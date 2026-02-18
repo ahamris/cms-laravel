@@ -48,7 +48,9 @@ So: one Laravel app = API for the SPA + admin panel + Swagger.
 
 - **Content model** — `Page`: `title`, `slug` (unique), `body`, `published_at`. Scope `published()` filters by `published_at <= now()`. API responses use `PageResource` and `UserResource`.
 
-Result: the React SPA can log in (cookie or token), get the current user, and read published pages. No admin UI is implemented in the API layer; the admin is the separate panel below.
+- **Public content security (no login)** — Content (pages) is public. Security between React and the CMS is via: **CORS** (restrict origins with `CORS_ALLOWED_ORIGINS`), **optional API key** for content routes (`CMS_API_KEY` + `X-API-Key` or `Authorization: Bearer`), **rate limiting** (60/min), and **HTTPS** in production. See [security.md](security.md).
+
+Result: the React SPA can read published pages without logging in; optional API key and CORS restrict who can call the API. Sanctum (login/logout/user) remains for admin or future protected endpoints.
 
 ### 3.2 Admin panel (web, `/admin/*`)
 

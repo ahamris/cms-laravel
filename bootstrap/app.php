@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'cms.api.key' => \App\Http\Middleware\ValidateCmsApiKey::class,
+            'restrict.origins' => \App\Http\Middleware\RestrictToAllowedOrigins::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

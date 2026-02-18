@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Headless CMS API (public content)
+    |--------------------------------------------------------------------------
+    | Optional API key for public content routes (pages). If set, the React app
+    | must send it in the X-API-Key header. If empty, no key is required.
+    | In a SPA the key is visible in the client; use for restricting access
+    | to known clients and pair with CORS + HTTPS + rate limiting.
+    */
+    'cms_api_key' => env('CMS_API_KEY'),
+
 ];

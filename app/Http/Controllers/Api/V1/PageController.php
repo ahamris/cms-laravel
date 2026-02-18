@@ -17,6 +17,7 @@ class PageController extends Controller
         tags: ['Pages'],
         parameters: [
             new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 15), description: 'Items per page'),
+            new OA\Parameter(name: 'X-API-Key', in: 'header', required: false, schema: new OA\Schema(type: 'string'), description: 'Required when CMS_API_KEY is set on the server. Alternatively use Authorization: Bearer <key>.'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Paginated list of published pages', content: new OA\JsonContent(properties: [
@@ -24,6 +25,7 @@ class PageController extends Controller
                 new OA\Property(property: 'links', type: 'object'),
                 new OA\Property(property: 'meta', type: 'object'),
             ])),
+            new OA\Response(response: 401, description: 'Invalid or missing API key (when CMS_API_KEY is configured)'),
         ]
     )]
     public function index(Request $request): JsonResponse
@@ -42,9 +44,11 @@ class PageController extends Controller
         tags: ['Pages'],
         parameters: [
             new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'), description: 'Page slug'),
+            new OA\Parameter(name: 'X-API-Key', in: 'header', required: false, schema: new OA\Schema(type: 'string'), description: 'Required when CMS_API_KEY is set on the server. Alternatively use Authorization: Bearer <key>.'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Success', content: new OA\JsonContent(ref: '#/components/schemas/Page')),
+            new OA\Response(response: 401, description: 'Invalid or missing API key (when CMS_API_KEY is configured)'),
             new OA\Response(response: 404, description: 'Page not found or not published'),
         ]
     )]
