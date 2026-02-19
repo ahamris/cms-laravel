@@ -8,7 +8,7 @@
         <x-partials.sidebar-menu-item :item="$item" />
     @empty
         <x-navigation.nav-section title="Navigation">
-            <x-navigation.nav-item title="Dashboard" icon="chart-line" route="admin.home" :active="request()->routeIs('admin.home')" />
+            <x-navigation.nav-item title="Dashboard" icon="chart-line" route="admin.index" :active="request()->routeIs('admin.index')" />
         </x-navigation.nav-section>
     @endforelse
 </x-navigation.nav-sidebar>

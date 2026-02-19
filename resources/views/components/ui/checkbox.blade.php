@@ -3,7 +3,7 @@
         <input
             type="checkbox"
             name="{{ $name }}"
-            value="{{ $value ?? '1' }}"
+            value="{{ $value }}"
             id="{{ $checkboxId }}"
             class="{{ $inputClasses }}"
             @if($checked) checked @endif

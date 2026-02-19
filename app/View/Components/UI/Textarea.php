@@ -12,23 +12,28 @@ class Textarea extends Component
 
     public string $textareaId;
 
+    public string $value = '';
+
     public function __construct(
         public string $label = '',
         public string $name = '',
         public ?string $id = null,
-        public string $value = '',
+        string|int|float|null $value = null,
         public string $placeholder = '',
         public string $hint = '',
         public bool $error = false,
         public string $errorMessage = '',
-        public bool $autoError = true,
         public bool $required = false,
         public bool $disabled = false,
         public bool $readonly = false,
         public ?string $size = null, // sm, lg
         public ?int $rows = null,
-        public ?int $cols = null
+        public ?int $cols = null,
+        public bool $showCharacterCount = false,
+        public ?int $maxLength = null
     ) {
+        // Normalize value to string
+        $this->value = $value !== null ? (string) $value : '';
         $classes = [];
 
         // Base textarea classes
@@ -54,7 +59,7 @@ class Textarea extends Component
         }
 
         $this->classes = implode(' ', $classes);
-        $this->textareaId = $id ?? ($name ?: 'textarea-'.uniqid());
+        $this->textareaId = $id ?? ($name ?: 'textarea-' . uniqid());
     }
 
     public function render(): View|Closure|string

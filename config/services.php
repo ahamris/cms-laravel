@@ -15,11 +15,11 @@ return [
     */
 
     'postmark' => [
-        'key' => env('POSTMARK_API_KEY'),
+        'token' => env('POSTMARK_TOKEN'),
     ],
 
     'resend' => [
-        'key' => env('RESEND_API_KEY'),
+        'key' => env('RESEND_KEY'),
     ],
 
     'ses' => [
@@ -35,15 +35,14 @@ return [
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Headless CMS API (public content)
-    |--------------------------------------------------------------------------
-    | Optional API key for public content routes (pages). If set, the React app
-    | must send it in the X-API-Key header. If empty, no key is required.
-    | In a SPA the key is visible in the client; use for restricting access
-    | to known clients and pair with CORS + HTTPS + rate limiting.
-    */
-    'cms_api_key' => env('CMS_API_KEY'),
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY', ''),
+        'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
+    ],
+
+    'groq' => [
+        'api_key' => env('GROQ_API_KEY', ''),
+        'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+    ],
 
 ];

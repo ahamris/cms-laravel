@@ -1,96 +1,55 @@
-<x-layouts.auth title="Reset Password">
-    <div class="flex h-full">
-        <!-- Left: Reset Password Form -->
-        <div class="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-            <div class="mx-auto w-full max-w-sm lg:w-96">
-                <div>
-                    <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">Reset your password</h2>
-                    <p class="mt-2 text-sm/6 text-gray-500 dark:text-gray-400">
-                        Enter your new password below.
-                    </p>
-                </div>
+@extends('admin.layouts.auth')
 
-                <div class="mt-10">
-                    <div>
-                        <form action="{{ route('password.update') }}" method="POST" class="space-y-6">
-                            @csrf
+@section('title', 'Reset Password')
+@section('heading', 'Reset Password')
+@section('subheading', 'Enter your new password to reset your account')
+@section('image_alt', 'Reset Password Illustration')
 
-                            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+@section('content')
+<form method="POST" action="{{ route('admin.password.store') }}" class="space-y-5">
+    @csrf
 
-                            @if (session('status'))
-                                <div class="rounded-md bg-green-50 dark:bg-green-900/20 p-4">
-                                    <p class="text-sm text-green-800 dark:text-green-200">{{ session('status') }}</p>
-                                </div>
-                            @endif
+    <!-- Password Reset Token -->
+    <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-                            <div>
-                                <label for="email" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">Email address</label>
-                                <div class="mt-2">
-                                    <input 
-                                        id="email" 
-                                        type="email" 
-                                        name="email" 
-                                        value="{{ old('email', $request->email) }}"
-                                        required 
-                                        autocomplete="email" 
-                                        autofocus
-                                        readonly
-                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-[var(--color-accent)] @error('email') outline-red-600 dark:outline-red-500 @enderror" 
-                                    />
-                                    @error('email')
-                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="password" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">Password</label>
-                                <div class="mt-2">
-                                    <input 
-                                        id="password" 
-                                        type="password" 
-                                        name="password" 
-                                        required 
-                                        autocomplete="new-password" 
-                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-[var(--color-accent)] @error('password') outline-red-600 dark:outline-red-500 @enderror" 
-                                    />
-                                    @error('password')
-                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="password_confirmation" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">Confirm Password</label>
-                                <div class="mt-2">
-                                    <input 
-                                        id="password_confirmation" 
-                                        type="password" 
-                                        name="password_confirmation" 
-                                        required 
-                                        autocomplete="new-password" 
-                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-[var(--color-accent)]" 
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <button type="submit" class="flex w-full justify-center rounded-md bg-[var(--color-accent)] px-3 py-1.5 text-sm/6 font-semibold text-[var(--color-accent-foreground)] shadow-xs hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] dark:bg-[var(--color-accent-content)] dark:shadow-none dark:hover:opacity-90 dark:focus-visible:outline-[var(--color-accent)] transition-opacity">Reset Password</button>
-                            </div>
-
-                            <div class="text-center">
-                                <a href="{{ route('login') }}" class="text-sm/6 font-semibold text-[var(--color-accent)] hover:opacity-80 dark:text-[var(--color-accent-content)] dark:hover:opacity-80 transition-opacity">Back to login</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right: Image -->
-        <div class="relative hidden w-0 flex-1 lg:block">
-            <img src="https://images.unsplash.com/photo-1496917756835-20cb06e75b4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" alt="" class="absolute inset-0 size-full object-cover" />
-        </div>
+    <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus autocomplete="username"
+               class="block w-full rounded-md border border-gray-200 px-3 py-2.5 focus:outline-none focus:border-primary/50 @error('email') border-red-500 @enderror">
+        @error('email')
+        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+        @enderror
     </div>
-</x-layouts.auth>
 
+    <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+        <input id="password" type="password" name="password" required autocomplete="new-password"
+               class="block w-full rounded-md border border-gray-200 px-3 py-2.5 focus:outline-none focus:border-primary/50 @error('password') border-red-500 @enderror">
+        @error('password')
+        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+        <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
+               class="block w-full rounded-md border border-gray-200 px-3 py-2.5 focus:outline-none focus:border-primary/50 @error('password_confirmation') border-red-500 @enderror">
+        @error('password_confirmation')
+        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div class="!mt-8">
+        <button type="submit" class="w-full py-2.5 px-3 bg-primary text-white font-semibold rounded-md hover:bg-primary/90 focus:outline-none transition-all duration-300 cursor-pointer">
+            Reset Password
+        </button>
+    </div>
+
+    <div class="text-center">
+        <p class="text-sm text-slate-500">
+            Remember your password?
+            <a href="{{ route('admin.login') }}" class="font-medium text-primary hover:underline">Sign in here</a>.
+        </p>
+    </div>
+</form>
+@endsection

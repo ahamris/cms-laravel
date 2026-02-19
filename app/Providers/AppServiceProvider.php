@@ -2,6 +2,16 @@
 
 namespace App\Providers;
 
+use App\Listeners\LogFailedEmail;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use App\Listeners\LogSentEmail;
+use App\Models\Subscription;
+use App\Models\VacancyModule\JobApplication;
+use App\Observers\JobApplicationObserver;
+use App\Observers\SubscriptionObserver;
+use App\Services\TranslationService;
 use App\View\Components\Navigation\Breadcrumbs;
 use App\View\Components\UI\Accordion;
 use App\View\Components\UI\AccordionItem;
@@ -15,6 +25,8 @@ use App\View\Components\UI\ColorPicker;
 use App\View\Components\UI\DatePicker;
 use App\View\Components\UI\Divider;
 use App\View\Components\UI\Dropdown;
+use App\View\Components\UI\IconPicker;
+use App\View\Components\UI\ImageUpload;
 use App\View\Components\UI\Input;
 use App\View\Components\UI\Modal;
 use App\View\Components\UI\Pagination;
@@ -25,7 +37,12 @@ use App\View\Components\UI\Textarea;
 use App\View\Components\UI\Toast;
 use App\View\Components\UI\Toggle;
 use App\View\Components\UI\Tooltip;
+use App\View\Composers\AIServiceStatusComposer;
+use App\View\Composers\MegaMenuComposer;
+use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -43,6 +60,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        require_once app_path('Helpers/functions.php');
+
+        // Define the 'api' rate limiter (required by throttle:api middleware)
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?? client_ip() ?? 'unknown');
+        });
+
+        // Register Translation Service
+        $this->app->singleton(TranslationService::class);
+
+        // Register Observers
+        Subscription::observe(SubscriptionObserver::class);
+        JobApplication::observe(JobApplicationObserver::class);
+
+        // Register Email Logging Listeners
+        Event::listen(MessageSent::class, LogSentEmail::class);
+
         // Form Components
         Blade::component(Button::class, 'button');
         Blade::component(Button::class, 'ui.button');
@@ -65,6 +99,10 @@ class AppServiceProvider extends ServiceProvider
         Blade::component(TagInput::class, 'tag-input');
         Blade::component(TagInput::class, 'ui.tag-input');
         Blade::component(Dropdown::class, 'ui.dropdown');
+        Blade::component(IconPicker::class, 'icon-picker');
+        Blade::component(IconPicker::class, 'ui.icon-picker');
+        Blade::component(ImageUpload::class, 'image-upload');
+        Blade::component(ImageUpload::class, 'ui.image-upload');
 
         // Layout Components
         Blade::component(Card::class, 'ui.card');

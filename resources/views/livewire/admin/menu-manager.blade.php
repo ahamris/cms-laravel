@@ -1,51 +1,17 @@
-<div class="space-y-8"
-    x-data="{ 
-        expanded: $persist({}).as('menu-expanded-state'),
-        allIds: @entangle('allIds'),
-        
-        handleSort(item, position) {
-            // item is the ID from x-sort:item
-            let el = document.querySelector(`[data-item-id='${item}']`);
-            
-            if (!el || !el.parentElement) return;
-            
-            let parentEl = el.parentElement;
-            let parentId = parentEl.dataset.parentId || null;
-            let orderedIds = Array.from(parentEl.children).map(child => child.dataset.itemId).filter(id => id);
-            
-            $wire.reorderFromFrontend(parentId, orderedIds);
-        },
-        
-        isExpanded(id) {
-            return this.expanded[id] === undefined ? true : this.expanded[id];
-        },
-        
-        toggleExpand(id) {
-            this.expanded[id] = !this.isExpanded(id);
-        },
-
-        expandAll() {
-            this.allIds.forEach(id => this.expanded[id] = true);
-        },
-
-        collapseAll() {
-            this.allIds.forEach(id => this.expanded[id] = false);
-        }
-    }"
->
+<div class="space-y-8">
     <div class="flex flex-col lg:flex-row gap-8">
-        <div class="lg:w-3/5 space-y-4">
+        <div class="lg:w-2/5 space-y-4">
             <div class="card">
-                <div class="card-header flex items-end justify-between gap-3 flex-wrap mb-4">
+                <div class="card-header flex items-center justify-between gap-3 flex-wrap">
                     <div>
                         <h2 class="card-title">Menu Tree</h2>
                         <p class="text-sm text-gray-600 dark:text-gray-400 m-0">Drag and drop items to reorder them or create sub-items.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <x-button variant="secondary" size="sm" icon="compress" @click="collapseAll">
+                        <x-button variant="secondary" size="sm" icon="compress" wire:click="collapseAll">
                             Collapse All
                         </x-button>
-                        <x-button variant="secondary" size="sm" icon="expand" @click="expandAll">
+                        <x-button variant="secondary" size="sm" icon="expand" wire:click="expandAll">
                             Expand All
                         </x-button>
                         <x-ui.dropdown>
@@ -71,11 +37,13 @@
                     @if($this->menuTree->isEmpty())
                         <p class="text-sm text-gray-600 dark:text-gray-400">No menu items yet. Create a new item.</p>
                     @else
-                        <ul class="space-y-2 list-none" x-sort="handleSort" x-sort:group="'menu-items'" data-parent-id="">
+                        <ul class="space-y-2 list-none" data-menu-sortable data-parent-id="">
                             @foreach($this->menuTree as $item)
                                 @include('livewire.admin.partials.menu-tree-item', [
                                     'item' => $item,
                                     'depth' => 0,
+                                    'expanded' => $expanded[$item->id] ?? true,
+                                    'expandedItems' => $expanded
                                 ])
                             @endforeach
                         </ul>
@@ -99,7 +67,7 @@
         </div>
 
         {{-- Documentation Panel --}}
-        <div class="lg:w-2/5">
+        <div class="lg:w-3/5">
             <div class="card lg:sticky lg:top-8 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
                 <div class="card-header">
                     <h2 class="card-title">How to Use</h2>
@@ -238,7 +206,7 @@
         {{-- Modal --}}
         <div class="fixed inset-0 z-50" x-data="{ show: @entangle('showModal').live }" x-show="show" x-cloak x-transition style="display: none;">
             {{-- Backdrop --}}
-            <div class="fixed inset-0 z-10 bg-gray-500/75 dark:bg-gray-900/75 transition-opacity pointer-events-auto" @click.self="$wire.resetForm()"></div>
+            <div class="fixed inset-0 z-10 bg-gray-500/75 dark:bg-gray-900/75 transition-opacity" @click="$wire.resetForm()"></div>
 
             {{-- Modal Panel --}}
             <div class="fixed inset-0 z-20 flex items-center justify-center p-4 pointer-events-none">
@@ -264,7 +232,7 @@
                                             placeholder="e.g. Settings" 
                                             required
                                         />
-                                        @error('form.label') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.label') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div class="md:col-span-2 flex items-center gap-3">
@@ -278,11 +246,11 @@
                                             name="form.parent_id" 
                                             wire:model="form.parent_id"
                                             placeholder="(No parent)"
-                                            :options="collect($this->parentOptions)->map(function($parent) {
-                                                return ['value' => $parent->id, 'label' => $parent->label . ($parent->item_type === 'section' ? ' (Section)' : '')];
-                                            })->values()->toArray()"
+                                            :options="collect($this->parentOptions)->mapWithKeys(function($parent) {
+                                                return [$parent->id => $parent->label . ($parent->item_type === 'section' ? ' (Section)' : '')];
+                                            })->toArray()"
                                         />
-                                        @error('form.parent_id') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.parent_id') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div>
@@ -293,7 +261,7 @@
                                             placeholder="e.g. Products" 
                                             required
                                         />
-                                        @error('form.label') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.label') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div>
@@ -304,7 +272,7 @@
                                             placeholder="e.g. box"
                                             hint="Icon name only (fa-solid is assumed)"
                                         />
-                                        @error('form.icon') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.icon') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div>
@@ -313,12 +281,11 @@
                                             name="form.route_name" 
                                             wire:model.live="form.route_name"
                                             placeholder="(Not selected)"
-                                            :options="collect($availableRoutes)->map(function($route) {
-                                                $label = $route['label'] ?? ($route['name'] . ' (' . $route['uri'] . ')');
-                                                return ['value' => $route['name'], 'label' => $label];
-                                            })->values()->toArray()"
+                                            :options="collect($availableRoutes)->mapWithKeys(function($route) {
+                                                return [$route['name'] => $route['name'] . ' (' . $route['uri'] . ')'];
+                                            })->toArray()"
                                         />
-                                        @error('form.route_name') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.route_name') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     @if(empty($form['route_name']))
@@ -329,7 +296,7 @@
                                                 wire:model.lazy="form.url" 
                                                 placeholder="https://..."
                                             />
-                                            @error('form.url') <small class="text-error">{{ $message }}</small> @enderror
+                                            @error('form.url') <span class="text-red-500">{{ $message }}</span> @enderror
                                         </div>
                                     @endif
 
@@ -340,13 +307,9 @@
                                             name="form.badge_type" 
                                             wire:model.live="form.badge_type"
                                             placeholder="No Badge"
-                                            :options="[
-                                                ['value' => '', 'label' => 'No Badge'],
-                                                ['value' => 'static', 'label' => 'Static Text'],
-                                                ['value' => 'dynamic', 'label' => 'Dynamic (Database Query)']
-                                            ]"
+                                            :options="['' => 'No Badge', 'static' => 'Static Text', 'dynamic' => 'Dynamic (Database Query)']"
                                         />
-                                        @error('form.badge_type') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.badge_type') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     @if($form['badge_type'] === 'static')
@@ -357,7 +320,7 @@
                                                 wire:model.lazy="form.badge_text" 
                                                 placeholder="e.g. 12"
                                             />
-                                            @error('form.badge_text') <small class="text-error">{{ $message }}</small> @enderror
+                                            @error('form.badge_text') <span class="text-red-500">{{ $message }}</span> @enderror
                                         </div>
                                     @endif
 
@@ -368,49 +331,47 @@
                                                 name="form.badge_query.model" 
                                                 wire:model.live="form.badge_query.model"
                                                 placeholder="Select Model"
-                                                :options="collect($availableModels)->map(function($model) {
-                                                    return ['value' => $model['class'], 'label' => $model['name']];
-                                                })->values()->toArray()"
+                                                :options="collect($availableModels)->mapWithKeys(function($model) {
+                                                    return [$model['class'] => $model['name']];
+                                                })->toArray()"
                                             />
-                                            @error('form.badge_query.model') <small class="text-error">{{ $message }}</small> @enderror
+                                            @error('form.badge_query.model') <span class="text-red-500">{{ $message }}</span> @enderror
                                         </div>
 
                                         @if(!empty($form['badge_query']['model']))
                                             @php
                                                 $modelName = class_basename($form['badge_query']['model']);
                                                 $prefixText = $modelName . '::';
+                                                $prefixLength = strlen($prefixText);
                                             @endphp
                                             <div class="md:col-span-2">
-                                                <label for="badge_query_query" class="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Query</label>
+                                                <label for="badge_query_query">Query</label>
                                                 <div class="relative">
-                                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-mono text-sm pointer-events-none select-none">
+                                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-mono text-base leading-6 pointer-events-none whitespace-nowrap">
                                                         {{ $prefixText }}
                                                     </span>
                                                     <input 
                                                         id="badge_query_query" 
                                                         type="text" 
-                                                        class="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
-                                                        style="padding-left: {{ strlen($prefixText) * 0.6 + 1 }}rem;"
+                                                        class="input font-mono"
+                                                        style="padding-left: calc(1rem + {{ $prefixLength }}ch + 0.5rem);"
                                                         wire:model.live="form.badge_query.query" 
                                                         placeholder="count()"
                                                     >
                                                 </div>
-                                                <div class="text-xs text-gray-600 dark:text-gray-400 mt-1.5">
-                                                    Enter Eloquent query method (e.g., count(), where('status', 'active')->count())
-                                                </div>
-                                                <details class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                    <summary class="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 font-medium">Common query examples</summary>
-                                                    <div class="mt-2 space-y-1 pl-3 border-l-2 border-gray-300 dark:border-gray-600">
-                                                        <div><code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">count()</code> - Total count</div>
-                                                        <div><code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">where('status', 'pending')->count()</code> - Count with condition</div>
-                                                        <div><code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">whereNotNull('email_verified_at')->count()</code> - Count non-null</div>
-                                                        <div><code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">whereNull('deleted_at')->count()</code> - Count null</div>
-                                                        <div><code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">where('created_at', '>', now()->subDays(7))->count()</code> - Count last 7 days</div>
-                                                        <div><code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">distinct('email')->count('email')</code> - Distinct count</div>
-                                                        <div><code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">exists()</code> - Check if exists (returns 1/0)</div>
+                                                <details class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    <summary class="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">Common query examples</summary>
+                                                    <div class="mt-2 space-y-1 pl-2 border-l-2 border-gray-300 dark:border-gray-600">
+                                                        <div><code class="text-xs">count()</code> - Total count</div>
+                                                        <div><code class="text-xs">where('status', 'pending')->count()</code> - Count with condition</div>
+                                                        <div><code class="text-xs">whereNotNull('email_verified_at')->count()</code> - Count non-null</div>
+                                                        <div><code class="text-xs">whereNull('deleted_at')->count()</code> - Count null</div>
+                                                        <div><code class="text-xs">where('created_at', '>', now()->subDays(7))->count()</code> - Count last 7 days</div>
+                                                        <div><code class="text-xs">distinct('email')->count('email')</code> - Distinct count</div>
+                                                        <div><code class="text-xs">exists()</code> - Check if exists (returns 1/0)</div>
                                                     </div>
                                                 </details>
-                                                @error('form.badge_query.query') <small class="text-error">{{ $message }}</small> @enderror
+                                                @error('form.badge_query.query') <span class="text-red-500">{{ $message }}</span> @enderror
                                             </div>
                                         @endif
                                     @endif
@@ -421,16 +382,9 @@
                                                 label="Badge Color" 
                                                 name="form.badge_color" 
                                                 wire:model.live="form.badge_color"
-                                                :options="[
-                                                    ['value' => 'primary', 'label' => 'Primary'],
-                                                    ['value' => 'secondary', 'label' => 'Secondary'],
-                                                    ['value' => 'success', 'label' => 'Success'],
-                                                    ['value' => 'warning', 'label' => 'Warning'],
-                                                    ['value' => 'error', 'label' => 'Error'],
-                                                    ['value' => 'sky', 'label' => 'Sky']
-                                                ]"
+                                                :options="['primary' => 'Primary', 'secondary' => 'Secondary', 'success' => 'Success', 'warning' => 'Warning', 'error' => 'Error', 'sky' => 'Sky']"
                                             />
-                                            @error('form.badge_color') <small class="text-error">{{ $message }}</small> @enderror
+                                            @error('form.badge_color') <span class="text-red-500">{{ $message }}</span> @enderror
                                         </div>
                                     @endif
 
@@ -442,7 +396,7 @@
                                             placeholder="admin.orders*"
                                             hint="Default: selected route + .*"
                                         />
-                                        @error('form.active_pattern') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.active_pattern') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div>
@@ -450,13 +404,9 @@
                                             label="Target" 
                                             name="form.target" 
                                             wire:model="form.target"
-                                            :options="[
-                                                ['value' => '', 'label' => 'Standard'],
-                                                ['value' => '_blank', 'label' => 'New tab'],
-                                                ['value' => '_self', 'label' => 'Same tab']
-                                            ]"
+                                            :options="['' => 'Standard', '_blank' => 'New tab', '_self' => 'Same tab']"
                                         />
-                                        @error('form.target') <small class="text-error">{{ $message }}</small> @enderror
+                                        @error('form.target') <span class="text-red-500">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div class="md:col-span-2 flex items-center gap-3">
@@ -480,6 +430,85 @@
     </div>
 
     @push('scripts')
-        {{-- Alpine.js logic is now handled via plugins imported in admin.js --}}
+        @once
+            @assets
+                <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+            @endassets
+            <script>
+                document.addEventListener('livewire:init', () => {
+                    let isReordering = false;
+                    
+                    const getComponent = (el) => {
+                        const componentEl = el.closest('[wire\\:id]');
+                        return componentEl ? Livewire.find(componentEl.getAttribute('wire:id')) : null;
+                    };
+
+                    const initializeSortables = () => {
+                        // Reordering sırasında sortable'ları yeniden initialize etme
+                        if (isReordering) {
+                            return;
+                        }
+                        
+                        document.querySelectorAll('[data-menu-sortable]').forEach(container => {
+                            if (container.__sortable) {
+                                container.__sortable.destroy();
+                            }
+
+                            container.__sortable = new Sortable(container, {
+                                group: 'admin-menu',
+                                handle: '[data-sort-handle]',
+                                animation: 150,
+                                fallbackTolerance: 5,
+                                onEnd: (evt) => {
+                                    const parentId = evt.to.dataset.parentId !== '' ? Number(evt.to.dataset.parentId) : null;
+                                    const orderedIds = Array.from(evt.to.children)
+                                        .map(child => child.dataset.itemId)
+                                        .filter(Boolean)
+                                        .map(Number);
+
+                                    const component = getComponent(container);
+                                    if (! component) {
+                                        return;
+                                    }
+
+                                    isReordering = true;
+                                    component.call('reorderFromFrontend', parentId, orderedIds).then(() => {
+                                        isReordering = false;
+                                        // Reordering tamamlandıktan sonra sortable'ları yeniden initialize et
+                                        setTimeout(() => {
+                                            initializeSortables();
+                                        }, 100);
+                                    }).catch(() => {
+                                        isReordering = false;
+                                    });
+                                },
+                            });
+                        });
+                    };
+
+                    initializeSortables();
+
+                    Livewire.hook('morph.updated', ({ component }) => {
+                        // Reordering sırasında morph.updated'i ignore et
+                        if (isReordering) {
+                            return;
+                        }
+                        
+                        const componentEl = document.querySelector(`[wire\\:id="${component.id}"]`);
+                        if (componentEl && componentEl.querySelector('[data-menu-sortable]')) {
+                            setTimeout(() => {
+                                initializeSortables();
+                            }, 100);
+                        }
+                    });
+
+                    Livewire.on('menu-tree-mounted', () => {
+                        setTimeout(() => {
+                            initializeSortables();
+                        }, 100);
+                    });
+                });
+            </script>
+        @endonce
     @endpush
 </div>

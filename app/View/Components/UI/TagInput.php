@@ -26,16 +26,7 @@ class TagInput extends Component
         public bool $disabled = false,
         public ?string $size = null // sm, lg
     ) {
-        // Ensure tags is always an array
-        if (!is_array($this->tags)) {
-            $this->tags = [];
-        }
-        
-        // Ensure options is always an array (or null)
-        if ($this->options !== null && !is_array($this->options)) {
-            $this->options = [];
-        }
-        $this->inputId = $id ?? ($name ?: 'tag-input-'.uniqid());
+        $this->inputId = $id ?? ($name ?: 'tag-input-' . uniqid());
 
         $classes = [];
         $baseClasses = 'block w-full border rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 transition-all duration-200 border-zinc-300 dark:border-zinc-700 focus:outline-none';
@@ -46,7 +37,7 @@ class TagInput extends Component
         } elseif ($size === 'lg') {
             $classes[] = 'px-5 py-3 text-base leading-6 tracking-[0.5px]';
         } else {
-            $classes[] = 'px-4 py-2.5 text-base leading-6 tracking-[0.5px]';
+            $classes[] = 'px-3 py-1.5 text-base sm:text-sm/6';
         }
 
         if ($error) {

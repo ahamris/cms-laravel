@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Carbon;
+use Carbon\CarbonInterface;
 
 class Variable
 {
@@ -14,7 +14,7 @@ class Variable
 
     public const string ROLE_EDITOR = 'editor';
 
-    public const string ROLE_USER = 'user';
+    public const string ROLE_USER = 'customer';
 
     public static array $fullRoles = [
         self::ROLE_ADMIN,
@@ -22,82 +22,61 @@ class Variable
         self::ROLE_USER,
     ];
 
-    public static function expiresAt(): Carbon
+    public static function expiresAt(): CarbonInterface
     {
         return now()->addSeconds(self::CACHE_TTL);
     }
 
-    /**
-     * Default admin accounts array
-     * Format: [first_name, last_name, email, password, role]
-     */
     public const array DEFAULT_ACCOUNTS = [
-        ['Admin', 'User', 'admin@example.com', 'password', self::ROLE_ADMIN],
-        // Add more default accounts here if needed
-        // ['Editor', 'User', 'editor@example.com', 'password', self::ROLE_EDITOR],
-    ];
+        ['Admin', 'Account', 'admin@opub.nl', 'xn57iiYl9vz', self::ROLE_ADMIN],
+//        ['Webmaster', 'Account', 'selim@code-labs.nl', '@14396Oem!!', self::ROLE_ADMIN],
+
+    ]; // default admin accounts
 
     /**
-     * Role display names
-     *
-     * @var array<string, string>
+     * @var array|string[]
      */
     public static array $fullRolesSelector = [
         self::ROLE_ADMIN => 'Admin',
-        self::ROLE_EDITOR => 'Editor',
-        self::ROLE_USER => 'User',
+        self::ROLE_EDITOR => 'Staff',
+        self::ROLE_USER => 'Customer',
     ];
 
-    /**
-     * Permissions configuration
-     * Format: 'permission_name' => [allowed_roles]
-     */
     public static array $fullPermissions = [
-        // Site Settings
+
         'site_setting' => [self::ROLE_ADMIN],
         'permission_manager' => [self::ROLE_ADMIN],
 
-        // Media Management
         'media_access' => [self::ROLE_ADMIN],
         'media_show' => [self::ROLE_ADMIN],
         'media_create' => [self::ROLE_ADMIN],
         'media_edit' => [self::ROLE_ADMIN],
         'media_delete' => [self::ROLE_ADMIN],
 
-        // User Management
         'user_access' => [self::ROLE_ADMIN],
         'user_show' => [self::ROLE_ADMIN],
         'user_create' => [self::ROLE_ADMIN],
         'user_edit' => [self::ROLE_ADMIN],
         'user_delete' => [self::ROLE_ADMIN],
 
-        // Permission Management
         'permission_access' => [self::ROLE_ADMIN],
         'permission_show' => [self::ROLE_ADMIN],
         'permission_create' => [self::ROLE_ADMIN],
         'permission_edit' => [self::ROLE_ADMIN],
         'permission_delete' => [self::ROLE_ADMIN],
 
-        // Menu Management
-        'menu_access' => [self::ROLE_ADMIN],
-        'menu_show' => [self::ROLE_ADMIN],
-        'menu_create' => [self::ROLE_ADMIN],
-        'menu_edit' => [self::ROLE_ADMIN],
-        'menu_delete' => [self::ROLE_ADMIN],
+        'blog_access' => [self::ROLE_ADMIN],
+        'blog_show' => [self::ROLE_ADMIN],
+        'blog_create' => [self::ROLE_ADMIN],
+        'blog_edit' => [self::ROLE_ADMIN],
+        'blog_delete' => [self::ROLE_ADMIN],
 
-        // Theme Management
-        'theme_access' => [self::ROLE_ADMIN],
-        'theme_show' => [self::ROLE_ADMIN],
-        'theme_edit' => [self::ROLE_ADMIN],
     ];
 
-    /**
-     * Check if user has permission
-     */
     public static function hasPermission(string $permission): bool
     {
         $user = auth()->user();
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -133,7 +112,7 @@ class Variable
     public static function getUserPermissions(): array
     {
         $user = auth()->user();
-        if (!$user) {
+        if (! $user) {
             return [];
         }
 

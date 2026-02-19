@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Admin\Concerns\LoadsMenuOptions;
+use App\Livewire\Admin\Concerns\ManagesMenuExpansion;
 use App\Livewire\Admin\Concerns\ManagesMenuForm;
 use App\Livewire\Admin\Concerns\ManagesMenuReordering;
 use App\Livewire\Admin\Concerns\ValidatesMenuForm;
@@ -15,6 +16,7 @@ use Livewire\Component;
 class MenuManager extends Component
 {
     use LoadsMenuOptions;
+    use ManagesMenuExpansion;
     use ManagesMenuForm;
     use ManagesMenuReordering;
     use ValidatesMenuForm;
@@ -35,14 +37,14 @@ class MenuManager extends Component
 
     public array $availableModels = [];
 
-    public array $allIds = [];
+    public array $expanded = [];
 
     public function mount(): void
     {
         $this->menu = AdminMenu::firstOrCreate(
             ['slug' => 'admin-main'],
             [
-                'name' => 'Admin Sidebar',
+                'name' => 'OpenPublication',
                 'description' => 'Admin panel menu',
                 'position' => 0,
                 'is_active' => true,
@@ -51,9 +53,10 @@ class MenuManager extends Component
 
         $this->availableRoutes = $this->loadRouteOptions();
         $this->availableModels = $this->loadModelOptions();
+        $this->expanded = $this->defaultExpandedState();
         $this->form = $this->getDefaultForm();
-        
-        $this->allIds = AdminMenuItem::where('admin_menu_id', $this->menu->id)->pluck('id')->toArray();
+
+        $this->dispatch('menu-tree-mounted');
     }
 
     public function getMenuTreeProperty(): Collection
@@ -78,15 +81,25 @@ class MenuManager extends Component
 
         if ($this->editingItemId) {
             $item = AdminMenuItem::where('admin_menu_id', $this->menu->id)->findOrFail($this->editingItemId);
+            $previousParent = $item->parent_id;
             $item->update($attributes);
             $message = 'Menu item updated.';
-        } else {
-            AdminMenuItem::create($attributes);
-            $message = 'Menu item created.';
-        }
 
-        // Sync allIds for client-side expansion
-        $this->allIds = AdminMenuItem::where('admin_menu_id', $this->menu->id)->pluck('id')->toArray();
+            if ($item->parent_id) {
+                $this->expanded[$item->parent_id] = true;
+            }
+
+            if ($previousParent && $previousParent !== $item->parent_id) {
+                $this->expanded[$previousParent] = $this->expanded[$previousParent] ?? false;
+            }
+        } else {
+            $item = AdminMenuItem::create($attributes);
+            $message = 'Menu item created.';
+            $this->expanded[$item->id] = true;
+            if ($item->parent_id) {
+                $this->expanded[$item->parent_id] = true;
+            }
+        }
 
         $this->showModal = false;
         $this->selectedItemType = null;
@@ -149,9 +162,7 @@ class MenuManager extends Component
         $item->delete();
 
         $this->confirmingDeleteId = null;
-        
-        // Sync allIds for client-side expansion
-        $this->allIds = AdminMenuItem::where('admin_menu_id', $this->menu->id)->pluck('id')->toArray();
+        unset($this->expanded[$item->id]);
         Cache::forget('admin-menu:sidebar');
         $this->dispatch('notify', type: 'success', message: 'Menu item deleted.');
         $this->dispatch('refresh-sidebar');

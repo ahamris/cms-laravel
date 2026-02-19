@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "updatedAt": null
+  },
+  "organization": {
+    "name": "",
+    "tradeName": "",
+    "type": "",
+    "address": "",
+    "registration": {
+      "kvkNumber": "",
+      "rsin": "",
+      "info": ""
+    }
+  },
+  "web": {
+    "siteUrl": "",
+    "privacyPolicyUrl": "",
+    "cookieSettingsLocation": ""
+  },
+  "contacts": {
+    "supportEmail": "",
+    "customerServiceEmail": "",
+    "complaintEmail": "",
+    "privacyEmail": ""
+  },
+  "service": {
+    "productName": ""
+  },
+  "contract": {
+    "initialTermMonths": "",
+    "renewalTermMonths": "",
+    "noticePeriodMonths": ""
+  },
+  "billing": {
+    "cycle": "",
+    "paymentTermsDays": "",
+    "priceIndexClause": ""
+  },
+  "liability": {
+    "capMonths": "",
+    "capAmount": ""
+  },
+  "legal": {
+    "courtLocation": "",
+    "changeNoticePeriodDays": ""
+  },
+  "complaints": {
+    "responseDays": ""
+  },
+  "privacy": {
+    "retention": {
+      "contactForm": ""
+    },
+    "providers": {
+      "hosting": {
+        "name": "",
+        "location": ""
+      },
+      "crm": {
+        "name": ""
+      },
+      "accounting": {
+        "name": ""
+      }
+    }
+  },
+  "cookie": {
+    "settingsLocation": ""
+  },
+  "documents": {
+    "b2cTerms": {
+      "label": "Algemene Voorwaarden - B2C",
+      "source": "Algemene Voorwaarden - B2C.html",
+      "version": "",
+      "lastUpdated": "",
+      "content": ""
+    },
+    "b2bTerms": {
+      "label": "Algemene Voorwaarden - B2B",
+      "source": "Algemene Voorwaarden - B2B.html",
+      "version": "",
+      "lastUpdated": "",
+      "content": ""
+    },
+    "privacyPolicy": {
+      "label": "Privacyverklaring",
+      "source": "Privacyverklaring.html",
+      "version": "",
+      "lastUpdated": "",
+      "content": ""
+    },
+    "cookiePolicy": {
+      "label": "Cookiebeleid",
+      "source": "Cookiebeleid.html",
+      "version": "",
+      "lastUpdated": "",
+      "content": ""
+    }
+  }
+}
+

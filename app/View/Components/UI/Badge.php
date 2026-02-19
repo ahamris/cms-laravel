@@ -17,15 +17,10 @@ class Badge extends Component
         public ?string $variant = 'secondary', // primary, secondary, success, warning, error, sky
         public ?string $icon = null
     ) {
-        // Ensure variant has a default
-        if ($this->variant === null) {
-            $this->variant = 'secondary';
-        }
         $classes = [];
 
         // Base badge classes
-        // self-start: flex container içinde badge'in tüm satıra yayılmasını engeller (inline davranış)
-        $baseClasses = 'inline-flex items-center font-medium rounded-full self-start';
+        $baseClasses = 'inline-flex items-center font-medium rounded-md self-start';
         $classes[] = $baseClasses;
 
         // Size classes

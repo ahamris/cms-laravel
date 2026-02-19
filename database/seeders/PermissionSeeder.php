@@ -14,30 +14,23 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create permissions from Variable::$fullPermissions
-        foreach (array_keys(Variable::$fullPermissions) as $permissionName) {
-            Permission::firstOrCreate(
-                ['name' => $permissionName, 'guard_name' => Variable::GUARD_NAME]
-            );
+        foreach (Variable::$fullRoles as $role) {
+            if (Role::where('name', $role)->doesntExist()) {
+                Role::create(['name' => $role]);
+            }
         }
+        //create permissions
+        foreach (Variable::$fullPermissions as $permission => $roles) {
 
-        // Assign permissions to roles based on Variable::$fullPermissions
-        foreach (Variable::$fullPermissions as $permissionName => $allowedRoles) {
-            $permission = Permission::where('name', $permissionName)
-                ->where('guard_name', Variable::GUARD_NAME)
-                ->first();
-
-            if ($permission) {
-                foreach ($allowedRoles as $roleName) {
-                    $role = Role::where('name', $roleName)
-                        ->where('guard_name', Variable::GUARD_NAME)
-                        ->first();
-
-                    if ($role && !$role->hasPermissionTo($permission)) {
-                        $role->givePermissionTo($permission);
-                    }
+            if (Permission::where('name', $permission)->doesntExist()) {
+                //create permission
+                $permissionInstance = Permission::create(['name' => $permission, 'guard_name' => Variable::GUARD_NAME]);
+                //authorize roles to those permissions
+                foreach ($roles as $role) {
+                    Role::where('name', $role)->first()->givePermissionTo($permissionInstance);
                 }
             }
         }
+
     }
 }

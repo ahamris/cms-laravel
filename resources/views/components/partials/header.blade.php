@@ -33,90 +33,28 @@
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-2 md:gap-3 flex-shrink-0">
-            <!-- Dark Mode Toggle -->
-            <div
-                x-data="{
-                    get darkModePreference() {
-                        return $store.darkMode.mode || 'system';
-                    },
-                    setDarkMode(value) {
-                        $store.darkMode.set(value);
-                    }
-                }"
-                class="relative"
-            >
-                <div class="inline-flex rounded-full bg-zinc-100/75 dark:bg-zinc-950/50 p-1 ring-1 ring-zinc-200/90 dark:ring-zinc-700/50">
-                    <div class="relative inline-flex items-center">
-                        <!-- Toggle Indicator -->
-                        <div
-                            x-cloak
-                            class="toggle-indicator absolute inset-y-0 left-0 w-1/3 rounded-full bg-white dark:bg-zinc-700/75 shadow-sm transition-transform duration-150 ease-out"
-                            x-bind:class="{
-                                'translate-x-0': darkModePreference === 'light',
-                                'translate-x-full': darkModePreference === 'system',
-                                'translate-x-[200%]': darkModePreference === 'dark',
-                            }"
-                        ></div>
-                        
-                        <!-- Light Mode -->
-                        <label class="group relative flex">
-                            <input
-                                class="peer absolute start-0 top-0 appearance-none opacity-0"
-                                id="dark-mode-off"
-                                name="dark-mode-switch"
-                                type="radio"
-                                value="light"
-                                x-bind:checked="darkModePreference === 'light'"
-                                x-on:change="setDarkMode('light')"
-                            />
-                            <span
-                                class="relative flex cursor-pointer items-center justify-center rounded-lg p-2 text-zinc-500 transition-transform duration-150 ease-out peer-checked:text-zinc-900 peer-focus-visible:ring-3 peer-focus-visible:ring-zinc-200 hover:text-zinc-900 active:scale-97 dark:text-zinc-400 dark:peer-checked:text-white dark:peer-focus-visible:ring-zinc-500/50 dark:hover:text-white"
-                            >
-                                <i class="fa-solid fa-sun text-sm"></i>
-                                <span class="sr-only">Light mode</span>
-                            </span>
-                        </label>
-                        
-                        <!-- System Mode -->
-                        <label class="group relative flex">
-                            <input
-                                class="peer absolute start-0 top-0 appearance-none opacity-0"
-                                id="dark-mode-system"
-                                name="dark-mode-switch"
-                                type="radio"
-                                value="system"
-                                x-bind:checked="darkModePreference === 'system'"
-                                x-on:change="setDarkMode('system')"
-                            />
-                            <span
-                                class="relative flex cursor-pointer items-center justify-center rounded-lg p-2 text-zinc-500 transition-transform duration-150 ease-out peer-checked:text-zinc-900 peer-focus-visible:ring-3 peer-focus-visible:ring-zinc-200 hover:text-zinc-900 active:scale-97 dark:text-zinc-400 dark:peer-checked:text-white dark:peer-focus-visible:ring-zinc-500/50 dark:hover:text-white"
-                            >
-                                <i class="fa-solid fa-desktop text-sm"></i>
-                                <span class="sr-only">System preference</span>
-                            </span>
-                        </label>
-                        
-                        <!-- Dark Mode -->
-                        <label class="group relative flex">
-                            <input
-                                class="peer absolute start-0 top-0 appearance-none opacity-0"
-                                id="dark-mode-on"
-                                name="dark-mode-switch"
-                                type="radio"
-                                value="dark"
-                                x-bind:checked="darkModePreference === 'dark'"
-                                x-on:change="setDarkMode('dark')"
-                            />
-                            <span
-                                class="relative flex cursor-pointer items-center justify-center rounded-lg p-2 text-zinc-500 transition-transform duration-150 ease-out peer-checked:text-zinc-900 peer-focus-visible:ring-3 peer-focus-visible:ring-zinc-200 hover:text-zinc-900 active:scale-97 dark:text-zinc-400 dark:peer-checked:text-white dark:peer-focus-visible:ring-zinc-500/50 dark:hover:text-white"
-                            >
-                                <i class="fa-solid fa-moon text-sm"></i>
-                                <span class="sr-only">Dark mode</span>
-                            </span>
-                        </label>
-                    </div>
-                </div>
-            </div>
+            <!-- Theme dropdown: Light / Dark / System -->
+            <x-ui.dropdown>
+                <x-slot name="trigger">
+                    <button class="inline-flex w-8 h-8 items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300" title="Theme">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                    </button>
+                </x-slot>
+                <x-slot name="content">
+                    <button type="button" @click="$store.darkMode.set('light')" class="w-full flex items-center justify-between px-4 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
+                        <span><i class="fa-solid fa-sun mr-2"></i> Light Mode</span>
+                        <i class="fa-solid fa-check text-[var(--color-accent)] dark:text-[var(--color-accent-content)]" x-show="$store.darkMode.mode === 'light'"></i>
+                    </button>
+                    <button type="button" @click="$store.darkMode.set('dark')" class="w-full flex items-center justify-between px-4 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
+                        <span><i class="fa-solid fa-moon mr-2"></i> Dark Mode</span>
+                        <i class="fa-solid fa-check text-[var(--color-accent)] dark:text-[var(--color-accent-content)]" x-show="$store.darkMode.mode === 'dark'"></i>
+                    </button>
+                    <button type="button" @click="$store.darkMode.set('system')" class="w-full flex items-center justify-between px-4 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
+                        <span><i class="fa-solid fa-desktop mr-2"></i> System Settings</span>
+                        <i class="fa-solid fa-check text-[var(--color-accent)] dark:text-[var(--color-accent-content)]" x-show="$store.darkMode.mode === 'system'"></i>
+                    </button>
+                </x-slot>
+            </x-ui.dropdown>
 
             <!-- User Dropdown -->
             <x-ui.dropdown>
@@ -152,14 +90,7 @@
                                     {{ auth()->check() && auth()->user()->email ? auth()->user()->email : 'admin@example.com' }}
                                 </div>
                                 <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 mt-0.5">
-                                    @php
-                                        $user = auth()->user();
-                                        $roleName = $user && $user->roles->isNotEmpty() 
-                                            ? $user->roles->first()->name 
-                                            : 'User';
-                                        $roleDisplay = \App\Helpers\Variable::$fullRolesSelector[$roleName] ?? ucfirst($roleName);
-                                    @endphp
-                                    {{ $roleDisplay }}
+                                    Administrator
                                 </div>
                             </div>
                         </div>
@@ -167,13 +98,17 @@
 
                     <!-- Navigation Links -->
                     <div class="py-1">
-                        <a href="{{ route('admin.profile.edit') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 hover:bg-[var(--color-accent)]/10 dark:hover:bg-[var(--color-accent)]/20 transition-colors">
+                        <a href="{{ route('admin.profile.show') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             <i class="fa-regular fa-user w-5 text-center"></i>
                             <span>My Profile</span>
                         </a>
-                        <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 hover:bg-[var(--color-accent)]/10 dark:hover:bg-[var(--color-accent)]/20 transition-colors">
+                        <a href="{{ route('admin.settings.general.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                             <i class="fa-regular fa-gear w-5 text-center"></i>
                             <span>Settings</span>
+                        </a>
+                        <a href="{{ route('admin.security.two-factor.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                            <i class="fa-regular fa-shield w-5 text-center"></i>
+                            <span>Two-Factor Auth</span>
                         </a>
                     </div>
 
@@ -181,7 +116,7 @@
                     <div class="border-t border-zinc-200 dark:border-zinc-700"></div>
 
                     <!-- Sign Out -->
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('admin.logout') }}">
                         @csrf
                         <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                             <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>

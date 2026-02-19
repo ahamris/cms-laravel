@@ -19,11 +19,7 @@ class Table extends Component
     // Component Configuration Props
     protected string $modelClass; // Resolved model class
 
-    protected array $resources = [
-        'users' => \App\Models\User::class,
-        'roles' => \Spatie\Permission\Models\Role::class,
-        'permissions' => \Spatie\Permission\Models\Permission::class,
-    ];
+    protected array $resources = [];
 
     public string $resource; // Resource key (e.g., 'users', 'orders') - deprecated, use model prop instead
 
@@ -85,11 +81,13 @@ class Table extends Component
         if ($resource instanceof Model) {
             // Direct model instance provided
             $this->modelClass = $resource::class;
-            $this->resource = $this->resolveResourceKeyFromModel($resource::class);
+            // Store the model class string directly for hydration persistence
+            $this->resource = $resource::class;
         } elseif (class_exists($resource)) {
             // Model class string provided (e.g., \App\Models\Product::class)
             $this->modelClass = $resource;
-            $this->resource = $this->resolveResourceKeyFromModel($resource);
+            // Store the model class string directly for hydration persistence
+            $this->resource = $resource;
         } elseif (array_key_exists($resource, $this->resources)) {
             // Legacy: Resource key provided (e.g., 'users', 'orders')
             $this->resource = $resource;
@@ -298,7 +296,6 @@ class Table extends Component
         // Eager load relationships dynamically based on column keys
         // Supports nested relations: 'user.role.name' -> loads 'user.role'
         $relationships = [];
-        $withCounts = [];
         foreach ($this->columns as $column) {
             $key = is_array($column) ? ($column['key'] ?? null) : null;
 
@@ -309,37 +306,12 @@ class Table extends Component
                 // Example: 'user.name' -> 'user'
                 $relationPath = str($key)->beforeLast('.')->toString();
                 $relationships[] = $relationPath;
-            } elseif ($key && !str($key)->endsWith('_count')) {
-                // If key is a direct relation name (e.g., 'roles', 'permissions')
-                // Check if it's a relationship on the model
-                $modelInstance = $this->getModelInstance();
-                if (method_exists($modelInstance, $key)) {
-                    try {
-                        $relation = $modelInstance->$key();
-                        if ($relation instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
-                            $relationships[] = $key;
-                        }
-                    } catch (\Exception $e) {
-                        // Ignore if it's not a relation
-                    }
-                }
-            }
-
-            // Check for withCount patterns (e.g., 'permissions_count', 'users_count')
-            if ($key && str($key)->endsWith('_count')) {
-                $relationName = str($key)->before('_count')->toString();
-                $withCounts[] = $relationName;
             }
         }
 
         // Load unique relationships
         if (!blank($relationships)) {
             $query->with(array_unique($relationships));
-        }
-
-        // Add withCount for count columns
-        if (!blank($withCounts)) {
-            $query->withCount(array_unique($withCounts));
         }
 
         // Apply search
@@ -453,26 +425,25 @@ class Table extends Component
         $this->dispatch('notify', type: 'success', message: $message);
     }
 
-    public function delete($id): void
+    public function delete(int $id): void
     {
         if (!in_array('delete', $this->actions)) {
             return;
         }
 
         $modelInstance = $this->getModelInstance();
-        $item = $modelInstance->query()->where($modelInstance->getKeyName(), $id)->firstOrFail();
-
+        $item = $modelInstance->query()->findOrFail($id);
         $itemName = $item->name ?? $item->email ?? $item->title ?? "#{$id}";
         $modelName = class_basename($this->modelClass);
 
         $item->delete();
-        $this->selected = array_filter($this->selected, fn($selectedId) => $selectedId !== $id);
+        $this->selected = array_filter($this->selected, fn($item) => $item !== $id);
 
         $message = str($modelName)->ucfirst()->toString() . " '{$itemName}' deleted successfully.";
         $this->dispatch('notify', type: 'success', message: $message);
     }
 
-    public function getRoute(string $action, Model $item): ?string
+    public function getRoute(string $action, int $id): ?string
     {
         if (!$this->routePrefix) {
             return null;
@@ -484,26 +455,37 @@ class Table extends Component
             return null;
         }
 
-        return route($routeName, $item);
+        return route($routeName, $id);
     }
 
-    public function view(Model $item): ?string
+    public function view(int $id): ?string
     {
-        return $this->getRoute('show', $item);
+        // For file models, return Storage URL instead of route
+        $modelInstance = $this->getModelInstance();
+        $item = $modelInstance->query()->findOrFail($id);
+
+        if (isset($item->file_path) && $item->file_path) {
+            return \Illuminate\Support\Facades\Storage::url($item->file_path);
+        }
+
+        return $this->getRoute('show', $id);
     }
 
-    public function edit(Model $item): ?string
+    public function edit(int $id): ?string
     {
-        return $this->getRoute('edit', $item);
+        return $this->getRoute('edit', $id);
     }
 
-    public function deleteRoute(Model $item): ?string
+    public function deleteRoute(int $id): ?string
     {
-        return $this->getRoute('destroy', $item);
+        return $this->getRoute('destroy', $id);
     }
 
-    public function download(Model $item): ?string
+    public function download(int $id): ?string
     {
+        $modelInstance = $this->getModelInstance();
+        $item = $modelInstance->query()->findOrFail($id);
+
         // Check if item has file_path (for file models)
         if (isset($item->file_path) && $item->file_path) {
             return \Illuminate\Support\Facades\Storage::url($item->file_path);
@@ -541,12 +523,22 @@ class Table extends Component
         $this->resetPage();
     }
 
+    /**
+     * Toggle a boolean field (e.g. is_active) for a table row.
+     *
+     * 403 can occur if:
+     * - The column for this field is not defined with type 'toggle', e.g. missing
+     *   ['key' => 'is_active', 'type' => 'toggle'] in the columns passed to the table.
+     * - The table is rendered in a context where $columns are not available on the
+     *   Livewire request (e.g. columns passed from a non-Livewire parent that is not
+     *   re-evaluated). Ensure the view passes columns explicitly: :columns="$columns".
+     */
     public function toggleField(int $id, string $field): void
     {
         // Security: Only allow toggling fields that are explicitly defined as toggle type in columns
         $columnType = $this->getColumnType($field);
         if ($columnType !== 'toggle') {
-            abort(403, 'Invalid field for toggle operation.');
+            abort(403, 'Invalid field for toggle operation. Ensure the column has type "toggle", e.g. [\'key\' => \'' . $field . '\', \'type\' => \'toggle\'].');
         }
 
         // Security: Validate field exists in columns to prevent mass assignment
@@ -585,29 +577,6 @@ class Table extends Component
         $message = str($modelName)->ucfirst()->toString() . " '{$itemName}' {$status} successfully.";
 
         $this->dispatch('notify', type: $variant, message: $message);
-    }
-
-    public function updateField(int|string $id, string $field, $value): void
-    {
-        $modelInstance = $this->getModelInstance();
-        $item = $modelInstance->query()->where($modelInstance->getKeyName(), $id)->firstOrFail();
-
-        // Safety check: ensure field is defined in columns
-        $allowed = false;
-        foreach ($this->columns as $column) {
-            if (($column['key'] ?? null) === $field) {
-                $allowed = true;
-                break;
-            }
-        }
-
-        if (!$allowed) {
-            abort(403, 'Field update not allowed.');
-        }
-
-        $item->update([$field => $value]);
-
-        $this->dispatch('notify', type: 'success', message: 'Successfully updated.');
     }
 
     public function getColumnType(string $field): ?string

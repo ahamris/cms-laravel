@@ -60,19 +60,19 @@ class DatePicker extends Component
         public ?string $position = null,
         public array $options = []
     ) {
-        $this->inputId = $id ?? ($name ?: 'datepicker-' . uniqid());
+        $this->inputId = $id ?? ($name ?: 'datepicker-'.uniqid());
 
         $classes = [];
         $baseClasses = 'block w-full border rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 transition-all duration-200 border-zinc-300 dark:border-zinc-700 focus:outline-none';
         $classes[] = $baseClasses;
 
-        // Size classes - Synchronized with Input
+        // Size classes - Input component ile aynı
         if ($size === 'sm') {
-            $classes[] = 'px-3 py-1 text-sm leading-5 tracking-wide';
+            $classes[] = 'px-3 py-1.5 text-sm leading-5 tracking-[0.25px]';
         } elseif ($size === 'lg') {
-            $classes[] = 'px-5 py-2.5 text-base leading-6 tracking-wide';
+            $classes[] = 'px-5 py-3 text-base leading-6 tracking-[0.5px]';
         } else {
-            $classes[] = 'px-4 py-2 text-sm leading-5 tracking-wide';
+            $classes[] = 'px-4 py-2.5 text-base leading-6 tracking-[0.5px]';
         }
 
         if ($error) {
@@ -83,9 +83,9 @@ class DatePicker extends Component
             $classes[] = 'bg-zinc-50 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700';
         }
 
-        if (!empty($icon) && $iconPosition === 'left') {
+        if ($icon && $iconPosition === 'left') {
             $classes[] = 'pl-11';
-        } elseif (!empty($icon) && $iconPosition === 'right') {
+        } elseif ($icon && $iconPosition === 'right') {
             $classes[] = 'pr-11';
         }
 
@@ -118,7 +118,7 @@ class DatePicker extends Component
             }
 
             if ($this->timeFormat) {
-                $options['time_24hr'] = !str_contains($this->timeFormat, 'h');
+                $options['time_24hr'] = ! str_contains($this->timeFormat, 'h');
             }
         } elseif ($this->format) {
             $options['dateFormat'] = $this->format;
@@ -133,12 +133,12 @@ class DatePicker extends Component
         }
 
         if ($this->type === 'datetime' || $this->type === 'time' || $this->enableTime) {
-            if (!$this->noCalendar) {
+            if (! $this->noCalendar) {
                 $options['enableTime'] = true;
                 $options['time_24hr'] = $this->time24hr;
 
                 if ($this->timeFormat) {
-                    $options['time_24hr'] = !str_contains($this->timeFormat, 'h');
+                    $options['time_24hr'] = ! str_contains($this->timeFormat, 'h');
                 }
             }
         }

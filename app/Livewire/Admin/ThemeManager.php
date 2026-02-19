@@ -26,8 +26,6 @@ class ThemeManager extends Component
             'accentColor' => ['required', 'string', 'in:'.implode(',', array_keys(ThemeHelper::getAvailableAccentColors()))],
         ]);
 
-        // Save "base" as-is - ThemeHelper will handle it
-        // Cache will be automatically cleared by model's booted() method
         $settings = AdminThemeSetting::getSettings();
         $settings->update([
             'base_color' => $this->baseColor,

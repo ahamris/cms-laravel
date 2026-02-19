@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -9,9 +11,12 @@
 @custom-variant group-data-open (&:where([data-open], [data-open] *));
 
 @theme {
+    --color-primary: #081245;
+    --color-secondary: #0073e6;
+    --color-natural: #dfd4d4;
+    --font-sans: "Inter", sans-serif;
     --font-geist: "Geist", sans-serif;
     --font-outfit: "Outfit", sans-serif;
-
     --color-accent: var(--color-zinc-800);
     --color-accent-content: var(--color-zinc-800);
     --color-accent-foreground: var(--color-white);
@@ -25,7 +30,47 @@
     }
 }
 
+@layer utilities {
+    .max-w-container {
+        max-width: 1260px;
+    }
+
+    .min-w-container {
+        min-width: 1260px;
+    }
+
+    .prose {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        ul,
+        ol,
+        li,
+        a,
+        strong,
+        em,
+        span {
+            @apply my-4;
+        }
+
+        ul {
+            @apply list-disc list-outside ml-4 my-4;
+        }
+
+        ol {
+            @apply list-decimal list-outside ml-4 my-4;
+        }
+    }
+}
+
 @layer base {
+
     h1 {
         @apply text-gray-900 dark:text-gray-100 font-normal font-outfit text-5xl leading-normal;
     }
@@ -55,7 +100,14 @@
     }
 }
 
-/* Sidebar - Base color aware background */
+html {
+    scroll-behavior: smooth;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
 aside#admin-sidebar {
     background-color: var(--color-zinc-50) !important;
     border-color: var(--color-zinc-300) !important;
@@ -66,7 +118,6 @@ html.dark aside#admin-sidebar {
     border-color: var(--color-zinc-700) !important;
 }
 
-/* Sidebar header border */
 aside#admin-sidebar > div:first-child {
     border-color: var(--color-zinc-300) !important;
 }
@@ -75,14 +126,31 @@ html.dark aside#admin-sidebar > div:first-child {
     border-color: var(--color-zinc-700) !important;
 }
 
-/* Override bg-white in dark mode to use base color */
 html.dark .bg-white,
 html.dark [class*="bg-white"] {
     background-color: var(--color-zinc-800) !important;
 }
 
-[x-cloak] {
-    display: none !important;
+.flatpickr-calendar {
+    @apply shadow-lg border border-gray-200 rounded-lg;
+}
+.flatpickr-day {
+    @apply text-gray-700;
+}
+.flatpickr-day:hover {
+    @apply bg-blue-50 text-blue-600;
+}
+.flatpickr-day.selected {
+    @apply bg-blue-500 text-white;
+}
+.flatpickr-day.today {
+    @apply bg-blue-100 text-blue-700 font-medium;
+}
+.flatpickr-months .flatpickr-month {
+    @apply text-gray-700;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    @apply text-gray-700;
 }
 
 /* Tailwind JIT Safelist */

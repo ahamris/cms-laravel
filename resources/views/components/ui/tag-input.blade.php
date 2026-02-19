@@ -3,7 +3,7 @@
     $wireModelValue = $hasWireModel ? $attributes->wire('model')->value() : null;
 @endphp
 
-<div class="space-y-1.5">
+<div>
     @if($label)
         <label for="{{ $inputId }}" class="{{ $error ? 'text-red-600 dark:text-red-400' : '' }}">
             {{ $label }}
@@ -121,38 +121,39 @@
                 this.addTag(option);
             }
         }"
-        class="relative"
+        class="relative {{ $label ? 'mt-2' : '' }}"
         @click.away="showDropdown = false"
     >
-        <div class="flex flex-wrap gap-2 {{ $classes }} min-h-[42px] items-center py-2">
+        <input type="hidden" name="{{ $name }}" :value="tags.join(',')">
+        <div class="flex flex-wrap gap-2 {{ $classes }} items-center py-1 min-h-[38px] transition-all duration-200 focus-within:border-[var(--color-accent)] dark:focus-within:border-[var(--color-accent-content)]">
             <template x-for="(tag, index) in tags" :key="index">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[color-mix(in_oklab,var(--color-accent)_10%,transparent)] dark:bg-[color-mix(in_oklab,var(--color-accent)_10%,transparent)] text-[var(--color-accent)] dark:text-[var(--color-accent-content)] border border-[color-mix(in_oklab,var(--color-accent)_70%,transparent)] dark:border-[color-mix(in_oklab,var(--color-accent)_70%,transparent)] rounded-md text-xs font-medium transition-all duration-200">
-                    <span x-text="tag" class="leading-5"></span>
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[color-mix(in_oklab,var(--color-accent)_5%,transparent)] dark:bg-[color-mix(in_oklab,var(--color-accent)_5%,transparent)] text-[var(--color-accent)] dark:text-[var(--color-accent-content)] border border-[color-mix(in_oklab,var(--color-accent)_70%,transparent)] dark:border-[color-mix(in_oklab,var(--color-accent)_70%,transparent)] rounded-md text-[11px] font-semibold transition-all duration-200">
+                    <span x-text="tag" class="leading-4"></span>
                     <button 
                         type="button"
                         @click="removeTag(index)"
-                        class="ml-0.5 -mr-0.5 flex items-center justify-center w-4 h-4 rounded-md hover:opacity-70 text-[var(--color-accent)] dark:text-[var(--color-accent-content)] transition-opacity duration-150 cursor-pointer"
+                        class="ml-0.5 -mr-0.5 flex items-center justify-center w-3.5 h-3.5 rounded-md hover:bg-[color-mix(in_oklab,var(--color-accent)_20%,transparent)] text-[var(--color-accent)] dark:text-[var(--color-accent-content)] transition-colors duration-150 cursor-pointer"
                         @if($disabled) disabled @endif
                         title="Remove tag"
                     >
-                        <i class="fa-solid fa-xmark text-xs leading-none"></i>
+                        <i class="fa-solid fa-xmark text-[10px] leading-none"></i>
                     </button>
                 </span>
             </template>
             
             <input
                 type="text"
-                name="{{ $name }}"
                 id="{{ $inputId }}"
                 x-model="inputValue"
+                @keydown.enter.prevent="if(inputValue.trim()) { addTag(inputValue); inputValue=''; }"
                 @input="handleInput"
                 @keydown="handleKeydown"
                 @focus="showDropdown = filteredOptions.length > 0"
                 placeholder="{{ $placeholder }}"
-                @if($required) required @endif
+                @if($required) :required="tags.length === 0" @endif
                 @if($disabled) disabled @endif
-                class="flex-1 min-w-[120px] border-0 bg-transparent focus:outline-none focus:ring-0 p-0"
-                {{ $attributes->whereDoesntStartWith('wire:model') }}
+                class="flex-1 min-w-[120px] border-0 bg-transparent focus:outline-none focus:ring-0 p-0 text-sm leading-6"
+                {{ $attributes->whereDoesntStartWith('wire:model')->except('name') }}
             />
         </div>
 

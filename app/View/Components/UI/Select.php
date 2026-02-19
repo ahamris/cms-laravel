@@ -8,55 +8,51 @@ use Illuminate\View\Component;
 
 class Select extends Component
 {
+    public string $classes;
+
     public string $selectId = '';
-    public string $classes = '';
+
+    public string $value = '';
 
     public function __construct(
         public string $label = '',
         public string $name = '',
         public ?string $id = null,
-        public string|int|null $value = null,
-        public string $placeholder = 'Please select...',
+        string|float|int|null $value = '',
+        public string $placeholder = '',
         public string $hint = '',
         public bool $error = false,
         public string $errorMessage = '',
         public bool $required = false,
         public bool $disabled = false,
-        public string $size = 'full', // xs, sm, md, lg, full
-        public array $options = [], // [['id' => 1, 'label' => 'Label', 'value' => 'value']] format
-        public bool $autoError = true,
+        public ?string $size = null, // sm, lg
+        public array $options = [] // ['value' => 'label'] format
     ) {
-        // Normalize value
-        if ($this->value === null) {
-            $this->value = '';
+        $this->value = $value !== null ? (string) $value : '';
+        $classes = [];
+
+        // Base select classes
+        $baseClasses = 'block w-full border rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 transition-all duration-200 border-zinc-300 dark:border-zinc-700 focus:outline-none appearance-none cursor-pointer';
+        $classes[] = $baseClasses;
+
+        // Size classes (default matches x-ui.input for consistent height)
+        if ($size === 'sm') {
+            $classes[] = 'px-3 py-1.5 text-sm leading-5 tracking-[0.25px]';
+        } elseif ($size === 'lg') {
+            $classes[] = 'px-5 py-3 text-base leading-6 tracking-[0.5px]';
         } else {
-            $this->value = (string) $this->value;
+            $classes[] = 'px-3 py-1.5 text-base sm:text-sm/6';
         }
 
-        // Size classes - Synchronized with Input
-        if ($size === 'sm') {
-            $classes[] = 'px-3 py-1 text-sm leading-5 tracking-wide';
-        } elseif ($size === 'lg') {
-            $classes[] = 'px-5 py-2.5 text-base leading-6 tracking-wide';
-        } else {
-            $classes[] = 'px-4 py-2 text-sm leading-5 tracking-wide';
-        }
-        if (!is_array($this->options)) {
-            $this->options = [];
+        // State classes
+        if ($error) {
+            $classes[] = 'bg-red-50 dark:bg-red-900/20 border-red-500 dark:border-red-400 text-red-600 dark:text-red-400';
+        } elseif ($disabled) {
+            $classes[] = 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-500 cursor-not-allowed';
         }
 
         $this->classes = implode(' ', $classes);
-
-        // Auto-detect error if autoError is enabled and name is provided
-        if ($this->autoError && $this->name && !$this->error && empty($this->errorMessage)) {
-            $errors = session()->get('errors');
-            if ($errors && $errors->has($this->name)) {
-                $this->error = true;
-                $this->errorMessage = $errors->first($this->name);
-            }
-        }
-
-        $this->selectId = $id ?? ($name ?: 'select-' . uniqid());
+        $this->selectId = $id ?? ($name ?: 'select-'.uniqid());
     }
 
     public function render(): View|Closure|string

@@ -1,0 +1,31 @@
+---
+description: Do not set text size with inline classes on h1-h6 and p elements
+globs: **/*.blade.php,**/*.vue,**/*.jsx,**/*.tsx,**/*.html
+alwaysApply: false
+---
+
+# Typography: Headings and Paragraphs
+
+## Rule
+
+**Never define text size with inline utility classes on semantic text elements.**
+
+Do **not** use Tailwind text-size classes (`text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, etc.) or responsive variants (e.g. `sm:text-lg`) on:
+
+- **Headings**: `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>`
+- **Paragraphs**: `<p>`
+
+## Why
+
+- Headings and paragraphs have built-in semantic meaning; their size should come from the document/CSS layer (e.g. base styles, typography scale), not ad-hoc inline classes.
+- Keeps hierarchy consistent and avoids overriding default sizes in a scattered way.
+
+## Allowed on these elements
+
+- Other utilities: colors (`text-gray-600`), weight (`font-bold`), spacing (`mb-4`), `tracking-*`, `line-clamp-*`, etc.
+- Do **not** add: any `text-{size}` class.
+
+## If you need a specific size
+
+- Use a shared typography class or component (e.g. `.prose` or a heading/paragraph component with fixed sizes).
+- Or define sizes in a stylesheet for `h1`–`h6` and `p` (and optional utility classes like `.lead` for intro paragraphs), not inline on each tag.

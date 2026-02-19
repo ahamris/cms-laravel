@@ -13,8 +13,8 @@
 /.zed
 /auth.json
 /node_modules
-/public/build
 /public/hot
+/public/build
 /public/storage
 /storage/*.key
 /storage/pail
@@ -22,5 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-/storage/api-docs/*
-!/storage/api-docs/.gitkeep
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php

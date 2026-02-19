@@ -21,7 +21,7 @@ class Dropdown extends Component
         public string $name = '',
         public ?string $id = null,
         public array $options = [], // ['value' => 'label'] format
-        public array|string|null $selected = [], // Array of selected values or single value
+        public array|string $selected = [], // Array of selected values or single value
         public string $placeholder = 'Placeholder',
         public string $hint = '',
         public bool $error = false,
@@ -32,26 +32,17 @@ class Dropdown extends Component
         public bool $radio = false, // Single-select with radio buttons
         public string $size = 'default', // sm, default, lg
     ) {
-        // Ensure options is always an array
-        if (!is_array($this->options)) {
-            $this->options = [];
-        }
-
-        // Normalize selected - handle null
-        if ($this->selected === null) {
-            $this->selected = [];
-        }
-        $this->dropdownId = $id ?? ($name ?: 'dropdown-' . uniqid());
+        $this->dropdownId = $id ?? ($name ?: 'dropdown-'.uniqid());
 
         // Normalize selected to array
         $selectedArray = is_array($selected) ? $selected : [$selected];
-        $selectedArray = array_filter($selectedArray, fn($value) => $value !== '' && $value !== null);
+        $selectedArray = array_filter($selectedArray, fn ($value) => $value !== '' && $value !== null);
 
-        // Size classes - Synchronized with Input
+        // Size classes
         $sizeClasses = [
-            'sm' => 'px-3 py-1 text-sm leading-5 tracking-wide',
-            'default' => 'px-4 py-2 text-sm leading-5 tracking-wide',
-            'lg' => 'px-5 py-2.5 text-base leading-6 tracking-wide',
+            'sm' => 'px-3 py-1.5 text-sm',
+            'default' => 'px-4 py-2.5 text-sm',
+            'lg' => 'px-5 py-3 text-base',
         ];
         $dropdownSizeClasses = $sizeClasses[$size] ?? $sizeClasses['default'];
 

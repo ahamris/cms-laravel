@@ -12,7 +12,11 @@
 */
 
 pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Unit');
+
+pest()->extend(Tests\TestCase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -44,4 +48,17 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * XSS payload helpers for purification tests.
+ */
+function xssScript(): string
+{
+    return '<script>alert("xss")</script>';
+}
+
+function xssOnClick(): string
+{
+    return '<img src=x onerror="alert(1)">';
 }

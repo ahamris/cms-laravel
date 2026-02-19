@@ -71,4 +71,3 @@ class Toggle extends Component
         return view('components.ui.toggle');
     }
 }
-

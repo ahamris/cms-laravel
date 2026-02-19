@@ -1,0 +1,6 @@
+# Project rules
+
+## Dutch translations
+- When translating or writing Dutch text in this project, use correct Dutch grammar and context.
+- **Capitalization:** In Dutch, only the first word of a sentence and proper nouns are capitalized. Do not capitalize common nouns (unlike German). Examples: "instellingen" not "Instellingen" mid-sentence; "opslaan" not "Opslaan".
+- Prefer natural, in-context Dutch over literal word-for-word translation.

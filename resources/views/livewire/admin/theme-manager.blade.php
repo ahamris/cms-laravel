@@ -24,14 +24,14 @@
                             <div class="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 gap-2">
                                 @foreach($this->availableAccentColors as $value => $label)
                                     <label class="relative cursor-pointer group">
-                                        <input 
-                                            type="radio" 
-                                            name="accentColor" 
-                                            value="{{ $value }}" 
+                                        <input
+                                            type="radio"
+                                            name="accentColor"
+                                            value="{{ $value }}"
                                             wire:model.live="accentColor"
                                             class="sr-only peer"
                                         >
-                                        <div class="relative flex flex-col items-center p-2 rounded-md transition-all duration-200 
+                                        <div class="relative flex flex-col items-center p-2 rounded-md transition-all duration-200
                                             hover:scale-105
                                             bg-white dark:bg-zinc-800
                                             peer-checked:ring-2 peer-checked:ring-[var(--color-accent)] dark:peer-checked:ring-[var(--color-accent-content)]
@@ -77,14 +77,14 @@
                             <div class="flex flex-wrap gap-2">
                                 @foreach($this->availableBaseColors as $value => $label)
                                     <label class="relative cursor-pointer group">
-                                        <input 
-                                            type="radio" 
-                                            name="baseColor" 
-                                            value="{{ $value }}" 
+                                        <input
+                                            type="radio"
+                                            name="baseColor"
+                                            value="{{ $value }}"
                                             wire:model.live="baseColor"
                                             class="sr-only peer"
                                         >
-                                        <div class="relative flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 
+                                        <div class="relative flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200
                                             hover:scale-105
                                             bg-white dark:bg-zinc-800
                                             peer-checked:bg-[var(--color-accent)]/10 dark:peer-checked:bg-[var(--color-accent)]/20
@@ -187,11 +187,11 @@
                         {{-- Cards --}}
                         <div class="bg-zinc-50 dark:bg-zinc-900/50 rounded-md border border-zinc-200 dark:border-zinc-700 p-3">
                             <h3 class="text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Cards</h3>
-                            <x-ui.card 
-                                icon="users" 
-                                icon-color="primary" 
-                                title="Users" 
-                                value="1,234" 
+                            <x-ui.card
+                                icon="users"
+                                icon-color="primary"
+                                title="Users"
+                                value="1,234"
                                 size="sm"
                                 :hover="false"
                             />
@@ -222,13 +222,15 @@
     </div>
 </div>
 
-@script
+@push('scripts')
 <script>
-    $wire.on('theme-updated', () => {
-        // Reload the page to apply new theme variables
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('theme-updated', () => {
+            // Reload the page to apply new theme variables
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        });
     });
 </script>
-@endscript
+@endpush

@@ -120,7 +120,7 @@ class Search extends Component
 
                     if (! $name ||
                         ! str_starts_with($name, 'admin.') ||
-                        $name === 'admin.home' ||
+                        $name === 'admin.index' ||
                         str_contains($name, '.files.') ||
                         str_contains($name, 'api.')) {
                         return false;
@@ -159,8 +159,8 @@ class Search extends Component
                     }
 
                     return stripos($item['title'], $this->query) !== false ||
-                        stripos($item['route'], $this->query) !== false ||
-                        stripos($item['url'], $this->query) !== false;
+                           stripos($item['route'], $this->query) !== false ||
+                           stripos($item['url'], $this->query) !== false;
                 })
                 ->values()
                 ->take(5);

@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('legal_pages', function (Blueprint $table) {
+            $table->integer('current_version')->default(1)->after('selected_call_actions');
+            $table->boolean('versioning_enabled')->default(true)->after('current_version');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('legal_pages', function (Blueprint $table) {
+            $table->dropColumn(['current_version', 'versioning_enabled']);
+        });
+    }
+};

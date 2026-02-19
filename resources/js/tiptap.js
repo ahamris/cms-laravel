@@ -9,7 +9,7 @@ import Underline from "@tiptap/extension-underline";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 
-window.setupEditor = function (content, placeholder = "Start typing...") {
+export function setupEditor(content, placeholder = "Start typing...") {
     let editor;
 
     return {
@@ -17,8 +17,12 @@ window.setupEditor = function (content, placeholder = "Start typing...") {
         updatedAt: Date.now(),
 
         init(element) {
-            const placeholderText = element.getAttribute("data-placeholder") || placeholder;
-            
+            if (!element || typeof element.getAttribute !== "function") {
+                return null;
+            }
+            const placeholderText =
+                element.getAttribute("data-placeholder") || placeholder;
+
             editor = new Editor({
                 element: element,
                 extensions: [
@@ -29,11 +33,11 @@ window.setupEditor = function (content, placeholder = "Start typing...") {
                     Link.configure({
                         openOnClick: false,
                         HTMLAttributes: {
-                            class: 'text-blue-600 dark:text-blue-400 hover:underline',
+                            class: "text-blue-600 dark:text-blue-400 hover:underline",
                         },
                     }),
                     TextAlign.configure({
-                        types: ['heading', 'paragraph'],
+                        types: ["heading", "paragraph"],
                     }),
                     TaskList,
                     TaskItem.configure({
@@ -43,21 +47,35 @@ window.setupEditor = function (content, placeholder = "Start typing...") {
                     Subscript,
                     Superscript,
                 ],
-                content: this.content,
+                content: this.content || "",
                 onUpdate: ({ editor }) => {
-                    this.content = editor.getHTML();
+                    this.content = editor.getHTML() || "";
                     this.updatedAt = Date.now();
+
+                    // Update hidden input immediately on content change
+                    const hiddenInputId = element
+                        .closest(".tiptap-editor-wrapper")
+                        ?.querySelector('input[type="hidden"]')?.id;
+                    if (hiddenInputId) {
+                        const hiddenInput =
+                            document.getElementById(hiddenInputId);
+                        if (hiddenInput) {
+                            hiddenInput.value = this.content;
+                            hiddenInput.dispatchEvent(
+                                new Event("input", { bubbles: true })
+                            );
+                            hiddenInput.dispatchEvent(
+                                new Event("change", { bubbles: true })
+                            );
+                        }
+                    }
                 },
                 onSelectionUpdate: () => {
                     this.updatedAt = Date.now();
                 },
             });
 
-            // Livewire veya external kaynaklardan gelen içerik değişikliklerini dinle
-            this.$watch("content", (content) => {
-                if (content === editor.getHTML()) return;
-                editor.commands.setContent(content, false);
-            });
+            return editor;
         },
 
         isLoaded() {
@@ -65,157 +83,212 @@ window.setupEditor = function (content, placeholder = "Start typing...") {
         },
 
         isActive(type, opts = {}) {
-            if (!editor) return false;
-            return editor.isActive(type, opts);
+            try {
+                if (!editor) {
+                    return false;
+                }
+                return editor.isActive(type, opts);
+            } catch (error) {
+                console.warn("isActive error:", error);
+                return false;
+            }
         },
 
         // Başlık toggle fonksiyonları
         toggleHeading(level) {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleHeading({ level }).run();
         },
 
         // Metin formatlama
         toggleBold() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleBold().run();
         },
 
         toggleItalic() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleItalic().run();
         },
 
         toggleStrike() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleStrike().run();
         },
 
         toggleCode() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleCode().run();
         },
 
         toggleUnderline() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleUnderline().run();
         },
 
         toggleSubscript() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleSubscript().run();
         },
 
         toggleSuperscript() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleSuperscript().run();
         },
 
         // Listeler
         toggleBulletList() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleBulletList().run();
         },
 
         toggleOrderedList() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleOrderedList().run();
         },
 
         toggleTaskList() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleTaskList().run();
         },
 
         // Blok elementler
         toggleBlockquote() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleBlockquote().run();
         },
 
         setCodeBlock() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().toggleCodeBlock().run();
         },
 
         setHorizontalRule() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().setHorizontalRule().run();
         },
 
         // Link işlemleri
         setLink() {
-            if (!editor) return;
-            const url = window.prompt('Enter URL:');
+            if (!editor) {
+                return;
+            }
+            const url = window.prompt("Enter URL:");
             if (url) {
                 editor.chain().focus().setLink({ href: url }).run();
             }
         },
 
         unsetLink() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().unsetLink().run();
         },
 
         // Hizalama
         setTextAlign(align) {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().setTextAlign(align).run();
         },
 
         // Undo/Redo
         undo() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().undo().run();
         },
 
         redo() {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.chain().focus().redo().run();
         },
 
         // HTML alma/ayarlama
         getHTML() {
-            if (!editor) return '';
+            if (!editor) {
+                return "";
+            }
             return editor.getHTML();
         },
 
         setHTML(html) {
-            if (!editor) return;
+            if (!editor) {
+                return;
+            }
             editor.commands.setContent(html, false);
             this.content = html;
         },
 
         // HTML formatlama (güzel görünüm için)
         formatHTML(html) {
-            if (!html || html.trim() === '') return '';
-            
+            if (!html || html.trim() === "") {
+                return "";
+            }
+
             let formatted = html;
             let indent = 0;
             const indentSize = 2;
-            
-            formatted = formatted.replace(/>/g, '>\n');
-            formatted = formatted.replace(/</g, '\n<');
-            
-            const lines = formatted.split('\n');
+
+            formatted = formatted.replace(/>/g, ">\n");
+            formatted = formatted.replace(/</g, "\n<");
+
+            const lines = formatted.split("\n");
             const formattedLines = [];
-            
+
             for (let line of lines) {
                 line = line.trim();
-                if (!line) continue;
-                
+                if (!line) {
+                    continue;
+                }
+
                 if (line.match(/^<\/\w/)) {
                     indent = Math.max(0, indent - indentSize);
                 }
-                
-                formattedLines.push(' '.repeat(indent) + line);
-                
+
+                formattedLines.push(" ".repeat(indent) + line);
+
                 if (line.match(/^<\w[^>]*>/) && !line.match(/\/>$/)) {
                     indent += indentSize;
                 }
             }
-            
-            return formattedLines.join('\n').trim();
+
+            return formattedLines.join("\n").trim();
         },
     };
 };
+
+window.setupEditor = setupEditor;

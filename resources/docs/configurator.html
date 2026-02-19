@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Legal Pages Configurator</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/[email protected]/dist/quill.snow.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --sidebar-width: 280px;
+        --accent-color: #0f62fe;
+        --border-color: #d0d7de;
+        --danger-color: #da1e28;
+        --background: #f6f8fa;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--background);
+        color: #24292f;
+        height: 100vh;
+        display: flex;
+      }
+
+      .app {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
+
+      aside {
+        width: var(--sidebar-width);
+        background: #fff;
+        border-right: 1px solid var(--border-color);
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        overflow-y: auto;
+      }
+
+      aside h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      aside p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: #4f5b66;
+        line-height: 1.45;
+      }
+
+      nav#documentList {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      nav#documentList button {
+        text-align: left;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: #fff;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      nav#documentList button.active {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px rgba(15, 98, 254, 0.15);
+        transform: translateY(-1px);
+      }
+
+      nav#documentList button:not(.active):hover {
+        border-color: rgba(15, 98, 254, 0.3);
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+      }
+
+      .sidebar-actions {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .sidebar-actions button {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: #fff;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background 0.2s ease, border 0.2s ease;
+      }
+
+      .sidebar-actions button.primary {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        color: #fff;
+      }
+
+      .sidebar-actions button.primary:hover {
+        filter: brightness(0.93);
+      }
+
+      .sidebar-actions button:hover {
+        background: #f0f3f6;
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      header {
+        background: #fff;
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+
+      .header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .header-actions button {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: #fff;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .header-actions button.primary {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        color: #fff;
+      }
+
+      .header-actions button.danger {
+        border-color: var(--danger-color);
+        color: var(--danger-color);
+      }
+
+      .header-actions button.primary:hover {
+        filter: brightness(0.93);
+      }
+
+      .header-actions button:hover {
+        background: #f0f3f6;
+      }
+
+      .content-grid {
+        flex: 1;
+        display: grid;
+        gap: 24px;
+        padding: 24px 28px 28px;
+        grid-template-columns: minmax(320px, 1fr) minmax(480px, 2fr);
+        min-height: 0;
+      }
+
+      .config-form {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 22px 24px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .config-form h3 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .config-form p.section-description {
+        margin: 0 0 16px;
+        font-size: 0.9rem;
+        color: #4f5b66;
+        line-height: 1.5;
+      }
+
+      .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background: #fafcfe;
+      }
+
+      .form-section h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .form-fields,
+      .form-group-fields {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.88rem;
+        color: #3b4754;
+      }
+
+      .form-field input,
+      .form-field textarea {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        font-size: 0.95rem;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+        font-family: inherit;
+        resize: vertical;
+      }
+
+      .form-field input:focus,
+      .form-field textarea:focus {
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.15);
+      }
+
+      .form-field small {
+        color: #64748b;
+      }
+
+      .form-subsection {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+      }
+
+      .form-subsection h5 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1f2937;
+      }
+
+      .editor-wrapper {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        min-height: 520px;
+        overflow: hidden;
+      }
+
+      .editor-toolbar {
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      #editor {
+        flex: 1;
+        min-height: 420px;
+      }
+
+      .status-bar {
+        padding: 12px 18px;
+        border-top: 1px solid var(--border-color);
+        background: #fafbfc;
+        font-size: 0.9rem;
+        color: #57606a;
+      }
+
+      .status-bar strong {
+        color: #24292f;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      dialog {
+        border: none;
+        border-radius: 14px;
+        padding: 20px 24px;
+      }
+
+      @media (max-width: 1200px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 900px) {
+        body {
+          flex-direction: column;
+        }
+
+        aside {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-grid {
+          padding: 24px 20px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside>
+        <h1>Legal Pages Configurator</h1>
+        <p>
+          Vul de organisatiegegevens in, pas de dynamische placeholders aan en exporteer één
+          organization.json. Links kies je welke juridische pagina je wilt bekijken of bewerken.
+        </p>
+        <nav id="documentList" aria-label="Juridische documenten"></nav>
+        <div class="sidebar-actions">
+          <button id="importConfigBtn">Importeer bestaande configuratie</button>
+          <button id="resetConfigBtn">Reset configuratie</button>
+          <button id="exportConfigBtn" class="primary">Opslaan naar organization.json</button>
+        </div>
+        <input
+          type="file"
+          id="jsonFileInput"
+          class="hidden"
+          accept="application/json"
+          aria-hidden="true"
+        />
+      </aside>
+      <main>
+        <header>
+          <h2 id="documentTitle">Selecteer een pagina</h2>
+          <div class="header-actions">
+            <button id="reapplyTemplateBtn" class="danger">Herstel template</button>
+            <button id="previewBtn">Toon HTML voorbeeld</button>
+            <button id="saveDocumentBtn" class="primary">Opslaan pagina</button>
+          </div>
+        </header>
+        <div class="content-grid">
+          <section id="configForm" class="config-form" aria-label="Organisatieconfiguratie"></section>
+          <div class="editor-wrapper">
+            <div id="toolbar" class="editor-toolbar">
+              <span class="ql-formats">
+                <select class="ql-header">
+                  <option selected></option>
+                  <option value="1"></option>
+                  <option value="2"></option>
+                </select>
+                <select class="ql-font"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-link"></button>
+              </span>
+              <span class="ql-formats">
+                <select class="ql-color"></select>
+                <select class="ql-background"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+                <button class="ql-indent" value="-1"></button>
+                <button class="ql-indent" value="+1"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-clean"></button>
+              </span>
+            </div>
+            <div id="editor" aria-label="Quill editor"></div>
+            <div class="status-bar">
+              <span id="statusMessage">Nog geen wijzigingen.</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/quill.js"></script>
+    <script>
+      (function () {
+        const DEFAULT_CONFIG = {
+          meta: { updatedAt: null },
+          organization: {
+            name: "",
+            tradeName: "",
+            type: "",
+            address: "",
+            registration: {
+              kvkNumber: "",
+              rsin: "",
+              info: ""
+            }
+          },
+          web: {
+            siteUrl: "",
+            privacyPolicyUrl: "",
+            cookieSettingsLocation: ""
+          },
+          contacts: {
+            supportEmail: "",
+            customerServiceEmail: "",
+            complaintEmail: "",
+            privacyEmail: ""
+          },
+          service: {
+            productName: ""
+          },
+          contract: {
+            initialTermMonths: "",
+            renewalTermMonths: "",
+            noticePeriodMonths: ""
+          },
+          billing: {
+            cycle: "",
+            paymentTermsDays: "",
+            priceIndexClause: ""
+          },
+          liability: {
+            capMonths: "",
+            capAmount: ""
+          },
+          legal: {
+            courtLocation: "",
+            changeNoticePeriodDays: ""
+          },
+          complaints: {
+            responseDays: ""
+          },
+          privacy: {
+            retention: {
+              contactForm: ""
+            },
+            providers: {
+              hosting: {
+                name: "",
+                location: ""
+              },
+              crm: {
+                name: ""
+              },
+              accounting: {
+                name: ""
+              }
+            }
+          },
+          cookie: {
+            settingsLocation: ""
+          },
+          documents: {
+            b2cTerms: {
+              label: "Algemene Voorwaarden - B2C",
+              source: "Algemene Voorwaarden - B2C.html",
+              version: "",
+              lastUpdated: "",
+              content: ""
+            },
+            b2bTerms: {
+              label: "Algemene Voorwaarden - B2B",
+              source: "Algemene Voorwaarden - B2B.html",
+              version: "",
+              lastUpdated: "",
+              content: ""
+            },
+            privacyPolicy: {
+              label: "Privacyverklaring",
+              source: "Privacyverklaring.html",
+              version: "",
+              lastUpdated: "",
+              content: ""
+            },
+            cookiePolicy: {
+              label: "Cookiebeleid",
+              source: "Cookiebeleid.html",
+              version: "",
+              lastUpdated: "",
+              content: ""
+            }
+          }
+        };
+
+        const FORM_DEFINITION = [
+          {
+            id: "organization",
+            title: "Organisatie",
+            description: "Basisgegevens die in meerdere documenten terugkomen.",
+            fields: [
+              { path: "organization.name", label: "Organisatienaam", placeholder: "Bijv. Gemeente Voorbeeld" },
+              { path: "organization.tradeName", label: "Handelsnaam", placeholder: "Bijv. OpenPublication" },
+              { path: "organization.type", label: "Type organisatie", placeholder: "Bijv. ZBO of SaaS-leverancier" },
+              { path: "organization.address", label: "Bezoekadres", placeholder: "Straatnaam 1, 1234 AB Plaats" },
+              { path: "organization.registration.info", label: "Registratie informatie", placeholder: "Bijv. RSIN 012345678" },
+              { path: "organization.registration.kvkNumber", label: "KVK-nummer", inputMode: "numeric" },
+              { path: "organization.registration.rsin", label: "RSIN", inputMode: "numeric" }
+            ]
+          },
+          {
+            id: "web",
+            title: "Website & Links",
+            fields: [
+              { path: "web.siteUrl", label: "Hoofdwebsite", placeholder: "https://voorbeeld.nl" },
+              { path: "web.privacyPolicyUrl", label: "URL privacyverklaring", placeholder: "https://voorbeeld.nl/privacy" },
+              { path: "web.cookieSettingsLocation", label: "Locatie cookie-instellingen", placeholder: "Bijv. footer, cookie-icoon" }
+            ]
+          },
+          {
+            id: "contacts",
+            title: "Contactgegevens",
+            fields: [
+              { path: "contacts.supportEmail", label: "Support e-mail" },
+              { path: "contacts.customerServiceEmail", label: "Klantenservice e-mail" },
+              { path: "contacts.complaintEmail", label: "Klachten e-mail" },
+              { path: "contacts.privacyEmail", label: "Privacy e-mail (FG/DPO)" }
+            ]
+          },
+          {
+            id: "legal",
+            title: "Juridische parameters",
+            fields: [
+              { path: "legal.courtLocation", label: "Bevoegde rechtbank", placeholder: "Bijv. Amsterdam" },
+              { path: "legal.changeNoticePeriodDays", label: "Termijn aankondiging wijzigingen (dagen)" },
+              { path: "complaints.responseDays", label: "Reactietermijn klachten (dagen)" }
+            ]
+          },
+          {
+            id: "service",
+            title: "Dienst & contract",
+            fields: [
+              { path: "service.productName", label: "Naam van de dienst / SaaS-product" },
+              { path: "contract.initialTermMonths", label: "Initiële contractduur (maanden)", inputMode: "numeric" },
+              { path: "contract.renewalTermMonths", label: "Verlengingsperiode (maanden)", inputMode: "numeric" },
+              { path: "contract.noticePeriodMonths", label: "Opzegtermijn (maanden)", inputMode: "numeric" },
+              { path: "billing.cycle", label: "Facturatiecyclus", placeholder: "Bijv. jaarlijks" },
+              { path: "billing.paymentTermsDays", label: "Betaaltermijn (dagen)", inputMode: "numeric" },
+              {
+                path: "billing.priceIndexClause",
+                label: "Indexeringsclausule",
+                multiline: true,
+                placeholder: "Bijv. Jaarlijkse indexering volgens CBS CPI."
+              },
+              { path: "liability.capMonths", label: "Aansprakelijkheid referteperiode (maanden)", inputMode: "numeric" },
+              { path: "liability.capAmount", label: "Aansprakelijkheid maximum", placeholder: "Bijv. € 25.000" }
+            ]
+          },
+          {
+            id: "privacy",
+            title: "Privacy & leveranciers",
+            fields: [
+              { path: "privacy.retention.contactForm", label: "Bewaartermijn contactformulieren", placeholder: "Bijv. 12 maanden" },
+              { path: "privacy.providers.hosting.name", label: "Hostingpartij naam" },
+              { path: "privacy.providers.hosting.location", label: "Hostingpartij locatie" },
+              { path: "privacy.providers.crm.name", label: "CRM leverancier" },
+              { path: "privacy.providers.accounting.name", label: "Boekhoudsoftware" }
+            ]
+          },
+          {
+            id: "cookie",
+            title: "Cookie instellingen",
+            fields: [
+              { path: "cookie.settingsLocation", label: "Locatie cookie-instellingen (UI)", placeholder: "Bijv. link in footer" }
+            ]
+          },
+          {
+            id: "documents",
+            title: "Document metadata",
+            description: "Versie en datums per document. Deze waardes worden in de templates gebruikt.",
+            groups: [
+              {
+                title: "Algemene Voorwaarden (B2C)",
+                fields: [
+                  { path: "documents.b2cTerms.version", label: "Versie" },
+                  { path: "documents.b2cTerms.lastUpdated", label: "Laatste update" }
+                ]
+              },
+              {
+                title: "Algemene Voorwaarden (B2B)",
+                fields: [
+                  { path: "documents.b2bTerms.version", label: "Versie" },
+                  { path: "documents.b2bTerms.lastUpdated", label: "Laatste update" }
+                ]
+              },
+              {
+                title: "Privacyverklaring",
+                fields: [
+                  { path: "documents.privacyPolicy.version", label: "Versie" },
+                  { path: "documents.privacyPolicy.lastUpdated", label: "Laatste update" }
+                ]
+              },
+              {
+                title: "Cookiebeleid",
+                fields: [
+                  { path: "documents.cookiePolicy.version", label: "Versie" },
+                  { path: "documents.cookiePolicy.lastUpdated", label: "Laatste update" }
+                ]
+              }
+            ]
+          }
+        ];
+
+        const templateCache = new Map();
+
+        const state = {
+          config: deepClone(DEFAULT_CONFIG),
+          quill: null,
+          currentDocId: null,
+          isApplyingTemplate: false,
+          docStates: {},
+          formInputs: {},
+          fieldMeta: {}
+        };
+
+        const elements = {
+          documentList: document.getElementById("documentList"),
+          documentTitle: document.getElementById("documentTitle"),
+          statusMessage: document.getElementById("statusMessage"),
+          saveDocumentBtn: document.getElementById("saveDocumentBtn"),
+          reapplyTemplateBtn: document.getElementById("reapplyTemplateBtn"),
+          previewBtn: document.getElementById("previewBtn"),
+          exportConfigBtn: document.getElementById("exportConfigBtn"),
+          importConfigBtn: document.getElementById("importConfigBtn"),
+          resetConfigBtn: document.getElementById("resetConfigBtn"),
+          jsonFileInput: document.getElementById("jsonFileInput"),
+          configForm: document.getElementById("configForm")
+        };
+
+        init();
+
+        function init() {
+          buildForm();
+          state.quill = new Quill("#editor", {
+            theme: "snow",
+            modules: {
+              toolbar: "#toolbar",
+              history: {
+                delay: 2000,
+                userOnly: true
+              }
+            }
+          });
+
+          state.quill.on("text-change", () => {
+            if (!state.currentDocId || state.isApplyingTemplate) {
+              return;
+            }
+            const docState = ensureDocState(state.currentDocId);
+            docState.manualOverride = true;
+            docState.dirty = true;
+            setStatus("Niet-opgeslagen wijzigingen in de editor.", true);
+          });
+
+          attachEventHandlers();
+          hydrateFromJson();
+        }
+
+        function attachEventHandlers() {
+          elements.saveDocumentBtn.addEventListener("click", saveCurrentDocument);
+          elements.reapplyTemplateBtn.addEventListener("click", () => reapplyCurrentDocument(true));
+          elements.previewBtn.addEventListener("click", showHtmlPreview);
+          elements.exportConfigBtn.addEventListener("click", exportConfiguration);
+          elements.importConfigBtn.addEventListener("click", () => elements.jsonFileInput.click());
+          elements.resetConfigBtn.addEventListener("click", resetConfiguration);
+          elements.jsonFileInput.addEventListener("change", handleJsonImport);
+        }
+
+        async function hydrateFromJson() {
+          try {
+            const response = await fetch("organization.json", { cache: "no-store" });
+            if (!response.ok) {
+              throw new Error("organization.json niet gevonden");
+            }
+            const loaded = await response.json();
+            state.config = mergeDeep(deepClone(DEFAULT_CONFIG), loaded);
+            setStatus("Configuratie geladen vanuit organization.json.");
+          } catch (error) {
+            console.warn(error);
+            state.config = deepClone(DEFAULT_CONFIG);
+            setStatus("Standaardconfiguratie geladen. Vul de velden om te beginnen.");
+          }
+
+          buildDocStatesFromConfig();
+          updateFormFields();
+          renderDocumentList();
+          const firstDoc = Object.keys(state.config.documents || {})[0];
+          if (firstDoc) {
+            await selectDocument(firstDoc);
+          }
+        }
+
+        function buildDocStatesFromConfig() {
+          state.docStates = {};
+          const documents = state.config.documents || {};
+          Object.entries(documents).forEach(([docId, docConfig]) => {
+            const hasContent = !!(docConfig.content && docConfig.content.trim());
+            state.docStates[docId] = {
+              manualOverride: hasContent,
+              dirty: false
+            };
+          });
+        }
+
+        function buildForm() {
+          elements.configForm.innerHTML = "";
+          state.formInputs = {};
+          state.fieldMeta = {};
+
+          FORM_DEFINITION.forEach((sectionDef) => {
+            const section = document.createElement("div");
+            section.className = "form-section";
+
+            const title = document.createElement("h4");
+            title.textContent = sectionDef.title;
+            section.appendChild(title);
+
+            if (sectionDef.description) {
+              const description = document.createElement("p");
+              description.className = "section-description";
+              description.textContent = sectionDef.description;
+              section.appendChild(description);
+            }
+
+            if (sectionDef.fields) {
+              const fieldsContainer = document.createElement("div");
+              fieldsContainer.className = "form-fields";
+              sectionDef.fields.forEach((field) => {
+                const fieldEl = createFieldElement(field);
+                fieldsContainer.appendChild(fieldEl);
+              });
+              section.appendChild(fieldsContainer);
+            }
+
+            if (sectionDef.groups) {
+              sectionDef.groups.forEach((group) => {
+                const groupEl = document.createElement("div");
+                groupEl.className = "form-subsection";
+
+                const groupTitle = document.createElement("h5");
+                groupTitle.textContent = group.title;
+                groupEl.appendChild(groupTitle);
+
+                const fieldsContainer = document.createElement("div");
+                fieldsContainer.className = "form-group-fields";
+                group.fields.forEach((field) => {
+                  const fieldEl = createFieldElement(field);
+                  fieldsContainer.appendChild(fieldEl);
+                });
+                groupEl.appendChild(fieldsContainer);
+                section.appendChild(groupEl);
+              });
+            }
+
+            elements.configForm.appendChild(section);
+          });
+        }
+
+        function createFieldElement(field) {
+          state.fieldMeta[field.path] = field;
+          const wrapper = document.createElement("label");
+          wrapper.className = "form-field";
+          wrapper.htmlFor = field.path;
+
+          const label = document.createElement("span");
+          label.textContent = field.label;
+          wrapper.appendChild(label);
+
+          const input = field.multiline ? document.createElement("textarea") : document.createElement("input");
+          input.id = field.path;
+          input.dataset.path = field.path;
+          input.placeholder = field.placeholder || "";
+          input.value = "";
+          if (!field.multiline) {
+            input.type = field.type || "text";
+            if (field.inputMode) {
+              input.inputMode = field.inputMode;
+            }
+          } else {
+            input.rows = field.rows || 3;
+          }
+
+          input.addEventListener("input", handleFormInput);
+          wrapper.appendChild(input);
+          state.formInputs[field.path] = input;
+
+          if (field.helperText) {
+            const helper = document.createElement("small");
+            helper.textContent = field.helperText;
+            wrapper.appendChild(helper);
+          }
+
+          return wrapper;
+        }
+
+        function handleFormInput(event) {
+          const path = event.target.dataset.path;
+          if (!path) return;
+
+          const meta = state.fieldMeta[path] || {};
+          const rawValue = event.target.value;
+          const value = meta.type === "number" || meta.inputMode === "numeric"
+            ? normalizeNumberValue(rawValue)
+            : rawValue;
+
+          setValueByPath(state.config, path, value);
+          setStatus(`Veld '${path}' bijgewerkt.`);
+
+          if (state.currentDocId) {
+            const docState = ensureDocState(state.currentDocId);
+            if (!docState.manualOverride) {
+              reapplyCurrentDocument(false);
+            }
+          }
+        }
+
+        function normalizeNumberValue(value) {
+          const trimmed = value.trim();
+          if (trimmed === "") return "";
+          return trimmed.replace(",", ".");
+        }
+
+        function updateFormFields() {
+          Object.entries(state.formInputs).forEach(([path, input]) => {
+            const value = getValueByPath(state.config, path);
+            input.value = value != null ? value : "";
+          });
+        }
+
+        function renderDocumentList() {
+          elements.documentList.innerHTML = "";
+          const documents = state.config.documents || {};
+          Object.entries(documents).forEach(([docId, docConfig]) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = docConfig.label || docId;
+            button.dataset.docId = docId;
+            button.addEventListener("click", () => selectDocument(docId));
+            elements.documentList.appendChild(button);
+          });
+        }
+
+        async function selectDocument(docId) {
+          if (state.currentDocId === docId) return;
+          state.currentDocId = docId;
+
+          highlightCurrentDocument();
+          const docConfig = state.config.documents[docId];
+          if (!docConfig) {
+            setStatus("Onbekende pagina geselecteerd.", true);
+            return;
+          }
+
+          elements.documentTitle.textContent = docConfig.label || docId;
+          const docState = ensureDocState(docId);
+
+          if (docState.manualOverride && docConfig.content) {
+            setQuillContent(docConfig.content);
+            docState.dirty = false;
+            setStatus("Handmatig opgeslagen inhoud geladen. Gebruik 'Herstel template' voor dynamische waarden.");
+          } else {
+            await applyTemplateForDocument(docId, { updateEditor: true, markManualFalse: true });
+            setStatus("Template geladen met actuele configuratiewaarden.");
+          }
+        }
+
+        function highlightCurrentDocument() {
+          const buttons = elements.documentList.querySelectorAll("button");
+          buttons.forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.docId === state.currentDocId);
+          });
+        }
+
+        function ensureDocState(docId) {
+          if (!state.docStates[docId]) {
+            state.docStates[docId] = { manualOverride: false, dirty: false };
+          }
+          return state.docStates[docId];
+        }
+
+        async function applyTemplateForDocument(docId, options = {}) {
+          const { updateEditor = false, markManualFalse = false } = options;
+          const docConfig = state.config.documents[docId];
+          if (!docConfig || !docConfig.source) {
+            setStatus("Geen templatebron gevonden voor deze pagina.", true);
+            return "";
+          }
+
+          const template = await loadTemplate(docId, docConfig.source);
+          const rendered = renderTemplate(template, state.config);
+          state.config.documents[docId].content = rendered;
+
+          const docState = ensureDocState(docId);
+          docState.dirty = false;
+          if (markManualFalse) {
+            docState.manualOverride = false;
+          }
+
+          if (updateEditor && state.currentDocId === docId) {
+            setQuillContent(rendered);
+          }
+
+          return rendered;
+        }
+
+        async function reapplyCurrentDocument(showConfirmation) {
+          if (!state.currentDocId) {
+            setStatus("Selecteer eerst een pagina.", true);
+            return;
+          }
+
+          const docState = ensureDocState(state.currentDocId);
+          if (showConfirmation && docState.manualOverride) {
+            const proceed = window.confirm(
+              "Handmatig opgeslagen wijzigingen worden overschreven door de templatewaarden. Doorgaan?"
+            );
+            if (!proceed) return;
+          }
+
+          await applyTemplateForDocument(state.currentDocId, { updateEditor: true, markManualFalse: true });
+          setStatus("Template opnieuw toegepast met de huidige configuratie.");
+        }
+
+        async function loadTemplate(docId, source) {
+          if (templateCache.has(docId)) {
+            return templateCache.get(docId);
+          }
+
+          const response = await fetch(source, { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error(`Kon template '${source}' niet laden.`);
+          }
+          const template = await response.text();
+          templateCache.set(docId, template);
+          return template;
+        }
+
+        function renderTemplate(template, data) {
+          return template.replace(/{{\s*([\w.]+)\s*}}/g, (match, path) => {
+            const value = getValueByPath(data, path);
+            if (value === undefined || value === null || value === "") {
+              return match;
+            }
+            return value;
+          });
+        }
+
+        function setQuillContent(html) {
+          state.isApplyingTemplate = true;
+          state.quill.setContents([]);
+          state.quill.clipboard.dangerouslyPasteHTML(html);
+          state.quill.setSelection(0, 0, "silent");
+          state.isApplyingTemplate = false;
+          const docState = ensureDocState(state.currentDocId);
+          docState.dirty = false;
+        }
+
+        function saveCurrentDocument() {
+          if (!state.currentDocId) {
+            setStatus("Selecteer eerst een pagina om op te slaan.", true);
+            return;
+          }
+
+          const html = state.quill.root.innerHTML;
+          state.config.documents[state.currentDocId].content = html;
+          const docState = ensureDocState(state.currentDocId);
+          docState.dirty = false;
+          state.config.meta.updatedAt = new Date().toISOString();
+          setStatus("Documentinhoud opgeslagen in configuratie.");
+        }
+
+        function showHtmlPreview() {
+          if (!state.currentDocId) {
+            setStatus("Selecteer een pagina om te bekijken.", true);
+            return;
+          }
+
+          const modal = document.createElement("dialog");
+          modal.style.maxWidth = "80vw";
+          modal.style.maxHeight = "80vh";
+          modal.style.overflow = "auto";
+          modal.style.border = "1px solid var(--border-color)";
+          modal.style.boxShadow = "0 16px 64px rgba(15, 17, 26, 0.18)";
+
+          const pre = document.createElement("pre");
+          pre.style.whiteSpace = "pre-wrap";
+          pre.style.margin = "0";
+          pre.textContent = state.quill.root.innerHTML;
+
+          const closeBtn = document.createElement("button");
+          closeBtn.textContent = "Sluiten";
+          closeBtn.style.marginTop = "20px";
+          closeBtn.style.padding = "8px 12px";
+          closeBtn.style.border = "1px solid var(--border-color)";
+          closeBtn.style.borderRadius = "8px";
+          closeBtn.style.cursor = "pointer";
+
+          closeBtn.addEventListener("click", () => modal.close("close"));
+          modal.addEventListener("close", () => modal.remove());
+
+          modal.appendChild(pre);
+          modal.appendChild(closeBtn);
+          document.body.appendChild(modal);
+          modal.showModal();
+        }
+
+        function exportConfiguration() {
+          state.config.meta.updatedAt = new Date().toISOString();
+          const dataStr = JSON.stringify(state.config, null, 2);
+          const blob = new Blob([dataStr], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "organization.json";
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+          URL.revokeObjectURL(url);
+          setStatus("organization.json is gedownload.");
+        }
+
+        function handleJsonImport(event) {
+          const file = event.target.files && event.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = async (loadEvent) => {
+            try {
+              const parsed = JSON.parse(loadEvent.target.result);
+              state.config = mergeDeep(deepClone(DEFAULT_CONFIG), parsed);
+              buildDocStatesFromConfig();
+              updateFormFields();
+              renderDocumentList();
+              const firstDoc = Object.keys(state.config.documents || {})[0];
+              if (firstDoc) {
+                await selectDocument(firstDoc);
+              }
+              setStatus("Configuratie succesvol geïmporteerd.");
+            } catch (error) {
+              console.error(error);
+              setStatus("Kon het JSON-bestand niet verwerken. Controleer de structuur.", true);
+            }
+          };
+
+          reader.readAsText(file);
+          elements.jsonFileInput.value = "";
+        }
+
+        function resetConfiguration() {
+          const confirmReset = window.confirm(
+            "Weet je zeker dat je de volledige configuratie wilt resetten naar de standaardwaarden? Alle velden en documentinhoud worden gewist."
+          );
+          if (!confirmReset) return;
+
+          state.config = deepClone(DEFAULT_CONFIG);
+          templateCache.clear();
+          buildDocStatesFromConfig();
+          updateFormFields();
+          renderDocumentList();
+          const firstDoc = Object.keys(state.config.documents || {})[0];
+          if (firstDoc) {
+            selectDocument(firstDoc);
+          } else {
+            state.currentDocId = null;
+            elements.documentTitle.textContent = "Selecteer een pagina";
+            state.quill.setText("");
+          }
+          setStatus("Configuratie is teruggezet naar de standaardwaarden.");
+        }
+
+        function setStatus(message, isError = false) {
+          elements.statusMessage.textContent = message;
+          elements.statusMessage.style.color = isError ? "#da1e28" : "#57606a";
+        }
+
+        function deepClone(value) {
+          return JSON.parse(JSON.stringify(value));
+        }
+
+        function mergeDeep(target, source) {
+          if (typeof source !== "object" || source === null) {
+            return target;
+          }
+          Object.entries(source).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              target[key] = deepClone(value);
+            } else if (value && typeof value === "object") {
+              target[key] = mergeDeep(target[key] ? deepClone(target[key]) : {}, value);
+            } else {
+              target[key] = value;
+            }
+          });
+          return target;
+        }
+
+        function getValueByPath(obj, path) {
+          return path.split(".").reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
+        }
+
+        function setValueByPath(obj, path, value) {
+          const keys = path.split(".");
+          let current = obj;
+          keys.forEach((key, index) => {
+            if (index === keys.length - 1) {
+              current[key] = value;
+            } else {
+              if (typeof current[key] !== "object" || current[key] === null) {
+                current[key] = {};
+              }
+              current = current[key];
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
+

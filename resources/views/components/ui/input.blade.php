@@ -1,24 +1,3 @@
-@php
-    // Defensive defaults (prevents "Undefined variable" if view is included directly)
-    $name = $name ?? '';
-    $id = $id ?? null;
-    $inputId = $inputId ?? $id ?? ($name !== '' ? $name : ('input-' . uniqid('', true)));
-    $label = $label ?? '';
-    $type = $type ?? 'text';
-    $value = $value ?? '';
-    $placeholder = $placeholder ?? '';
-    $hint = $hint ?? '';
-    $error = $error ?? false;
-    $errorMessage = $errorMessage ?? '';
-    $required = $required ?? false;
-    $disabled = $disabled ?? false;
-    $readonly = $readonly ?? false;
-    $icon = $icon ?? null;
-    $iconPosition = $iconPosition ?? 'left';
-    $classes = $classes ?? 'block w-full border rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 transition-all duration-200 border-zinc-300 dark:border-zinc-700 focus:outline-none px-4 py-2 text-base leading-6 tracking-[0.5px]';
-    $attributes = $attributes ?? new \Illuminate\View\ComponentAttributeBag();
-@endphp
-
 @once
     @push('styles')
         <style>
@@ -52,20 +31,50 @@
             <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none">
                 <i class="fas fa-{{ $icon }}"></i>
             </div>
-            <input type="{{ $type }}" name="{{ $name }}" id="{{ $inputId }}" value="{{ is_string($value) ? $value : '' }}"
-                placeholder="{{ $placeholder }}" @if($required) required @endif @if($disabled) disabled @endif
-                @if($readonly) readonly @endif class="{{ $classes }}" {{ $attributes->except(['class', 'value']) }}>
+            <input 
+                type="{{ $type }}" 
+                name="{{ $name }}" 
+                id="{{ $inputId }}"
+                value="{{ is_string($value) ? $value : '' }}"
+                placeholder="{{ $placeholder }}"
+                @if($required) required @endif
+                @if($disabled) disabled @endif
+                @if($readonly) readonly @endif
+                class="{{ $classes }}"
+                @if($slugFrom) data-slug-from="{{ $slugFrom }}" @endif
+                {{ $attributes->except(['class', 'value']) }}
+            >
         @elseif($icon && $iconPosition === 'right')
-            <input type="{{ $type }}" name="{{ $name }}" id="{{ $inputId }}" value="{{ is_string($value) ? $value : '' }}"
-                placeholder="{{ $placeholder }}" @if($required) required @endif @if($disabled) disabled @endif
-                @if($readonly) readonly @endif class="{{ $classes }}" {{ $attributes->except(['class', 'value']) }}>
+            <input 
+                type="{{ $type }}" 
+                name="{{ $name }}" 
+                id="{{ $inputId }}"
+                value="{{ is_string($value) ? $value : '' }}"
+                placeholder="{{ $placeholder }}"
+                @if($required) required @endif
+                @if($disabled) disabled @endif
+                @if($readonly) readonly @endif
+                class="{{ $classes }}"
+                @if($slugFrom) data-slug-from="{{ $slugFrom }}" @endif
+                {{ $attributes->except(['class', 'value']) }}
+            >
             <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none">
                 <i class="fas fa-{{ $icon }}"></i>
             </div>
         @else
-            <input type="{{ $type }}" name="{{ $name }}" id="{{ $inputId }}" value="{{ is_string($value) ? $value : '' }}"
-                placeholder="{{ $placeholder }}" @if($required) required @endif @if($disabled) disabled @endif
-                @if($readonly) readonly @endif class="{{ $classes }}" {{ $attributes->except(['class', 'value']) }}>
+            <input 
+                type="{{ $type }}" 
+                name="{{ $name }}" 
+                id="{{ $inputId }}"
+                value="{{ is_string($value) ? $value : '' }}"
+                placeholder="{{ $placeholder }}"
+                @if($required) required @endif
+                @if($disabled) disabled @endif
+                @if($readonly) readonly @endif
+                class="{{ $classes }}"
+                @if($slugFrom) data-slug-from="{{ $slugFrom }}" @endif
+                {{ $attributes->except(['class', 'value']) }}
+            >
         @endif
     </div>
 
@@ -80,3 +89,56 @@
         </div>
     @endif
 </div>
+
+@if($slugFrom)
+@once
+@push('scripts')
+<script>
+(function() {
+    'use strict';
+    function generateSlug(text) {
+        if (!text) return '';
+        return text.toLowerCase()
+            .replace(/[^a-z0-9 -]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+    function initSlugInput(slugInput) {
+        var sourceId = slugInput.getAttribute('data-slug-from');
+        if (!sourceId) return;
+        var sourceInput = document.getElementById(sourceId);
+        if (!sourceInput || slugInput._slugInitialized) return;
+        slugInput._slugInitialized = true;
+        var currentSource = sourceInput.value || '';
+        var currentSlug = slugInput.value || '';
+        slugInput.dataset.autoGenerated = (currentSlug === generateSlug(currentSource) || !currentSlug) ? 'true' : 'false';
+        sourceInput.addEventListener('input', function() {
+            if (slugInput.dataset.autoGenerated === 'true' || !slugInput.value) {
+                slugInput.value = generateSlug(this.value);
+                slugInput.dataset.autoGenerated = 'true';
+                slugInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+        slugInput.addEventListener('input', function() {
+            var gen = generateSlug(sourceInput.value);
+            slugInput.dataset.autoGenerated = (this.value === gen) ? 'true' : 'false';
+            if (!this.value) slugInput.dataset.autoGenerated = 'true';
+        });
+    }
+    function runSlugInits() {
+        document.querySelectorAll('input[data-slug-from]').forEach(initSlugInput);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', runSlugInits);
+    } else {
+        runSlugInits();
+    }
+    if (typeof Livewire !== 'undefined') {
+        Livewire.hook('morph.updated', function() { setTimeout(runSlugInits, 50); });
+    }
+})();
+</script>
+@endpush
+@endonce
+@endif

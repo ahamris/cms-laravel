@@ -45,7 +45,9 @@ trait ManagesMenuReordering
             $this->reindexSiblings($oldParent);
         }
 
-
+        if (! is_null($parentId)) {
+            $this->expanded[$parentId] = true;
+        }
 
         Cache::forget('admin-menu:sidebar');
 

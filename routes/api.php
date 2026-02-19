@@ -1,20 +1,16 @@
 <?php
 
-use App\Http\Controllers\Api\V1\Auth\LoginController;
-use App\Http\Controllers\Api\V1\Auth\LogoutController;
-use App\Http\Controllers\Api\V1\Auth\UserController;
-use App\Http\Controllers\Api\V1\PageController;
+use App\Http\Controllers\Api\AnalyticsTrackingController;
+use App\Http\Controllers\Api\HomepageBuilderController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->middleware(['restrict.origins', 'throttle:60,1'])->group(function (): void {
-    Route::post('login', LoginController::class)->name('api.v1.login');
-    Route::middleware('auth:sanctum')->group(function (): void {
-        Route::post('logout', LogoutController::class)->name('api.v1.logout');
-        Route::get('user', UserController::class)->name('api.v1.user');
-    });
-
-    Route::middleware('cms.api.key')->group(function (): void {
-        Route::get('pages', [PageController::class, 'index'])->name('api.v1.pages.index');
-        Route::get('pages/{slug}', [PageController::class, 'show'])->name('api.v1.pages.show');
-    });
+// Analytics tracking routes (public, no auth required; rate limited)
+Route::prefix('analytics')->middleware('throttle:api')->group(function () {
+    Route::post('track', [AnalyticsTrackingController::class, 'track'])->name('api.analytics.track');
+    Route::post('batch-track', [AnalyticsTrackingController::class, 'batchTrack'])->name('api.analytics.batch-track');
+    Route::post('guest-activity', [AnalyticsTrackingController::class, 'guestActivity'])->name('api.analytics.guest-activity');
+    Route::post('performance', [AnalyticsTrackingController::class, 'performance'])->name('api.analytics.performance');
+    Route::get('stats', [AnalyticsTrackingController::class, 'stats'])->name('api.analytics.stats');
 });
+
+Route::get('/admin/homepage-builder/template-parameters', [HomepageBuilderController::class, 'getTemplateParameters'])->name('api.homepage-builder.template-parameters')->middleware(['web', 'admin']);

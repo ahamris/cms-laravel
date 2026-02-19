@@ -26,4 +26,3 @@ class Tooltip extends Component
         return view('components.ui.tooltip');
     }
 }
-

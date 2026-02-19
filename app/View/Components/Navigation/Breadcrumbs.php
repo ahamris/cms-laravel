@@ -55,8 +55,8 @@ class Breadcrumbs extends Component
                 }
             }
 
-            $dashboardUrl = Route::has('admin.home')
-                ? route('admin.home')
+            $dashboardUrl = Route::has('admin.index')
+                ? route('admin.index')
                 : (Route::has('dashboard') ? route('dashboard') : url('/'));
             $generated[] = ['label' => 'Dashboard', 'url' => $dashboardUrl];
 
@@ -100,8 +100,8 @@ class Breadcrumbs extends Component
     {
         // Eğer crumbs boşsa, en azından Dashboard'u ekle
         if (empty($this->crumbs)) {
-            $dashboardUrl = Route::has('admin.home')
-                ? route('admin.home')
+            $dashboardUrl = Route::has('admin.index')
+                ? route('admin.index')
                 : (Route::has('dashboard') ? route('dashboard') : url('/'));
             $this->crumbs = [['label' => 'Dashboard', 'url' => $dashboardUrl]];
         }

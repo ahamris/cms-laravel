@@ -42,4 +42,3 @@ class Modal extends Component
         return view('components.ui.modal');
     }
 }
-

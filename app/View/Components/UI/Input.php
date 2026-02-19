@@ -29,9 +29,9 @@ class Input extends Component
         public bool $readonly = false,
         public ?string $icon = null,
         public string $iconPosition = 'left', // left, right
-        public string $iconType = 'solid', // solid, brand
         public ?string $size = null, // sm, lg
-        public ?string $variant = null // slug, etc.
+        public ?string $variant = null, // slug, etc.
+        public ?string $slugFrom = null // when set, this input auto-fills from the element with this id (e.g. "title")
     ) {
         // Normalize value to string
         if ($value === null) {
@@ -48,15 +48,17 @@ class Input extends Component
         $baseClasses = 'block w-full border rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 transition-all duration-200 border-zinc-300 dark:border-zinc-700 focus:outline-none';
         $classes[] = $baseClasses;
 
-        // Size classes - Synchronized with Button
-        if ($variant === 'slug') {
-            $classes[] = 'px-3 py-1.5 text-sm leading-5';
+        // Size classes
+        if ($variant === 'slug' || $slugFrom !== null) {
+            // Slug variant uses same size as title input
+            $classes[] = 'px-3 py-1.5 text-base sm:text-sm/6';
         } elseif ($size === 'sm') {
-            $classes[] = 'px-3 py-1 text-sm leading-5 tracking-wide';
+            $classes[] = 'px-3 py-1.5 text-sm leading-5 tracking-[0.25px]';
         } elseif ($size === 'lg') {
-            $classes[] = 'px-5 py-2.5 text-base leading-6 tracking-wide';
+            $classes[] = 'px-5 py-3 text-base leading-6 tracking-[0.5px]';
         } else {
-            $classes[] = 'px-4 py-2 text-sm leading-5 tracking-wide';
+            // Standardizing default to match sm variant's compact look which is used in manual inputs
+            $classes[] = 'px-3 py-1.5 text-base sm:text-sm/6';
         }
 
         // State classes
@@ -69,19 +71,19 @@ class Input extends Component
         }
 
         // Icon paddings
-        if (!empty($icon) && $iconPosition === 'left') {
+        if ($icon && $iconPosition === 'left') {
             $classes[] = 'pl-11';
-        } elseif (!empty($icon) && $iconPosition === 'right') {
+        } elseif ($icon && $iconPosition === 'right') {
             $classes[] = 'pr-11';
         }
 
         // Variant classes
-        if ($variant === 'slug') {
+        if ($variant === 'slug' || $slugFrom !== null) {
             $classes[] = 'font-mono bg-gray-50 dark:bg-white/5 border-gray-300 dark:border-white/10';
         }
 
         $this->classes = implode(' ', $classes);
-        $this->inputId = $id ?? ($name ?: 'input-' . uniqid('', true));
+        $this->inputId = $id ?? ($name ?: 'input-' . uniqid());
     }
 
     public function render(): View|Closure|string

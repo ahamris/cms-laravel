@@ -15,12 +15,12 @@ class Card extends Component
     public string $paddingClasses;
 
     public function __construct(
-        public ?string $icon = null,
+        public string $icon = 'check',
         public string $iconColor = 'primary', // primary, success, warning, error, sky, secondary
-        public ?string $title = null,
-        public ?string $value = null,
-        public ?string $actionText = null,
-        public ?string $actionUrl = null,
+        public string $title = '',
+        public string $value = '',
+        public string $actionText = 'View details',
+        public string $actionUrl = 'javascript:void(0)',
         public bool $hover = true,
         public string $variant = 'default', // default, outlined, filled, elevated
         public ?string $size = null, // sm, md, lg
@@ -29,13 +29,7 @@ class Card extends Component
         public bool $clickable = false,
         public ?string $clickUrl = null,
         public bool $loading = false,
-        public bool $showDividers = true,
     ) {
-        // Normalize nullable strings to empty strings for display
-        $this->title = $this->title ?? '';
-        $this->value = $this->value ?? '';
-        $this->actionText = $this->actionText ?? 'View details';
-        $this->actionUrl = $this->actionUrl ?? 'javascript:void(0)';
         // Size-based padding
         $this->paddingClasses = match ($size) {
             'sm' => 'p-3',
@@ -44,18 +38,18 @@ class Card extends Component
         };
 
         // Card base classes
-        $classes = 'bg-white dark:bg-zinc-800 rounded-lg transition-all duration-200 ' . $this->paddingClasses;
+        $classes = 'rounded-lg transition-all duration-200';
 
         // Variant classes
         $classes .= match ($variant) {
-            'outlined' => ' border-2 border-zinc-200 dark:border-zinc-700',
+            'outlined' => ' bg-white dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700',
             'filled' => ' bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700',
-            'elevated' => ' border border-zinc-200 dark:border-zinc-700 shadow-lg dark:shadow-xl',
-            default => ' border border-zinc-200 dark:border-zinc-700 shadow-sm dark:shadow-none',
+            'elevated' => ' bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-lg dark:shadow-xl',
+            default => ' bg-white dark:bg-gray-800/50 shadow-sm dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/10',
         };
 
         // Hover effects
-        if ($hover && !$loading) {
+        if ($hover && ! $loading) {
             if ($variant === 'elevated') {
                 $classes .= ' hover:shadow-xl dark:hover:shadow-2xl';
             } else {
