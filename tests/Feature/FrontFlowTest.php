@@ -35,15 +35,12 @@ test('blog show returns 404 for non-existent slug', function () {
 });
 
 test('page show returns 200 for existing slug', function () {
-    $page = Page::create([
+    $page = Page::factory()->create([
         'title' => 'Test Page',
         'slug' => 'test-page-flow',
-        'page_type' => 'static',
         'short_body' => 'Short content.',
         'long_body' => 'Long body content here.',
         'is_active' => true,
-        'hide_header' => false,
-        'hide_footer' => false,
     ]);
 
     $response = $this->get(route('page.show', $page));

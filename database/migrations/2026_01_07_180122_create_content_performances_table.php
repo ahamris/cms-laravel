@@ -23,7 +23,7 @@ return new class extends Migration
             $table->json('ranking_data')->nullable(); // Keyword rankings, positions, etc.
             $table->timestamp('measured_at');
             $table->timestamps();
-            
+
             // Index for polymorphic relation and measured_at (shorter name to avoid MySQL 64 char limit)
             $table->index(['contentable_type', 'contentable_id', 'measured_at'], 'content_perf_poly_measured_idx');
         });

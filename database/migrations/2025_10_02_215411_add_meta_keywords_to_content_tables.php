@@ -15,10 +15,6 @@ return new class extends Migration
             $table->text('meta_keywords')->nullable()->after('slug');
         });
 
-        Schema::table('pages', function (Blueprint $table) {
-            $table->text('meta_keywords')->nullable()->after('slug');
-        });
-
         Schema::table('solutions', function (Blueprint $table) {
             $table->text('meta_keywords')->nullable()->after('slug');
         });
@@ -30,10 +26,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('blogs', function (Blueprint $table) {
-            $table->dropColumn('meta_keywords');
-        });
-
-        Schema::table('pages', function (Blueprint $table) {
             $table->dropColumn('meta_keywords');
         });
 

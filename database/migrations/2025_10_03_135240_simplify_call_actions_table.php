@@ -21,9 +21,9 @@ return new class extends Migration
                 'stats_number',
                 'stats_text',
                 'stats_button_text',
-                'stats_button_url'
+                'stats_button_url',
             ]);
-            
+
             // Add simple content field
             $table->text('content')->after('title');
         });
@@ -44,7 +44,7 @@ return new class extends Migration
             $table->string('stats_text')->nullable();
             $table->string('stats_button_text')->nullable();
             $table->string('stats_button_url')->nullable();
-            
+
             // Remove the content field
             $table->dropColumn('content');
         });

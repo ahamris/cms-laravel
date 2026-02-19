@@ -21,7 +21,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->json('strategy_data')->nullable(); // SEO analysis, topic clusters, channel scoring, etc.
             $table->timestamps();
-            
+
             $table->index(['intent_brief_id', 'status']);
             $table->index(['start_date', 'end_date']);
         });

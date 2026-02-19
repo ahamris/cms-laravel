@@ -13,10 +13,6 @@
         $pageObj = $routeParams['page'] ?? null;
     }
 
-    if (($footerLayoutType === null || $footerLayoutType === '') && $pageObj && !empty($pageObj->layout_type)) {
-        $footerLayoutType = $pageObj->layout_type;
-    }
-
     $useCustomFooter = false;
     $footerBladeFile = null;
 @endphp

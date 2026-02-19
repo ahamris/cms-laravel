@@ -14,7 +14,7 @@ return new class extends Migration
         // Clean up any existing marketing fields from failed migrations
         Schema::table('blogs', function (Blueprint $table) {
             $columns = Schema::getColumnListing('blogs');
-            
+
             // Drop foreign keys first
             if (in_array('marketing_persona_id', $columns)) {
                 try {
@@ -23,7 +23,7 @@ return new class extends Migration
                     // Foreign key might not exist
                 }
             }
-            
+
             if (in_array('content_type_id', $columns)) {
                 try {
                     $table->dropForeign(['content_type_id']);
@@ -31,10 +31,10 @@ return new class extends Migration
                     // Foreign key might not exist
                 }
             }
-            
+
             // Now drop columns
             $fieldsToRemove = ['funnel_fase', 'marketing_persona_id', 'content_type_id', 'primary_keyword', 'secondary_keywords', 'ai_briefing', 'seo_analysis'];
-            
+
             foreach ($fieldsToRemove as $field) {
                 if (in_array($field, $columns)) {
                     $table->dropColumn($field);

@@ -35,7 +35,6 @@ use App\Http\Controllers\Admin\Content\LegalController;
 use App\Http\Controllers\Admin\Content\LiveSessionController;
 use App\Http\Controllers\Admin\Content\ModuleController;
 use App\Http\Controllers\Admin\Content\OrganizationNameController;
-use App\Http\Controllers\Admin\Content\PageBlockPresetController;
 use App\Http\Controllers\Admin\Content\PageController;
 use App\Http\Controllers\Admin\Content\PresenterController;
 use App\Http\Controllers\Admin\Content\PricingBoosterController;
@@ -159,18 +158,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // Pages
             Route::resource('page', PageController::class);
             Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
-            Route::post('page/{page}/set-homepage', [PageController::class, 'setAsHomepage'])->name('page.set-homepage');
-            Route::post('page/{page}/remove-homepage', [PageController::class, 'removeHomepage'])->name('page.remove-homepage');
-            Route::get('page/api/components/get', fn () => response()->json(['html' => null, 'error' => 'Component not found'], 404))->name('page.get-component');
-            Route::post('page/api/image/upload', [PageController::class, 'uploadImageForEditing'])->name('page.upload-image');
-            Route::get('page/api/presets', [PageController::class, 'getPresets'])->name('page.get-presets');
-            Route::post('page/api/save-preset', [PageController::class, 'savePreset'])->name('page.save-preset');
-            Route::get('page/api/load-preset/{preset}', [PageController::class, 'loadPreset'])->name('page.load-preset');
-            Route::delete('page/api/preset/{preset}', [PageController::class, 'deletePreset'])->name('page.delete-preset');
-            Route::post('page/api/fix-with-ai', [PageController::class, 'fixWithAI'])->name('page.fix-with-ai');
-
-            // Page Block Presets
-            Route::resource('content/page-block-preset', PageBlockPresetController::class)->parameters(['page-block-preset' => 'pageBlockPreset']);
 
             // Legal Pages
             Route::resource('legal', LegalController::class);

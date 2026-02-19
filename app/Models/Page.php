@@ -18,14 +18,6 @@ class Page extends BaseModel
     protected $fillable = [
         'title',
         'slug',
-        'page_type',
-        'design_type',
-        'header_block',
-        'footer_block',
-        'hide_header',
-        'hide_footer',
-        'widget_config',
-        'layout_type',
         'short_body',
         'long_body',
         'meta_title',
@@ -34,7 +26,6 @@ class Page extends BaseModel
         'image',
         'icon',
         'is_active',
-        'home_page',
         // Marketing Automation fields
         'funnel_fase',
         'marketing_persona_id',
@@ -45,43 +36,14 @@ class Page extends BaseModel
         'seo_analysis',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-        'hide_header' => 'boolean',
-        'hide_footer' => 'boolean',
-        'home_page' => 'boolean',
-        'page_type' => 'string',
-        'widget_config' => 'array',
-        // Marketing Automation casts
-        'secondary_keywords' => 'array',
-        'seo_analysis' => 'array',
-    ];
-
-    protected $attributes = [
-        'page_type' => 'static',
-    ];
-
-    /**
-     * Boot the model.
-     */
-    protected static function boot()
+    protected function casts(): array
     {
-        parent::boot();
-
-        static::saving(function ($page) {
-            // If this page is being set as homepage, unset all other homepages
-            if ($page->home_page === true && $page->isDirty('home_page')) {
-                // Use DB facade to avoid triggering model events
-                $query = \DB::table('pages')->where('home_page', true);
-
-                // Exclude current page if it exists (for updates)
-                if ($page->exists && $page->id) {
-                    $query->where('id', '!=', $page->id);
-                }
-
-                $query->update(['home_page' => false]);
-            }
-        });
+        return [
+            'is_active' => 'boolean',
+            // Marketing Automation casts
+            'secondary_keywords' => 'array',
+            'seo_analysis' => 'array',
+        ];
     }
 
     /**
@@ -101,14 +63,6 @@ class Page extends BaseModel
     public function contentType(): BelongsTo
     {
         return $this->belongsTo(ContentType::class);
-    }
-
-    /**
-     * Scope for showcase pages
-     */
-    public function scopeShowcase($query)
-    {
-        return $query->where('page_type', 'showcase');
     }
 
     /**
@@ -155,70 +109,5 @@ class Page extends BaseModel
                 'includeTrashed' => true,
             ],
         ];
-    }
-
-    /**
-     * Check if page is showcase type
-     */
-    public function isShowcase(): bool
-    {
-        return $this->page_type === 'showcase';
-    }
-
-    /**
-     * Check if page is static type
-     */
-    public function isStatic(): bool
-    {
-        return $this->page_type === 'static';
-    }
-
-    /**
-     * Check if page is homepage
-     */
-    public function isHomepage(): bool
-    {
-        return $this->home_page === true;
-    }
-
-    /**
-     * Get the homepage page
-     */
-    public static function getHomepage(): ?self
-    {
-        return self::where('home_page', true)
-            ->where('is_active', true)
-            ->first();
-    }
-
-    /**
-     * Set a page as homepage
-     * The boot method will automatically unset any existing homepage
-     */
-    public static function setAsHomepage(self $page): bool
-    {
-        // Ensure page is active
-        if (! $page->is_active) {
-            return false;
-        }
-
-        // Set this page as homepage (boot method will handle unsetting others)
-        $page->update(['home_page' => true]);
-
-        return true;
-    }
-
-    /**
-     * Remove homepage status from a page
-     */
-    public static function removeHomepage(self $page): bool
-    {
-        if ($page->isHomepage()) {
-            $page->update(['home_page' => false]);
-
-            return true;
-        }
-
-        return false;
     }
 }

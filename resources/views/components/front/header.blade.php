@@ -14,10 +14,6 @@
         $pageObj = $routeParams['page'] ?? null;
     }
 
-    if (($headerLayoutType === null || $headerLayoutType === '') && $pageObj && !empty($pageObj->layout_type)) {
-        $headerLayoutType = $pageObj->layout_type;
-    }
-
     $useCustomHeader = false;
     $headerBladeFile = null;
 @endphp

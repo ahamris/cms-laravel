@@ -4,14 +4,6 @@
     // Get header layout type from setting or use default max-w-7xl
     $headerLayoutType = \App\Models\Setting::getValue('site_header_layout_type');
 
-    // Get page layout if header layout is empty
-    if (empty($headerLayoutType)) {
-        $pageObj = request()->route('page');
-        if ($pageObj && !empty($pageObj->layout_type)) {
-            $headerLayoutType = $pageObj->layout_type;
-        }
-    }
-
     // Map layout type to container class
     $containerClass = match ($headerLayoutType) {
         'full-width' => 'w-full',

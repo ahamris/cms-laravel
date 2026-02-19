@@ -20,10 +20,10 @@ return new class extends Migration
             $table->text('description')->nullable(); // Description for translators
             $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
-            
+
             // Ensure unique combination of translation_key, locale, and group_name
             $table->unique(['translation_key', 'locale', 'group_name']);
-            
+
             // Composite indexes for better performance
             $table->index(['locale', 'is_active']);
             $table->index(['group_name', 'locale']);

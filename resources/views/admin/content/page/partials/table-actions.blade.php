@@ -10,26 +10,6 @@
     </a>
 @endif
 
-@if($item->home_page ?? false)
-    <button type="button"
-            title="Remove Homepage"
-            data-page-id="{{ $item->id }}"
-            data-page-title="{{ e($item->title) }}"
-            data-action="remove-homepage"
-            class="inline-flex items-center justify-center rounded-md p-1.5 text-zinc-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors">
-        <i class="fa-solid fa-star text-sm"></i>
-    </button>
-@else
-    <button type="button"
-            title="Set as Homepage"
-            data-page-id="{{ $item->id }}"
-            data-page-title="{{ e($item->title) }}"
-            data-action="set-homepage"
-            @if(!$item->is_active) disabled class="inline-flex items-center justify-center rounded-md p-1.5 text-zinc-300 dark:text-zinc-600 cursor-not-allowed" @else class="inline-flex items-center justify-center rounded-md p-1.5 text-zinc-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors" @endif>
-        <i class="fa-regular fa-star text-sm"></i>
-    </button>
-@endif
-
 @if(in_array('delete', $actions))
     @php
         $modelName = class_basename($this->modelClass ?? \App\Models\Page::class);

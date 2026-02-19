@@ -22,16 +22,3 @@ test('page store fails when required fields are missing', function () {
 
     $response->assertSessionHasErrors(['title', 'slug', 'short_body', 'long_body']);
 });
-
-test('page store fails when page_type is invalid', function () {
-    $response = $this->actingAs($this->admin)->post(route('admin.content.page.store'), [
-        'title' => 'Test',
-        'slug' => 'test-page',
-        'page_type' => 'invalid-type',
-        'short_body' => 'At least ten chars here.',
-        'long_body' => 'At least ten characters in long body.',
-        'is_active' => true,
-    ]);
-
-    $response->assertSessionHasErrors(['page_type']);
-});

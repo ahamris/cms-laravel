@@ -27,7 +27,7 @@ return new class extends Migration
             $table->text('error_message')->nullable(); // Error details if failed
             $table->json('engagement_stats')->nullable(); // Likes, shares, comments
             $table->timestamps();
-            
+
             $table->index(['status', 'scheduled_at']);
         });
     }

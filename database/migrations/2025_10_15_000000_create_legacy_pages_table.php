@@ -31,7 +31,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('legacy_pages');
     }
-
 };
-
-

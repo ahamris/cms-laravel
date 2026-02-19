@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('is_primary')->default(false);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
+
             $table->unique(['live_session_id', 'presenter_id']);
             $table->index(['live_session_id', 'is_primary']);
         });

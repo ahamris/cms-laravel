@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('client_industry')->nullable();
             $table->string('client_logo')->nullable();
             $table->text('challenge'); // Uitdaging
-            $table->text('solution'); // Oplossing  
+            $table->text('solution'); // Oplossing
             $table->text('results'); // Resultaten
             $table->json('metrics')->nullable(); // Quantifiable results
             $table->text('key_quote');

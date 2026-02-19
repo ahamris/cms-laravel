@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('approval_level', ['manual', 'auto_approve'])->default('manual');
             $table->enum('status', ['draft', 'processing', 'completed', 'failed'])->default('draft');
             $table->timestamps();
-            
+
             $table->index(['user_id', 'status']);
         });
     }

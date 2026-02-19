@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::table('blogs', function (Blueprint $table) {
             $columns = Schema::getColumnListing('blogs');
-            if (!in_array('meta_title', $columns)) {
+            if (! in_array('meta_title', $columns)) {
                 $table->string('meta_title', 255)->nullable()->after('meta_keywords');
             }
-            if (!in_array('meta_description', $columns)) {
+            if (! in_array('meta_description', $columns)) {
                 $table->text('meta_description')->nullable()->after('meta_title');
             }
         });

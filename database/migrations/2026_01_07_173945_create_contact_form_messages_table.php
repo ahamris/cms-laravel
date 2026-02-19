@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('status')->default('sent'); // sent, failed
             $table->text('error_message')->nullable();
             $table->timestamps();
-            
+
             $table->index('contact_form_id');
             $table->index('user_id');
             $table->index('direction');

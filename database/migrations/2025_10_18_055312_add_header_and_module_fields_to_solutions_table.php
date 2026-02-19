@@ -14,20 +14,19 @@ return new class extends Migration
         Schema::table('solutions', function (Blueprint $table) {
             // Header configuration fields
             $table->boolean('show_buttons')->default(true);
-            
+
             $table->string('button1_text')->nullable()->default('Start Gratis Proefperiode');
             $table->string('button1_url')->nullable()->default('#');
-            
+
             $table->string('button2_text')->nullable()->default('Neem Contact Op');
             $table->string('button2_url')->nullable()->default('#');
-            
-            
+
             // Module activation fields
             $table->boolean('show_knowledge_grid')->default(false);
             $table->boolean('show_news_articles')->default(false);
             $table->boolean('show_modules_header')->default(false);
             $table->boolean('show_cta')->default(false);
-            
+
         });
     }
 

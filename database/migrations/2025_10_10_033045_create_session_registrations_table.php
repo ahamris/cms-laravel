@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('attended_at')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['live_session_id', 'email']);
             $table->index(['live_session_id', 'status']);
             $table->index('email');

@@ -19,53 +19,15 @@ class PageRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Decode widget_config if it's a JSON string
-        if ($this->has('widget_config')) {
-            if (is_string($this->widget_config) && ! empty($this->widget_config)) {
-                $decoded = json_decode($this->widget_config, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    $this->merge(['widget_config' => $decoded]);
-                } else {
-                    $this->merge(['widget_config' => null]);
-                }
-            } elseif (empty($this->widget_config)) {
-                $this->merge(['widget_config' => null]);
-            }
+        $value = $this->input('is_active');
+        if (is_array($value)) {
+            $value = in_array('1', $value) || in_array(1, $value);
+        } elseif ($value === '1' || $value === 1 || $value === true || $value === 'true') {
+            $value = true;
+        } else {
+            $value = false;
         }
-
-        // Handle toggle/checkbox boolean fields
-        // Hidden input sends '1' or '0' as string
-        $booleanFields = ['is_active', 'home_page', 'hide_header', 'hide_footer'];
-
-        foreach ($booleanFields as $field) {
-            $value = $this->input($field);
-
-            // Handle array (if both checkbox and hidden input are sent - should not happen now but keep for safety)
-            if (is_array($value)) {
-                $value = in_array('1', $value) || in_array(1, $value) ? true : false;
-            }
-            // Handle string '1' or '0'
-            elseif ($value === '1' || $value === 1 || $value === true || $value === 'true') {
-                $value = true;
-            }
-            // Handle string '0' or false
-            elseif ($value === '0' || $value === 0 || $value === false || $value === 'false' || $value === '') {
-                $value = false;
-            }
-            // Field not present or null
-            else {
-                // Default based on field
-                if ($field === 'is_active') {
-                    $value = false;
-                } elseif ($field === 'home_page') {
-                    $value = false; // home_page must be boolean, not null
-                } else {
-                    $value = null;
-                }
-            }
-
-            $this->merge([$field => $value]);
-        }
+        $this->merge(['is_active' => $value]);
     }
 
     /**
@@ -73,45 +35,28 @@ class PageRequest extends FormRequest
      */
     public function rules(): array
     {
-        $pageType = $this->input('page_type', 'static');
-        $isStatic = $pageType === 'static';
-
-        $designType = $this->input('design_type', 'general');
-        $isCustom = $designType === 'custom';
-
         return [
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:pages,slug,'.$this->route('page')?->id,
-            'page_type' => 'required|string|in:showcase,static',
-            'design_type' => 'nullable|string|in:general,custom',
-            'layout_type' => 'nullable|string|in:full-width,container,max-w-2xl,max-w-4xl,max-w-6xl,max-w-7xl',
-            'header_block' => $isCustom ? 'nullable|string|max:255' : 'nullable',
-            'footer_block' => $isCustom ? 'nullable|string|max:255' : 'nullable',
-            'hide_header' => 'nullable|boolean',
-            'hide_footer' => 'nullable|boolean',
-            'widget_config' => 'nullable|array',
-            'short_body' => $isStatic ? 'required|string|min:10' : 'nullable|string',
-            'long_body' => $isStatic ? ['required', 'string', function ($attribute, $value, $fail) {
-                // Allow empty string or null for long_body
+            'short_body' => 'required|string|min:10',
+            'long_body' => ['required', 'string', function ($attribute, $value, $fail) {
                 if ($value === null || $value === '') {
                     return;
                 }
-                // Strip HTML tags and check minimum length
                 $textContent = strip_tags($value);
                 $textContent = preg_replace('/\s+/', ' ', trim($textContent));
                 if (strlen($textContent) < 10 && strlen($textContent) > 0) {
                     $fail('The long body must be at least 10 characters (excluding HTML tags).');
                 }
-            }] : 'nullable|string',
+            }],
             'meta_title' => 'nullable|string|max:255',
             'meta_body' => 'nullable|string',
             'meta_keywords' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'icon' => 'nullable|string|max:255',
             'is_active' => 'required|boolean',
-            'home_page' => 'nullable|boolean',
 
-            // Marketing Automation fields (only for static pages)
+            // Marketing Automation fields
             'funnel_fase' => 'nullable|string|in:interesseer,overtuig,activeer,inspireer',
             'marketing_persona_id' => 'nullable|exists:marketing_personas,id',
             'content_type_id' => 'nullable|exists:content_types,id',
@@ -166,8 +111,6 @@ class PageRequest extends FormRequest
         return [
             'title' => 'Title',
             'slug' => 'Slug',
-            'page_type' => 'Page type',
-            'widget_config' => 'Widget configuration',
             'short_body' => 'Short body',
             'long_body' => 'Long body',
             'meta_title' => 'Meta title',

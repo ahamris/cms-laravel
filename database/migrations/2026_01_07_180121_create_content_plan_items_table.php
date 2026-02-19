@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('related_content_id')->nullable(); // ID of created blog/post
             $table->string('related_content_type')->nullable(); // Blog, SocialMediaPost, etc.
             $table->timestamps();
-            
+
             $table->index(['content_plan_id', 'status']);
             $table->index(['scheduled_at', 'status']);
             $table->index(['item_type', 'status']);

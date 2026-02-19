@@ -19,12 +19,12 @@ return new class extends Migration
                 'content',
                 'image',
                 'button_text',
-                'button_url'
+                'button_url',
             ]);
-            
+
             // Add new JSON column for multiple items
             $table->json('items')->after('identifier');
-            
+
             // Add optional section title and subtitle
             $table->string('section_title')->nullable()->after('identifier');
             $table->string('section_subtitle')->nullable()->after('section_title');
@@ -39,7 +39,7 @@ return new class extends Migration
         Schema::table('feature_blocks', function (Blueprint $table) {
             // Remove JSON column
             $table->dropColumn(['items', 'section_title', 'section_subtitle']);
-            
+
             // Restore old columns
             $table->string('title')->after('identifier');
             $table->string('subtitle')->nullable()->after('title');

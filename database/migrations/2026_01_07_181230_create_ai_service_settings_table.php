@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(false);
             $table->integer('priority')->default(0); // Lower number = higher priority
             $table->timestamps();
-            
+
             $table->index('service');
             $table->index('is_active');
         });

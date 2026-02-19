@@ -13,9 +13,6 @@ export default defineConfig({
                 "resources/js/datepicker.js",
                 "resources/js/quill.js",
                 "resources/js/tiptap.js",
-                // Page Builder Assets
-                "resources/js/admin/page-builder.js",
-                "resources/css/admin/page-builder-toolbox.css",
                 // Image Optimizer (Vue app)
                 "resources/js/admin/image-optimizer.js",
             ],

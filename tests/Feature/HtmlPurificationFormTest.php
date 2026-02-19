@@ -87,15 +87,9 @@ test('admin page store purifies short_body and long_body', function () {
     $response = $this->actingAs($user)->post(route('admin.content.page.store'), [
         'title' => 'XSS Test Page',
         'slug' => 'xss-test-page',
-        'page_type' => 'static',
-        'design_type' => 'general',
         'short_body' => $xssShort,
         'long_body' => $xssLong,
         'is_active' => true,
-        'home_page' => false,
-        'hide_header' => false,
-        'hide_footer' => false,
-        'widget_config' => null,
     ]);
 
     $response->assertRedirect();

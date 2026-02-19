@@ -4,14 +4,9 @@ namespace App\Http\Controllers\Admin\Content;
 
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\PageRequest;
-use App\Models\AIServiceSetting;
 use App\Models\ContentType;
 use App\Models\MarketingPersona;
 use App\Models\Page;
-use App\Models\PageBlockPreset;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -39,16 +34,9 @@ class PageController extends AdminBaseController
             ->ordered()
             ->get();
 
-        $components = [];
-        $headerBlocks = [];
-        $footerBlocks = [];
-
         return view('admin.content.page.create', compact(
             'marketingPersonas',
-            'contentTypes',
-            'components',
-            'headerBlocks',
-            'footerBlocks'
+            'contentTypes'
         ));
     }
 
@@ -72,39 +60,10 @@ class PageController extends AdminBaseController
             $validated['secondary_keywords'] = ! empty($validated['secondary_keywords']) ? $validated['secondary_keywords'] : null;
         }
 
-        // Handle widget_config (store as JSON)
-        // widget_config is already decoded in PageRequest::prepareForValidation()
-        $widgetConfig = $validated['widget_config'] ?? null;
-        $validated['widget_config'] = $widgetConfig ? json_encode($widgetConfig) : null;
-
-        // Validate that only active pages can be set as homepage
-        // (The boot method will automatically unset other homepages)
-        // Ensure home_page is always boolean
-        $validated['home_page'] = isset($validated['home_page']) ? (bool) $validated['home_page'] : false;
-
-        // Prevent deactivating if homepage is set
-        if ($validated['home_page'] === true && isset($validated['is_active']) && $validated['is_active'] === false) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Homepage pages cannot be deactivated. Please unset homepage first.');
-        }
-
-        if ($validated['home_page'] === true) {
-            if (! ($validated['is_active'] ?? false)) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Only active pages can be set as homepage.');
-            }
-        }
-
         $page = Page::create($validated);
 
-        // Clear cache for this page
         Cache::forget("page.{$page->id}");
         Cache::forget("page.slug.{$page->slug}");
-        if ($page->isHomepage()) {
-            Cache::forget('page.homepage');
-        }
 
         // Log activity
         $this->logCreate($page);
@@ -136,17 +95,10 @@ class PageController extends AdminBaseController
             ->ordered()
             ->get();
 
-        $components = [];
-        $headerBlocks = [];
-        $footerBlocks = [];
-
         return view('admin.content.page.edit', compact(
             'page',
             'marketingPersonas',
-            'contentTypes',
-            'components',
-            'headerBlocks',
-            'footerBlocks'
+            'contentTypes'
         ));
     }
 
@@ -184,39 +136,10 @@ class PageController extends AdminBaseController
             $validated['secondary_keywords'] = ! empty($validated['secondary_keywords']) ? $validated['secondary_keywords'] : null;
         }
 
-        // Handle widget_config (store as JSON)
-        // widget_config is already decoded in PageRequest::prepareForValidation()
-        $widgetConfig = $validated['widget_config'] ?? null;
-        $validated['widget_config'] = $widgetConfig ? json_encode($widgetConfig) : null;
-
-        // Validate that only active pages can be set as homepage
-        // (The boot method will automatically unset other homepages)
-        // Ensure home_page is always boolean
-        $validated['home_page'] = isset($validated['home_page']) ? (bool) $validated['home_page'] : ($page->home_page ?? false);
-
-        // Prevent deactivating if homepage is set
-        if ($validated['home_page'] === true && isset($validated['is_active']) && $validated['is_active'] === false) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Homepage pages cannot be deactivated. Please unset homepage first.');
-        }
-
-        if ($validated['home_page'] === true) {
-            if (! ($validated['is_active'] ?? $page->is_active)) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Only active pages can be set as homepage.');
-            }
-        }
-
         $page->update($validated);
 
-        // Clear cache for this page
         Cache::forget("page.{$page->id}");
         Cache::forget("page.slug.{$page->slug}");
-        if ($page->isHomepage()) {
-            Cache::forget('page.homepage');
-        }
 
         // Log activity
         $this->logUpdate($page);
@@ -230,13 +153,7 @@ class PageController extends AdminBaseController
      */
     public function destroy(Page $page)
     {
-        // Log activity before deletion
         $this->logDelete($page);
-
-        // Clear homepage flag if this is the homepage
-        if ($page->isHomepage()) {
-            $page->update(['home_page' => false]);
-        }
 
         // Delete image if exists
         if ($page->image) {
@@ -254,14 +171,6 @@ class PageController extends AdminBaseController
      */
     public function toggleActive(Page $page)
     {
-        // Prevent deactivating if it's the homepage
-        if ($page->isHomepage() && $page->is_active) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Cannot deactivate the homepage page. Please set another page as homepage first.',
-            ], 422);
-        }
-
         $page->update(['is_active' => ! $page->is_active]);
 
         return response()->json([
@@ -269,407 +178,5 @@ class PageController extends AdminBaseController
             'is_active' => $page->is_active,
             'message' => $page->is_active ? 'Page activated successfully!' : 'Page deactivated successfully!',
         ]);
-    }
-
-    /**
-     * Set a page as homepage
-     */
-    public function setAsHomepage(Page $page): JsonResponse|RedirectResponse
-    {
-        try {
-            // Ensure page is active
-            if (! $page->is_active) {
-                if (request()->expectsJson() || request()->wantsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'Only active pages can be set as homepage.',
-                    ], 422);
-                }
-
-                return redirect()->route('admin.content.page.index')
-                    ->with('error', 'Only active pages can be set as homepage.');
-            }
-
-            // Set as homepage directly - boot method will handle unsetting others
-            $page->home_page = true;
-            $page->save();
-
-            // Refresh the page to get updated data
-            $page->refresh();
-
-            // Log activity
-            try {
-                $this->logUpdate($page);
-            } catch (\Exception $logError) {
-                // Don't fail the request if logging fails
-                \Log::warning('Failed to log homepage update: '.$logError->getMessage());
-            }
-
-            if (request()->expectsJson() || request()->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Page set as homepage successfully!',
-                ]);
-            }
-
-            return redirect()->route('admin.content.page.index')
-                ->with('success', 'Page set as homepage successfully!');
-        } catch (\Exception $e) {
-            \Log::error('Error setting homepage: '.$e->getMessage(), [
-                'page_id' => $page->id ?? null,
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            if (request()->expectsJson() || request()->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'An error occurred while setting the homepage: '.$e->getMessage(),
-                ], 500);
-            }
-
-            return redirect()->route('admin.content.page.index')
-                ->with('error', 'An error occurred while setting the homepage.');
-        }
-    }
-
-    /**
-     * Remove homepage status from a page
-     */
-    public function removeHomepage(Page $page): JsonResponse|RedirectResponse
-    {
-        try {
-            if (! $page->isHomepage()) {
-                if (request()->expectsJson() || request()->wantsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'This page is not set as homepage.',
-                    ], 422);
-                }
-
-                return redirect()->route('admin.content.page.index')
-                    ->with('error', 'This page is not set as homepage.');
-            }
-
-            // Remove homepage status directly
-            $page->home_page = false;
-            $page->save();
-
-            // Refresh the page to get updated data
-            $page->refresh();
-
-            // Log activity
-            try {
-                $this->logUpdate($page);
-            } catch (\Exception $logError) {
-                // Don't fail the request if logging fails
-                \Log::warning('Failed to log homepage removal: '.$logError->getMessage());
-            }
-
-            if (request()->expectsJson() || request()->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Homepage status removed successfully!',
-                ]);
-            }
-
-            return redirect()->route('admin.content.page.index')
-                ->with('success', 'Homepage status removed successfully!');
-        } catch (\Exception $e) {
-            \Log::error('Error removing homepage: '.$e->getMessage(), [
-                'page_id' => $page->id ?? null,
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            if (request()->expectsJson() || request()->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'An error occurred while removing the homepage: '.$e->getMessage(),
-                ], 500);
-            }
-
-            return redirect()->route('admin.content.page.index')
-                ->with('error', 'An error occurred while removing the homepage.');
-        }
-    }
-
-    /**
-     * Upload image for inline editing.
-     */
-    public function uploadImageForEditing(Request $request): JsonResponse
-    {
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,jpg,png,gif,webp,svg|max:2048',
-        ]);
-
-        try {
-            $imagePath = $this->uploadImage($request->file('image'), 'widget-images');
-            $imageUrl = asset('storage/'.$imagePath);
-
-            return response()->json([
-                'success' => true,
-                'url' => $imageUrl,
-                'path' => $imagePath,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Get presets by type (header/body) via AJAX
-     */
-    public function getPresets(Request $request): JsonResponse
-    {
-        $query = PageBlockPreset::active()->orderBy('name');
-
-        // Optional type filter
-        if ($request->has('type') && in_array($request->type, ['header', 'body'])) {
-            $query->where('type', $request->type);
-        }
-
-        $presets = $query->get(['id', 'name', 'description', 'type', 'blocks']);
-
-        return response()->json([
-            'success' => true,
-            'presets' => $presets,
-        ]);
-    }
-
-    /**
-     * Save current blocks as preset
-     */
-    public function savePreset(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'type' => 'required|string|in:header,body',
-            'blocks' => 'required|array',
-        ]);
-
-        $preset = PageBlockPreset::create([
-            'name' => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'type' => $validated['type'],
-            'blocks' => $validated['blocks'],
-            'is_active' => true,
-            'created_by' => auth()->id(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Preset saved successfully!',
-            'preset' => $preset,
-        ]);
-    }
-
-    /**
-     * Load preset data via AJAX
-     */
-    public function loadPreset(PageBlockPreset $preset): JsonResponse
-    {
-        return response()->json([
-            'success' => true,
-            'preset' => [
-                'id' => $preset->id,
-                'name' => $preset->name,
-                'description' => $preset->description,
-                'type' => $preset->type,
-                'blocks' => $preset->blocks,
-            ],
-        ]);
-    }
-
-    /**
-     * Delete preset
-     */
-    public function deletePreset(PageBlockPreset $preset): JsonResponse
-    {
-        $preset->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Preset deleted successfully!',
-        ]);
-    }
-
-    /**
-     * Fix HTML code using AI (Groq primary, Gemini fallback)
-     */
-    public function fixWithAI(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'html' => 'required|string',
-            'prompt' => 'required|string|max:1000',
-        ]);
-
-        $systemPrompt = 'You are an expert HTML/TailwindCSS developer. The user will provide HTML code and a request to modify or fix it. 
-Your task is to:
-1. Analyze the provided HTML code
-2. Apply the requested changes/fixes
-3. Return ONLY the fixed/modified HTML code, no explanations
-4. Preserve the existing structure and TailwindCSS classes unless specifically asked to change them
-5. Ensure the output is valid HTML
-
-Important: Return ONLY the HTML code, nothing else. No markdown code blocks, no explanations.';
-
-        $userMessage = "HTML Code:\n```html\n{$validated['html']}\n```\n\nRequest: {$validated['prompt']}";
-
-        // Try Groq first: use Admin AI Settings (Settings → AI) then fall back to .env
-        $groqApiKey = AIServiceSetting::getApiKey('groq') ?? config('services.groq.api_key');
-        if (! empty($groqApiKey)) {
-            $groqModel = AIServiceSetting::getModel('groq', 'llama-3.3-70b-versatile') ?? config('services.groq.model', 'llama-3.3-70b-versatile');
-            $result = $this->callGroqAI($groqApiKey, $systemPrompt, $userMessage, $groqModel);
-            if ($result['success']) {
-                return response()->json($result);
-            }
-            \Log::warning('Groq API failed, falling back to Gemini', ['error' => $result['error'] ?? 'Unknown']);
-        }
-
-        // Fallback to Gemini: use Admin AI Settings then .env
-        $geminiApiKey = AIServiceSetting::getApiKey('gemini') ?? config('services.gemini.api_key');
-        if (! empty($geminiApiKey)) {
-            $geminiModel = AIServiceSetting::getModel('gemini', 'gemini-2.0-flash') ?? config('services.gemini.model', 'gemini-2.0-flash');
-            $result = $this->callGeminiAI($geminiApiKey, $systemPrompt, $userMessage, $geminiModel);
-            if ($result['success']) {
-                return response()->json($result);
-            }
-
-            return response()->json($result, 500);
-        }
-
-        return response()->json([
-            'success' => false,
-            'error' => 'No AI service configured. Please configure Groq or Gemini in Admin → Settings → AI Settings, or add GROQ_API_KEY / GEMINI_API_KEY to your .env file.',
-        ], 500);
-    }
-
-    /**
-     * Call Groq AI API
-     */
-    private function callGroqAI(string $apiKey, string $systemPrompt, string $userMessage, ?string $model = null): array
-    {
-        try {
-            $model = $model ?? config('services.groq.model', 'llama-3.3-70b-versatile');
-
-            $payload = [
-                'model' => $model,
-                'messages' => [
-                    ['role' => 'system', 'content' => $systemPrompt],
-                    ['role' => 'user', 'content' => $userMessage],
-                ],
-                'temperature' => 0.3,
-                'max_tokens' => 8192,
-            ];
-
-            $response = \Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Authorization' => "Bearer {$apiKey}",
-            ])->timeout(60)->post('https://api.groq.com/openai/v1/chat/completions', $payload);
-
-            if ($response->failed()) {
-                \Log::error('Groq API Error', [
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                ]);
-
-                if ($response->status() === 429) {
-                    return ['success' => false, 'error' => 'API rate limit exceeded. Please wait a moment and try again.'];
-                }
-
-                return ['success' => false, 'error' => 'Groq API request failed'];
-            }
-
-            $data = $response->json();
-            $fixedHtml = $data['choices'][0]['message']['content'] ?? null;
-
-            if (! $fixedHtml) {
-                return ['success' => false, 'error' => 'No response from Groq AI'];
-            }
-
-            // Clean up the response
-            $fixedHtml = $this->cleanAIResponse($fixedHtml);
-
-            return ['success' => true, 'html' => $fixedHtml];
-
-        } catch (\Exception $e) {
-            \Log::error('Groq AI Error', ['message' => $e->getMessage()]);
-
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Call Gemini AI API
-     */
-    private function callGeminiAI(string $apiKey, string $systemPrompt, string $userMessage, ?string $model = null): array
-    {
-        try {
-            $model = $model ?? config('services.gemini.model', 'gemini-2.0-flash');
-
-            $payload = [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $systemPrompt."\n\n".$userMessage],
-                        ],
-                    ],
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.3,
-                    'maxOutputTokens' => 8192,
-                ],
-            ];
-
-            $response = \Http::withHeaders([
-                'Content-Type' => 'application/json',
-            ])->timeout(60)->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}", $payload);
-
-            if ($response->failed()) {
-                \Log::error('Gemini API Error', [
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                ]);
-
-                if ($response->status() === 429) {
-                    return ['success' => false, 'error' => 'API rate limit exceeded. Please wait a moment and try again.'];
-                }
-
-                return ['success' => false, 'error' => 'Gemini API request failed'];
-            }
-
-            $data = $response->json();
-            $fixedHtml = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
-            if (! $fixedHtml) {
-                return ['success' => false, 'error' => 'No response from Gemini AI'];
-            }
-
-            // Clean up the response
-            $fixedHtml = $this->cleanAIResponse($fixedHtml);
-
-            return ['success' => true, 'html' => $fixedHtml];
-
-        } catch (\Exception $e) {
-            \Log::error('Gemini AI Error', ['message' => $e->getMessage()]);
-
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Clean AI response - remove markdown code blocks
-     */
-    private function cleanAIResponse(string $html): string
-    {
-        // Remove markdown code blocks if present
-        $html = preg_replace('/^```html?\s*/i', '', $html);
-        $html = preg_replace('/\s*```$/i', '', $html);
-        $html = preg_replace('/```/i', '', $html); // Remove any remaining backticks
-
-        return trim($html);
     }
 }
