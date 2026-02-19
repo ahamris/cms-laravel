@@ -5,15 +5,21 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\DailyPageView;
 use App\Models\Guest;
-use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
+/**
+ * Analytics tracking endpoints. track, batchTrack, guestActivity, and performance
+ * are best-effort: on failure they log and return 200 with status 'error' so
+ * client-side code does not break. stats() returns 500 on failure.
+ */
 class AnalyticsTrackingController extends Controller
 {
     /**
-     * Track page view via AJAX
+     * Track page view via AJAX (best-effort; returns 200 with status 'error' on failure).
      */
     public function track(Request $request)
     {
@@ -47,15 +53,13 @@ class AnalyticsTrackingController extends Controller
             return response()->json(['status' => 'tracked'], 200);
 
         } catch (Exception $e) {
-            // Log error but return success to avoid client-side errors
-
-            // Return success to prevent client-side JavaScript errors
+            Log::warning('Analytics track failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json(['status' => 'error'], 200);
         }
     }
 
     /**
-     * Batch track multiple page views (for SPA applications)
+     * Batch track multiple page views (for SPA applications). Best-effort; returns 200 with status 'error' on failure.
      */
     public function batchTrack(Request $request)
     {
@@ -93,13 +97,13 @@ class AnalyticsTrackingController extends Controller
             return response()->json(['status' => 'tracked', 'count' => $tracked], 200);
 
         } catch (Exception $e) {
-
+            Log::warning('Analytics batch-track failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json(['status' => 'error'], 200);
         }
     }
 
     /**
-     * Track guest activity via AJAX (primary method)
+     * Track guest activity via AJAX (primary method). Best-effort; returns 200 with status 'error' on failure.
      */
     public function guestActivity(Request $request)
     {
@@ -120,13 +124,13 @@ class AnalyticsTrackingController extends Controller
             return response()->json(['status' => 'tracked'], 200);
 
         } catch (Exception $e) {
-
+            Log::warning('Analytics guest-activity failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json(['status' => 'error'], 200);
         }
     }
 
     /**
-     * Track performance metrics
+     * Track performance metrics. Best-effort; returns 200 with status 'error' on failure.
      */
     public function performance(Request $request)
     {
@@ -141,12 +145,13 @@ class AnalyticsTrackingController extends Controller
             return response()->json(['status' => 'tracked'], 200);
 
         } catch (Exception $e) {
+            Log::warning('Analytics performance failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json(['status' => 'error'], 200);
         }
     }
 
     /**
-     * Get basic analytics stats (for client-side display)
+     * Get basic analytics stats (for client-side display). Returns 500 with status 'error' on failure.
      */
     public function stats(Request $request)
     {
@@ -165,6 +170,7 @@ class AnalyticsTrackingController extends Controller
             return response()->json($stats, 200);
 
         } catch (Exception $e) {
+            Log::error('Analytics stats failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json(['status' => 'error'], 500);
         }
     }

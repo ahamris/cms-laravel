@@ -84,14 +84,14 @@ class ContentScheduler
     }
 
     /**
-     * Get optimal time from historical performance data
+     * Get optimal time from historical performance data.
+     *
+     * Default only: no Search Console or historical traffic integration. Always returns null,
+     * so callers use the default day/time (e.g. Tue–Thu 09:00 for blog). Do not use for
+     * real scheduling decisions until a data source (e.g. Google Search Console) is integrated.
      */
     protected function getOptimalTimeFromHistory(string $type, Carbon $defaultDate): ?Carbon
     {
-        // This would ideally use Google Search Console data or historical CMS traffic
-        // For now, return null to use defaults
-        // TODO: Implement when Search Console integration is available
-
         return null;
     }
 

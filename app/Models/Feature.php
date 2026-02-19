@@ -16,6 +16,7 @@ class Feature extends BaseModel
 
     protected $fillable = [
         'title',
+        'anchor',
         'description',
         'icon',
         'is_active',

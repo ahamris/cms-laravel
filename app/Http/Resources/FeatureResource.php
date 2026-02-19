@@ -15,7 +15,7 @@ class FeatureResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $anchor = Str::slug($this->title);
+        $anchor = $this->anchor ?? Str::slug($this->title);
 
         return [
             'id' => $this->id,

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\FeatureListResource;
 use App\Http\Resources\FeatureResource;
 use App\Models\Feature;
-use Illuminate\Support\Str;
 
 class FeatureController extends Controller
 {
@@ -21,20 +20,14 @@ class FeatureController extends Controller
     }
 
     /**
-     * Single feature by anchor (slug of title).
+     * Single feature by anchor (stored slug).
      */
     public function show(string $anchor)
     {
         $feature = Feature::with('modules')
             ->active()
-            ->get()
-            ->first(fn ($f) => Str::slug($f->title) === $anchor);
-
-        if (! $feature) {
-            abort(404);
-        }
-
-        $feature->anchor = $anchor;
+            ->where('anchor', $anchor)
+            ->firstOrFail();
 
         return new FeatureResource($feature);
     }

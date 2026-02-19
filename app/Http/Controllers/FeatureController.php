@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Traits\SeoSetTrait;
 use App\Models\Feature;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class FeatureController extends Controller
@@ -25,35 +24,21 @@ class FeatureController extends Controller
         $features = Feature::with('modules')
             ->active()
             ->ordered()
-            ->get()
-            ->map(function ($feature) {
-                // Add anchor field for URL generation
-                $feature->anchor = \Illuminate\Support\Str::slug($feature->title);
-                return $feature;
-            });
+            ->get();
 
         return view('front.features.index', compact('features'));
     }
 
     /**
-     * Display the specified feature
+     * Display the specified feature (resolved by anchor via route model binding).
      */
-    public function show(Request $request, $anchor): View
+    public function show(Feature $feature): View
     {
-        // Find feature by generated anchor (slug of title)
-        $feature = Feature::with('modules')
-            ->active()
-            ->get()
-            ->first(function ($feature) use ($anchor) {
-                return \Illuminate\Support\Str::slug($feature->title) === $anchor;
-            });
-
-        if (!$feature) {
+        if (! $feature->is_active) {
             abort(404);
         }
 
-        // Add anchor field
-        $feature->anchor = $anchor;
+        $feature->load('modules');
 
         // Set SEO tags for feature
         $this->setSeoTags([

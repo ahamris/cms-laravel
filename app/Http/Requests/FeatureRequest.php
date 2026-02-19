@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class FeatureRequest extends FormRequest
 {
@@ -21,6 +22,12 @@ class FeatureRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
+            'anchor' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('features', 'anchor')->ignore($this->route('feature')),
+            ],
             'description' => 'nullable|string',
             'icon' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
@@ -53,6 +60,7 @@ class FeatureRequest extends FormRequest
     {
         return [
             'title' => 'Title',
+            'anchor' => 'Anchor (URL slug)',
             'description' => 'Description',
             'icon' => 'Icon',
             'sort_order' => 'Sort order',

@@ -8,6 +8,7 @@ use App\Models\Feature;
 use App\Models\Module;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class FeatureController extends AdminBaseController
@@ -40,6 +41,9 @@ class FeatureController extends AdminBaseController
 
         // Set is_active (toggle sends '1' when checked, '0' when unchecked)
         $validated['is_active'] = $request->input('is_active', '0') === '1';
+
+        // Ensure anchor is set (for API URL); must be unique
+        $validated['anchor'] = $this->ensureUniqueAnchor($validated['anchor'] ?? Str::slug($validated['title']), null);
 
         $feature = Feature::create($validated);
 
@@ -88,6 +92,9 @@ class FeatureController extends AdminBaseController
         // Set is_active (toggle sends '1' when checked, '0' when unchecked)
         $validated['is_active'] = $request->input('is_active', '0') === '1';
 
+        // Ensure anchor is set and unique (exclude current feature)
+        $validated['anchor'] = $this->ensureUniqueAnchor($validated['anchor'] ?? Str::slug($validated['title']), $feature->id);
+
         $feature->update($validated);
 
         // Sync modules
@@ -108,6 +115,23 @@ class FeatureController extends AdminBaseController
 
         return redirect()->route('admin.content.feature.index')
             ->with('success', 'Feature updated successfully.');
+    }
+
+    /**
+     * Ensure anchor is unique; append suffix if needed.
+     */
+    private function ensureUniqueAnchor(string $anchor, ?int $excludeId): string
+    {
+        $base = $anchor;
+        $suffix = 0;
+        do {
+            $candidate = $suffix === 0 ? $base : $base . '-' . $suffix;
+            $exists = Feature::where('anchor', $candidate)->when($excludeId !== null, fn ($q) => $q->where('id', '!=', $excludeId))->exists();
+            if (! $exists) {
+                return $candidate;
+            }
+            $suffix++;
+        } while (true);
     }
 
     /**

@@ -1,10 +1,10 @@
 # Frontend API documentation
 
-This document describes the **JSON API** for the headless CMS so a React SPA (or any frontend) can fetch content. **Content endpoints (pages, blog, legal, static) are protected with Laravel Sanctum**; the SPA must log in and send a Bearer token with each request.
+This document describes the **JSON API** for the headless CMS so a React SPA (or any frontend) can fetch content. **Content endpoints (pages, blog, legal, static, docs, live-sessions, modules, features, solutions, sitemap, vacancies, settings) are public** — no authentication is required. Access is restricted by **allowed origins** (Origin/Referer check). Configure `FRONTEND_ALLOWED_ORIGINS` in `.env`; if empty, all origins are allowed (suitable for development only).
 
 **Base URL:** Use your app URL, e.g. `https://your-cms.test` or `https://cms.example.com`.  
-Content and auth endpoints live under `/api/`.  
-Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)) and remain **public** (no auth).
+Content endpoints live under `/api/`.  
+Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)) and are also public (rate-limited).
 
 **Response format:** JSON.  
 **Character encoding:** UTF-8.
@@ -13,109 +13,16 @@ Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)) a
 
 ## Table of contents
 
-1. [Authentication (Sanctum)](#authentication-sanctum)
-2. [Pages](#pages)
-3. [Blog](#blog)
-4. [Legal pages](#legal-pages)
-5. [Static pages](#static-pages)
-6. [Changelog](#changelog)
-7. [Search](#search)
-8. [Contact](#contact)
-9. [Analytics](#analytics)
-10. [Errors](#errors)
-
----
-
-## Authentication (Sanctum)
-
-All content endpoints (pages, blog, legal, static) require a valid **Sanctum token**. Send it in the request header:
-
-```http
-Authorization: Bearer {your-token}
-```
-
-### Login
-
-**POST** `/api/login`
-
-Authenticate with email and password. Returns a Bearer token for use with content endpoints.
-
-**Body (JSON):**
-
-| Field        | Type    | Required | Description |
-|-------------|---------|----------|-------------|
-| `email`     | string  | yes      | User email. |
-| `password`  | string  | yes      | User password. |
-| `token`     | boolean | no       | If `true` (default), response includes a token. |
-| `token_name`| string  | no       | Name for the token (default: `spa-token`). |
-
-**Example request:**
-
-```http
-POST /api/login
-Content-Type: application/json
-
-{"email": "user@example.com", "password": "secret", "token": true}
-```
-
-**Example response:** `200 OK`
-
-```json
-{
-  "message": "Authenticated.",
-  "user": {
-    "id": 1,
-    "name": "Jan Jansen",
-    "email": "user@example.com"
-  },
-  "token": "1|abc123...",
-  "token_type": "Bearer"
-}
-```
-
-Store the `token` in your SPA (e.g. memory or secure storage) and send it as `Authorization: Bearer {token}` on every request to `/api/pages`, `/api/blog`, etc.
-
-**Validation error:** `422 Unprocessable Entity` with `message` and `errors` (e.g. invalid credentials).
-
----
-
-### Logout
-
-**POST** `/api/logout`
-
-Revoke the current access token. Requires authentication.
-
-**Headers:** `Authorization: Bearer {token}`
-
-**Example response:** `200 OK`
-
-```json
-{"message": "Logged out."}
-```
-
----
-
-### Current user
-
-**GET** `/api/user`
-
-Return the authenticated user. Requires authentication.
-
-**Headers:** `Authorization: Bearer {token}`
-
-**Example response:** `200 OK`
-
-```json
-{
-  "data": {
-    "id": 1,
-    "name": "Jan Jansen",
-    "email": "user@example.com"
-  }
-}
-```
-
-**Error:** `401 Unauthorized` if the token is missing or invalid.
+1. [Pages](#pages)
+2. [Blog](#blog)
+3. [Legal pages](#legal-pages)
+4. [Static pages](#static-pages)
+5. [Changelog](#changelog)
+6. [Search](#search)
+7. [Contact](#contact)
+8. [Analytics](#analytics)
+9. [Errors](#errors)
+10. [CORS and security](#cors-and-security)
 
 ---
 
@@ -126,7 +33,7 @@ CMS-managed pages (e.g. “Over ons”, “Prijzen”, custom landing pages).
 ### List pages
 
 **GET** `/api/pages`  
-**Auth:** Bearer token required.
+**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
 
 Returns a paginated list of **active** pages.
 
@@ -181,7 +88,7 @@ List items do **not** include `long_body` (only the single-page response does).
 ### Get page by slug
 
 **GET** `/api/pages/{slug}`  
-**Auth:** Bearer token required.
+**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
 
 Returns a single **active** page by slug. Includes full `long_body` (HTML).
 
@@ -222,7 +129,7 @@ GET /api/pages/over-ons
 ### Latest blog posts (preview)
 
 **GET** `/api/blog-posts`  
-**Auth:** Bearer token required.
+**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
 
 Returns the **latest 3** active blog posts. Useful for “latest articles” blocks on the homepage or in a page builder.
 
@@ -257,7 +164,7 @@ GET /api/blog-posts
 ### Get blog post by slug
 
 **GET** `/api/blog/{slug}`  
-**Auth:** Bearer token required.
+**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
 
 Returns a single **active** blog post by slug, including full body and author/category.
 
@@ -311,7 +218,7 @@ Legal/content pages (e.g. privacy, terms) with optional versioning.
 ### Get legal page by slug
 
 **GET** `/api/legal/{slug}`  
-**Auth:** Bearer token required.
+**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
 
 Returns a single **active** legal page by slug.
 
@@ -354,7 +261,7 @@ Static/info pages managed in the CMS.
 ### Get static page by slug
 
 **GET** `/api/static/{slug}`  
-**Auth:** Bearer token required.
+**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
 
 Returns a single **active** static page by slug.
 
@@ -632,8 +539,8 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 
 ## Errors
 
-- **401 Unauthorized**  
-  Returned when a content endpoint is called without `Authorization: Bearer {token}` or with an invalid/expired token. Send `Accept: application/json` to receive a JSON body.
+- **403 Forbidden**  
+  Returned when the request Origin/Referer is not in the allowed list (see [CORS and security](#cors-and-security)). Body: `{"message": "Origin not allowed."}`.
 
 - **404 Not Found**  
   Returned when a single resource is requested by slug and no **active** item exists (e.g. `/api/pages/unknown`, `/api/blog/unknown`). Laravel may return HTML or JSON depending on `Accept` header; for SPA, send `Accept: application/json` to get JSON.
@@ -651,9 +558,9 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 
 ## CORS and security
 
-- Configure **CORS** in `config/cors.php` so your SPA origin is allowed (e.g. `https://your-react-app.com`). If using credentials (Bearer tokens), enable `supports_credentials`.
-- **Content endpoints** (pages, blog, legal, static, docs, live-sessions, modules, features, solutions, sitemap, vacancies, settings) require **Sanctum**: send `Authorization: Bearer {token}`. Obtain the token via `POST /api/login`.
-- Search suggestions (`/api/search/suggestions`), contact forms, and analytics are **public** (no auth). Use rate limiting and HTTPS in production.
+- **Allowed origins:** Requests to content and analytics endpoints are checked against `FRONTEND_ALLOWED_ORIGINS` (comma-separated list in `.env`). If empty or not set, all origins are allowed. In production, set this to your SPA domain(s), e.g. `https://your-react-app.com`.
+- **Content endpoints** (pages, blog, legal, static, docs, live-sessions, modules, features, solutions, sitemap, vacancies, settings) are **public** — no login or Bearer token. Security is via origin restriction only.
+- Search suggestions (`/api/search/suggestions`), contact forms, and analytics are also public and rate-limited. Use HTTPS in production.
 
 ---
 
@@ -661,38 +568,35 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/api/login` | no | Log in, get Bearer token |
-| POST | `/api/logout` | Bearer | Revoke current token |
-| GET | `/api/user` | Bearer | Current user |
-| GET | `/api/pages` | Bearer | List active pages (paginated) |
-| GET | `/api/pages/{slug}` | Bearer | Single page by slug |
-| GET | `/api/blog-posts` | Bearer | Latest 3 blog posts |
-| GET | `/api/blog/{slug}` | Bearer | Single blog post by slug |
-| GET | `/api/legal/{slug}` | Bearer | Single legal page by slug |
-| GET | `/api/static/{slug}` | Bearer | Single static page by slug |
-| GET | `/api/settings` | Bearer | Site + theme settings (homepage) |
-| GET | `/api/docs` | Bearer | Doc versions with sections/pages tree |
-| GET | `/api/docs/search?q=` | Bearer | Search documentation |
-| GET | `/api/docs/{version}` | Bearer | Single doc version with sections/pages |
-| GET | `/api/docs/{version}/{section}/{page}` | Bearer | Single doc page content |
-| GET | `/api/live-sessions` | Bearer | Upcoming + past live sessions |
-| GET | `/api/live-sessions/{slug}` | Bearer | Single live session |
-| GET | `/api/modules` | Bearer | List modules (with features) |
-| GET | `/api/modules/{slug}` | Bearer | Single module |
-| GET | `/api/features` | Bearer | List features |
-| GET | `/api/features/{anchor}` | Bearer | Single feature by anchor |
-| GET | `/api/solutions` | Bearer | List solutions |
-| GET | `/api/solutions/{anchor}` | Bearer | Single solution by anchor |
-| GET | `/api/sitemap` | Bearer | Sitemap as JSON (urls for SPA) |
-| GET | `/api/vacancies` | Bearer | List vacancies (paginated, filterable) |
-| GET | `/api/vacancies/{slug}` | Bearer | Single vacancy |
+| GET | `/api/pages` | — | List active pages (paginated) |
+| GET | `/api/pages/{slug}` | — | Single page by slug |
+| GET | `/api/blog-posts` | — | Latest 3 blog posts |
+| GET | `/api/blog/{slug}` | — | Single blog post by slug |
+| GET | `/api/legal/{slug}` | — | Single legal page by slug |
+| GET | `/api/static/{slug}` | — | Single static page by slug |
+| GET | `/api/settings` | — | Site + theme settings (homepage) |
+| GET | `/api/docs` | — | Doc versions with sections/pages tree |
+| GET | `/api/docs/search?q=` | — | Search documentation |
+| GET | `/api/docs/{version}` | — | Single doc version with sections/pages |
+| GET | `/api/docs/{version}/{section}/{page}` | — | Single doc page content |
+| GET | `/api/live-sessions` | — | Upcoming + past live sessions |
+| GET | `/api/live-sessions/{slug}` | — | Single live session |
+| GET | `/api/modules` | — | List modules (with features) |
+| GET | `/api/modules/{slug}` | — | Single module |
+| GET | `/api/features` | — | List features |
+| GET | `/api/features/{anchor}` | — | Single feature by anchor |
+| GET | `/api/solutions` | — | List solutions |
+| GET | `/api/solutions/{anchor}` | — | Single solution by anchor |
+| GET | `/api/sitemap` | — | Sitemap as JSON (urls for SPA) |
+| GET | `/api/vacancies` | — | List vacancies (paginated, filterable) |
+| GET | `/api/vacancies/{slug}` | — | Single vacancy |
 | GET | `/changelog` (AJAX) | — | Changelog index (general) |
 | GET | `/changelog/api` (AJAX) | — | Changelog index (API status) |
 | GET | `/api/search/suggestions?q=` | — | Search suggestions |
-| POST | `/contact/demo` | Submit demo request |
-| POST | `/contact/verstuur` | Submit contact form |
-| POST | `/api/analytics/track` | Track page view |
-| POST | `/api/analytics/batch-track` | Batch track (SPA) |
-| POST | `/api/analytics/guest-activity` | Guest activity |
-| POST | `/api/analytics/performance` | Performance metrics |
-| GET | `/api/analytics/stats` | Analytics stats |
+| POST | `/contact/demo` | — | Submit demo request |
+| POST | `/contact/verstuur` | — | Submit contact form |
+| POST | `/api/analytics/track` | — | Track page view |
+| POST | `/api/analytics/batch-track` | — | Batch track (SPA) |
+| POST | `/api/analytics/guest-activity` | — | Guest activity |
+| POST | `/api/analytics/performance` | — | Performance metrics |
+| GET | `/api/analytics/stats` | — | Analytics stats |

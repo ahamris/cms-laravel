@@ -215,8 +215,7 @@
                         <div>
                             <h4 class="text-sm font-semibold text-yellow-900 mb-1">Newsletter Subscription</h4>
                             <p class="text-sm text-yellow-800">
-                                Newsletter subscription functionality is not yet implemented. This is marked as TODO.
-                                The form in the footer is currently non-functional and needs to be connected to a newsletter service.
+                                Newsletter subscription is planned for a future release. The footer signup form is currently disabled until a newsletter service is integrated.
                             </p>
                         </div>
                     </div>

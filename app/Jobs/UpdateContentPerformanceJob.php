@@ -9,6 +9,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Updates content performance metrics (blog, social posts).
+ *
+ * Placeholder only: metrics are generated with rand() for demo/display. Do not use
+ * for real analytics or business decisions. Integrate with Google Search Console
+ * (or similar) for real data.
+ */
 class UpdateContentPerformanceJob implements ShouldQueue
 {
     use Queueable;
@@ -55,13 +62,10 @@ class UpdateContentPerformanceJob implements ShouldQueue
     }
 
     /**
-     * Update blog performance metrics
+     * Update blog performance metrics (placeholder only; uses rand() for demo data).
      */
     protected function updateBlogPerformance(Blog $blog): void
     {
-        // TODO: Integrate with Google Search Console API
-        // For now, create placeholder data
-        
         $existing = ContentPerformance::forContent(Blog::class, $blog->id)
             ->whereDate('measured_at', today())
             ->first();
@@ -70,7 +74,7 @@ class UpdateContentPerformanceJob implements ShouldQueue
             return; // Already updated today
         }
 
-        // Placeholder metrics (would be replaced with real API data)
+        // Placeholder metrics only — not for real decisions; integrate Search Console for real data
         ContentPerformance::create([
             'contentable_type' => Blog::class,
             'contentable_id' => $blog->id,
@@ -97,7 +101,7 @@ class UpdateContentPerformanceJob implements ShouldQueue
             return;
         }
 
-        // Placeholder metrics
+        // Placeholder metrics only — not for real decisions
         ContentPerformance::create([
             'contentable_type' => SocialMediaPost::class,
             'contentable_id' => $post->id,
