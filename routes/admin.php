@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Administrator\UserCrudController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\CallActionController;
 use App\Http\Controllers\Admin\ContactFormController;
+use App\Http\Controllers\Admin\ContactPageSettingsController;
 use App\Http\Controllers\Admin\Content\AboutController;
 use App\Http\Controllers\Admin\Content\AcademyCategoryController;
 use App\Http\Controllers\Admin\Content\AcademyChapterController;
@@ -50,7 +51,6 @@ use App\Http\Controllers\Admin\Content\StickyMenuItemController;
 use App\Http\Controllers\Admin\Content\TailwindPlusController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FooterLinkController;
-use App\Http\Controllers\Admin\ContactPageSettingsController;
 use App\Http\Controllers\Admin\GeneralSettingsController;
 use App\Http\Controllers\Admin\HeroBackgroundSettingsController;
 use App\Http\Controllers\Admin\LoginSettingController;
@@ -85,7 +85,6 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\TwoFactorController;
-use App\Livewire\Admin\MenuManager;
 use App\Livewire\Admin\ThemeManager;
 use App\Models\SocialMediaPlatform;
 use Illuminate\Support\Facades\Route;
@@ -434,7 +433,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::get('page-builder', [PageBuilderController::class, 'index'])->name('page-builder.index');
             Route::get('page-builder/{pageType}/manage', [PageBuilderController::class, 'manage'])->name('page-builder.manage');
 
-
             // Homepage Builder (Keep for backward compatibility)
             Route::resource('homepage-builder', PageBuilderController::class)->parameters(['homepage-builder' => 'widget']);
             Route::group(['prefix' => 'homepage-builder', 'as' => 'homepage-builder.'], function () {
@@ -533,9 +531,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
                 Route::put('/', [AISettingsController::class, 'update'])->name('update');
                 Route::post('/test-connection', [AISettingsController::class, 'testConnection'])->name('test-connection');
             });
-
-            // Menu Management
-            Route::get('/menu', MenuManager::class)->name('adminmenu');
 
             // Theme Management
             Route::get('/admintheme', ThemeManager::class)->name('admintheme');

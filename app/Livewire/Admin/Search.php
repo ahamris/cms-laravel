@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Admin\AdminMenu;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -58,20 +57,11 @@ class Search extends Component
     protected function searchMenus(): Collection
     {
         try {
-            $menu = AdminMenu::query()
-                ->active()
-                ->where('slug', 'admin-main')
-                ->with(['items' => fn ($query) => $query->ordered()->with('childrenRecursive')])
-                ->first();
-
-            if (! $menu) {
-                return collect();
-            }
-
+            $menuItems = StaticSidebarItem::fromArray(Sidebar::staticMenuDefinition());
             $items = collect();
 
-            $searchInItems = function ($menuItems, $parentLabel = '') use (&$searchInItems, &$items) {
-                foreach ($menuItems as $item) {
+            $searchInItems = function (array $nodes, string $parentLabel = '') use (&$searchInItems, &$items): void {
+                foreach ($nodes as $item) {
                     if (! $item->is_active) {
                         continue;
                     }
@@ -79,26 +69,26 @@ class Search extends Component
                     $label = $item->label;
                     $fullLabel = $parentLabel ? "{$parentLabel} → {$label}" : $label;
 
-                    if (stripos($label, $this->query) !== false ||
-                        stripos($fullLabel, $this->query) !== false ||
-                        ($item->route_name && stripos($item->route_name, $this->query) !== false)) {
+                    if (stripos($label, $this->query) !== false
+                        || stripos($fullLabel, $this->query) !== false
+                        || ($item->route_name && stripos($item->route_name, $this->query) !== false)) {
+                        $url = $item->route_name ? route($item->route_name, $item->resolvedRouteParameters()) : $item->url;
                         $items->push([
                             'title' => $fullLabel,
-                            'url' => $item->url,
+                            'url' => $url,
                             'route' => $item->route_name,
                             'icon' => $item->icon,
                         ]);
                     }
 
-                    if ($item->relationLoaded('childrenRecursive') && $item->childrenRecursive->isNotEmpty()) {
-                        $searchInItems($item->childrenRecursive, $fullLabel);
+                    $children = $item->children; // Collection from StaticSidebarItem::__get
+                    if ($children->isNotEmpty()) {
+                        $searchInItems($children->all(), $fullLabel);
                     }
                 }
             };
 
-            if ($menu->relationLoaded('items')) {
-                $searchInItems($menu->items);
-            }
+            $searchInItems($menuItems, '');
 
             return $items->take(5);
         } catch (\Exception $e) {

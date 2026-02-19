@@ -28,7 +28,6 @@ class DatabaseSeeder extends Seeder
             MegaMenuSeeder::class,
             FormBuilderSeeder::class,
             PageSeeder::class,
-            AdminMenuSeeder::class,
             TailwindPlusSeeder::class,
         ]);
     }
