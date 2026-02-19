@@ -7,14 +7,13 @@ use App\Models\Traits\MegaMenuModuleTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @mixin IdeHelperPage
  */
 class Page extends BaseModel
 {
-    use HasFactory, MegaMenuModuleTrait, Sluggable, ClearsSitemapCache;
+    use ClearsSitemapCache, HasFactory, MegaMenuModuleTrait, Sluggable;
 
     protected $fillable = [
         'title',
@@ -105,28 +104,6 @@ class Page extends BaseModel
     }
 
     /**
-     * Get TailwindPlus components for this page
-     */
-    public function tailwindPlusComponents(): BelongsToMany
-    {
-        return $this->belongsToMany(TailwindPlus::class, 'page_tailwind_plus')
-            ->withPivot('sort_order', 'is_active', 'custom_config')
-            ->withTimestamps()
-            ->orderByPivot('sort_order');
-    }
-
-    /**
-     * Get ordered active components for this page
-     */
-    public function getOrderedComponents()
-    {
-        return $this->tailwindPlusComponents()
-            ->wherePivot('is_active', true)
-            ->orderByPivot('sort_order')
-            ->get();
-    }
-
-    /**
      * Scope for showcase pages
      */
     public function scopeShowcase($query)
@@ -157,7 +134,7 @@ class Page extends BaseModel
                     return $matches[0];
                 }
 
-                return "<script{$attrs}>(function(){" . $code . "})();</script>";
+                return "<script{$attrs}>(function(){".$code.'})();</script>';
             },
             $value
         );
@@ -221,7 +198,7 @@ class Page extends BaseModel
     public static function setAsHomepage(self $page): bool
     {
         // Ensure page is active
-        if (!$page->is_active) {
+        if (! $page->is_active) {
             return false;
         }
 
@@ -238,6 +215,7 @@ class Page extends BaseModel
     {
         if ($page->isHomepage()) {
             $page->update(['home_page' => false]);
+
             return true;
         }
 

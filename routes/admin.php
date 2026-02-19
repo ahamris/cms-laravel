@@ -29,8 +29,6 @@ use App\Http\Controllers\Admin\Content\EventController;
 use App\Http\Controllers\Admin\Content\ExternalCodeController;
 use App\Http\Controllers\Admin\Content\FeatureBlockController;
 use App\Http\Controllers\Admin\Content\FeatureController;
-use App\Http\Controllers\Admin\Content\FormBuilderController;
-use App\Http\Controllers\Admin\Content\HeroSectionController;
 use App\Http\Controllers\Admin\Content\HeroWidgetController;
 use App\Http\Controllers\Admin\Content\HomepageFaqController;
 use App\Http\Controllers\Admin\Content\LegalController;
@@ -38,7 +36,6 @@ use App\Http\Controllers\Admin\Content\LiveSessionController;
 use App\Http\Controllers\Admin\Content\ModuleController;
 use App\Http\Controllers\Admin\Content\OrganizationNameController;
 use App\Http\Controllers\Admin\Content\PageBlockPresetController;
-use App\Http\Controllers\Admin\Content\PageBuilderController;
 use App\Http\Controllers\Admin\Content\PageController;
 use App\Http\Controllers\Admin\Content\PresenterController;
 use App\Http\Controllers\Admin\Content\PricingBoosterController;
@@ -48,7 +45,6 @@ use App\Http\Controllers\Admin\Content\SessionRegistrationController;
 use App\Http\Controllers\Admin\Content\SolutionController;
 use App\Http\Controllers\Admin\Content\StaticPageController;
 use App\Http\Controllers\Admin\Content\StickyMenuItemController;
-use App\Http\Controllers\Admin\Content\TailwindPlusController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FooterLinkController;
 use App\Http\Controllers\Admin\GeneralSettingsController;
@@ -152,12 +148,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
         // Content Management
         Route::prefix('content')->name('content.')->group(function () {
-            // Hero Sections
-            Route::resource('hero-section', HeroSectionController::class);
-            Route::post('hero-section/{hero_section}/toggle-active', [HeroSectionController::class, 'toggleActive'])->name('hero-section.toggle-active');
-            Route::post('hero-sections/update-order', [HeroSectionController::class, 'updateOrder'])->name('hero-sections.update-order');
-            Route::post('hero-sections/create-default', [HeroSectionController::class, 'createDefault'])->name('hero-sections.create-default');
-
             // Hero Media Widget
             Route::get('hero-widget', [HeroWidgetController::class, 'index'])->name('hero-widget.index');
             Route::get('hero-widget/create', [HeroWidgetController::class, 'create'])->name('hero-widget.create');
@@ -171,12 +161,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
             Route::post('page/{page}/set-homepage', [PageController::class, 'setAsHomepage'])->name('page.set-homepage');
             Route::post('page/{page}/remove-homepage', [PageController::class, 'removeHomepage'])->name('page.remove-homepage');
-            Route::get('page/{page}/components', [PageController::class, 'manageComponents'])->name('page.components');
-            Route::post('page/{page}/components', [PageController::class, 'addComponent'])->name('page.components.add');
-            Route::delete('page/{page}/components/{component}', [PageController::class, 'removeComponent'])->name('page.components.remove');
-            Route::post('page/{page}/components/update-order', [PageController::class, 'updateComponentOrder'])->name('page.components.update-order');
-            Route::put('page/{page}/components/{component}', [PageController::class, 'updateComponentConfig'])->name('page.components.update-config');
-            Route::get('page/api/components/get', [PageController::class, 'getComponent'])->name('page.get-component');
+            Route::get('page/api/components/get', fn () => response()->json(['html' => null, 'error' => 'Component not found'], 404))->name('page.get-component');
             Route::post('page/api/image/upload', [PageController::class, 'uploadImageForEditing'])->name('page.upload-image');
             Route::get('page/api/presets', [PageController::class, 'getPresets'])->name('page.get-presets');
             Route::post('page/api/save-preset', [PageController::class, 'savePreset'])->name('page.save-preset');
@@ -273,12 +258,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::get('api-changelog', [ApiChangelogController::class, 'index'])->name('api-changelog.index');
             Route::get('api-changelog/{changelog}', [ApiChangelogController::class, 'show'])->name('api-changelog.show');
 
-            // TailwindPlus Components
-            Route::post('tailwind-plus/import-from-file', [TailwindPlusController::class, 'importFromFile'])->name('tailwind-plus.import-from-file');
-            Route::resource('tailwind-plus', TailwindPlusController::class)->parameters(['tailwind-plus' => 'tailwindPlus']);
-            Route::get('tailwind-plus/{tailwindPlus}/preview', [TailwindPlusController::class, 'preview'])->name('tailwind-plus.preview');
-            Route::post('tailwind-plus/{tailwindPlus}/toggle-active', [TailwindPlusController::class, 'toggleActive'])->name('tailwind-plus.toggle-active');
-
             // Homepage FAQs
             Route::resource('faq-module', HomepageFaqController::class)->parameters(['faq-module' => 'faq']);
             Route::post('faq-modules/update-order', [HomepageFaqController::class, 'updateOrder'])->name('faq-modules.update-order');
@@ -286,14 +265,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // External Codes
             Route::resource('external-code', ExternalCodeController::class);
             Route::post('external-codes/update-order', [ExternalCodeController::class, 'updateOrder'])->name('external-codes.update-order');
-
-            // Form Builder
-            Route::resource('form-builder', FormBuilderController::class);
-            Route::post('form-builder/{formBuilder}/toggle-active', [FormBuilderController::class, 'toggleActive'])->name('form-builder.toggle-active');
-            Route::post('form-builders/update-order', [FormBuilderController::class, 'updateOrder'])->name('form-builders.update-order');
-            Route::get('form-builder/{formBuilder}/submissions', [FormBuilderController::class, 'submissions'])->name('form-builder.submissions');
-            Route::get('form-builder/{formBuilder}/submissions/{submission}', [FormBuilderController::class, 'viewSubmission'])->name('form-builder.view-submission');
-            Route::delete('form-builder/{formBuilder}/submissions/{submission}', [FormBuilderController::class, 'deleteSubmission'])->name('form-builder.delete-submission');
 
             // Carousel Widgets
             Route::resource('carousel-widgets', CarouselWidgetController::class);
@@ -429,18 +400,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::resource('widgets/module-list-widgets', ModuleListWidgetController::class);
             Route::post('widgets/module-list-widgets/{moduleListWidget}/toggle-active', [ModuleListWidgetController::class, 'toggleActive'])->name('widgets.module-list-widgets.toggle-active');
 
-            // Page Builder
-            Route::get('page-builder', [PageBuilderController::class, 'index'])->name('page-builder.index');
-            Route::get('page-builder/{pageType}/manage', [PageBuilderController::class, 'manage'])->name('page-builder.manage');
-
-            // Homepage Builder (Keep for backward compatibility)
-            Route::resource('homepage-builder', PageBuilderController::class)->parameters(['homepage-builder' => 'widget']);
-            Route::group(['prefix' => 'homepage-builder', 'as' => 'homepage-builder.'], function () {
-                Route::get('template-options/{template}', [PageBuilderController::class, 'getTemplateOptions'])->name('template-options');
-                Route::post('{widget}/toggle-active', [PageBuilderController::class, 'toggleActive'])->name('toggle-active');
-                Route::post('{widget}/duplicate', [PageBuilderController::class, 'duplicate'])->name('duplicate');
-                Route::post('update-order', [PageBuilderController::class, 'updateOrder'])->name('update-order');
-            });
         });
 
         // Administrator Management

@@ -1,84 +1,25 @@
 @props(['page' => null])
 
 @php
-    $headerComponentId = \App\Models\Setting::getValue('site_header_component_id');
     $headerSticky = \App\Models\Setting::getValue('site_header_sticky', false);
     $headerLayoutType = \App\Models\Setting::getValue('site_header_layout_type');
 
-    // Get page from component prop, route, or view variable
-    $pageObj = $page; // Use prop first
-    if (!$pageObj) {
-        if (request()->route('page')) {
-            $pageObj = request()->route('page');
-        } elseif (isset($page) && is_object($page)) {
-            $pageObj = $page;
-        } elseif (request()->routeIs('page.show')) {
-            $routeParams = request()->route()->parameters();
-            if (isset($routeParams['page'])) {
-                $pageObj = $routeParams['page'];
-            }
-        }
+    $pageObj = $page;
+    if (!$pageObj && request()->route('page')) {
+        $pageObj = request()->route('page');
+    } elseif (!$pageObj && isset($page) && is_object($page)) {
+        $pageObj = $page;
+    } elseif (!$pageObj && request()->routeIs('page.show')) {
+        $routeParams = request()->route()->parameters();
+        $pageObj = $routeParams['page'] ?? null;
     }
 
-    // Check if page has custom header (design_type = 'custom' and header_block is set)
-    // Only for static pages, not showcase pages
-    $usePageCustomHeader = false;
-    $pageHeaderComponent = null;
-    if ($pageObj) {
-        // Check if page is showcase - use method if available, otherwise check page_type property
-        $isShowcase = false;
-        if (method_exists($pageObj, 'isShowcase')) {
-            $isShowcase = $pageObj->isShowcase();
-        } elseif (isset($pageObj->page_type)) {
-            $isShowcase = $pageObj->page_type === 'showcase';
-        }
-
-        if (!$isShowcase && isset($pageObj->design_type) && $pageObj->design_type === 'custom' && !empty($pageObj->header_block)) {
-            $componentService = app(\App\Services\TailwindPlusComponentService::class);
-            $pageHeaderComponent = $componentService->getComponentByPath($pageObj->header_block);
-            if ($pageHeaderComponent) {
-                $usePageCustomHeader = true;
-                $headerComponentId = $pageHeaderComponent->id;
-            }
-        }
-    }
-
-    // If header layout type is empty/null, use page's layout_type (for both showcase and static pages)
     if (($headerLayoutType === null || $headerLayoutType === '') && $pageObj && !empty($pageObj->layout_type)) {
         $headerLayoutType = $pageObj->layout_type;
     }
 
-    $useCustomHeader = !empty($headerComponentId);
+    $useCustomHeader = false;
     $headerBladeFile = null;
-
-    if ($useCustomHeader) {
-        // Use page custom header component if available, otherwise use site setting
-        $headerComponent = $pageHeaderComponent ?? \App\Models\TailwindPlus::find($headerComponentId);
-        if ($headerComponent) {
-            // Component name to blade file mapping
-            $componentNameMapping = [
-                'Constrained' => 'constrained',
-                'Full width' => 'full_width',
-                'With call-to-action' => 'with_call_to_action',
-                'With centered logo' => 'with_centered_logo',
-                'With full width flyout menu' => 'with_full_width_flyout_menu',
-                'With icons in mobile menu' => 'with_icons_in_mobile_menu',
-                'With left-aligned nav' => 'with_left_aligned_nav',
-                'With multiple flyout menus' => 'with_multiple_flyout_menus',
-                'With right-aligned nav' => 'with_right_aligned_nav',
-                'With stacked flyout menu' => 'with_stacked_flyout_menu',
-            ];
-
-            $componentName = $headerComponent->component_name;
-            if (isset($componentNameMapping[$componentName])) {
-                $headerBladeFile = 'components.front.headers.' . $componentNameMapping[$componentName];
-            }
-        }
-
-        if (!$headerBladeFile) {
-            $useCustomHeader = false;
-        }
-    }
 @endphp
 
 @if($useCustomHeader && $headerBladeFile)

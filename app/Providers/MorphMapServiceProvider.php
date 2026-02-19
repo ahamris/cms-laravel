@@ -18,7 +18,6 @@ use App\Models\Faq;
 use App\Models\Feature;
 use App\Models\FooterLink;
 use App\Models\HelpArticle;
-use App\Models\HeroSection;
 use App\Models\Legal;
 use App\Models\MailSetting;
 use App\Models\MarketingEvent;
@@ -76,7 +75,6 @@ class MorphMapServiceProvider extends ServiceProvider
             'feature' => Feature::class,
             'footer_link' => FooterLink::class,
             'help_article' => HelpArticle::class,
-            'hero_section' => HeroSection::class,
             'mail_setting' => MailSetting::class,
             'marketing_event' => MarketingEvent::class,
             'marketing_persona' => MarketingPersona::class,
@@ -98,7 +96,7 @@ class MorphMapServiceProvider extends ServiceProvider
             'translation' => Translation::class,
             'user' => User::class,
             'legal' => Legal::class,
-            'static_page' => StaticPage::class
+            'static_page' => StaticPage::class,
         ]);
     }
 }

@@ -23,7 +23,6 @@ class MegaMenuItem extends BaseModel
         'icon',
         'icon_bg_color',
         'is_mega_menu',
-        'flyout_menu_component_id',
         'footer_action_1_text',
         'footer_action_1_icon',
         'footer_action_1_url',
@@ -62,14 +61,6 @@ class MegaMenuItem extends BaseModel
     public function children()
     {
         return $this->hasMany(MegaMenuItem::class, 'parent_id')->ordered();
-    }
-
-    /**
-     * Get the flyout menu component for this menu item
-     */
-    public function flyoutMenuComponent()
-    {
-        return $this->belongsTo(TailwindPlus::class, 'flyout_menu_component_id');
     }
 
     /**
@@ -143,11 +134,11 @@ class MegaMenuItem extends BaseModel
                             $subQuery->active()->ordered()->with([
                                 'children' => function ($subSubQuery) {
                                     $subSubQuery->active()->ordered();
-                                }
+                                },
                             ]);
-                        }
+                        },
                     ]);
-                }
+                },
             ])
             ->get()
             ->toArray();
@@ -197,7 +188,7 @@ class MegaMenuItem extends BaseModel
         }
 
         // Otherwise, use custom URL if available
-        if (!empty($this->url)) {
+        if (! empty($this->url)) {
             return $this->url;
         }
 
@@ -313,7 +304,7 @@ class MegaMenuItem extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            Log::info('Pages table not available: ' . $e->getMessage());
+            Log::info('Pages table not available: '.$e->getMessage());
         }
 
         // Get Blog Posts
@@ -335,7 +326,7 @@ class MegaMenuItem extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            Log::info('Blog table not available: ' . $e->getMessage());
+            Log::info('Blog table not available: '.$e->getMessage());
         }
 
         // Get Solutions
@@ -356,7 +347,7 @@ class MegaMenuItem extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            Log::info('Solution table not available: ' . $e->getMessage());
+            Log::info('Solution table not available: '.$e->getMessage());
         }
 
         // Get Modules
@@ -378,7 +369,7 @@ class MegaMenuItem extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            Log::info('Module table not available: ' . $e->getMessage());
+            Log::info('Module table not available: '.$e->getMessage());
         }
 
         // Get Legal Pages
@@ -399,7 +390,7 @@ class MegaMenuItem extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            Log::info('Legal table not available: ' . $e->getMessage());
+            Log::info('Legal table not available: '.$e->getMessage());
         }
 
         // Get Static Pages
@@ -420,7 +411,7 @@ class MegaMenuItem extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            Log::info('StaticPage table not available: ' . $e->getMessage());
+            Log::info('StaticPage table not available: '.$e->getMessage());
         }
 
         return $content;

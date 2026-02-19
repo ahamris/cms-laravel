@@ -98,11 +98,9 @@ class Sidebar extends Component
                         'label' => 'Widgets',
                         'route_name' => 'admin.social-settings.index',
                         'icon' => 'list-alt',
-                        'active_pattern' => 'admin.social-settings*,admin.content.form-builder*,admin.content.tailwind-plus*',
+                        'active_pattern' => 'admin.social-settings*',
                         'children' => [
                             ['label' => 'Social Media', 'route_name' => 'admin.social-settings.index', 'icon' => 'share-alt'],
-                            ['label' => 'Form Section', 'route_name' => 'admin.content.form-builder.index', 'icon' => 'wpforms'],
-                            ['label' => 'TailwindPlus Components', 'route_name' => 'admin.content.tailwind-plus.index', 'icon' => 'code'],
                         ],
                     ],
                     [

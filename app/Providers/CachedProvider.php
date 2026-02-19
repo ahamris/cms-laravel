@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Models\ExternalCode;
 use App\Models\FooterLink;
-use App\Models\HeroSection;
 use App\Models\MailSetting;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Schema;
@@ -28,10 +27,6 @@ class CachedProvider extends ServiceProvider
     {
 
         if (! app()->runningInConsole()) {
-
-            if (Schema::hasTable('hero_sections')) {
-                View::share('heroSections', HeroSection::getCached());
-            }
 
             if (Schema::hasTable('footer_links')) {
                 View::share('footerLinks', FooterLink::getCached());

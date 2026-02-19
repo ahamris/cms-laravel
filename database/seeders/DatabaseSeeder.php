@@ -26,9 +26,7 @@ class DatabaseSeeder extends Seeder
             ExternalCodeSeeder::class,
             RobotsTxtSeeder::class,
             MegaMenuSeeder::class,
-            FormBuilderSeeder::class,
             PageSeeder::class,
-            TailwindPlusSeeder::class,
         ]);
     }
 }

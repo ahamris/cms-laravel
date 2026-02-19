@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('mega_menu_items', function (Blueprint $table) {
-            $table->string('footer_action_1_text')->nullable()->after('flyout_menu_component_id');
+            $table->string('footer_action_1_text')->nullable()->after('is_mega_menu');
             $table->string('footer_action_1_url')->nullable()->after('footer_action_1_text');
             $table->string('footer_action_2_text')->nullable()->after('footer_action_1_url');
             $table->string('footer_action_2_url')->nullable()->after('footer_action_2_text');

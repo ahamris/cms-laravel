@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Models\MegaMenuItem;
 use App\Models\Setting;
-use App\Services\TailwindPlusComponentService;
 use App\View\Composers\MegaMenuComposer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -14,31 +12,29 @@ use Illuminate\View\View;
 class MegaMenuController extends AdminBaseController
 {
     use \App\Traits\HandlesNavigationLinks;
+
     /**
      * Display a listing of mega menu items.
      */
-    public function index(TailwindPlusComponentService $componentService): View
+    public function index(): View
     {
         // Get all root level items with their children
         $menuItems = MegaMenuItem::with([
             'children' => function ($query) {
                 $query->ordered();
-            }
+            },
         ])
             ->rootLevel()
             ->ordered()
             ->get();
 
-        // Get header components for selection
-        $headerComponents = $componentService->getHeaderComponents();
+        $headerComponents = [];
         $selectedHeaderComponentId = Setting::getValue('site_header_component_id');
         $selectedHeaderSticky = Setting::getValue('site_header_sticky', false);
         $selectedHeaderLayoutType = Setting::getValue('site_header_layout_type');
         $headerLoginLinkEnabled = Setting::getValue('site_header_login_link_enabled', true);
         $headerLoginLinkUrl = Setting::getValue('site_header_login_link_url', '#');
-
-        // Get flyout menu components for selection
-        $flyoutMenuComponents = $componentService->getFlyoutMenuComponents();
+        $flyoutMenuComponents = [];
         $selectedDefaultFlyoutMenuComponentId = Setting::getValue('site_default_flyout_menu_component_id');
 
         return view('admin.settings.mega-menu.index', compact('menuItems', 'headerComponents', 'selectedHeaderComponentId', 'selectedHeaderSticky', 'selectedHeaderLayoutType', 'headerLoginLinkEnabled', 'headerLoginLinkUrl', 'flyoutMenuComponents', 'selectedDefaultFlyoutMenuComponentId'));
@@ -86,7 +82,7 @@ class MegaMenuController extends AdminBaseController
         ]);
 
         // Validate max depth for new items
-        if (!empty($validated['parent_id'])) {
+        if (! empty($validated['parent_id'])) {
             $parent = MegaMenuItem::find($validated['parent_id']);
             if ($parent && $this->getDepth($parent) >= 2) {
                 return redirect()->back()->withErrors(['parent_id' => 'Maximum nesting depth of 3 levels reached.'])->withInput();
@@ -97,7 +93,7 @@ class MegaMenuController extends AdminBaseController
         $validated = $this->processUrlByLinkType($request, $validated);
 
         // If parent_id is provided, this is a child item, so is_mega_menu should be false
-        if (!empty($validated['parent_id'])) {
+        if (! empty($validated['parent_id'])) {
             $validated['is_mega_menu'] = false;
         }
 
@@ -122,7 +118,7 @@ class MegaMenuController extends AdminBaseController
         $megaMenu->load([
             'children' => function ($query) {
                 $query->ordered();
-            }
+            },
         ]);
 
         // Get all root level items for parent dropdown (excluding current item)
@@ -157,7 +153,7 @@ class MegaMenuController extends AdminBaseController
             'icon' => 'nullable|string|max:255',
             'icon_bg_color' => 'nullable|string|max:50',
             'is_mega_menu' => 'boolean',
-            'flyout_menu_component_id' => 'nullable|integer|exists:tailwind_plus,id',
+            'flyout_menu_component_id' => 'nullable|integer',
             'footer_action_1_text' => 'nullable|string|max:255',
             'footer_action_1_icon' => 'nullable|string|max:50',
             'footer_action_1_url' => 'nullable|string|max:500',
@@ -169,7 +165,7 @@ class MegaMenuController extends AdminBaseController
         ]);
 
         // Cycle Detection
-        if (!empty($validated['parent_id'])) {
+        if (! empty($validated['parent_id'])) {
             if ($validated['parent_id'] == $megaMenu->id) {
                 return redirect()->back()->withErrors(['parent_id' => 'An item cannot be its own parent.'])->withInput();
             }
@@ -186,12 +182,12 @@ class MegaMenuController extends AdminBaseController
         $validated = $this->processUrlByLinkType($request, $validated);
 
         // If parent_id is provided, this is a child item, so is_mega_menu should be false
-        if (!empty($validated['parent_id'])) {
+        if (! empty($validated['parent_id'])) {
             $validated['is_mega_menu'] = false;
         }
 
         // Check if is_mega_menu changed to false - delete children
-        if ($megaMenu->is_mega_menu && !($validated['is_mega_menu'] ?? false)) {
+        if ($megaMenu->is_mega_menu && ! ($validated['is_mega_menu'] ?? false)) {
             $megaMenu->children()->delete();
         }
 
@@ -399,7 +395,7 @@ class MegaMenuController extends AdminBaseController
     public function updateHeaderComponent(Request $request)
     {
         $validated = $request->validate([
-            'header_component_id' => 'nullable|integer|exists:tailwind_plus,id',
+            'header_component_id' => 'nullable|integer',
             'header_sticky' => 'nullable|boolean',
         ]);
 
@@ -424,7 +420,7 @@ class MegaMenuController extends AdminBaseController
     public function updateDefaultFlyoutMenuComponent(Request $request)
     {
         $validated = $request->validate([
-            'default_flyout_menu_component_id' => 'nullable|integer|exists:tailwind_plus,id',
+            'default_flyout_menu_component_id' => 'nullable|integer',
         ]);
 
         $componentId = $validated['default_flyout_menu_component_id'] ?? null;
@@ -446,12 +442,12 @@ class MegaMenuController extends AdminBaseController
     public function updateAllSettings(Request $request)
     {
         $validated = $request->validate([
-            'header_component_id' => 'nullable|integer|exists:tailwind_plus,id',
+            'header_component_id' => 'nullable|integer',
             'header_sticky' => 'nullable|boolean',
             'header_layout_type' => 'nullable|string|in:,full-width,container,max-w-2xl,max-w-4xl,max-w-6xl,max-w-7xl',
             'header_login_link_enabled' => 'nullable|boolean',
             'header_login_link_url' => 'nullable|string|max:500',
-            'default_flyout_menu_component_id' => 'nullable|integer|exists:tailwind_plus,id',
+            'default_flyout_menu_component_id' => 'nullable|integer',
             'header_cta_button_text' => 'nullable|string|max:255',
             'header_cta_button_url' => 'nullable|string|max:500',
         ]);
@@ -534,6 +530,7 @@ class MegaMenuController extends AdminBaseController
                 return true;
             }
         }
+
         return false;
     }
 
@@ -547,9 +544,11 @@ class MegaMenuController extends AdminBaseController
         while ($parent) {
             $depth++;
             $parent = $parent->parent;
-            if ($depth > 10)
+            if ($depth > 10) {
                 break;
+            }
         }
+
         return $depth;
     }
 }

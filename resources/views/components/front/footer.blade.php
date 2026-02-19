@@ -1,80 +1,24 @@
 @props(['page' => null])
 
 @php
-    $footerComponentId = \App\Models\Setting::getValue('site_footer_component_id');
     $footerLayoutType = \App\Models\Setting::getValue('site_footer_layout_type');
-    
-    // Get page from component prop, route, or view variable
-    $pageObj = $page; // Use prop first
-    if (!$pageObj) {
-        if (request()->route('page')) {
-            $pageObj = request()->route('page');
-        } elseif (isset($page) && is_object($page)) {
-            $pageObj = $page;
-        } elseif (request()->routeIs('page.show')) {
-            $routeParams = request()->route()->parameters();
-            if (isset($routeParams['page'])) {
-                $pageObj = $routeParams['page'];
-            }
-        }
+
+    $pageObj = $page;
+    if (!$pageObj && request()->route('page')) {
+        $pageObj = request()->route('page');
+    } elseif (!$pageObj && isset($page) && is_object($page)) {
+        $pageObj = $page;
+    } elseif (!$pageObj && request()->routeIs('page.show')) {
+        $routeParams = request()->route()->parameters();
+        $pageObj = $routeParams['page'] ?? null;
     }
-    
-    // Check if page has custom footer (design_type = 'custom' and footer_block is set)
-    // Only for static pages, not showcase pages
-    $usePageCustomFooter = false;
-    $pageFooterComponent = null;
-    if ($pageObj) {
-        // Check if page is showcase - use method if available, otherwise check page_type property
-        $isShowcase = false;
-        if (method_exists($pageObj, 'isShowcase')) {
-            $isShowcase = $pageObj->isShowcase();
-        } elseif (isset($pageObj->page_type)) {
-            $isShowcase = $pageObj->page_type === 'showcase';
-        }
-        
-        if (!$isShowcase && isset($pageObj->design_type) && $pageObj->design_type === 'custom' && !empty($pageObj->footer_block)) {
-            $componentService = app(\App\Services\TailwindPlusComponentService::class);
-            $pageFooterComponent = $componentService->getComponentByPath($pageObj->footer_block);
-            if ($pageFooterComponent) {
-                $usePageCustomFooter = true;
-                $footerComponentId = $pageFooterComponent->id;
-            }
-        }
-    }
-    
-    // If footer layout type is empty/null, use page's layout_type (for both showcase and static pages)
+
     if (($footerLayoutType === null || $footerLayoutType === '') && $pageObj && !empty($pageObj->layout_type)) {
         $footerLayoutType = $pageObj->layout_type;
     }
-    
-    $useCustomFooter = !empty($footerComponentId);
+
+    $useCustomFooter = false;
     $footerBladeFile = null;
-    
-    if ($useCustomFooter) {
-        // Use page custom footer component if available, otherwise use site setting
-        $footerComponent = $pageFooterComponent ?? \App\Models\TailwindPlus::find($footerComponentId);
-        if ($footerComponent) {
-            // Component name to blade file mapping
-            $componentNameMapping = [
-                '4-column simple' => '4_column_simple',
-                '4-column with call-to-action' => '4_column_with_call_to_action',
-                '4-column with company mission' => '4_column_with_company_mission',
-                '4-column with newsletter below' => '4_column_with_newsletter_below',
-                '4-column with newsletter' => '4_column_with_newsletter',
-                'Simple centered' => 'simple_centered',
-                'Simple with social links' => 'simple_with_social_links',
-            ];
-            
-            $componentName = $footerComponent->component_name;
-            if (isset($componentNameMapping[$componentName])) {
-                $footerBladeFile = 'components.front.footers.' . $componentNameMapping[$componentName];
-            }
-        }
-        
-        if (!$footerBladeFile) {
-            $useCustomFooter = false;
-        }
-    }
 @endphp
 
 @if($useCustomFooter && $footerBladeFile)

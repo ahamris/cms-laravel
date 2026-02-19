@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Models\FooterLink;
 use App\Models\MegaMenuItem;
 use App\Models\Setting;
-use App\Services\TailwindPlusComponentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
@@ -13,15 +12,15 @@ use Illuminate\Support\Facades\Validator;
 class FooterLinkController extends AdminBaseController
 {
     use \App\Traits\HandlesNavigationLinks;
+
     /**
      * Display a listing of the resource.
      */
-    public function index(TailwindPlusComponentService $componentService)
+    public function index()
     {
         $links = FooterLink::orderBy('column')->orderBy('order')->get()->groupBy('column');
 
-        // Get footer components for selection
-        $footerComponents = $componentService->getFooterComponents();
+        $footerComponents = [];
         $selectedFooterComponentId = Setting::getValue('site_footer_component_id');
         $selectedFooterLayoutType = Setting::getValue('site_footer_layout_type');
 
@@ -131,7 +130,7 @@ class FooterLinkController extends AdminBaseController
         $orderData = $request->input('order');
 
         foreach ($orderData as $column => $itemIds) {
-            if (!is_array($itemIds)) {
+            if (! is_array($itemIds)) {
                 continue;
             }
             foreach ($itemIds as $index => $itemId) {
@@ -152,7 +151,7 @@ class FooterLinkController extends AdminBaseController
      */
     public function toggleActive(FooterLink $footerLink)
     {
-        $footerLink->update(['is_active' => !$footerLink->is_active]);
+        $footerLink->update(['is_active' => ! $footerLink->is_active]);
 
         return response()->json(['success' => true, 'is_active' => $footerLink->is_active]);
     }
@@ -163,7 +162,7 @@ class FooterLinkController extends AdminBaseController
     public function updateFooterComponent(Request $request)
     {
         $validated = $request->validate([
-            'footer_component_id' => 'nullable|integer|exists:tailwind_plus,id',
+            'footer_component_id' => 'nullable|integer',
             'footer_layout_type' => 'nullable|string|in:,full-width,container,max-w-2xl,max-w-4xl,max-w-6xl,max-w-7xl',
             'footer_cta_title' => 'nullable|string|max:255',
             'footer_cta_subtitle' => 'nullable|string|max:500',
@@ -234,5 +233,3 @@ class FooterLinkController extends AdminBaseController
             ->with('success', 'CTA settings updated successfully.');
     }
 }
-
-

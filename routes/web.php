@@ -8,8 +8,6 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DocController;
 use App\Http\Controllers\FeatureController;
-use App\Http\Controllers\FormBuilderController;
-use App\Http\Controllers\HeroSectionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LegalController;
@@ -36,10 +34,8 @@ Route::post('/language/switch', [LanguageController::class, 'switch'])->name('la
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// API Routes for Hero Sections
+// API Routes
 Route::prefix('api')->group(function () {
-    Route::get('/hero-sections', [HeroSectionController::class, 'index'])->name('api.hero-sections.index');
-    Route::get('/hero-sections/{heroSection}', [HeroSectionController::class, 'show'])->name('api.hero-sections.show');
     Route::get('/blog-posts', [BlogController::class, 'apiPosts'])->name('api.blog-posts');
 });
 
@@ -50,9 +46,6 @@ Route::get('/api/search/suggestions', [SearchController::class, 'suggestions'])-
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact/demo', [ContactController::class, 'storeDemo'])->name('contact.demo.store');
 Route::post('/contact/verstuur', [ContactController::class, 'storeContact'])->name('contact.submit');
-
-// Form Builder Submission
-Route::post('/form-builder/{identifier}/submit', [FormBuilderController::class, 'submit'])->name('form-builder.submit');
 
 Route::group(['prefix' => 'artikelen'], function () {
     Route::get('/', [BlogController::class, 'index'])->name('blog');
@@ -126,7 +119,6 @@ Route::group(['prefix' => 'careers', 'as' => 'career.'], static function () {
     Route::post('{vacancy:slug}/apply', [VacancyController::class, 'submit'])->name('apply.submit');
 });
 
-
 // Academy Routes
 Route::group(['prefix' => 'academy'], function () {
     Route::get('/', [AcademyController::class, 'index'])->name('academy.index');
@@ -144,7 +136,6 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 // Robots.txt Route
 Route::get('/robots.txt', [RobotsTxtController::class, 'index'])->name('robots');
-
 
 // Documentation Routes
 Route::prefix('docs')->name('docs.')->group(function () {
