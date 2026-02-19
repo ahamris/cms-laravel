@@ -10,6 +10,7 @@ use App\Models\BlogCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use OpenApi\Attributes as OA;
 
 class BlogController extends Controller
 {
@@ -173,9 +174,23 @@ class BlogController extends Controller
         return view('front.blog.show', compact('blog', 'relatedArticles', 'comments', 'totalReviews'));
     }
 
-    /**
-     * API endpoint: latest blog posts for dynamic blog section (e.g. page builder).
-     */
+    #[OA\Get(
+        path: '/api/blog-posts',
+        summary: 'List latest blog posts',
+        description: 'Returns the latest 3 active blog posts (for dynamic blog section / page builder).',
+        tags: ['Blog'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'List of blog posts',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BlogListItem')),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function apiPosts()
     {
         $blogs = Blog::with(['blog_category', 'author'])
@@ -187,9 +202,19 @@ class BlogController extends Controller
         return BlogListResource::collection($blogs);
     }
 
-    /**
-     * API endpoint: single blog post by slug (for React SPA).
-     */
+    #[OA\Get(
+        path: '/api/blog/{slug}',
+        summary: 'Get a blog post by slug',
+        description: 'Returns a single active blog post by slug (for React SPA).',
+        tags: ['Blog'],
+        parameters: [
+            new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'), description: 'Blog post slug'),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Blog post', content: new OA\JsonContent(ref: '#/components/schemas/Blog')),
+            new OA\Response(response: 404, description: 'Blog post not found'),
+        ]
+    )]
     public function apiShow(string $slug)
     {
         $blog = Blog::with(['blog_category', 'author'])

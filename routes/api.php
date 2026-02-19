@@ -21,18 +21,18 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('api.logout');
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')->name('api.user');
 
+// Frontend feeds (public, no auth – documented in Swagger)
+Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
+Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/blog-posts', [BlogController::class, 'apiPosts'])->name('api.blog-posts');
+Route::get('/blog/{slug}', [BlogController::class, 'apiShow'])->name('api.blog.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/legal/{slug}', [ApiLegalController::class, 'show'])->name('api.legal.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('api.static.show')->where('slug', '[a-z0-9\-]+');
+
 // Frontend content API (Sanctum protected)
 Route::middleware('auth:sanctum')->group(function () {
     // Homepage / settings
     Route::get('/settings', [HomepageController::class, 'settings'])->name('api.settings');
-
-    // Pages, blog, legal, static
-    Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
-    Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/blog-posts', [BlogController::class, 'apiPosts'])->name('api.blog-posts');
-    Route::get('/blog/{slug}', [BlogController::class, 'apiShow'])->name('api.blog.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/legal/{slug}', [ApiLegalController::class, 'show'])->name('api.legal.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('api.static.show')->where('slug', '[a-z0-9\-]+');
 
     // Documentation
     Route::get('/docs', [ApiDocController::class, 'index'])->name('api.docs.index');
