@@ -97,38 +97,6 @@
                 </div>
             </div>
 
-            <!-- Included Call to Actions -->
-            @if($staticPage->selected_call_actions && count($staticPage->selected_call_actions) > 0)
-                <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6">
-                    <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fa-solid fa-bullhorn mr-2 text-purple-500"></i>
-                        Included Call to Actions
-                    </h3>
-                    
-                    <div class="space-y-3">
-                        @foreach($staticPage->getSelectedCallActions() as $callAction)
-                            <div class="border border-gray-200 rounded-md p-4 bg-white">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex-1">
-                                        <h4 class="text-xs font-medium text-gray-900">{{ $callAction->title }}</h4>
-                                        <p class="text-xs text-gray-600 mt-1">{{ Str::limit($callAction->content, 100) }}</p>
-                                        <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500">
-                                            <span>Section: {{ $callAction->section_identifier }}</span>
-                                            @if($callAction->button_text)
-                                                <span>Button: {{ $callAction->button_text }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $callAction->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $callAction->is_active ? 'Active' : 'Inactive' }}
-                                    </span>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
         </div>
 
         <!-- Sidebar -->
@@ -161,10 +129,6 @@
                     <div class="flex justify-between">
                         <span class="text-xs font-medium text-gray-700">Last Updated</span>
                         <span class="text-xs text-gray-900">{{ $staticPage->updated_at->format('M j, Y') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-xs font-medium text-gray-700">Call Actions</span>
-                        <span class="text-xs text-gray-900">{{ count($staticPage->selected_call_actions ?? []) }}</span>
                     </div>
                 </div>
             </div>

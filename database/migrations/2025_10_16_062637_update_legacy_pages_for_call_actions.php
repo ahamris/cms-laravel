@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('legacy_pages', function (Blueprint $table) {
             $table->dropColumn('selected_sections');
-            $table->json('selected_call_actions')->nullable()->after('meta_description');
         });
     }
 
@@ -23,7 +22,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('legacy_pages', function (Blueprint $table) {
-            $table->dropColumn('selected_call_actions');
             $table->json('selected_sections')->nullable()->after('meta_description');
         });
     }

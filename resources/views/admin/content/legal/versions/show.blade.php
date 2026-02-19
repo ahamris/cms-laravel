@@ -85,38 +85,6 @@
                 </div>
             </div>
 
-            {{-- Selected Call Actions --}}
-            @if($version->selected_call_actions && count($version->selected_call_actions) > 0)
-            <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6">
-                <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center">
-                    <i class="fa-solid fa-bullhorn mr-2 text-purple-500"></i>
-                    Included Call to Actions
-                </h3>
-                <div class="space-y-3">
-                    @php
-                        $callActions = \App\Models\CallAction::whereIn('id', $version->selected_call_actions)
-                            ->where('is_active', true)
-                            ->orderBy('sort_order')
-                            ->get();
-                    @endphp
-                    @foreach($callActions as $callAction)
-                        <div class="flex items-start p-4 bg-white rounded-md border border-gray-200">
-                            <i class="fa-solid fa-bullhorn text-blue-500 mr-3 mt-1"></i>
-                            <div class="flex-1">
-                                <div class="text-xs font-medium text-gray-900">{{ $callAction->title }}</div>
-                                @if($callAction->content)
-                                    <div class="text-xs text-gray-600 mt-1">{{ Str::limit($callAction->content, 150) }}</div>
-                                @endif
-                                @if($callAction->section_identifier)
-                                    <div class="text-xs text-gray-400 mt-1">Section: {{ $callAction->section_identifier }}</div>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-
         </div>
 
         {{-- Sidebar --}}

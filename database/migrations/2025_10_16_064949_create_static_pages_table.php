@@ -22,7 +22,6 @@ return new class extends Migration
             $table->text('meta_description')->nullable();
             $table->text('keywords')->nullable();
             $table->string('image')->nullable();
-            $table->json('selected_call_actions')->nullable();
         });
     }
 

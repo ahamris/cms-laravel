@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\Administrator\RolesController;
 use App\Http\Controllers\Admin\Administrator\SubscriptionController;
 use App\Http\Controllers\Admin\Administrator\UserCrudController;
 use App\Http\Controllers\Admin\AnalyticsController;
-use App\Http\Controllers\Admin\CallActionController;
 use App\Http\Controllers\Admin\ContactFormController;
 use App\Http\Controllers\Admin\ContactPageSettingsController;
 use App\Http\Controllers\Admin\Content\AboutController;
@@ -27,9 +26,7 @@ use App\Http\Controllers\Admin\Content\DocSectionController;
 use App\Http\Controllers\Admin\Content\DocVersionController;
 use App\Http\Controllers\Admin\Content\EventController;
 use App\Http\Controllers\Admin\Content\ExternalCodeController;
-use App\Http\Controllers\Admin\Content\FeatureBlockController;
 use App\Http\Controllers\Admin\Content\FeatureController;
-use App\Http\Controllers\Admin\Content\HeroWidgetController;
 use App\Http\Controllers\Admin\Content\HomepageFaqController;
 use App\Http\Controllers\Admin\Content\LegalController;
 use App\Http\Controllers\Admin\Content\LiveSessionController;
@@ -71,7 +68,6 @@ use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\TwoFactorController as AdminTwoFactorController;
 use App\Http\Controllers\Admin\VacancyModule\JobApplicationController;
 use App\Http\Controllers\Admin\VacancyModule\VacancyController;
-use App\Http\Controllers\Admin\Widgets\ModuleListWidgetController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -147,14 +143,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
         // Content Management
         Route::prefix('content')->name('content.')->group(function () {
-            // Hero Media Widget
-            Route::get('hero-widget', [HeroWidgetController::class, 'index'])->name('hero-widget.index');
-            Route::get('hero-widget/create', [HeroWidgetController::class, 'create'])->name('hero-widget.create');
-            Route::post('hero-widget', [HeroWidgetController::class, 'store'])->name('hero-widget.store');
-            Route::get('hero-widget/{heroWidget:id}/edit', [HeroWidgetController::class, 'edit'])->name('hero-widget.edit');
-            Route::put('hero-widget/{heroWidget:id}', [HeroWidgetController::class, 'update'])->name('hero-widget.update');
-            Route::delete('hero-widget/{heroWidget:id}', [HeroWidgetController::class, 'destroy'])->name('hero-widget.destroy');
-
             // Pages
             Route::resource('page', PageController::class);
             Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
@@ -207,14 +195,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // About Section (single record only)
             Route::resource('about', AboutController::class)->except(['create', 'store', 'destroy']);
             Route::post('about/update-order', [AboutController::class, 'updateOrder'])->name('about.update-order');
-
-            // Call Actions
-            Route::resource('call-action', CallActionController::class);
-            Route::post('call-action/{callAction}/toggle-status', [CallActionController::class, 'toggleStatus'])->name('call-action.toggle-status');
-
-            // Feature Blocks
-            Route::post('block-feature/update-order', [FeatureBlockController::class, 'updateOrder'])->name('block-feature.update-order');
-            Route::resource('block-feature', FeatureBlockController::class);
 
             // Organization Names
             Route::post('organization-name/update-order', [OrganizationNameController::class, 'updateOrder'])->name('organization-name.update-order');
@@ -383,10 +363,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::post('sticky-menu-items/update-order', [StickyMenuItemController::class, 'updateOrder'])->name('sticky-menu-items.update-order');
             Route::post('sticky-menu-item/{stickyMenuItem}/toggle-status', [StickyMenuItemController::class, 'toggleStatus'])->name('sticky-menu-item.toggle-status');
 
-            // Widgets
-            Route::resource('widgets/module-list-widgets', ModuleListWidgetController::class);
-            Route::post('widgets/module-list-widgets/{moduleListWidget}/toggle-active', [ModuleListWidgetController::class, 'toggleActive'])->name('widgets.module-list-widgets.toggle-active');
-
         });
 
         // Administrator Management
@@ -519,7 +495,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
                 Route::get('get-module-items', [MegaMenuController::class, 'getModuleItems'])->name('get-module-items');
                 Route::post('update-order', [MegaMenuController::class, 'updateOrder'])->name('update-order');
                 Route::post('update-header-component', [MegaMenuController::class, 'updateHeaderComponent'])->name('update-header-component');
-                Route::post('update-default-flyout-menu-component', [MegaMenuController::class, 'updateDefaultFlyoutMenuComponent'])->name('update-default-flyout-menu-component');
                 Route::post('update-all-settings', [MegaMenuController::class, 'updateAllSettings'])->name('update-all-settings');
                 Route::post('update-header-cta-settings', [MegaMenuController::class, 'updateHeaderCtaSettings'])->name('update-header-cta-settings');
                 Route::post('{megaMenu}/add-sub-item', [MegaMenuController::class, 'addSubItem'])->name('add-sub-item');

@@ -43,9 +43,6 @@ class LegalController extends Controller
             'google_image' => get_image($legal->image, asset('images/legal-og-image.jpg')),
         ]);
 
-        // Get selected call actions
-        $selectedCallActions = $legal->getSelectedCallActions();
-
-        return view('front.legal.show', compact('legal', 'selectedCallActions', 'versions', 'displayVersion'));
+        return view('front.legal.show', compact('legal', 'versions', 'displayVersion'));
     }
 }

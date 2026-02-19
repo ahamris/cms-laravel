@@ -6,7 +6,6 @@ use App\Models\About;
 use App\Models\ActivityLog;
 use App\Models\Blog;
 use App\Models\BlogCategory;
-use App\Models\CallAction;
 use App\Models\CaseStudy;
 use App\Models\Changelog;
 use App\Models\Comment;
@@ -63,7 +62,6 @@ class MorphMapServiceProvider extends ServiceProvider
             'activity_log' => ActivityLog::class,
             'blog' => Blog::class,
             'blog_category' => BlogCategory::class,
-            'call_action' => CallAction::class,
             'case_study' => CaseStudy::class,
             'changelog' => Changelog::class,
             'comment' => Comment::class,

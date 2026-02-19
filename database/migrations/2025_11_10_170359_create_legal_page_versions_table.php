@@ -23,7 +23,6 @@ return new class extends Migration
             $table->text('meta_description')->nullable();
             $table->text('keywords')->nullable();
             $table->string('image')->nullable();
-            $table->json('selected_call_actions')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->text('version_notes')->nullable();
             $table->timestamps();

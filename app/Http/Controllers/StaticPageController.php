@@ -28,9 +28,6 @@ class StaticPageController extends Controller
             'google_image' => get_image($staticPage->image, asset('images/static-og-image.jpg')),
         ]);
 
-        // Get selected call actions
-        $selectedCallActions = $staticPage->getSelectedCallActions();
-
-        return view('front.static.show', compact('staticPage', 'selectedCallActions'));
+        return view('front.static.show', compact('staticPage'));
     }
 }

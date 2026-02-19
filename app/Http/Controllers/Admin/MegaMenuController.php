@@ -408,28 +408,6 @@ class MegaMenuController extends AdminBaseController
     }
 
     /**
-     * Update the selected default flyout menu component.
-     */
-    public function updateDefaultFlyoutMenuComponent(Request $request)
-    {
-        $validated = $request->validate([
-            'default_flyout_menu_component_id' => 'nullable|integer',
-        ]);
-
-        $componentId = $validated['default_flyout_menu_component_id'] ?? null;
-
-        Setting::setValue('site_default_flyout_menu_component_id', $componentId);
-
-        // Clear cache
-        Cache::forget('settings.site_default_flyout_menu_component_id');
-        Cache::forget('mega_menu_data');
-        MegaMenuComposer::clearCache();
-
-        return redirect()->route('admin.settings.mega-menu.index')
-            ->with('success', 'Default flyout menu component updated successfully.');
-    }
-
-    /**
      * Update all settings at once (header component, sticky, and default flyout menu).
      */
     public function updateAllSettings(Request $request)
@@ -450,7 +428,6 @@ class MegaMenuController extends AdminBaseController
         $headerLayoutType = $validated['header_layout_type'] ?? null;
         $headerLoginLinkEnabled = $request->has('header_login_link_enabled') ? true : false;
         $headerLoginLinkUrl = $validated['header_login_link_url'] ?? '#';
-        $defaultFlyoutMenuComponentId = $validated['default_flyout_menu_component_id'] ?? null;
         $headerCtaButtonText = $validated['header_cta_button_text'] ?? 'Sign up';
         $headerCtaButtonUrl = $validated['header_cta_button_url'] ?? '#';
 
@@ -459,7 +436,6 @@ class MegaMenuController extends AdminBaseController
         Setting::setValue('site_header_layout_type', $headerLayoutType);
         Setting::setValue('site_header_login_link_enabled', $headerLoginLinkEnabled);
         Setting::setValue('site_header_login_link_url', $headerLoginLinkUrl);
-        Setting::setValue('site_default_flyout_menu_component_id', $defaultFlyoutMenuComponentId);
         Setting::setValue('header_cta_button_text', $headerCtaButtonText);
         Setting::setValue('header_cta_button_url', $headerCtaButtonUrl);
 
@@ -470,7 +446,6 @@ class MegaMenuController extends AdminBaseController
         Cache::forget('settings.site_header_layout_type');
         Cache::forget('settings.site_header_login_link_enabled');
         Cache::forget('settings.site_header_login_link_url');
-        Cache::forget('settings.site_default_flyout_menu_component_id');
         Cache::forget('settings.header_cta_button_text');
         Cache::forget('settings.header_cta_button_url');
         Cache::forget('mega_menu_data');

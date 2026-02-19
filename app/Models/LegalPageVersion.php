@@ -20,7 +20,6 @@ class LegalPageVersion extends BaseModel
         'meta_description',
         'keywords',
         'image',
-        'selected_call_actions',
         'created_by',
         'version_notes',
     ];
@@ -28,7 +27,6 @@ class LegalPageVersion extends BaseModel
     protected $casts = [
         'is_active' => 'boolean',
         'version_number' => 'integer',
-        'selected_call_actions' => 'array',
     ];
 
     /**

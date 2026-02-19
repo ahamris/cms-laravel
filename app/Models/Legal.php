@@ -25,14 +25,12 @@ class Legal extends BaseModel
         'meta_description',
         'keywords',
         'image',
-        'selected_call_actions',
         'current_version',
         'versioning_enabled',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'selected_call_actions' => 'array',
         'current_version' => 'integer',
         'versioning_enabled' => 'boolean',
     ];
@@ -56,32 +54,6 @@ class Legal extends BaseModel
                 ->where('is_active', true)
                 ->get();
         });
-    }
-
-    /**
-     * Get available call actions for selection
-     */
-    public static function getAvailableCallActions()
-    {
-        return CallAction::active()
-            ->orderBy('sort_order')
-            ->orderBy('title')
-            ->get();
-    }
-
-    /**
-     * Get selected call actions
-     */
-    public function getSelectedCallActions()
-    {
-        if (! $this->selected_call_actions) {
-            return collect();
-        }
-
-        return CallAction::whereIn('id', $this->selected_call_actions)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
     }
 
     /**
@@ -147,7 +119,6 @@ class Legal extends BaseModel
             'meta_description' => $this->meta_description,
             'keywords' => $this->keywords,
             'image' => $this->image,
-            'selected_call_actions' => $this->selected_call_actions,
             'created_by' => auth()->id(),
             'version_notes' => $notes,
         ]);
@@ -183,7 +154,6 @@ class Legal extends BaseModel
             'meta_description' => $this->meta_description,
             'keywords' => $this->keywords,
             'image' => $this->image,
-            'selected_call_actions' => $this->selected_call_actions,
             'created_by' => auth()->id(),
             'version_notes' => $notes,
         ]);
@@ -235,7 +205,6 @@ class Legal extends BaseModel
             'meta_description' => $version->meta_description,
             'keywords' => $version->keywords,
             'image' => $version->image,
-            'selected_call_actions' => $version->selected_call_actions,
         ]);
 
         return true;

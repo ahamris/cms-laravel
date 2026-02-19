@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('legal_pages', function (Blueprint $table) {
-            $table->integer('current_version')->default(1)->after('selected_call_actions');
+            $table->integer('current_version')->default(1)->after('image');
             $table->boolean('versioning_enabled')->default(true)->after('current_version');
         });
     }

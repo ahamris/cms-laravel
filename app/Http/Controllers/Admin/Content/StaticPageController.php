@@ -26,9 +26,7 @@ class StaticPageController extends AdminBaseController
      */
     public function create(): View
     {
-        $availableCallActions = StaticPage::getAvailableCallActions();
-        
-        return view('admin.content.static-page.create', compact('availableCallActions'));
+        return view('admin.content.static-page.create');
     }
 
     /**
@@ -65,9 +63,7 @@ class StaticPageController extends AdminBaseController
      */
     public function edit(StaticPage $staticPage): View
     {
-        $availableCallActions = StaticPage::getAvailableCallActions();
-        
-        return view('admin.content.static-page.edit', compact('staticPage', 'availableCallActions'));
+        return view('admin.content.static-page.edit', compact('staticPage'));
     }
 
     /**

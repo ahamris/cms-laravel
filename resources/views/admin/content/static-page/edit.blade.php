@@ -125,44 +125,6 @@
                             </div>
                         </div>
 
-                        <!-- Call Actions Selector -->
-                        <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6">
-                            <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center">
-                                <i class="fa-solid fa-bullhorn mr-2 text-purple-500"></i>
-                                Call to Actions
-                            </h3>
-                            <p class="text-xs text-gray-600 mb-4">Select which call to actions should be displayed on this page</p>
-                            
-                            @if($availableCallActions->count() > 0)
-                                <div class="space-y-3">
-                                    @foreach($availableCallActions as $callAction)
-                                        <label class="flex items-start space-x-3 p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
-                                            <input type="checkbox" 
-                                                   name="selected_call_actions[]" 
-                                                   value="{{ $callAction->id }}"
-                                                   {{ in_array($callAction->id, old('selected_call_actions', $staticPage->selected_call_actions ?? [])) ? 'checked' : '' }}
-                                                   class="mt-1 h-4 w-4 text-primary focus:outline-none border-gray-300 rounded">
-                                            <div class="flex-1 min-w-0">
-                                                <div class="text-xs font-medium text-gray-900">{{ $callAction->title }}</div>
-                                                <div class="text-xs text-gray-500 mt-1">{{ Str::limit($callAction->content, 100) }}</div>
-                                                <div class="text-xs text-gray-400 mt-1">Section: {{ $callAction->section_identifier }}</div>
-                                            </div>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="text-center py-8 text-gray-500">
-                                    <i class="fa fa-bullhorn text-3xl text-gray-300 mb-2"></i>
-                                    <p class="text-xs">No call actions available</p>
-                                    <p class="text-xs">Create call actions first to select them here</p>
-                                </div>
-                            @endif
-                            
-                            @error('selected_call_actions')
-                                <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
             </div>
 
                     <!-- Sidebar -->

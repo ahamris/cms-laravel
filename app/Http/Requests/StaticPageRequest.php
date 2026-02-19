@@ -27,8 +27,6 @@ class StaticPageRequest extends FormRequest
             'is_active' => 'boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
-            'selected_call_actions' => 'nullable|array',
-            'selected_call_actions.*' => 'integer|exists:call_actions,id',
             'keywords' => 'nullable|string|max:1000',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'faqs' => 'nullable|array',
@@ -68,7 +66,6 @@ class StaticPageRequest extends FormRequest
             'image.image' => 'The file must be an image.',
             'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg.',
             'image.max' => 'The image may not be greater than 2048 kilobytes.',
-            'selected_call_actions.*.exists' => 'One or more selected call actions do not exist.',
         ];
     }
 }

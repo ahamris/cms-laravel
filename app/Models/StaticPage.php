@@ -26,12 +26,10 @@ class StaticPage extends BaseModel
         'meta_description',
         'keywords',
         'image',
-        'selected_call_actions',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'selected_call_actions' => 'array',
     ];
 
     public function sluggable(): array
@@ -53,31 +51,5 @@ class StaticPage extends BaseModel
                 ->where('is_active', true)
                 ->get();
         });
-    }
-
-    /**
-     * Get available call actions for selection
-     */
-    public static function getAvailableCallActions()
-    {
-        return CallAction::active()
-            ->orderBy('sort_order')
-            ->orderBy('title')
-            ->get();
-    }
-
-    /**
-     * Get selected call actions
-     */
-    public function getSelectedCallActions()
-    {
-        if (! $this->selected_call_actions) {
-            return collect();
-        }
-
-        return CallAction::whereIn('id', $this->selected_call_actions)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
     }
 }

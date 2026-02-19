@@ -28,8 +28,6 @@ class LegalRequest extends FormRequest
             'meta_description' => 'nullable|string|max:500',
             'keywords' => 'nullable|string|max:1000',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'selected_call_actions' => 'nullable|array',
-            'selected_call_actions.*' => 'integer|exists:call_actions,id',
             'faqs' => 'nullable|array',
             'faqs.*.question' => 'required_with:faqs|string|max:500',
             'faqs.*.answer' => 'required_with:faqs|string|min:10',

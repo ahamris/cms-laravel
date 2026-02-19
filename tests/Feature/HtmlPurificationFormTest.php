@@ -2,7 +2,6 @@
 
 use App\Helpers\Variable;
 use App\Models\Blog;
-use App\Models\CallAction;
 use App\Models\Changelog;
 use App\Models\Comment;
 use App\Models\User;
@@ -127,34 +126,6 @@ test('admin changelog store purifies description and content', function () {
     expect($changelog)->not->toBeNull();
     expect($changelog->description)->not->toContain('<script>');
     expect($changelog->content)->not->toContain('onerror');
-});
-
-test('admin call action store purifies content', function () {
-    Role::firstOrCreate(['name' => Variable::ROLE_ADMIN]);
-    $user = User::create([
-        'name' => 'Admin',
-        'last_name' => 'Call',
-        'email' => 'admin-callaction-xss@example.com',
-        'password' => Hash::make('password'),
-        'email_verified_at' => now(),
-    ]);
-    $user->assignRole(Variable::ROLE_ADMIN);
-
-    $xssContent = '<p>CTA text</p><script>alert(1)</script>';
-
-    $response = $this->actingAs($user)->post(route('admin.content.call-action.store'), [
-        'title' => 'XSS Call Action',
-        'content' => $xssContent,
-        'background_color' => '#1e40af',
-        'text_color' => '#ffffff',
-        'section_identifier' => 'xss_call_action_section',
-        'is_active' => true,
-    ]);
-
-    $response->assertRedirect();
-    $callAction = CallAction::where('section_identifier', 'xss_call_action_section')->first();
-    expect($callAction)->not->toBeNull();
-    expect($callAction->content)->not->toContain('<script>');
 });
 
 test('admin vacancy store purifies description requirements and responsibilities', function () {

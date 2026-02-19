@@ -25,8 +25,7 @@ class LegalController extends AdminBaseController
      */
     public function create(): View
     {
-        $availableCallActions = Legal::getAvailableCallActions();
-        return view('admin.content.legal.create', compact('availableCallActions'));
+        return view('admin.content.legal.create');
     }
 
     /**
@@ -66,8 +65,7 @@ class LegalController extends AdminBaseController
      */
     public function edit(Legal $legal): View
     {
-        $availableCallActions = Legal::getAvailableCallActions();
-        return view('admin.content.legal.edit', compact('legal', 'availableCallActions'));
+        return view('admin.content.legal.edit', compact('legal'));
     }
 
     /**
