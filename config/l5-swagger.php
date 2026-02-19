@@ -10,9 +10,13 @@ return [
 
             'routes' => [
                 /*
-                 * Route for accessing api documentation interface
+                 * Route for accessing api documentation interface (Swagger UI)
                  */
                 'api' => 'api/documentation',
+                /*
+                 * Route that serves the generated api-docs.json (required for UI to load the spec; must not conflict with API route api/docs)
+                 */
+                'docs' => 'api/documentation/json',
             ],
             'paths' => [
                 /*
