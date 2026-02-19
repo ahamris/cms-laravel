@@ -81,7 +81,7 @@ class Search extends Component
                         ]);
                     }
 
-                    $children = $item->children; // Collection from StaticSidebarItem::__get
+                    $children = collect($item->children ?? []);
                     if ($children->isNotEmpty()) {
                         $searchInItems($children->all(), $fullLabel);
                     }
