@@ -651,9 +651,9 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 
 ## CORS and security
 
-- Configure **CORS** in `config/cors.php` so your SPA origin is allowed (e.g. `https://your-react-app.com`).
-- Content endpoints are **public**; no API key or Bearer token is required for reading pages, blog, legal, static, changelog, or search suggestions.
-- Contact and analytics endpoints are also public but should be protected by rate limiting and, in production, HTTPS only.
+- Configure **CORS** in `config/cors.php` so your SPA origin is allowed (e.g. `https://your-react-app.com`). If using credentials (Bearer tokens), enable `supports_credentials`.
+- **Content endpoints** (pages, blog, legal, static, docs, live-sessions, modules, features, solutions, sitemap, vacancies, settings) require **Sanctum**: send `Authorization: Bearer {token}`. Obtain the token via `POST /api/login`.
+- Search suggestions (`/api/search/suggestions`), contact forms, and analytics are **public** (no auth). Use rate limiting and HTTPS in production.
 
 ---
 
@@ -670,9 +670,25 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 | GET | `/api/blog/{slug}` | Bearer | Single blog post by slug |
 | GET | `/api/legal/{slug}` | Bearer | Single legal page by slug |
 | GET | `/api/static/{slug}` | Bearer | Single static page by slug |
-| GET | `/changelog` (AJAX) | Changelog index (general) |
-| GET | `/changelog/api` (AJAX) | Changelog index (API status) |
-| GET | `/api/search/suggestions?q=` | Search suggestions |
+| GET | `/api/settings` | Bearer | Site + theme settings (homepage) |
+| GET | `/api/docs` | Bearer | Doc versions with sections/pages tree |
+| GET | `/api/docs/search?q=` | Bearer | Search documentation |
+| GET | `/api/docs/{version}` | Bearer | Single doc version with sections/pages |
+| GET | `/api/docs/{version}/{section}/{page}` | Bearer | Single doc page content |
+| GET | `/api/live-sessions` | Bearer | Upcoming + past live sessions |
+| GET | `/api/live-sessions/{slug}` | Bearer | Single live session |
+| GET | `/api/modules` | Bearer | List modules (with features) |
+| GET | `/api/modules/{slug}` | Bearer | Single module |
+| GET | `/api/features` | Bearer | List features |
+| GET | `/api/features/{anchor}` | Bearer | Single feature by anchor |
+| GET | `/api/solutions` | Bearer | List solutions |
+| GET | `/api/solutions/{anchor}` | Bearer | Single solution by anchor |
+| GET | `/api/sitemap` | Bearer | Sitemap as JSON (urls for SPA) |
+| GET | `/api/vacancies` | Bearer | List vacancies (paginated, filterable) |
+| GET | `/api/vacancies/{slug}` | Bearer | Single vacancy |
+| GET | `/changelog` (AJAX) | — | Changelog index (general) |
+| GET | `/changelog/api` (AJAX) | — | Changelog index (API status) |
+| GET | `/api/search/suggestions?q=` | — | Search suggestions |
 | POST | `/contact/demo` | Submit demo request |
 | POST | `/contact/verstuur` | Submit contact form |
 | POST | `/api/analytics/track` | Track page view |

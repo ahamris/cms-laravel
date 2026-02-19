@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Traits\SeoSetTrait;
+use App\Http\Resources\BlogListResource;
+use App\Http\Resources\BlogResource;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use Illuminate\Http\JsonResponse;
@@ -174,64 +176,28 @@ class BlogController extends Controller
     /**
      * API endpoint: latest blog posts for dynamic blog section (e.g. page builder).
      */
-    public function apiPosts(): JsonResponse
+    public function apiPosts()
     {
         $blogs = Blog::with(['blog_category', 'author'])
             ->where('is_active', true)
             ->latest()
             ->take(3)
-            ->get()
-            ->map(fn(Blog $b) => [
-                'title' => $b->title,
-                'slug' => $b->slug,
-                'url' => route('blog.show', $b->slug),
-                'image' => get_image($b->image, asset('front/images/blog.png')),
-                'short_body' => \Illuminate\Support\Str::limit(strip_tags($b->short_body ?? ''), 160),
-                'date' => $b->created_at?->format('M j, Y'),
-                'date_attr' => $b->created_at?->format('Y-m-d'),
-                'category' => $b->blog_category?->name ?? 'Blog',
-                'category_slug' => $b->blog_category?->slug ?? null,
-                'author_name' => $b->author ? ($b->author->full_name ?? $b->author->name ?? 'Author') : 'Author',
-                'author_avatar' => $b->author ? get_image($b->author->avatar, 'https://ui-avatars.com/api/?name=' . urlencode($b->author->name ?? 'Author') . '&size=80') : 'https://ui-avatars.com/api/?name=Author&size=80',
-            ]);
+            ->get();
 
-        return response()->json($blogs);
+        return BlogListResource::collection($blogs);
     }
 
     /**
      * API endpoint: single blog post by slug (for React SPA).
      */
-    public function apiShow(string $slug): JsonResponse
+    public function apiShow(string $slug)
     {
         $blog = Blog::with(['blog_category', 'author'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
 
-        return response()->json([
-            'data' => [
-                'id' => $blog->id,
-                'title' => $blog->title,
-                'slug' => $blog->slug,
-                'short_body' => $blog->short_body,
-                'long_body' => $blog->long_body,
-                'image' => get_image($blog->image, asset('front/images/blog.png')),
-                'meta_title' => $blog->meta_title,
-                'meta_description' => $blog->meta_description,
-                'url' => route('blog.show', $blog->slug),
-                'date' => $blog->created_at?->format('M j, Y'),
-                'date_attr' => $blog->created_at?->format('Y-m-d'),
-                'published_at' => $blog->published_at?->toIso8601String(),
-                'category' => $blog->blog_category ? ['id' => $blog->blog_category->id, 'name' => $blog->blog_category->name, 'slug' => $blog->blog_category->slug] : null,
-                'author' => $blog->author ? [
-                    'id' => $blog->author->id,
-                    'name' => $blog->author->full_name ?? $blog->author->name ?? 'Author',
-                    'avatar' => get_image($blog->author->avatar, 'https://ui-avatars.com/api/?name=' . urlencode($blog->author->name ?? 'Author') . '&size=80'),
-                ] : null,
-                'created_at' => $blog->created_at?->toIso8601String(),
-                'updated_at' => $blog->updated_at?->toIso8601String(),
-            ],
-        ]);
+        return new BlogResource($blog);
     }
 
     /**
