@@ -34,11 +34,6 @@ Route::post('/language/switch', [LanguageController::class, 'switch'])->name('la
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// API Routes
-Route::prefix('api')->group(function () {
-    Route::get('/blog-posts', [BlogController::class, 'apiPosts'])->name('api.blog-posts');
-});
-
 // Search Routes
 Route::get('/zoeken', [SearchController::class, 'index'])->name('search');
 Route::get('/api/search/suggestions', [SearchController::class, 'suggestions'])->name('search.suggestions');
