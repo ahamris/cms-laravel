@@ -23,12 +23,6 @@ class MegaMenuItem extends BaseModel
         'icon',
         'icon_bg_color',
         'is_mega_menu',
-        'footer_action_1_text',
-        'footer_action_1_icon',
-        'footer_action_1_url',
-        'footer_action_2_text',
-        'footer_action_2_icon',
-        'footer_action_2_url',
         'is_active',
         'open_in_new_tab',
     ];

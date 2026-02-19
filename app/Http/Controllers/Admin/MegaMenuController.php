@@ -153,13 +153,6 @@ class MegaMenuController extends AdminBaseController
             'icon' => 'nullable|string|max:255',
             'icon_bg_color' => 'nullable|string|max:50',
             'is_mega_menu' => 'boolean',
-            'flyout_menu_component_id' => 'nullable|integer',
-            'footer_action_1_text' => 'nullable|string|max:255',
-            'footer_action_1_icon' => 'nullable|string|max:50',
-            'footer_action_1_url' => 'nullable|string|max:500',
-            'footer_action_2_text' => 'nullable|string|max:255',
-            'footer_action_2_icon' => 'nullable|string|max:50',
-            'footer_action_2_url' => 'nullable|string|max:500',
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
         ]);

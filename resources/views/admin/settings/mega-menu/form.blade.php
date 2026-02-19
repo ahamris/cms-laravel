@@ -63,107 +63,6 @@
                 <i class="fas fa-arrow-right mr-1"></i> Simple menu item with custom link
             </div>
         </div>
-
-        <!-- Flyout Menu Component Selection (Only for root level items with children) -->
-        <div class="border-t border-gray-200 pt-4 space-y-3" x-show="!document.getElementById('parent_id').value && isMegaMenu" x-transition>
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Flyout Menu Component</h3>
-            
-            <div>
-                <label for="flyout_menu_component_id" class="block text-sm font-medium text-gray-700 mb-2">
-                    Select Flyout Menu Component
-                </label>
-                <select name="flyout_menu_component_id" id="flyout_menu_component_id" 
-                        x-model="flyoutMenuComponentId"
-                        @change="updateFooterActionsVisibility()"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
-                    <option value="">-- Use Default Flyout Menu --</option>
-                    @php
-                        $flyoutMenuComponents = app(\App\Services\TailwindPlusComponentService::class)->getFlyoutMenuComponents();
-                        $selectedFlyoutMenuComponentId = old('flyout_menu_component_id', $megaMenu->flyout_menu_component_id ?? '');
-                    @endphp
-                    @foreach($flyoutMenuComponents as $component)
-                        <option value="{{ $component['id'] }}" 
-                                data-raw-name="{{ $component['raw_name'] }}"
-                                {{ $selectedFlyoutMenuComponentId == $component['id'] ? 'selected' : '' }}>
-                            {{ $component['name'] }}
-                        </option>
-                    @endforeach
-                </select>
-                <p class="text-xs text-gray-500 mt-1">Select a specific flyout menu component for this menu item, or leave empty to use the default</p>
-            </div>
-
-            <!-- Footer Actions (Only for Stacked with Footer Actions) -->
-            <div x-show="showFooterActions" x-transition class="space-y-4 mt-4">
-                <h4 class="text-sm font-semibold text-gray-900">Footer Actions</h4>
-                <p class="text-xs text-gray-500 mb-3">Configure the footer action buttons for "Stacked with Footer Actions" flyout menu</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Action 1 Column -->
-                    <div class="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <h5 class="font-medium text-gray-900 border-b border-gray-200 pb-2">Action 1</h5>
-                        
-                        <div>
-                            <label for="footer_action_1_text" class="block text-sm font-medium text-gray-700 mb-2">Text</label>
-                            <input type="text" name="footer_action_1_text" id="footer_action_1_text" 
-                                   value="{{ old('footer_action_1_text', $megaMenu->footer_action_1_text ?? 'Watch demo') }}"
-                                   placeholder="Watch demo"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
-                        </div>
-
-                        <div>
-                            <label for="footer_action_1_url" class="block text-sm font-medium text-gray-700 mb-2">URL</label>
-                            <input type="text" name="footer_action_1_url" id="footer_action_1_url" 
-                                   value="{{ old('footer_action_1_url', $megaMenu->footer_action_1_url ?? '#') }}"
-                                   placeholder="#"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
-                        </div>
-
-                        <div>
-                            <x-icon-picker
-                                id="footer_action_1_icon"
-                                name="footer_action_1_icon"
-                                :value="old('footer_action_1_icon', $megaMenu->footer_action_1_icon ?? '')"
-                                label="Icon"
-                                help-text="Example: fas fa-play"
-                                :required="false"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Action 2 Column -->
-                    <div class="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <h5 class="font-medium text-gray-900 border-b border-gray-200 pb-2">Action 2</h5>
-                        
-                        <div>
-                            <label for="footer_action_2_text" class="block text-sm font-medium text-gray-700 mb-2">Text</label>
-                            <input type="text" name="footer_action_2_text" id="footer_action_2_text" 
-                                   value="{{ old('footer_action_2_text', $megaMenu->footer_action_2_text ?? 'Contact sales') }}"
-                                   placeholder="Contact sales"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
-                        </div>
-
-                        <div>
-                            <label for="footer_action_2_url" class="block text-sm font-medium text-gray-700 mb-2">URL</label>
-                            <input type="text" name="footer_action_2_url" id="footer_action_2_url" 
-                                   value="{{ old('footer_action_2_url', $megaMenu->footer_action_2_url ?? '#') }}"
-                                   placeholder="#"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
-                        </div>
-
-                        <div>
-                           <x-icon-picker
-                                id="footer_action_2_icon"
-                                name="footer_action_2_icon"
-                                :value="old('footer_action_2_icon', $megaMenu->footer_action_2_icon ?? '')"
-                                label="Icon"
-                                help-text="Example: fas fa-phone"
-                                :required="false"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     @endif
 
     <!-- Item Details -->
@@ -426,8 +325,6 @@ function megaMenuForm() {
         selectedSystemContent: initialSelectedSystemContent,
         customUrl: initialCustomUrl,
         finalUrl: currentUrl,
-        flyoutMenuComponentId: '{{ old('flyout_menu_component_id', $megaMenu->flyout_menu_component_id ?? '') }}',
-        showFooterActions: false,
         
         init() {
             // Watch for parent_id changes to hide mega menu checkbox
@@ -442,26 +339,6 @@ function megaMenuForm() {
             
             // Set initial URL
             this.updateUrl();
-            
-            // Check initial footer actions visibility
-            this.updateFooterActionsVisibility();
-        },
-        
-        updateFooterActionsVisibility() {
-            const select = document.getElementById('flyout_menu_component_id');
-            if (!select) {
-                this.showFooterActions = false;
-                return;
-            }
-            
-            const selectedOption = select.options[select.selectedIndex];
-            const rawName = selectedOption ? selectedOption.getAttribute('data-raw-name') : null;
-            
-            // Show footer actions for "Stacked with footer actions"
-            this.showFooterActions = rawName === 'Stacked with footer actions';
-            
-            // Update flyoutMenuComponentId
-            this.flyoutMenuComponentId = select.value;
         },
         
         updateUrl() {

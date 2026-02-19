@@ -25,8 +25,6 @@ class MegaMenuComposer
     public function getMegaMenuData(): array
     {
         return Cache::remember('mega_menu_data', 3600, function () {
-            $defaultFlyoutMenuComponentId = Setting::getValue('site_default_flyout_menu_component_id');
-
             $menuItems = MegaMenuItem::active()
                 ->rootLevel()
                 ->ordered()
@@ -36,10 +34,9 @@ class MegaMenuComposer
                     }]);
                 }])
                 ->get()
-                ->map(function ($item) use ($defaultFlyoutMenuComponentId) {
+                ->map(function ($item) {
                     $itemArray = $item->toArray();
-                    $itemArray['flyout_menu_component_id'] = $item->flyout_menu_component_id ?? $defaultFlyoutMenuComponentId;
-                    $itemArray['flyout_menu_component_name'] = null;
+                    $itemArray['flyout_menu_component_name'] = 'simple';
 
                     return $itemArray;
                 })
