@@ -14,7 +14,6 @@ return [
     'all_results' => 'Alle resultaten bekijken',
     'view_all' => 'Bekijk alle',
     'read_more' => 'Lees meer',
-    'contact' => 'Contact opnemen',
     'help_needed' => 'Hulp nodig?',
     'quick_nav' => 'Snel naar',
 
@@ -147,6 +146,7 @@ return [
 
     // Contact page
     'contact' => [
+        'title' => 'Contact opnemen',
         'email' => 'woo@opub.nl',
         'more_about_woo' => 'Lees meer over Woo',
         'direct_to' => 'Direct naar',
