@@ -8,6 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Consolidated: create carousel_widgets with show_author, view_all fields; no number_of_rows.
      */
     public function up(): void
     {
@@ -17,16 +18,19 @@ return new class extends Migration
             $table->string('identifier')->unique();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
-            $table->string('data_source')->default('blog'); // blog, custom, etc.
+            $table->string('data_source')->default('blog');
             $table->unsignedBigInteger('blog_category_id')->nullable();
-            $table->integer('items_per_row')->default(3); // 1, 2, 3, 4, 6
-            $table->integer('number_of_rows')->default(2); // 1, 2, 3, etc.
-            $table->integer('total_items')->default(6); // Total items to show
+            $table->integer('items_per_row')->default(3);
+            $table->integer('total_items')->default(6);
             $table->boolean('show_arrows')->default(true);
             $table->boolean('show_dots')->default(true);
+            $table->boolean('show_author')->default(true);
             $table->boolean('autoplay')->default(false);
-            $table->integer('autoplay_speed')->default(3000); // milliseconds
+            $table->integer('autoplay_speed')->default(3000);
             $table->boolean('infinite_loop')->default(true);
+            $table->boolean('show_view_all_button')->default(false);
+            $table->string('view_all_title')->nullable();
+            $table->text('view_all_description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);
             $table->json('settings')->nullable();

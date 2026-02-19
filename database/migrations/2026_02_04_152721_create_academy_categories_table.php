@@ -8,6 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Consolidated: academy_categories and academy_videos (videos depend on categories).
      */
     public function up(): void
     {
@@ -20,6 +21,23 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        Schema::create('academy_videos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('academy_category_id')->constrained('academy_categories')->cascadeOnDelete();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->string('video_path')->nullable()->comment('Uploaded video file path in storage');
+            $table->string('video_url')->nullable()->comment('External video URL (YouTube, Vimeo, etc.)');
+            $table->string('thumbnail_path')->nullable();
+            $table->unsignedInteger('duration_seconds')->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+
+            $table->index(['academy_category_id', 'is_active', 'sort_order']);
+        });
     }
 
     /**
@@ -27,6 +45,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('academy_videos');
         Schema::dropIfExists('academy_categories');
     }
 };

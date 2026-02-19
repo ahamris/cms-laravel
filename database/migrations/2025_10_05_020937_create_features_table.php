@@ -8,6 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Consolidated: features table only (feature_categories and related columns removed).
      */
     public function up(): void
     {

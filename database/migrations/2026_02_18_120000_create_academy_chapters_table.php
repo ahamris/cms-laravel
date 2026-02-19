@@ -8,6 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Consolidated: academy_chapters, add academy_chapter_id to academy_videos, add image_path to academy_categories.
      */
     public function up(): void
     {
@@ -21,6 +22,15 @@ return new class extends Migration
 
             $table->index(['academy_category_id', 'sort_order']);
         });
+
+        Schema::table('academy_videos', function (Blueprint $table) {
+            $table->foreignId('academy_chapter_id')->nullable()->after('academy_category_id')
+                ->constrained('academy_chapters')->nullOnDelete();
+        });
+
+        Schema::table('academy_categories', function (Blueprint $table) {
+            $table->string('image_path')->nullable()->after('description');
+        });
     }
 
     /**
@@ -28,6 +38,14 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('academy_categories', function (Blueprint $table) {
+            $table->dropColumn('image_path');
+        });
+
+        Schema::table('academy_videos', function (Blueprint $table) {
+            $table->dropForeign(['academy_chapter_id']);
+        });
+
         Schema::dropIfExists('academy_chapters');
     }
 };

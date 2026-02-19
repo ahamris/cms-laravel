@@ -16,13 +16,15 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->longText('content')->nullable();
+            $table->string('video_url')->nullable();
             $table->date('date')->nullable();
-            $table->enum('status', ['new', 'improved', 'fixed'])->default('new');
+            $table->enum('status', ['new', 'improved', 'fixed', 'api'])->default('new');
             $table->string('slug')->unique();
             $table->json('features')->nullable();
             $table->json('steps')->nullable();
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);
+            
             $table->timestamps();
 
             // Indexes
