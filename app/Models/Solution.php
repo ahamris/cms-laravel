@@ -113,11 +113,13 @@ class Solution extends BaseModel
     }
 
     /**
-     * Link identifier for headless (anchor only; frontend builds URL).
+     * API path for this solution (headless; frontend uses this to fetch or build URL).
      */
     public function getLinkUrlAttribute(): string
     {
-        return $this->anchor ?? '';
+        $anchor = $this->anchor ?? '';
+
+        return $anchor !== '' ? api_path('solution', $anchor) : api_path('solutions');
     }
 
     /**

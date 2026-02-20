@@ -22,7 +22,7 @@ class SolutionListResource extends JsonResource
             'subtitle' => $this->subtitle,
             'short_body' => $this->short_body,
             'image' => get_image($this->image, asset('images/solutions-og-image.jpg')),
-            'url' => route('solutions.show', $this->anchor),
+            'url' => route('api.solutions.show', $this->anchor),
             'sort_order' => $this->sort_order,
             'created_at' => $this->created_at?->toIso8601String(),
         ];

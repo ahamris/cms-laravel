@@ -97,11 +97,13 @@ class Module extends BaseModel
     }
 
     /**
-     * Link identifier for headless (slug only; frontend builds URL).
+     * API path for this module (headless; frontend uses this to fetch or build URL).
      */
     public function getLinkUrlAttribute(): string
     {
-        return $this->slug ?? '';
+        $slug = $this->slug ?? $this->anchor ?? '';
+
+        return $slug !== '' ? api_path('module', $slug) : api_path('modules');
     }
 
     /**

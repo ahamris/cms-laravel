@@ -129,11 +129,13 @@ class Blog extends BaseModel
     }
 
     /**
-     * Link identifier for headless (slug only; frontend builds URL).
+     * API path for this blog post (headless; frontend uses this to fetch or build URL).
      */
     public function getLinkUrlAttribute(): string
     {
-        return $this->slug ?? '';
+        $slug = $this->slug ?? '';
+
+        return $slug !== '' ? api_path('blog_post', $slug) : api_path('blog');
     }
 
     public function sluggable(): array

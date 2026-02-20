@@ -4,6 +4,27 @@ use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
+if (! function_exists('api_path')) {
+    /**
+     * Build API path from config key. Use for seeders, menus, sitemap (headless).
+     *
+     * @param  string  $key  Key from config('api_paths.endpoints'), e.g. 'home', 'solution', 'module'
+     * @param  string|array  ...$segments  Optional segment(s) for template endpoints (e.g. api_path('solution', 'crm') => '/api/solutions/crm')
+     */
+    function api_path(string $key, ...$segments): string
+    {
+        $prefix = config('api_paths.prefix', 'api');
+        $endpoints = config('api_paths.endpoints', []);
+        $path = $endpoints[$key] ?? $key;
+
+        if (! empty($segments)) {
+            $path = sprintf($path, ...$segments);
+        }
+
+        return '/'.ltrim($prefix.'/'.ltrim($path, '/'), '/');
+    }
+}
+
 if (! function_exists('get_setting')) {
     function get_setting(string $key, ?string $default = null): mixed
     {

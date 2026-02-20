@@ -22,13 +22,13 @@ class MegaMenuSeeder extends Seeder
             'description' => null,
             'icon' => 'fas fa-home',
             'icon_bg_color' => '#3B82F6',
-            'url' => route('home'),
+            'url' => api_path('home'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,
         ]);
 
-        // 2. Solutions (Mega Menu with children)
+        // 2. Solutions (Mega Menu with children) – API endpoints
         $solutions = MegaMenuItem::create([
             'parent_id' => null,
             'order' => 1,
@@ -37,13 +37,13 @@ class MegaMenuSeeder extends Seeder
             'description' => null,
             'icon' => 'fas fa-briefcase',
             'icon_bg_color' => '#10B981',
-            'url' => '/oplossing',
+            'url' => api_path('solutions'),
             'is_mega_menu' => true,
             'is_active' => true,
             'open_in_new_tab' => false,
         ]);
 
-        // Solution 1: Business Management
+        // Solution 1: Business Management – API endpoint
         $solution1 = MegaMenuItem::create([
             'parent_id' => $solutions->id,
             'order' => 1,
@@ -51,11 +51,11 @@ class MegaMenuSeeder extends Seeder
             'subtitle' => 'Core business operations and customer management',
             'icon' => 'fas fa-building',
             'icon_bg_color' => '#3B82F6',
-            'url' => route('solutions.show', ['solution' => 'crm']),
+            'url' => api_path('solution', 'crm'),
             'is_active' => true,
         ]);
 
-        // Solution 2: Financial Operations
+        // Solution 2: Financial Operations – API endpoint
         $solution2 = MegaMenuItem::create([
             'parent_id' => $solutions->id,
             'order' => 2,
@@ -63,7 +63,7 @@ class MegaMenuSeeder extends Seeder
             'subtitle' => 'Accounting, invoicing, and financial management',
             'icon' => 'fas fa-chart-line',
             'icon_bg_color' => '#10B981',
-            'url' => route('solutions.show', ['solution' => 'financial-operations']),
+            'url' => api_path('solution', 'financial-operations'),
             'is_active' => true,
         ]);
 
@@ -83,7 +83,7 @@ class MegaMenuSeeder extends Seeder
                         'subtitle' => $module->subtitle ?: $module->short_body,
                         'icon' => 'fas fa-cube',
                         'icon_bg_color' => '#3B82F6',
-                        'url' => route('module.show', ['module' => $module->anchor]),
+                        'url' => api_path('module', $module->slug ?? $module->anchor),
                         'is_active' => true,
                     ]);
                 }
@@ -101,13 +101,13 @@ class MegaMenuSeeder extends Seeder
                         'subtitle' => $module->subtitle ?: $module->short_body,
                         'icon' => 'fas fa-cube',
                         'icon_bg_color' => '#10B981',
-                        'url' => route('module.show', ['module' => $module->anchor]),
+                        'url' => api_path('module', $module->slug ?? $module->anchor),
                         'is_active' => true,
                     ]);
                 }
             }
         } catch (\Exception $e) {
-            // Fallback: Add static modules under Solution 1
+            // Fallback: Add static modules under Solution 1 – API endpoints
             MegaMenuItem::create([
                 'parent_id' => $solution1->id,
                 'order' => 1,
@@ -115,7 +115,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Customer relationship management',
                 'icon' => 'fas fa-users',
                 'icon_bg_color' => '#3B82F6',
-                'url' => route('solutions.show', ['solution' => 'crm']),
+                'url' => api_path('solution', 'crm'),
                 'is_active' => true,
             ]);
 
@@ -126,7 +126,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Manage projects and tasks',
                 'icon' => 'fas fa-tasks',
                 'icon_bg_color' => '#3B82F6',
-                'url' => route('solutions.show', ['solution' => 'projects']),
+                'url' => api_path('solution', 'projects'),
                 'is_active' => true,
             ]);
 
@@ -137,7 +137,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Create and manage quotes',
                 'icon' => 'fas fa-file-alt',
                 'icon_bg_color' => '#3B82F6',
-                'url' => route('solutions.show', ['solution' => 'quotations']),
+                'url' => api_path('solution', 'quotations'),
                 'is_active' => true,
             ]);
 
@@ -148,7 +148,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Track billable hours',
                 'icon' => 'fas fa-clock',
                 'icon_bg_color' => '#3B82F6',
-                'url' => route('solutions.show', ['solution' => 'time-tracking']),
+                'url' => api_path('solution', 'time-tracking'),
                 'is_active' => true,
             ]);
 
@@ -159,7 +159,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Organize business documents',
                 'icon' => 'fas fa-folder',
                 'icon_bg_color' => '#3B82F6',
-                'url' => route('solutions.show', ['solution' => 'documents']),
+                'url' => api_path('solution', 'documents'),
                 'is_active' => true,
             ]);
 
@@ -170,11 +170,11 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Collaborate with your team',
                 'icon' => 'fas fa-users-cog',
                 'icon_bg_color' => '#3B82F6',
-                'url' => route('solutions.show', ['solution' => 'collaboration']),
+                'url' => api_path('solution', 'collaboration'),
                 'is_active' => true,
             ]);
 
-            // Fallback: Add static modules under Solution 2
+            // Fallback: Add static modules under Solution 2 – API endpoints
             MegaMenuItem::create([
                 'parent_id' => $solution2->id,
                 'order' => 1,
@@ -182,7 +182,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Create and send invoices',
                 'icon' => 'fas fa-file-invoice',
                 'icon_bg_color' => '#10B981',
-                'url' => route('solutions.show', ['solution' => 'invoices']),
+                'url' => api_path('solution', 'invoices'),
                 'is_active' => true,
             ]);
 
@@ -193,7 +193,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Track business expenses',
                 'icon' => 'fas fa-receipt',
                 'icon_bg_color' => '#10B981',
-                'url' => route('solutions.show', ['solution' => 'expenses']),
+                'url' => api_path('solution', 'expenses'),
                 'is_active' => true,
             ]);
 
@@ -204,7 +204,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Business insights and analytics',
                 'icon' => 'fas fa-chart-bar',
                 'icon_bg_color' => '#10B981',
-                'url' => route('solutions.show', ['solution' => 'insights']),
+                'url' => api_path('solution', 'insights'),
                 'is_active' => true,
             ]);
 
@@ -215,7 +215,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Handle tax calculations',
                 'icon' => 'fas fa-calculator',
                 'icon_bg_color' => '#10B981',
-                'url' => route('solutions.show', ['solution' => 'tax']),
+                'url' => api_path('solution', 'tax'),
                 'is_active' => true,
             ]);
 
@@ -226,7 +226,7 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Connect with banks',
                 'icon' => 'fas fa-university',
                 'icon_bg_color' => '#10B981',
-                'url' => route('solutions.show', ['solution' => 'banking']),
+                'url' => api_path('solution', 'banking'),
                 'is_active' => true,
             ]);
 
@@ -237,12 +237,12 @@ class MegaMenuSeeder extends Seeder
                 'subtitle' => 'Handle online payments',
                 'icon' => 'fas fa-credit-card',
                 'icon_bg_color' => '#10B981',
-                'url' => route('solutions.show', ['solution' => 'payments']),
+                'url' => api_path('solution', 'payments'),
                 'is_active' => true,
             ]);
         }
 
-        // 3. Pricing (Simple Link)
+        // 3. Pricing (Simple Link) – API endpoint
         MegaMenuItem::create([
             'parent_id' => null,
             'order' => 2,
@@ -251,13 +251,13 @@ class MegaMenuSeeder extends Seeder
             'description' => null,
             'icon' => 'fas fa-tags',
             'icon_bg_color' => '#F59E0B',
-            'url' => route('pricing'),
+            'url' => api_path('pricing'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,
         ]);
 
-        // 4. Pricing (Simple Link)
+        // 4. Changelog (Simple Link) – API endpoint
         MegaMenuItem::create([
             'parent_id' => null,
             'order' => 3,
@@ -266,13 +266,13 @@ class MegaMenuSeeder extends Seeder
             'description' => null,
             'icon' => 'fas fa-tags',
             'icon_bg_color' => '#F59E0B',
-            'url' => route('changelog.index'),
+            'url' => api_path('changelog'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,
         ]);
 
-        // 5. Blog (Simple Link)
+        // 5. Blog (Simple Link) – API endpoint
         MegaMenuItem::create([
             'parent_id' => null,
             'order' => 4,
@@ -281,13 +281,13 @@ class MegaMenuSeeder extends Seeder
             'description' => null,
             'icon' => 'fas fa-newspaper',
             'icon_bg_color' => '#6366F1',
-            'url' => route('blog'),
+            'url' => api_path('blog'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,
         ]);
 
-        // 6. Contact (Simple Link)
+        // 6. Contact (Simple Link) – API endpoint
         MegaMenuItem::create([
             'parent_id' => null,
             'order' => 5,
@@ -296,7 +296,7 @@ class MegaMenuSeeder extends Seeder
             'description' => null,
             'icon' => 'fas fa-envelope',
             'icon_bg_color' => '#EF4444',
-            'url' => route('contact'),
+            'url' => api_path('contact'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,

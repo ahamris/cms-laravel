@@ -114,11 +114,13 @@ class Page extends BaseModel
     }
 
     /**
-     * Link identifier for headless (slug only; frontend builds URL).
+     * API path for this page (headless; frontend uses this to fetch or build URL).
      */
     public function getLinkUrlAttribute(): string
     {
-        return $this->slug ?? '';
+        $slug = $this->slug ?? '';
+
+        return $slug !== '' ? api_path('page', $slug) : api_path('pages');
     }
 
     public function sluggable(): array

@@ -33,7 +33,7 @@ class SolutionResource extends JsonResource
             'testimonial_author' => $this->testimonial_author,
             'testimonial_company' => $this->testimonial_company,
             'image_position' => $this->image_position,
-            'url' => route('solutions.show', $this->anchor),
+            'url' => route('api.solutions.show', $this->anchor),
             'modules' => ModuleListResource::collection($this->whenLoaded('modules')),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

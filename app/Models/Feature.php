@@ -66,11 +66,13 @@ class Feature extends BaseModel
     }
 
     /**
-     * Link identifier for headless (anchor only; frontend builds URL).
+     * API path for this feature (headless; frontend uses this to fetch or build URL).
      */
     public function getLinkUrlAttribute(): string
     {
-        return $this->anchor ?? '';
+        $anchor = $this->anchor ?? '';
+
+        return $anchor !== '' ? api_path('feature', $anchor) : api_path('features');
     }
 
     protected static function boot()
