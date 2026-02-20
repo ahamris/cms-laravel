@@ -11,7 +11,6 @@ use App\Http\Controllers\Admin\Administrator\UserCrudController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ContactFormController;
 use App\Http\Controllers\Admin\ContactPageSettingsController;
-use App\Http\Controllers\Admin\Content\AboutController;
 use App\Http\Controllers\Admin\Content\AcademyCategoryController;
 use App\Http\Controllers\Admin\Content\AcademyChapterController;
 use App\Http\Controllers\Admin\Content\AcademyVideoController;
@@ -191,10 +190,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // Solutions
             Route::resource('solution', SolutionController::class);
             Route::post('solution/{solution}/toggle-active', [SolutionController::class, 'toggleActive'])->name('solution.toggle-active');
-
-            // About Section (single record only)
-            Route::resource('about', AboutController::class)->except(['create', 'store', 'destroy']);
-            Route::post('about/update-order', [AboutController::class, 'updateOrder'])->name('about.update-order');
 
             // Organization Names
             Route::post('organization-name/update-order', [OrganizationNameController::class, 'updateOrder'])->name('organization-name.update-order');

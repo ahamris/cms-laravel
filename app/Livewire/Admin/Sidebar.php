@@ -112,12 +112,11 @@ class Sidebar extends Component
                         'route_name' => 'admin.content.page.index',
                         'icon' => 'puzzle-piece',
                         'permission' => 'page_access',
-                        'active_pattern' => 'admin.content.page*,admin.content.legal*,admin.content.changelog*,admin.content.about*,admin.content.event*,admin.settings.hero-backgrounds*',
+                        'active_pattern' => 'admin.content.page*,admin.content.legal*,admin.content.changelog*,admin.content.event*,admin.settings.hero-backgrounds*',
                         'children' => [
                             ['label' => 'Pages', 'route_name' => 'admin.content.page.index', 'icon' => 'file-text', 'permission' => 'page_access'],
                             ['label' => 'Legal Pages', 'route_name' => 'admin.content.legal.index', 'icon' => 'list-alt', 'permission' => 'legal_access'],
                             ['label' => 'Changelog', 'route_name' => 'admin.content.changelog.index', 'icon' => 'list-alt', 'permission' => 'changelog_access'],
-                            ['label' => 'About', 'route_name' => 'admin.content.about.index', 'icon' => 'info-circle', 'permission' => 'about_access'],
                             ['label' => 'Event', 'route_name' => 'admin.content.event.index', 'icon' => 'calendar-alt', 'permission' => 'event_access'],
                             ['label' => 'Header Settings', 'route_name' => 'admin.settings.hero-backgrounds.index', 'icon' => 'heading', 'permission' => 'hero_background_access'],
                         ],
@@ -251,9 +250,9 @@ class Sidebar extends Component
                         'permission' => 'user_access',
                         'active_pattern' => 'admin.administrator.users*,admin.administrator.permissions*,admin.administrator.roles*',
                         'children' => [
-                            ['label' => 'Users', 'route_name' => 'admin.administrator.users.index', 'icon' => 'user', 'permission' => 'user_access'],
-                            ['label' => 'Permissions', 'route_name' => 'admin.administrator.permissions.index', 'icon' => 'key', 'permission' => 'permission_access'],
                             ['label' => 'Roles', 'route_name' => 'admin.administrator.roles.index', 'icon' => 'clipboard-list', 'permission' => 'role_access'],
+                            ['label' => 'Permissions', 'route_name' => 'admin.administrator.permissions.index', 'icon' => 'key', 'permission' => 'permission_access'],
+                            ['label' => 'Users', 'route_name' => 'admin.administrator.users.index', 'icon' => 'user', 'permission' => 'user_access'],
                         ],
                     ],
                     [

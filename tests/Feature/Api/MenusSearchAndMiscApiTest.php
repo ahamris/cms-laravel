@@ -127,16 +127,6 @@ test('api proefversie success returns 200', function () {
     $response->assertStatus(200);
 });
 
-// ---- About (over-ons) ----
-test('api over-ons returns 200 when about content exists or 404 when none', function () {
-    $response = $this->getJson(route('api.about'));
-
-    expect([200, 404])->toContain($response->status());
-    if ($response->status() === 200) {
-        $response->assertJsonStructure(['data']);
-    }
-});
-
 // ---- Academy ----
 test('api academy index returns 200', function () {
     $response = $this->getJson(route('api.academy.index'));

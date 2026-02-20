@@ -113,12 +113,6 @@ class Variable
         'changelog_edit' => [self::ROLE_ADMIN],
         'changelog_delete' => [self::ROLE_ADMIN],
 
-        'about_access' => [self::ROLE_ADMIN],
-        'about_show' => [self::ROLE_ADMIN],
-        'about_create' => [self::ROLE_ADMIN],
-        'about_edit' => [self::ROLE_ADMIN],
-        'about_delete' => [self::ROLE_ADMIN],
-
         'event_access' => [self::ROLE_ADMIN],
         'event_show' => [self::ROLE_ADMIN],
         'event_create' => [self::ROLE_ADMIN],

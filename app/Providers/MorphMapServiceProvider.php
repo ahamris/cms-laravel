@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\About;
 use App\Models\ActivityLog;
 use App\Models\Blog;
 use App\Models\BlogCategory;
@@ -58,7 +57,6 @@ class MorphMapServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::enforceMorphMap([
-            'about' => About::class,
             'activity_log' => ActivityLog::class,
             'blog' => Blog::class,
             'blog_category' => BlogCategory::class,

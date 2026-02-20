@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             PricingPlanSeeder::class,
             PricingBoosterSeeder::class,
             PricingFeatureSeeder::class,
-            AboutSeeder::class,
             StickMenuSeeder::class,
             ExternalCodeSeeder::class,
             RobotsTxtSeeder::class,

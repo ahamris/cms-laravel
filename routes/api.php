@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\Frontend\AboutController as ApiAboutController;
 use App\Http\Controllers\Api\Frontend\AcademyController as ApiAcademyController;
 use App\Http\Controllers\Api\Frontend\BlogController as ApiBlogController;
 use App\Http\Controllers\Api\Frontend\ChangelogController as ApiChangelogController;
@@ -75,9 +74,6 @@ Route::middleware('frontend.origins')->group(function () {
     // Trial (proefversie)
     Route::get('/proefversie', [ApiTrialController::class, 'index'])->name('api.trial.index');
     Route::get('/proefversie/success', [ApiTrialController::class, 'success'])->name('api.trial.success');
-
-    // About (over-ons)
-    Route::get('/over-ons', ApiAboutController::class)->name('api.about');
 
     // Academy
     Route::get('/academy', [ApiAcademyController::class, 'index'])->name('api.academy.index');

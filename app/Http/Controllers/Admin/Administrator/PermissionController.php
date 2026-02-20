@@ -3,14 +3,23 @@
 namespace App\Http\Controllers\Admin\Administrator;
 
 use App\Http\Controllers\Admin\AdminBaseController;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 
 class PermissionController extends AdminBaseController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $permissions = Permission::paginate(25);
+        $search = $request->input('search', '');
 
-        return view('admin.administrator.permissions.index', compact('permissions'));
+        $query = Permission::query()->orderBy('name');
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $permissions = $query->get();
+
+        return view('admin.administrator.permissions.index', compact('permissions', 'search'));
     }
 }
