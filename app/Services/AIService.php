@@ -123,7 +123,61 @@ class AIService
     }
 
     /**
-     * Call AI with fallback (Groq first, then Gemini)
+     * Call Ollama API (self-hosted; no API key)
+     */
+    protected function callOllamaAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
+    {
+        try {
+            $baseUrl = \App\Models\AIServiceSetting::getBaseUrl('ollama');
+            if (empty($baseUrl)) {
+                return ['success' => false, 'error' => 'Ollama base URL not configured. Please set it in Admin → Settings → AI Settings.'];
+            }
+
+            $model = \App\Models\AIServiceSetting::getModel('ollama', 'llama3.2');
+            $baseUrl = rtrim($baseUrl, '/');
+
+            $payload = [
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $userMessage],
+                ],
+                'stream' => false,
+                'options' => [
+                    'temperature' => $temperature,
+                    'num_predict' => $maxTokens,
+                ],
+            ];
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->timeout(120)->post("{$baseUrl}/api/chat", $payload);
+
+            if ($response->failed()) {
+                Log::error('Ollama API Error', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+                return ['success' => false, 'error' => 'Ollama request failed: ' . ($response->json()['error'] ?? $response->body())];
+            }
+
+            $data = $response->json();
+            $content = $data['message']['content'] ?? null;
+
+            if (!$content) {
+                return ['success' => false, 'error' => 'No response from Ollama'];
+            }
+
+            return ['success' => true, 'content' => $this->cleanAIResponse($content)];
+
+        } catch (\Exception $e) {
+            Log::error('Ollama AI Error', ['message' => $e->getMessage()]);
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Call AI with fallback (Groq, Gemini, Ollama by priority)
      */
     protected function callAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
     {
@@ -137,7 +191,6 @@ class AIService
             ];
         }
 
-        // Try services in priority order
         foreach ($activeServices as $service) {
             if ($service->service === 'groq') {
                 $result = $this->callGroqAI($systemPrompt, $userMessage, $temperature, $maxTokens);
@@ -151,12 +204,18 @@ class AIService
                     return $result;
                 }
                 Log::warning('Gemini API failed, trying next service', ['error' => $result['error'] ?? 'Unknown']);
+            } elseif ($service->service === 'ollama') {
+                $result = $this->callOllamaAI($systemPrompt, $userMessage, $temperature, $maxTokens);
+                if ($result['success']) {
+                    return $result;
+                }
+                Log::warning('Ollama API failed, trying next service', ['error' => $result['error'] ?? 'Unknown']);
             }
         }
 
         return [
             'success' => false,
-            'error' => 'All configured AI services failed. Please check your API keys in Admin → Settings → AI Settings.',
+            'error' => 'All configured AI services failed. Please check your settings in Admin → Settings → AI Settings.',
         ];
     }
 

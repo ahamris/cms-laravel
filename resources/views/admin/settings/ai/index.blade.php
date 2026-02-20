@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
             <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">AI Settings</h1>
-            <p class="text-zinc-600 dark:text-zinc-400">Configure AI API keys for content generation (Groq and Gemini)</p>
+            <p class="text-zinc-600 dark:text-zinc-400">Configure AI for content generation: Groq, Gemini, or your own Ollama instance</p>
         </div>
     </div>
 
@@ -298,6 +298,114 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Ollama Settings Section --}}
+                <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
+                    <div class="mb-6 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Ollama (self-hosted)</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Use your own Ollama server for private AI content generation</p>
+                        </div>
+                        <button type="button" 
+                                onclick="testConnection('ollama')"
+                                class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+                            <i class="fa-solid fa-plug mr-2"></i>Test Connection
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        {{-- Ollama Base URL --}}
+                        <div>
+                            <label for="ollama_base_url" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">
+                                Base URL
+                            </label>
+                            <input type="url" 
+                                   id="ollama_base_url" 
+                                   name="ollama_base_url" 
+                                   value="{{ old('ollama_base_url', $settings['ollama_base_url'] ?? 'http://localhost:11434') }}"
+                                   placeholder="http://localhost:11434"
+                                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-[var(--color-accent)] @error('ollama_base_url') outline-red-500 dark:outline-red-500 @enderror">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Your Ollama server URL (e.g. <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">http://localhost:11434</code> or your internal host)
+                            </p>
+                            @error('ollama_base_url')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Ollama Model --}}
+                        <div>
+                            <label for="ollama_model" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">
+                                Model
+                            </label>
+                            <select id="ollama_model" 
+                                    name="ollama_model" 
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-[var(--color-accent)]">
+                                <optgroup label="Llama">
+                                    <option value="llama3.2" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'llama3.2' ? 'selected' : '' }}>Llama 3.2</option>
+                                    <option value="llama3.1" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'llama3.1' ? 'selected' : '' }}>Llama 3.1</option>
+                                    <option value="llama3" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'llama3' ? 'selected' : '' }}>Llama 3</option>
+                                    <option value="llama2" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'llama2' ? 'selected' : '' }}>Llama 2</option>
+                                </optgroup>
+                                <optgroup label="Other">
+                                    <option value="mistral" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'mistral' ? 'selected' : '' }}>Mistral</option>
+                                    <option value="mixtral" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'mixtral' ? 'selected' : '' }}>Mixtral</option>
+                                    <option value="codellama" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'codellama' ? 'selected' : '' }}>Code Llama</option>
+                                    <option value="qwen2.5" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'qwen2.5' ? 'selected' : '' }}>Qwen 2.5</option>
+                                    <option value="phi3" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'phi3' ? 'selected' : '' }}>Phi-3</option>
+                                    <option value="gemma2" {{ old('ollama_model', $settings['ollama_model'] ?? '') === 'gemma2' ? 'selected' : '' }}>Gemma 2</option>
+                                </optgroup>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Model must be pulled on your Ollama server (e.g. <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">ollama pull llama3.2</code>)
+                            </p>
+                            @error('ollama_model')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Ollama Active Toggle --}}
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                            <div>
+                                <label for="ollama_is_active" class="block text-sm font-medium text-gray-900 dark:text-white">
+                                    Activate Ollama Service
+                                </label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Enable to use your Ollama instance for AI content generation
+                                </p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" 
+                                       id="ollama_is_active" 
+                                       name="ollama_is_active" 
+                                       value="1"
+                                       {{ old('ollama_is_active', $settings['ollama_is_active'] ?? false) ? 'checked' : '' }}
+                                       class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
+                        {{-- Ollama Priority --}}
+                        <div>
+                            <label for="ollama_priority" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">
+                                Priority (0 = highest priority)
+                            </label>
+                            <input type="number" 
+                                   id="ollama_priority" 
+                                   name="ollama_priority" 
+                                   value="{{ old('ollama_priority', $settings['ollama_priority'] ?? 2) }}"
+                                   min="0" 
+                                   max="10"
+                                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-[var(--color-accent)]">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Lower numbers are tried first. Set to 0 to prefer Ollama over Groq/Gemini.
+                            </p>
+                            @error('ollama_priority')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- Right Column - 1/3 --}}
@@ -312,7 +420,7 @@
                             The system will try services in <strong>priority order</strong> (lower number = higher priority). Services must be <strong>activated</strong> to be used.
                         </p>
                         <p>
-                            You only need to configure one API, but having both provides redundancy.
+                            You can use Groq, Gemini, and/or your own <strong>Ollama</strong> instance. Configure one or more; the system tries them in priority order.
                         </p>
                         <p class="pt-3 border-t border-gray-200 dark:border-white/10">
                             <strong class="text-gray-900 dark:text-white">Note:</strong> Settings are saved to the database. Make sure to activate at least one service for AI features to work.

@@ -14,6 +14,7 @@ class AIServiceSetting extends BaseModel
     protected $fillable = [
         'service',
         'api_key',
+        'base_url',
         'model',
         'is_active',
         'priority',
@@ -52,16 +53,31 @@ class AIServiceSetting extends BaseModel
     public static function isServiceActive(string $service): bool
     {
         $setting = self::getForService($service);
-        return $setting && $setting->is_active && !empty($setting->api_key);
+        if (!$setting || !$setting->is_active) {
+            return false;
+        }
+        if ($service === 'ollama') {
+            return !empty($setting->base_url);
+        }
+        return !empty($setting->api_key);
     }
 
     /**
-     * Get API key for a service
+     * Get API key for a service (null for Ollama)
      */
     public static function getApiKey(string $service): ?string
     {
         $setting = self::getForService($service);
         return $setting && $setting->is_active ? $setting->api_key : null;
+    }
+
+    /**
+     * Get base URL for a service (e.g. Ollama: http://localhost:11434)
+     */
+    public static function getBaseUrl(string $service): ?string
+    {
+        $setting = self::getForService($service);
+        return $setting && $setting->is_active ? ($setting->base_url ?? null) : null;
     }
 
     /**

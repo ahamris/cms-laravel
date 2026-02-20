@@ -15,6 +15,7 @@ class AISettingsController extends AdminBaseController
     {
         $groqSetting = AIServiceSetting::getForService('groq');
         $geminiSetting = AIServiceSetting::getForService('gemini');
+        $ollamaSetting = AIServiceSetting::getForService('ollama');
 
         $settings = [
             'groq_api_key' => $groqSetting->api_key ?? '',
@@ -25,6 +26,10 @@ class AISettingsController extends AdminBaseController
             'gemini_model' => $geminiSetting->model ?? 'gemini-2.0-flash',
             'gemini_is_active' => $geminiSetting->is_active ?? false,
             'gemini_priority' => $geminiSetting->priority ?? 1,
+            'ollama_base_url' => $ollamaSetting->base_url ?? 'http://localhost:11434',
+            'ollama_model' => $ollamaSetting->model ?? 'llama3.2',
+            'ollama_is_active' => $ollamaSetting->is_active ?? false,
+            'ollama_priority' => $ollamaSetting->priority ?? 2,
         ];
 
         $groqModels = $this->fetchGroqModels($settings['groq_api_key'] ?? null);
@@ -85,6 +90,10 @@ class AISettingsController extends AdminBaseController
             'gemini_model' => 'nullable|string|max:100',
             'gemini_is_active' => 'boolean',
             'gemini_priority' => 'integer|min:0|max:10',
+            'ollama_base_url' => 'nullable|string|max:500',
+            'ollama_model' => 'nullable|string|max:100',
+            'ollama_is_active' => 'boolean',
+            'ollama_priority' => 'integer|min:0|max:10',
         ]);
 
         try {
@@ -110,6 +119,19 @@ class AISettingsController extends AdminBaseController
                 ]
             );
 
+            // Update Ollama settings (self-hosted; no API key)
+            $ollamaBaseUrl = isset($validated['ollama_base_url']) ? rtrim(trim($validated['ollama_base_url']), '/') : null;
+            AIServiceSetting::updateOrCreate(
+                ['service' => 'ollama'],
+                [
+                    'api_key' => null,
+                    'base_url' => $ollamaBaseUrl,
+                    'model' => $validated['ollama_model'] ?? 'llama3.2',
+                    'is_active' => $request->has('ollama_is_active') && !empty($ollamaBaseUrl),
+                    'priority' => $validated['ollama_priority'] ?? 2,
+                ]
+            );
+
             // Log activity
             $this->logSettingsUpdate('AI Settings');
 
@@ -129,21 +151,38 @@ class AISettingsController extends AdminBaseController
     public function testConnection(Request $request)
     {
         $request->validate([
-            'provider' => 'required|in:groq,gemini',
+            'provider' => 'required|in:groq,gemini,ollama',
         ]);
 
         try {
             $provider = $request->provider;
             $setting = AIServiceSetting::getForService($provider);
 
-            if (!$setting || !$setting->is_active || empty($setting->api_key)) {
+            if (!$setting) {
+                return response()->json([
+                    'success' => false,
+                    'message' => ucfirst($provider) . ' service is not configured.',
+                ], 400);
+            }
+
+            if ($provider === 'ollama') {
+                if (!empty($setting->base_url)) {
+                    $testResult = $this->performApiTest($provider, $setting->base_url, $setting->model);
+                    return response()->json($testResult);
+                }
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ollama base URL is not set.',
+                ], 400);
+            }
+
+            if (!$setting->is_active || empty($setting->api_key)) {
                 return response()->json([
                     'success' => false,
                     'message' => ucfirst($provider) . ' service is not configured or not active.',
                 ], 400);
             }
 
-            // Try a simple API call to verify the key works
             $testResult = $this->performApiTest($provider, $setting->api_key, $setting->model);
 
             return response()->json($testResult);
@@ -158,14 +197,15 @@ class AISettingsController extends AdminBaseController
 
     /**
      * Perform actual API test.
+     * For Ollama, $apiKey is the base URL.
      */
-    protected function performApiTest(string $provider, string $apiKey, string $model): array
+    protected function performApiTest(string $provider, string $apiKeyOrBaseUrl, string $model): array
     {
         try {
             if ($provider === 'groq') {
                 $response = \Http::withHeaders([
                     'Content-Type' => 'application/json',
-                    'Authorization' => "Bearer {$apiKey}",
+                    'Authorization' => "Bearer {$apiKeyOrBaseUrl}",
                 ])->timeout(10)->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => $model,
                     'messages' => [
@@ -185,33 +225,61 @@ class AISettingsController extends AdminBaseController
                         'message' => 'Groq API test failed: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
                     ];
                 }
-            } else {
+            }
+
+            if ($provider === 'ollama') {
+                $baseUrl = rtrim($apiKeyOrBaseUrl, '/');
                 $response = \Http::withHeaders([
                     'Content-Type' => 'application/json',
-                ])->timeout(10)->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}", [
-                    'contents' => [
-                        [
-                            'parts' => [
-                                ['text' => 'Say test']
-                            ]
-                        ]
+                ])->timeout(15)->post("{$baseUrl}/api/chat", [
+                    'model' => $model,
+                    'messages' => [
+                        ['role' => 'user', 'content' => 'Say "test"'],
                     ],
-                    'generationConfig' => [
-                        'maxOutputTokens' => 10,
-                    ],
+                    'stream' => false,
                 ]);
 
                 if ($response->successful()) {
                     return [
                         'success' => true,
-                        'message' => 'Gemini API connection successful!',
+                        'message' => 'Ollama connection successful!',
                     ];
                 } else {
+                    $body = $response->json();
+                    $err = $body['error'] ?? $response->body();
                     return [
                         'success' => false,
-                        'message' => 'Gemini API test failed: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
+                        'message' => 'Ollama test failed: ' . (is_string($err) ? $err : json_encode($err)),
                     ];
                 }
+            }
+
+            // Gemini
+            $response = \Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->timeout(10)->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKeyOrBaseUrl}", [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => 'Say test']
+                        ]
+                    ]
+                ],
+                'generationConfig' => [
+                    'maxOutputTokens' => 10,
+                ],
+            ]);
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'message' => 'Gemini API connection successful!',
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Gemini API test failed: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
+                ];
             }
 
         } catch (\Exception $e) {
