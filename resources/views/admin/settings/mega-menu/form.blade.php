@@ -259,6 +259,19 @@
                    class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
             <span class="text-sm text-gray-700">Open in new tab</span>
         </label>
+
+        <!-- Tags (multiple, comma-separated) -->
+        <div>
+            <label for="tags" class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <input type="text" name="tags" id="tags"
+                   value="{{ old('tags', implode(', ', optional($megaMenu)->tags ?? [])) }}"
+                   placeholder="e.g. nav, cta, primary (comma-separated)"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+            <p class="text-xs text-gray-500 mt-1">Multiple tags allowed, comma-separated. Used for styling or grouping (e.g. nav, dropdown, cta, primary).</p>
+            @error('tags')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
     </div>
 </div>
 

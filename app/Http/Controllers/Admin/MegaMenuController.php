@@ -79,7 +79,10 @@ class MegaMenuController extends AdminBaseController
             'is_mega_menu' => 'boolean',
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
+            'tags' => 'nullable|string|max:500',
         ]);
+
+        $validated['tags'] = self::normalizeTags($request->input('tags'));
 
         // Validate max depth for new items
         if (! empty($validated['parent_id'])) {
@@ -155,7 +158,10 @@ class MegaMenuController extends AdminBaseController
             'is_mega_menu' => 'boolean',
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
+            'tags' => 'nullable|string|max:500',
         ]);
+
+        $validated['tags'] = self::normalizeTags($request->input('tags'));
 
         // Cycle Detection
         if (! empty($validated['parent_id'])) {
@@ -230,10 +236,12 @@ class MegaMenuController extends AdminBaseController
             'icon_bg_color' => 'nullable|string|max:7',
             'is_active' => 'boolean',
             'link_type' => 'nullable|string|in:predefined,custom,system,page',
+            'tags' => 'nullable|string|max:500',
         ]);
 
         $validated = $this->processUrlByLinkType($request, $validated);
         unset($validated['link_type']);
+        $validated['tags'] = self::normalizeTags($request->input('tags'));
 
         // Get the next order number for this parent
         $nextOrder = $megaMenu->children()->max('order') + 1;
@@ -250,6 +258,7 @@ class MegaMenuController extends AdminBaseController
             'is_mega_menu' => false,
             'is_active' => $validated['is_active'] ?? true,
             'open_in_new_tab' => false,
+            'tags' => $validated['tags'],
         ]);
 
         // Clear mega menu cache
@@ -303,6 +312,7 @@ class MegaMenuController extends AdminBaseController
             'icon_bg_color' => 'nullable|string|max:50',
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
+            'tags' => 'nullable|string|max:500',
         ]);
 
         // Process URL based on link type
@@ -314,6 +324,7 @@ class MegaMenuController extends AdminBaseController
 
         // Remove link_type from validated data as it's not a database field
         unset($validated['link_type']);
+        $validated['tags'] = self::normalizeTags($request->input('tags'));
 
         $subItem->update($validated);
 
@@ -478,6 +489,22 @@ class MegaMenuController extends AdminBaseController
 
         return redirect()->route('admin.settings.mega-menu.index')
             ->with('success', 'Header CTA settings updated successfully.');
+    }
+
+    /**
+     * Normalize tags from request (comma-separated string or array) to array or null.
+     */
+    private static function normalizeTags($input): ?array
+    {
+        if ($input === null || $input === '') {
+            return null;
+        }
+        if (is_array($input)) {
+            $tags = array_values(array_filter(array_map('trim', $input)));
+            return empty($tags) ? null : $tags;
+        }
+        $tags = array_values(array_filter(array_map('trim', explode(',', (string) $input))));
+        return empty($tags) ? null : $tags;
     }
 
     /**

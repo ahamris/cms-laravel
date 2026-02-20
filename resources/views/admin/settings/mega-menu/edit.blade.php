@@ -249,6 +249,16 @@
                                        class="w-full h-10 border border-gray-300 rounded-lg">
                             </div>
 
+                            <!-- Tags -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                                <input type="text" 
+                                       name="tags"
+                                       placeholder="e.g. dropdown-item (comma-separated)"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                                <p class="text-xs text-gray-500 mt-1">Optional. Comma-separated, e.g. dropdown-item</p>
+                            </div>
+
                             <!-- Active Status -->
                             <div class="flex items-center">
                                 <input type="checkbox" 
@@ -398,6 +408,16 @@
                                        class="w-full h-10 border border-gray-300 rounded-lg">
                             </div>
 
+                            <!-- Tags -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                                <input type="text" 
+                                       x-model="editForm.tags"
+                                       placeholder="e.g. dropdown-item (comma-separated)"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                                <p class="text-xs text-gray-500 mt-1">Optional. Comma-separated</p>
+                            </div>
+
                             <!-- Active Status -->
                             <div class="flex items-center space-x-4">
                                 <label class="flex items-center space-x-2 cursor-pointer">
@@ -462,7 +482,8 @@ function subItemManager() {
             icon: '',
             icon_bg_color: '#3B82F6',
             is_active: true,
-            open_in_new_tab: false
+            open_in_new_tab: false,
+            tags: ''
         },
         editLinkType: 'custom',
         editSelectedRoute: '',
@@ -503,6 +524,7 @@ function subItemManager() {
                 
                 if (data.success) {
                     this.currentEditId = subItemId;
+                    const tags = data.subItem.tags;
                     this.editForm = {
                         title: data.subItem.title || '',
                         subtitle: data.subItem.subtitle || '',
@@ -510,7 +532,8 @@ function subItemManager() {
                         icon: data.subItem.icon || '',
                         icon_bg_color: data.subItem.icon_bg_color || '#3B82F6',
                         is_active: data.subItem.is_active || false,
-                        open_in_new_tab: data.subItem.open_in_new_tab || false
+                        open_in_new_tab: data.subItem.open_in_new_tab || false,
+                        tags: Array.isArray(tags) ? tags.join(', ') : (tags || '')
                     };
                     
                     // Determine link type and set appropriate values
@@ -589,6 +612,7 @@ function subItemManager() {
                 formData.append('icon_bg_color', this.editForm.icon_bg_color || '#3B82F6');
                 formData.append('is_active', this.editForm.is_active ? '1' : '0');
                 formData.append('open_in_new_tab', this.editForm.open_in_new_tab ? '1' : '0');
+                formData.append('tags', this.editForm.tags || '');
                 
                 const response = await fetch(`{{ route('admin.settings.mega-menu.update-sub-item', [$megaMenu, '__SUBITEM__']) }}`.replace('__SUBITEM__', this.currentEditId), {
                     method: 'POST',
@@ -617,5 +641,4 @@ function subItemManager() {
     };
 }
 </script>
-    </script>
 </x-layouts.admin>

@@ -5,6 +5,12 @@ namespace Database\Seeders;
 use App\Models\MegaMenuItem;
 use Illuminate\Database\Seeder;
 
+/**
+ * Seeds header mega menu to match Websiteplan OpenPublication.EU (sectie 3. Sitemap).
+ * Hoofdmenu: Regie op informatie · Leren & Doen · Op de hoogte · Achter OpenPublication · In gesprek
+ * CTA: Demo aanvragen, Contact
+ * All URLs use api_path() for headless API endpoints.
+ */
 class MegaMenuSeeder extends Seeder
 {
     public function run(): void
@@ -13,7 +19,11 @@ class MegaMenuSeeder extends Seeder
             return;
         }
 
-        // 1. Home (Simple Link)
+        $primaryDark = '#001f4c';
+        $primary = '#1f64aa';
+        $secondary = '#709bc1';
+
+        // 1. Home (simple link)
         MegaMenuItem::create([
             'parent_id' => null,
             'order' => 0,
@@ -21,285 +31,316 @@ class MegaMenuSeeder extends Seeder
             'subtitle' => null,
             'description' => null,
             'icon' => 'fas fa-home',
-            'icon_bg_color' => '#3B82F6',
+            'icon_bg_color' => $primary,
             'url' => api_path('home'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,
+            'tags' => ['nav'],
         ]);
 
-        // 2. Solutions (Mega Menu with children) – API endpoints
-        $solutions = MegaMenuItem::create([
+        // 2. Regie op informatie (Oplossingen) – mega menu
+        $regie = MegaMenuItem::create([
             'parent_id' => null,
             'order' => 1,
-            'title' => 'Solutions',
-            'subtitle' => 'Explore our software solutions',
+            'title' => 'Regie op informatie',
+            'subtitle' => 'Oplossingen voor Woo, informatiehuishouding, openbaarmaking en archivering.',
             'description' => null,
-            'icon' => 'fas fa-briefcase',
-            'icon_bg_color' => '#10B981',
+            'icon' => 'fas fa-layer-group',
+            'icon_bg_color' => $primary,
             'url' => api_path('solutions'),
             'is_mega_menu' => true,
             'is_active' => true,
             'open_in_new_tab' => false,
+            'tags' => ['nav', 'dropdown'],
         ]);
 
-        // Solution 1: Business Management – API endpoint
-        $solution1 = MegaMenuItem::create([
-            'parent_id' => $solutions->id,
-            'order' => 1,
-            'title' => 'Business Management',
-            'subtitle' => 'Core business operations and customer management',
-            'icon' => 'fas fa-building',
-            'icon_bg_color' => '#3B82F6',
-            'url' => api_path('solution', 'crm'),
-            'is_active' => true,
-        ]);
-
-        // Solution 2: Financial Operations – API endpoint
-        $solution2 = MegaMenuItem::create([
-            'parent_id' => $solutions->id,
-            'order' => 2,
-            'title' => 'Financial Operations',
-            'subtitle' => 'Accounting, invoicing, and financial management',
-            'icon' => 'fas fa-chart-line',
-            'icon_bg_color' => '#10B981',
-            'url' => api_path('solution', 'financial-operations'),
-            'is_active' => true,
-        ]);
-
-        // Populate modules under Solution 1 (Business Management)
-        try {
-            if (class_exists('\App\Models\Module')) {
-                $businessModules = \App\Models\Module::where('is_active', true)
-                    ->whereIn('anchor', ['crm', 'projects', 'quotations'])
-                    ->orderBy('sort_order')
-                    ->get();
-
-                foreach ($businessModules as $index => $module) {
-                    MegaMenuItem::create([
-                        'parent_id' => $solution1->id,
-                        'order' => $index + 1,
-                        'title' => $module->nav_title ?: $module->title,
-                        'subtitle' => $module->subtitle ?: $module->short_body,
-                        'icon' => 'fas fa-cube',
-                        'icon_bg_color' => '#3B82F6',
-                        'url' => api_path('module', $module->slug ?? $module->anchor),
-                        'is_active' => true,
-                    ]);
-                }
-
-                $financialModules = \App\Models\Module::where('is_active', true)
-                    ->whereIn('anchor', ['expenses', 'invoices', 'insights'])
-                    ->orderBy('sort_order')
-                    ->get();
-
-                foreach ($financialModules as $index => $module) {
-                    MegaMenuItem::create([
-                        'parent_id' => $solution2->id,
-                        'order' => $index + 1,
-                        'title' => $module->nav_title ?: $module->title,
-                        'subtitle' => $module->subtitle ?: $module->short_body,
-                        'icon' => 'fas fa-cube',
-                        'icon_bg_color' => '#10B981',
-                        'url' => api_path('module', $module->slug ?? $module->anchor),
-                        'is_active' => true,
-                    ]);
-                }
-            }
-        } catch (\Exception $e) {
-            // Fallback: Add static modules under Solution 1 – API endpoints
-            MegaMenuItem::create([
-                'parent_id' => $solution1->id,
-                'order' => 1,
-                'title' => 'CRM',
-                'subtitle' => 'Customer relationship management',
-                'icon' => 'fas fa-users',
-                'icon_bg_color' => '#3B82F6',
-                'url' => api_path('solution', 'crm'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution1->id,
-                'order' => 2,
-                'title' => 'Project Management',
-                'subtitle' => 'Manage projects and tasks',
-                'icon' => 'fas fa-tasks',
-                'icon_bg_color' => '#3B82F6',
-                'url' => api_path('solution', 'projects'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution1->id,
-                'order' => 3,
-                'title' => 'Quotations',
-                'subtitle' => 'Create and manage quotes',
-                'icon' => 'fas fa-file-alt',
-                'icon_bg_color' => '#3B82F6',
-                'url' => api_path('solution', 'quotations'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution1->id,
-                'order' => 4,
-                'title' => 'Time Tracking',
-                'subtitle' => 'Track billable hours',
-                'icon' => 'fas fa-clock',
-                'icon_bg_color' => '#3B82F6',
-                'url' => api_path('solution', 'time-tracking'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution1->id,
-                'order' => 5,
-                'title' => 'Document Management',
-                'subtitle' => 'Organize business documents',
-                'icon' => 'fas fa-folder',
-                'icon_bg_color' => '#3B82F6',
-                'url' => api_path('solution', 'documents'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution1->id,
-                'order' => 6,
-                'title' => 'Team Collaboration',
-                'subtitle' => 'Collaborate with your team',
-                'icon' => 'fas fa-users-cog',
-                'icon_bg_color' => '#3B82F6',
-                'url' => api_path('solution', 'collaboration'),
-                'is_active' => true,
-            ]);
-
-            // Fallback: Add static modules under Solution 2 – API endpoints
-            MegaMenuItem::create([
-                'parent_id' => $solution2->id,
-                'order' => 1,
-                'title' => 'Invoicing',
-                'subtitle' => 'Create and send invoices',
-                'icon' => 'fas fa-file-invoice',
-                'icon_bg_color' => '#10B981',
-                'url' => api_path('solution', 'invoices'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution2->id,
-                'order' => 2,
-                'title' => 'Expense Management',
-                'subtitle' => 'Track business expenses',
-                'icon' => 'fas fa-receipt',
-                'icon_bg_color' => '#10B981',
-                'url' => api_path('solution', 'expenses'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution2->id,
-                'order' => 3,
-                'title' => 'Financial Reports',
-                'subtitle' => 'Business insights and analytics',
-                'icon' => 'fas fa-chart-bar',
-                'icon_bg_color' => '#10B981',
-                'url' => api_path('solution', 'insights'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution2->id,
-                'order' => 4,
-                'title' => 'Tax Management',
-                'subtitle' => 'Handle tax calculations',
-                'icon' => 'fas fa-calculator',
-                'icon_bg_color' => '#10B981',
-                'url' => api_path('solution', 'tax'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution2->id,
-                'order' => 5,
-                'title' => 'Banking Integration',
-                'subtitle' => 'Connect with banks',
-                'icon' => 'fas fa-university',
-                'icon_bg_color' => '#10B981',
-                'url' => api_path('solution', 'banking'),
-                'is_active' => true,
-            ]);
-
-            MegaMenuItem::create([
-                'parent_id' => $solution2->id,
-                'order' => 6,
-                'title' => 'Payment Processing',
-                'subtitle' => 'Handle online payments',
-                'icon' => 'fas fa-credit-card',
-                'icon_bg_color' => '#10B981',
-                'url' => api_path('solution', 'payments'),
-                'is_active' => true,
-            ]);
-        }
-
-        // 3. Pricing (Simple Link) – API endpoint
         MegaMenuItem::create([
+            'parent_id' => $regie->id,
+            'order' => 1,
+            'title' => 'Woo-verzoeken',
+            'subtitle' => 'Afhandeling & Dossierbeheer',
+            'icon' => 'fas fa-folder-open',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('solution', 'woo-verzoeken'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $regie->id,
+            'order' => 2,
+            'title' => 'Actieve openbaarmaking',
+            'subtitle' => 'Transparant volgens de wet',
+            'icon' => 'fas fa-globe',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('solution', 'actieve-openbaarmaking'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $regie->id,
+            'order' => 3,
+            'title' => 'Publicatieplatform',
+            'subtitle' => 'Gecentraliseerd & Toegankelijk',
+            'icon' => 'fas fa-desktop',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('solution', 'publicatieplatform'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $regie->id,
+            'order' => 4,
+            'title' => 'Informatieobjectcatalogus & Data-regie',
+            'subtitle' => 'Metadata, levenscyclusbeheer, API-first.',
+            'icon' => 'fas fa-database',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('solution', 'informatieobjectcatalogus'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        // 3. Leren & Doen (Academy) – mega menu
+        $leren = MegaMenuItem::create([
             'parent_id' => null,
             'order' => 2,
-            'title' => 'Pricing',
-            'subtitle' => null,
+            'title' => 'Leren & Doen',
+            'subtitle' => 'Academy: webinars, OPMS in Vogelvlucht, Terugkijken.',
             'description' => null,
-            'icon' => 'fas fa-tags',
-            'icon_bg_color' => '#F59E0B',
-            'url' => api_path('pricing'),
-            'is_mega_menu' => false,
+            'icon' => 'fas fa-graduation-cap',
+            'icon_bg_color' => $primary,
+            'url' => api_path('academy'),
+            'is_mega_menu' => true,
             'is_active' => true,
             'open_in_new_tab' => false,
+            'tags' => ['nav', 'dropdown'],
         ]);
 
-        // 4. Changelog (Simple Link) – API endpoint
         MegaMenuItem::create([
+            'parent_id' => $leren->id,
+            'order' => 1,
+            'title' => 'Live sessies',
+            'subtitle' => 'Webinars en live sessies.',
+            'icon' => 'fas fa-video',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('live_sessions'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $leren->id,
+            'order' => 2,
+            'title' => 'Terugkijken',
+            'subtitle' => 'Opnames van eerdere sessies.',
+            'icon' => 'fas fa-history',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('live_sessions_recordings'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $leren->id,
+            'order' => 3,
+            'title' => 'OPMS in Vogelvlucht',
+            'subtitle' => 'Snel meegroeien met OPMS.',
+            'icon' => 'fas fa-play-circle',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('academy'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        // 4. Op de hoogte – mega menu
+        $hoogte = MegaMenuItem::create([
             'parent_id' => null,
             'order' => 3,
-            'title' => 'Changelog',
-            'subtitle' => null,
+            'title' => 'Op de hoogte',
+            'subtitle' => 'Succesverhalen, changelog, nieuws en blog.',
             'description' => null,
-            'icon' => 'fas fa-tags',
-            'icon_bg_color' => '#F59E0B',
-            'url' => api_path('changelog'),
-            'is_mega_menu' => false,
+            'icon' => 'fas fa-bullhorn',
+            'icon_bg_color' => $primary,
+            'url' => api_path('blog'),
+            'is_mega_menu' => true,
             'is_active' => true,
             'open_in_new_tab' => false,
+            'tags' => ['nav', 'dropdown'],
         ]);
 
-        // 5. Blog (Simple Link) – API endpoint
         MegaMenuItem::create([
-            'parent_id' => null,
+            'parent_id' => $hoogte->id,
+            'order' => 1,
+            'title' => 'Zo doen zij het',
+            'subtitle' => 'Succesverhalen en cases.',
+            'icon' => 'fas fa-award',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('page', 'zo-doen-zij-het'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $hoogte->id,
+            'order' => 2,
+            'title' => 'Wat is er nieuw',
+            'subtitle' => 'Changelog en releases.',
+            'icon' => 'fas fa-code-branch',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('changelog'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $hoogte->id,
+            'order' => 3,
+            'title' => 'Nieuws',
+            'subtitle' => 'Actuele berichten.',
+            'icon' => 'fas fa-newspaper',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('blog'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $hoogte->id,
             'order' => 4,
             'title' => 'Blog',
+            'subtitle' => 'Artikelen en inzichten.',
+            'icon' => 'fas fa-pen-fancy',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('blog'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        // 5. Achter OpenPublication – mega menu
+        $achter = MegaMenuItem::create([
+            'parent_id' => null,
+            'order' => 4,
+            'title' => 'Achter OpenPublication',
+            'subtitle' => 'Ons verhaal, partners en werken bij.',
+            'description' => null,
+            'icon' => 'fas fa-building',
+            'icon_bg_color' => $primary,
+            'url' => api_path('page', 'ons-verhaal'),
+            'is_mega_menu' => true,
+            'is_active' => true,
+            'open_in_new_tab' => false,
+            'tags' => ['nav', 'dropdown'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $achter->id,
+            'order' => 1,
+            'title' => 'Ons verhaal',
+            'subtitle' => 'Wie is OpenPublication.',
+            'icon' => 'fas fa-book-open',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('page', 'ons-verhaal'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $achter->id,
+            'order' => 2,
+            'title' => 'Partners',
+            'subtitle' => 'ODC-Noord, Logius, SSC-ICT, PaaS.',
+            'icon' => 'fas fa-handshake',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('page', 'partners'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $achter->id,
+            'order' => 3,
+            'title' => 'Werken bij',
+            'subtitle' => 'Codelabs en vacatures.',
+            'icon' => 'fas fa-briefcase',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('vacancies'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        // 6. In gesprek – mega menu
+        $gesprek = MegaMenuItem::create([
+            'parent_id' => null,
+            'order' => 5,
+            'title' => 'In gesprek',
+            'subtitle' => 'Ondersteuning en contact.',
+            'description' => null,
+            'icon' => 'fas fa-comments',
+            'icon_bg_color' => $primary,
+            'url' => api_path('contact'),
+            'is_mega_menu' => true,
+            'is_active' => true,
+            'open_in_new_tab' => false,
+            'tags' => ['nav', 'dropdown'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $gesprek->id,
+            'order' => 1,
+            'title' => 'Ondersteuning',
+            'subtitle' => 'Vraag, demo, prijsopgave, sparren.',
+            'icon' => 'fas fa-life-ring',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('page', 'ondersteuning'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        MegaMenuItem::create([
+            'parent_id' => $gesprek->id,
+            'order' => 2,
+            'title' => 'Contact',
+            'subtitle' => 'Overzicht en formulieren.',
+            'icon' => 'fas fa-envelope',
+            'icon_bg_color' => $secondary,
+            'url' => api_path('contact'),
+            'is_active' => true,
+            'tags' => ['dropdown-item'],
+        ]);
+
+        // 7. Demo aanvragen (CTA – primair)
+        MegaMenuItem::create([
+            'parent_id' => null,
+            'order' => 6,
+            'title' => 'Demo aanvragen',
             'subtitle' => null,
             'description' => null,
-            'icon' => 'fas fa-newspaper',
-            'icon_bg_color' => '#6366F1',
-            'url' => api_path('blog'),
+            'icon' => 'fas fa-rocket',
+            'icon_bg_color' => $primary,
+            'url' => api_path('trial'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,
+            'tags' => ['cta', 'primary'],
         ]);
 
-        // 6. Contact (Simple Link) – API endpoint
+        // 8. Contact (CTA – secundair)
         MegaMenuItem::create([
             'parent_id' => null,
-            'order' => 5,
+            'order' => 7,
             'title' => 'Contact',
             'subtitle' => null,
             'description' => null,
             'icon' => 'fas fa-envelope',
-            'icon_bg_color' => '#EF4444',
+            'icon_bg_color' => $secondary,
             'url' => api_path('contact'),
             'is_mega_menu' => false,
             'is_active' => true,
             'open_in_new_tab' => false,
+            'tags' => ['cta', 'secondary'],
         ]);
     }
 }

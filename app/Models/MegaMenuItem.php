@@ -29,6 +29,7 @@ class MegaMenuItem extends BaseModel
         'is_mega_menu',
         'is_active',
         'open_in_new_tab',
+        'tags',
     ];
 
     protected function casts(): array
@@ -37,6 +38,7 @@ class MegaMenuItem extends BaseModel
             'is_mega_menu' => 'boolean',
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
+            'tags' => 'array',
             'order' => 'integer',
             'parent_id' => 'integer',
             'page_id' => 'integer',

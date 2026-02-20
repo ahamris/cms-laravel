@@ -7,14 +7,17 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'MenuItem',
     title: 'Menu item',
-    description: 'Header menu tree node (id, title, subtitle, description, url, order, children)',
+    description: 'Header menu tree node (id, title, subtitle, description, url, slug, page_type, order, tags, children)',
     properties: [
         new OA\Property(property: 'id', type: 'integer', nullable: true),
         new OA\Property(property: 'title', type: 'string'),
         new OA\Property(property: 'subtitle', type: 'string', nullable: true),
         new OA\Property(property: 'description', type: 'string', nullable: true),
-        new OA\Property(property: 'url', type: 'string', format: 'uri'),
+        new OA\Property(property: 'url', type: 'string', nullable: true, description: 'Resolved link URL/path'),
+        new OA\Property(property: 'slug', type: 'string', nullable: true, description: 'Page slug when page_type is page'),
+        new OA\Property(property: 'page_type', type: 'string', enum: ['page', 'custom']),
         new OA\Property(property: 'order', type: 'integer'),
+        new OA\Property(property: 'tags', type: 'array', items: new OA\Items(type: 'string'), description: 'Optional tags for styling or grouping (e.g. nav, cta, primary)'),
         new OA\Property(property: 'children', type: 'array', items: new OA\Items(ref: '#/components/schemas/MenuItem')),
     ]
 )]

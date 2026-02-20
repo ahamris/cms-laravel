@@ -129,9 +129,11 @@ class MenuController extends Controller
             'title' => $item['title'] ?? '',
             'subtitle' => $item['subtitle'] ?? null,
             'description' => $item['description'] ?? null,
+            'url' => $item['url'] ?? null,
             'slug' => $item['page']['slug'] ?? null,
             'page_type' => ! empty($item['page_id']) ? 'page' : 'custom',
             'order' => (int) ($item['order'] ?? 0),
+            'tags' => $item['tags'] ?? [],
         ];
 
         $children = $item['children'] ?? [];
