@@ -47,6 +47,11 @@ class AllowFrontendOrigins
             return $next($request);
         }
 
+        // Always allow localhost for developers (e.g. Vite dev server at localhost:5173)
+        if (strtolower($requestHost) === 'localhost') {
+            return $next($request);
+        }
+
         foreach ($allowed as $domain) {
             $domain = trim($domain);
             if ($domain === '') {
