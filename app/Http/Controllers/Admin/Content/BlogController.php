@@ -268,17 +268,32 @@ class BlogController extends AdminBaseController
     }
 
     /**
-     * Create social media posts for a blog
+     * Create social media posts for a blog.
+     * Use post_to_all=true to post to all active platforms with API credentials configured.
      */
     public function createSocialMediaPost(Request $request, Blog $blog, SocialMediaPostingService $socialMediaService)
     {
         $request->validate([
-            'platforms' => 'required|array|min:1',
+            'platforms' => 'nullable|array',
             'platforms.*' => 'exists:social_media_platforms,id',
+            'post_to_all' => 'nullable|boolean',
             'schedule_type' => 'required|in:now,scheduled',
             'scheduled_at' => 'required_if:schedule_type,scheduled|nullable|date|after:now',
             'custom_content' => 'nullable|string|max:5000',
         ]);
+
+        $platformIds = $request->boolean('post_to_all')
+            ? $socialMediaService->getActiveConfiguredPlatforms()->pluck('id')->toArray()
+            : ($request->input('platforms', []));
+
+        if (empty($platformIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => $request->boolean('post_to_all')
+                    ? 'No active platforms with API credentials configured. Add credentials in Settings → Social Media Platforms.'
+                    : 'Please select at least one platform.',
+            ], 422);
+        }
 
         try {
             $scheduledAt = null;
@@ -288,7 +303,7 @@ class BlogController extends AdminBaseController
 
             $results = $socialMediaService->quickPostToMultiplePlatforms(
                 $blog,
-                $request->platforms,
+                $platformIds,
                 $scheduledAt
             );
 

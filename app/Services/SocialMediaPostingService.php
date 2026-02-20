@@ -342,11 +342,23 @@ class SocialMediaPostingService
     }
 
     /**
-     * Get available platforms for posting
+     * Get available platforms for posting (all active).
      */
     public function getAvailablePlatforms(): \Illuminate\Database\Eloquent\Collection
     {
         return SocialMediaPlatform::active()->ordered()->get();
+    }
+
+    /**
+     * Get platforms that are active, have API credentials, and support auto-posting.
+     * Use this for "post to all" (shareToAll / shareImageToAll / shareVideoToAll semantics).
+     */
+    public function getActiveConfiguredPlatforms(): \Illuminate\Database\Eloquent\Collection
+    {
+        return SocialMediaPlatform::active()
+            ->ordered()
+            ->get()
+            ->filter(fn (SocialMediaPlatform $p) => $p->isConfigured() && $p->supportsAutoPost());
     }
 
     /**

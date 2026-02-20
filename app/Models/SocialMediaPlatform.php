@@ -27,6 +27,14 @@ class SocialMediaPlatform extends BaseModel
         'is_active' => 'boolean',
     ];
 
+    protected $hidden = [
+        'api_credentials',
+    ];
+
+    protected $appends = [
+        'is_configured',
+    ];
+
     // Relationships
     public function socialMediaPosts(): HasMany
     {
@@ -48,6 +56,11 @@ class SocialMediaPlatform extends BaseModel
     public function isConfigured(): bool
     {
         return !empty($this->api_credentials);
+    }
+
+    public function getIsConfiguredAttribute(): bool
+    {
+        return $this->isConfigured();
     }
 
     public function getPostsCount(): int

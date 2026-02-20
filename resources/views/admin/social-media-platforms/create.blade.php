@@ -10,7 +10,7 @@
             </a>
         </div>
 
-        <form action="{{ route('admin.settings.social-media-platforms.store') }}" method="POST" class="max-w-2xl">
+        <form action="{{ route('admin.settings.social-media-platforms.store') }}" method="POST">
             @csrf
 
             @if($errors->any())
@@ -23,39 +23,53 @@
                 </div>
             @endif
 
-            <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 space-y-6">
-                <x-ui.input id="name" name="name" :value="old('name')" label="Name" placeholder="e.g. LinkedIn" required />
-                <x-ui.input id="slug" name="slug" :value="old('slug')" label="Slug" placeholder="e.g. linkedin" required />
-                <x-ui.icon-picker id="icon" name="icon" :value="old('icon')" label="Icon (FontAwesome)" help-text="Select a FontAwesome icon for the platform" :required="false" />
-                <div>
-                    <label for="color" class="block text-sm font-medium text-zinc-900 dark:text-white">Color (hex)</label>
-                    <div class="mt-2 flex items-center gap-2">
-                        <input type="color" id="color-picker" value="{{ old('color', '#0077b5') }}" class="h-10 w-14 rounded border border-gray-300 dark:border-white/20 cursor-pointer">
-                        <x-ui.input id="color" name="color" type="text" :value="old('color', '#0077b5')" placeholder="#0077b5" maxlength="7" class="flex-1" />
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {{-- Left: Platform settings --}}
+                <div class="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 space-y-6 shadow-sm">
+                    <div class="flex items-center gap-2 border-b border-zinc-200 dark:border-white/10 pb-3">
+                        <i class="fa-solid fa-sliders text-zinc-500 dark:text-zinc-400"></i>
+                        <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">Platform settings</h2>
                     </div>
-                    @error('color')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
-                </div>
-                <x-ui.input id="sort_order" name="sort_order" type="number" :value="old('sort_order', 0)" label="Sort order" min="0" />
-                <div>
-                    <x-ui.toggle id="is_active" name="is_active" :checked="old('is_active', true)" label="Active" />
-                </div>
-            </div>
-
-            <div class="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5 p-6 space-y-4 mt-6">
-                <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">API credentials (for auto-posting)</h2>
-                <p class="text-sm text-zinc-600 dark:text-zinc-400">Use one of these slugs to enable credential fields: <code class="text-xs bg-zinc-200 dark:bg-zinc-700 px-1 rounded">{{ implode(', ', $supportedSlugs) }}</code></p>
-                @foreach ($credentialFieldsBySlug as $platformSlug => $fields)
-                    @if (count($fields) > 0)
-                        <div data-credential-block="{{ $platformSlug }}" class="credential-block hidden space-y-4">
-                            @foreach ($fields as $field)
-                                <div>
-                                    <label for="api_credentials_{{ $platformSlug }}_{{ $field['key'] }}" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ $field['label'] }}</label>
-                                    <input type="{{ $field['type'] ?? 'text' }}" id="api_credentials_{{ $platformSlug }}_{{ $field['key'] }}" name="api_credentials[{{ $field['key'] }}]" value="{{ old('api_credentials.'.$field['key']) }}" autocomplete="off" class="mt-1 block w-full rounded-md border border-gray-300 dark:border-white/20 bg-white dark:bg-zinc-800 px-3 py-2 text-sm">
-                                </div>
-                            @endforeach
+                    <x-ui.input id="name" name="name" :value="old('name')" label="Name" placeholder="e.g. LinkedIn" required />
+                    <x-ui.input id="slug" name="slug" :value="old('slug')" label="Slug" placeholder="e.g. linkedin" required />
+                    <x-ui.icon-picker id="icon" name="icon" :value="old('icon')" label="Icon (FontAwesome)" help-text="Select a FontAwesome icon for the platform" :required="false" />
+                    <div>
+                        <label for="color" class="block text-sm font-medium text-zinc-900 dark:text-white">Color (hex)</label>
+                        <div class="mt-2 flex items-center gap-2">
+                            <input type="color" id="color-picker" value="{{ old('color', '#0077b5') }}" class="h-10 w-14 rounded border border-gray-300 dark:border-white/20 cursor-pointer">
+                            <x-ui.input id="color" name="color" type="text" :value="old('color', '#0077b5')" placeholder="#0077b5" maxlength="7" class="flex-1" />
                         </div>
-                    @endif
-                @endforeach
+                        @error('color')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+                    </div>
+                    <x-ui.input id="sort_order" name="sort_order" type="number" :value="old('sort_order', 0)" label="Sort order" min="0" />
+                    <div>
+                        <x-ui.toggle id="is_active" name="is_active" :checked="old('is_active', true)" label="Active" />
+                    </div>
+                </div>
+
+                {{-- Right: API credentials --}}
+                <div class="rounded-xl border border-amber-200/60 dark:border-amber-500/20 bg-amber-50/30 dark:bg-amber-500/5 p-6 space-y-4 shadow-sm">
+                    <div class="flex items-center gap-2 border-b border-amber-200/60 dark:border-amber-500/20 pb-3">
+                        <i class="fa-solid fa-key text-amber-600 dark:text-amber-400"></i>
+                        <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">API credentials</h2>
+                    </div>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">Set the slug to a supported platform to show credential fields: <code class="text-xs bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded">{{ implode(', ', $supportedSlugs) }}</code></p>
+                    @foreach ($credentialFieldsBySlug as $platformSlug => $fields)
+                        @if (count($fields) > 0)
+                            <div data-credential-block="{{ $platformSlug }}" class="credential-block hidden space-y-4">
+                                @foreach ($fields as $field)
+                                    <div>
+                                        <label for="api_credentials_{{ $platformSlug }}_{{ $field['key'] }}" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ $field['label'] }}</label>
+                                        <input type="{{ $field['type'] ?? 'text' }}" id="api_credentials_{{ $platformSlug }}_{{ $field['key'] }}" name="api_credentials[{{ $field['key'] }}]" value="{{ old('api_credentials.'.$field['key']) }}" autocomplete="off" class="mt-1 block w-full rounded-md border border-gray-300 dark:border-white/20 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500">
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    @endforeach
+                    <div data-credential-block="none" class="credential-block creds-placeholder text-sm text-zinc-500 dark:text-zinc-400 italic py-4">
+                        Enter a slug above to load credential fields.
+                    </div>
+                </div>
             </div>
 
             <div class="mt-6 flex gap-3">
@@ -77,7 +91,12 @@
             var slug = (document.getElementById('slug')?.value || '').toLowerCase().trim();
             document.querySelectorAll('.credential-block').forEach(function(el) {
                 var blockSlug = el.getAttribute('data-credential-block');
-                el.classList.toggle('hidden', blockSlug !== slug);
+                var isPlaceholder = el.classList.contains('creds-placeholder');
+                if (isPlaceholder) {
+                    el.classList.toggle('hidden', !!slug);
+                } else {
+                    el.classList.toggle('hidden', blockSlug !== slug);
+                }
             });
         }
         document.getElementById('slug')?.addEventListener('input', toggleCredentialBlocks);

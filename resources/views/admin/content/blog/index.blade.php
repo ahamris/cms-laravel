@@ -41,9 +41,19 @@
 
                 <form id="socialMediaForm">
                     <div class="space-y-4">
+                        {{-- Post to all configured --}}
+                        <div class="rounded-lg border border-amber-200/60 dark:border-amber-500/20 bg-amber-50/30 dark:bg-amber-500/5 p-3 mb-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="post_to_all" id="postToAllConfigured" value="1" class="rounded border-gray-300 dark:border-white/20 text-amber-600 focus:ring-amber-500">
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">Post to all configured platforms</span>
+                                <span id="postToAllCount" class="text-xs text-gray-500 dark:text-gray-400">(0)</span>
+                            </label>
+                            <p class="mt-1 text-xs text-gray-600 dark:text-gray-400 ml-6">Uses share to all active platforms that have API credentials set. Text, image, or video is chosen from the blog.</p>
+                        </div>
+
                         {{-- Platform Selection --}}
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Platforms</label>
+                        <div id="platformSelectionSection">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Or select platforms</label>
                             <div id="platformsList" class="space-y-2">
                                 {{-- Platforms will be loaded dynamically --}}
                             </div>
@@ -118,6 +128,9 @@
                     try {
                         const { data } = await axios.get('/admin/content/social-media-platforms');
                         this.availablePlatforms = data;
+                        const configuredCount = (data || []).filter(p => p.is_configured).length;
+                        const el = document.getElementById('postToAllCount');
+                        if (el) el.textContent = '(' + configuredCount + ' configured)';
                     } catch (error) {
                         console.error('Error loading platforms:', error);
                     }
@@ -279,11 +292,12 @@
         function submitSocialMediaForm() {
             const form = document.getElementById('socialMediaForm');
             const formData = new FormData(form);
+            const postToAll = document.getElementById('postToAllConfigured') && document.getElementById('postToAllConfigured').checked;
             const selectedPlatforms = Array.from(document.querySelectorAll('input[name="platforms[]"]:checked')).map(function(cb) { return cb.value; });
             
-            if (selectedPlatforms.length === 0) {
+            if (!postToAll && selectedPlatforms.length === 0) {
                 if (typeof toastManager !== 'undefined') {
-                    toastManager.show('error', 'Please select at least one platform');
+                    toastManager.show('error', 'Please select at least one platform or check "Post to all configured platforms"');
                 }
                 return;
             }
@@ -308,12 +322,19 @@
                 return;
             }
             
-            axios.post('/admin/content/blog/' + currentBlogId + '/social-media-post', {
-                platforms: selectedPlatforms,
+            const payload = {
                 schedule_type: formData.get('schedule_type'),
                 scheduled_at: formData.get('scheduled_at'),
                 custom_content: formData.get('custom_content')
-            })
+            };
+            if (postToAll) {
+                payload.post_to_all = true;
+                payload.platforms = [];
+            } else {
+                payload.platforms = selectedPlatforms;
+            }
+            
+            axios.post('/admin/content/blog/' + currentBlogId + '/social-media-post', payload)
             .then(function(response) {
                 const result = response.data;
                 if (result.success) {

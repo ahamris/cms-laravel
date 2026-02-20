@@ -149,12 +149,13 @@ Return your response as JSON in this exact format:
     }
 
     /**
-     * Generate social media posts from blog content
+     * Generate social media posts from blog content.
+     * Only posts to platforms that are active and have API credentials configured.
      */
     protected function generateSocialPosts(Blog $blog, ContentPlanItem $item): void
     {
         try {
-            $platforms = SocialMediaPlatform::where('is_active', true)->get();
+            $platforms = $this->socialMediaService->getActiveConfiguredPlatforms();
             if ($platforms->isEmpty()) {
                 return;
             }
