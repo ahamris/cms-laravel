@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             RobotsTxtSeeder::class,
             MegaMenuSeeder::class,
             PageSeeder::class,
+            BlogContentSeeder::class,
         ]);
     }
 }

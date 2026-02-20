@@ -17,6 +17,10 @@ class BlogContentSeeder extends Seeder
      */
     public function run(): void
     {
+        if (Blog::query()->exists()) {
+            return;
+        }
+
         // 1. Create realistic Dutch Users/Authors if none exist
         $author = User::firstOrCreate([
             'email' => 'author@opencontext.nl',
