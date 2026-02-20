@@ -18,35 +18,55 @@ class SitemapController extends Controller
     public function index()
     {
         $urls = [];
+        $link = fn (string $path, string $loc, string $priority) => ['url' => url($path), 'loc' => $loc, 'priority' => $priority];
+        $routeLink = fn (string $name, string $loc, string $priority, array $params = []) => Route::has($name)
+            ? ['url' => route($name, $params), 'loc' => $loc, 'priority' => $priority]
+            : $link($loc, $loc, $priority);
 
-        $urls[] = ['url' => url('/'), 'loc' => '/', 'priority' => '1.0'];
-        $urls[] = ['url' => route('about'), 'loc' => '/over-ons', 'priority' => '0.8'];
-        $urls[] = ['url' => route('contact'), 'loc' => '/contact', 'priority' => '0.8'];
-        $urls[] = ['url' => route('pricing'), 'loc' => '/prijzen', 'priority' => '0.9'];
-        $urls[] = ['url' => route('page.index'), 'loc' => '/pagina', 'priority' => '0.9'];
+        $urls[] = $link('/', '/', '1.0');
+        $urls[] = $routeLink('about', '/over-ons', '0.8');
+        $urls[] = $routeLink('contact', '/contact', '0.8');
+        $urls[] = $routeLink('pricing', '/prijzen', '0.9');
+        $urls[] = $routeLink('page.index', '/pagina', '0.9');
 
         if (Route::has('blog')) {
             $urls[] = ['url' => route('blog'), 'loc' => '/artikelen', 'priority' => '0.9'];
+        } else {
+            $urls[] = $link('/artikelen', '/artikelen', '0.9');
         }
 
         foreach (Blog::where('is_active', true)->get(['slug']) as $blog) {
-            $urls[] = ['url' => route('blog.show', $blog->slug), 'loc' => '/artikelen/'.$blog->slug, 'priority' => '0.7'];
+            $urls[] = Route::has('blog.show')
+                ? ['url' => route('blog.show', $blog->slug), 'loc' => '/artikelen/'.$blog->slug, 'priority' => '0.7']
+                : $link('/artikelen/'.$blog->slug, '/artikelen/'.$blog->slug, '0.7');
         }
 
         if (Route::has('solutions.index')) {
             $urls[] = ['url' => route('solutions.index'), 'loc' => '/oplossing', 'priority' => '0.8'];
+        } else {
+            $urls[] = $link('/oplossing', '/oplossing', '0.8');
         }
         foreach (Solution::where('is_active', true)->get(['anchor']) as $s) {
-            $urls[] = ['url' => route('solutions.show', $s->anchor), 'loc' => '/oplossing/'.$s->anchor, 'priority' => '0.7'];
+            $urls[] = Route::has('solutions.show')
+                ? ['url' => route('solutions.show', $s->anchor), 'loc' => '/oplossing/'.$s->anchor, 'priority' => '0.7']
+                : $link('/oplossing/'.$s->anchor, '/oplossing/'.$s->anchor, '0.7');
         }
 
         foreach (Page::where('is_active', true)->get(['slug']) as $page) {
-            $urls[] = ['url' => route('page.show', $page->slug), 'loc' => '/pagina/'.$page->slug, 'priority' => '0.6'];
+            $urls[] = Route::has('page.show')
+                ? ['url' => route('page.show', $page->slug), 'loc' => '/pagina/'.$page->slug, 'priority' => '0.6']
+                : $link('/pagina/'.$page->slug, '/pagina/'.$page->slug, '0.6');
         }
 
-        $urls[] = ['url' => route('career.index'), 'loc' => '/careers', 'priority' => '0.8'];
+        if (Route::has('career.index')) {
+            $urls[] = ['url' => route('career.index'), 'loc' => '/careers', 'priority' => '0.8'];
+        } else {
+            $urls[] = $link('/careers', '/careers', '0.8');
+        }
         foreach (Vacancy::active()->get(['slug']) as $v) {
-            $urls[] = ['url' => route('career.detail', $v->slug), 'loc' => '/careers/'.$v->slug, 'priority' => '0.7'];
+            $urls[] = Route::has('career.detail')
+                ? ['url' => route('career.detail', $v->slug), 'loc' => '/careers/'.$v->slug, 'priority' => '0.7']
+                : $link('/careers/'.$v->slug, '/careers/'.$v->slug, '0.7');
         }
 
         return response()->json([
