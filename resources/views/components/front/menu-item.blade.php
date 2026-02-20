@@ -64,13 +64,8 @@
     {{-- Desktop Menu Item --}}
     @if($isDropdown)
         @php
-            // Determine flyout component
-            $flyoutName = \Illuminate\Support\Str::slug($menuItem->flyout_menu_component_name ?? 'simple', '_');
-
-            // Fallback to simple if component doesn't exist
+            $flyoutName = 'simple';
             if (!view()->exists("components.front.flyout-menus.$flyoutName")) {
-                // Check for legacy tabs fallback if strictly needed, or just default to simple
-                // $flyoutName = 'mega_menu_tabs'; // Optional fallback if we want to preserve tabs by default
                 $flyoutName = 'simple';
             }
         @endphp

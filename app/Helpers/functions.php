@@ -338,26 +338,3 @@ if (! function_exists('format_dutch_date_long')) {
     }
 }
 
-if (! function_exists('get_flyout_menu_component_name')) {
-    /**
-     * Get flyout menu component name from component_name
-     * Maps database component_name to blade file name
-     */
-    function get_flyout_menu_component_name(?string $componentName): ?string
-    {
-        if (! $componentName) {
-            return null;
-        }
-
-        $mapping = [
-            'Simple' => 'simple',
-            'Simple with descriptions' => 'simple_with_descriptions',
-            'Two-column' => 'two_column',
-            'Full-width' => 'full_width',
-            'Full-width two-columns' => 'full_width_two_columns',
-            'Stacked with footer actions' => 'stacked_with_footer_actions',
-        ];
-
-        return $mapping[$componentName] ?? null;
-    }
-}

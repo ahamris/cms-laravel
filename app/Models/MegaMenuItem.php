@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Helpers\Variable;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Log;
 
 /**
@@ -11,6 +13,8 @@ use Log;
 class MegaMenuItem extends BaseModel
 {
     protected $table = 'mega_menu_items';
+
+    public const CACHE_KEY = 'mega_menu_data';
 
     protected $fillable = [
         'parent_id',
@@ -63,6 +67,63 @@ class MegaMenuItem extends BaseModel
     public function page()
     {
         return $this->belongsTo(Page::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::created(fn () => static::clearCache());
+        static::updated(fn () => static::clearCache());
+        static::deleted(fn () => static::clearCache());
+    }
+
+    /**
+     * Get mega menu tree from cache; only hits the database when cache is cold (or after create/update/delete).
+     * Same 3-level structure as before: parent > children > grandchildren.
+     */
+    public static function getCached(): array
+    {
+        if (! Cache::has(self::CACHE_KEY)) {
+            return Cache::remember(self::CACHE_KEY, Variable::CACHE_TTL, function () {
+                $items = self::active()
+                    ->rootLevel()
+                    ->ordered()
+                    ->with([
+                        'page',
+                        'children' => fn ($query) => $query->active()->ordered()->with([
+                            'page',
+                            'children' => fn ($subQuery) => $subQuery->active()->ordered()->with('page'),
+                        ]),
+                    ])
+                    ->get();
+
+                return $items->map(fn ($item) => self::itemToCachedArray($item))->toArray();
+            });
+        }
+
+        return Cache::get(self::CACHE_KEY);
+    }
+
+    /**
+     * Clear mega menu cache (e.g. after reorder or header settings change).
+     */
+    public static function clearCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    /**
+     * Convert one menu item (and its children) to cached array with resolved url.
+     */
+    private static function itemToCachedArray(self $item): array
+    {
+        $arr = $item->toArray();
+        $arr['url'] = $item->full_url;
+        if (! empty($arr['children']) && $item->relationLoaded('children')) {
+            $arr['children'] = $item->children->map(fn ($child) => self::itemToCachedArray($child))->toArray();
+        }
+
+        return $arr;
     }
 
     /**

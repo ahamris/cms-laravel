@@ -31,7 +31,7 @@
             @if(!empty($megaMenuData))
                 @foreach($megaMenuData as $index => $menuItem)
                     @php
-                        $flyoutName = \Illuminate\Support\Str::slug($menuItem['flyout_menu_component_name'] ?? 'simple', '_');
+                        $flyoutName = 'simple';
                     @endphp
                     @if(!empty($menuItem['children']))
                         <x-dynamic-component :component="'front.flyout-menus.' . $flyoutName" :item="$menuItem" :index="$index" />

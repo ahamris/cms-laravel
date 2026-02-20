@@ -448,7 +448,6 @@ class MegaMenuController extends AdminBaseController
         Cache::forget('settings.site_header_login_link_url');
         Cache::forget('settings.header_cta_button_text');
         Cache::forget('settings.header_cta_button_url');
-        Cache::forget('mega_menu_data');
         MegaMenuComposer::clearCache();
 
         return redirect()->route('admin.settings.mega-menu.index')
@@ -475,7 +474,6 @@ class MegaMenuController extends AdminBaseController
         Cache::forget('settings'); // Clear the main settings cache used by get_setting() helper
         Cache::forget('settings.header_cta_button_text');
         Cache::forget('settings.header_cta_button_url');
-        Cache::forget('mega_menu_data');
         MegaMenuComposer::clearCache();
 
         return redirect()->route('admin.settings.mega-menu.index')

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Frontend\FeatureController as ApiFeatureController;
 use App\Http\Controllers\Api\Frontend\HomepageController;
 use App\Http\Controllers\Api\Frontend\LegalController as ApiLegalController;
 use App\Http\Controllers\Api\Frontend\LiveSessionController as ApiLiveSessionController;
+use App\Http\Controllers\Api\Frontend\MenuController as ApiMenuController;
 use App\Http\Controllers\Api\Frontend\ModuleController as ApiModuleController;
 use App\Http\Controllers\Api\Frontend\PageController as ApiPageController;
 use App\Http\Controllers\Api\Frontend\SitemapController as ApiSitemapController;
@@ -39,6 +40,12 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitemap');
     Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
     Route::get('/vacancies/{slug}', [ApiVacancyController::class, 'show'])->name('api.vacancies.show')->where('slug', '[a-z0-9\-]+');
+
+    // Header and footer menu structures
+    Route::get('/menus', [ApiMenuController::class, 'index'])->name('api.menus.index');
+    Route::get('/menus/header', [ApiMenuController::class, 'header'])->name('api.menus.header');
+    Route::get('/menus/footer', [ApiMenuController::class, 'footer'])->name('api.menus.footer');
+    Route::get('/menus/sticky', [ApiMenuController::class, 'sticky'])->name('api.menus.sticky');
 });
 
 // Analytics tracking routes (public, rate limited)
