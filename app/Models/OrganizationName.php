@@ -117,11 +117,11 @@ class OrganizationName extends BaseModel
     }
 
     /**
-     * Get link URL for organization
+     * Link identifier for headless (id; no slug on this model; frontend builds URL).
      */
     public function getLinkUrlAttribute(): string
     {
-        return "/organization/{$this->id}";
+        return (string) $this->id;
     }
 
     protected static function boot()

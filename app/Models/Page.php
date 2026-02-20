@@ -94,9 +94,12 @@ class Page extends BaseModel
         );
     }
 
+    /**
+     * Link identifier for headless (slug only; frontend builds URL).
+     */
     public function getLinkUrlAttribute(): string
     {
-        return route('page.show', $this->slug);
+        return $this->slug ?? '';
     }
 
     public function sluggable(): array

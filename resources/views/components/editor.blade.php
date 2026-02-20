@@ -34,7 +34,7 @@
                     hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
-            
+
             // Ensure content is synced before form submit
             const form = $el.closest('form');
             if (form) {
@@ -73,7 +73,7 @@
             <button
                 type="button"
                 @click="switchTab('editor')"
-                :class="{ 
+                :class="{
                     'bg-white dark:bg-zinc-800 border-b-2 border-zinc-900 dark:border-zinc-100': activeTab === 'editor',
                     'hover:bg-zinc-100 dark:hover:bg-zinc-700/50': activeTab !== 'editor'
                 }"
@@ -84,7 +84,7 @@
             <button
                 type="button"
                 @click="switchTab('html')"
-                :class="{ 
+                :class="{
                     'bg-white dark:bg-zinc-800 border-b-2 border-zinc-900 dark:border-zinc-100': activeTab === 'html',
                     'hover:bg-zinc-100 dark:hover:bg-zinc-700/50': activeTab !== 'html'
                 }"
@@ -316,8 +316,7 @@
             <div
                 x-ref="editor"
                 data-placeholder="{{ $placeholder }}"
-                @click="if (editorInstance && $event.target === $refs.editor) editorInstance.commands.focus()"
-                class="prose prose-zinc dark:prose-invert max-w-none focus:outline-none min-h-[300px] p-4 border-l border-r border-b border-zinc-200 dark:border-zinc-700 rounded-b-md bg-white dark:bg-zinc-800 cursor-text"
+                class="prose prose-zinc dark:prose-invert max-w-none focus:outline-none min-h-[300px] p-4 border-l border-r border-b border-zinc-200 dark:border-zinc-700 rounded-b-md bg-white dark:bg-zinc-800"
             ></div>
         </div>
 
@@ -341,113 +340,112 @@
     </div>
 
     @error($name)
-        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
     @enderror
 </div>
 
 @push('styles')
-<style>
-    /* TipTap Editor Styles – editable area fills container so click-to-focus works anywhere */
-    .tiptap-editor-wrapper .ProseMirror {
-        outline: none;
-        min-height: calc(300px - 2rem);
-    }
+    <style>
+        /* TipTap Editor Styles */
+        .tiptap-editor-wrapper .ProseMirror {
+            outline: none;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror p.is-editor-empty:first-child::before {
-        content: attr(data-placeholder);
-        float: left;
-        color: #9ca3af;
-        pointer-events: none;
-        height: 0;
-    }
+        .tiptap-editor-wrapper .ProseMirror p.is-editor-empty:first-child::before {
+            content: attr(data-placeholder);
+            float: left;
+            color: #9ca3af;
+            pointer-events: none;
+            height: 0;
+        }
 
-    /* Heading weights: h1-h3 semibold, match front base */
-    .tiptap-editor-wrapper .ProseMirror h1 {
-        font-size: 2em;
-        font-weight: 600;
-    }
+        /* Heading weights: h1-h3 semibold, match front base */
+        .tiptap-editor-wrapper .ProseMirror h1 {
+            font-size: 2em;
+            font-weight: 600;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror h2 {
-        font-size: 1.5em;
-        font-weight: 600;
-    }
+        .tiptap-editor-wrapper .ProseMirror h2 {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror h3 {
-        font-size: 1.25em;
-        font-weight: 600;
-    }
+        .tiptap-editor-wrapper .ProseMirror h3 {
+            font-size: 1.25em;
+            font-weight: 600;
+        }
 
-    /* Liste stilleri */
-    .tiptap-editor-wrapper .ProseMirror ul,
-    .tiptap-editor-wrapper .ProseMirror ol {
-        padding-left: 1.5em;
-    }
+        /* Liste stilleri */
+        .tiptap-editor-wrapper .ProseMirror ul,
+        .tiptap-editor-wrapper .ProseMirror ol {
+            padding-left: 1.5em;
+        }
 
-    /* Kod stilleri */
-    .tiptap-editor-wrapper .ProseMirror code {
-        background-color: rgba(97, 97, 97, 0.1);
-        padding: 0.2em 0.4em;
-        border-radius: 3px;
-        font-family: monospace;
-    }
+        /* Kod stilleri */
+        .tiptap-editor-wrapper .ProseMirror code {
+            background-color: rgba(97, 97, 97, 0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror pre {
-        background-color: rgba(97, 97, 97, 0.1);
-        padding: 1em;
-        border-radius: 4px;
-        overflow-x: auto;
-    }
+        .tiptap-editor-wrapper .ProseMirror pre {
+            background-color: rgba(97, 97, 97, 0.1);
+            padding: 1em;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror pre code {
-        background-color: transparent;
-        padding: 0;
-    }
+        .tiptap-editor-wrapper .ProseMirror pre code {
+            background-color: transparent;
+            padding: 0;
+        }
 
-    /* Blockquote */
-    .tiptap-editor-wrapper .ProseMirror blockquote {
-        border-left: 3px solid #d4d4d8;
-        padding-left: 1em;
-        font-style: italic;
-        margin: 1em 0;
-    }
+        /* Blockquote */
+        .tiptap-editor-wrapper .ProseMirror blockquote {
+            border-left: 3px solid #d4d4d8;
+            padding-left: 1em;
+            font-style: italic;
+            margin: 1em 0;
+        }
 
-    /* Link stilleri */
-    .tiptap-editor-wrapper .ProseMirror a {
-        color: #3b82f6;
-        text-decoration: underline;
-    }
+        /* Link stilleri */
+        .tiptap-editor-wrapper .ProseMirror a {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
 
-    /* Task list stilleri */
-    .tiptap-editor-wrapper .ProseMirror ul[data-type="taskList"] {
-        list-style: none;
-        padding-left: 0;
-    }
+        /* Task list stilleri */
+        .tiptap-editor-wrapper .ProseMirror ul[data-type="taskList"] {
+            list-style: none;
+            padding-left: 0;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror ul[data-type="taskList"] li {
-        display: flex;
-        align-items: flex-start;
-    }
+        .tiptap-editor-wrapper .ProseMirror ul[data-type="taskList"] li {
+            display: flex;
+            align-items: flex-start;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror ul[data-type="taskList"] li > label {
-        margin-right: 0.5em;
-    }
+        .tiptap-editor-wrapper .ProseMirror ul[data-type="taskList"] li > label {
+            margin-right: 0.5em;
+        }
 
-    /* Text align stilleri */
-    .tiptap-editor-wrapper .ProseMirror [style*="text-align: left"] {
-        text-align: left;
-    }
+        /* Text align stilleri */
+        .tiptap-editor-wrapper .ProseMirror [style*="text-align: left"] {
+            text-align: left;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror [style*="text-align: center"] {
-        text-align: center;
-    }
+        .tiptap-editor-wrapper .ProseMirror [style*="text-align: center"] {
+            text-align: center;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror [style*="text-align: right"] {
-        text-align: right;
-    }
+        .tiptap-editor-wrapper .ProseMirror [style*="text-align: right"] {
+            text-align: right;
+        }
 
-    .tiptap-editor-wrapper .ProseMirror [style*="text-align: justify"] {
-        text-align: justify;
-    }
-</style>
+        .tiptap-editor-wrapper .ProseMirror [style*="text-align: justify"] {
+            text-align: justify;
+        }
+    </style>
 @endpush
 

@@ -65,9 +65,12 @@ class Feature extends BaseModel
         return $this->belongsToMany(Module::class, 'module_feature');
     }
 
+    /**
+     * Link identifier for headless (anchor only; frontend builds URL).
+     */
     public function getLinkUrlAttribute(): string
     {
-        return "/feature/{$this->id}";
+        return $this->anchor ?? '';
     }
 
     protected static function boot()

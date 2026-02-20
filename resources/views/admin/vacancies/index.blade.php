@@ -156,12 +156,14 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex items-center space-x-2">
-                                        <a href="{{ route('career.detail', $vacancy->slug) }}" 
+                                        @if(Route::has('career.detail'))
+                                        <a href="{{ route('career.detail', $vacancy->slug) }}"
                                            target="_blank"
-                                           class="text-xs text-gray-600 hover:text-green-600 transition-colors duration-200" 
+                                           class="text-xs text-gray-600 hover:text-green-600 transition-colors duration-200"
                                            title="View on Site">
                                             <i class="fa-solid fa-external-link-alt"></i>
                                         </a>
+                                        @endif
                                         <a href="{{ route('admin.vacancies.show', $vacancy) }}" 
                                            class="text-xs text-gray-600 hover:text-primary transition-colors duration-200" 
                                            title="View">

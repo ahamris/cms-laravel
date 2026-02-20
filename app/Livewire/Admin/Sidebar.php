@@ -227,6 +227,12 @@ class Sidebar extends Component
                         ],
                     ],
                     [
+                        'label' => 'AI Settings',
+                        'route_name' => 'admin.settings.ai.index',
+                        'icon' => 'robot',
+                        'active_pattern' => 'admin.settings.ai*',
+                    ],
+                    [
                         'label' => 'Routes',
                         'route_name' => 'admin.settings.mega-menu.index',
                         'icon' => 'user-shield',

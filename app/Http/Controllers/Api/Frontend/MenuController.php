@@ -15,7 +15,7 @@ use OpenApi\Attributes as OA;
  */
 class MenuController extends Controller
 {
-    #[OA\Get(path: '/api/menus/header', summary: 'Header menu', description: 'Mega menu tree with resolved URLs and header settings.', tags: ['Menus'], responses: [
+    #[OA\Get(path: '/api/menus/header', summary: 'Header menu', description: 'Mega menu tree with slug and page_type per item (headless: frontend builds routes). Header settings included.', tags: ['Menus'], responses: [
         new OA\Response(response: 200, description: 'Header menu', content: new OA\JsonContent(ref: '#/components/schemas/HeaderMenuResponse')),
     ])]
     public function header(): JsonResponse
@@ -119,7 +119,8 @@ class MenuController extends Controller
     }
 
     /**
-     * Map a cached menu item array to API response node (data only: no styles or type).
+     * Map a cached menu item array to API response node.
+     * Headless: return slug and page_type only (no url); frontend builds routes.
      */
     private function mapCachedMenuItem(array $item): array
     {
@@ -128,7 +129,8 @@ class MenuController extends Controller
             'title' => $item['title'] ?? '',
             'subtitle' => $item['subtitle'] ?? null,
             'description' => $item['description'] ?? null,
-            'url' => $item['url'] ?? '#',
+            'slug' => $item['page']['slug'] ?? null,
+            'page_type' => ! empty($item['page_id']) ? 'page' : 'custom',
             'order' => (int) ($item['order'] ?? 0),
         ];
 

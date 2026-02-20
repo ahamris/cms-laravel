@@ -23,7 +23,6 @@ class VacancyListResource extends JsonResource
             'department' => $this->department,
             'category' => $this->category,
             'closing_date' => $this->closing_date?->toDateString(),
-            'url' => route('career.detail', $this->slug),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

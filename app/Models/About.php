@@ -88,11 +88,11 @@ class About extends BaseModel
     }
 
     /**
-     * Get link URL based on anchor
+     * Link identifier for headless (slug only; frontend builds URL).
      */
     public function getLinkUrlAttribute(): string
     {
-        return route('about');
+        return $this->slug ?? '';
     }
 
     /**

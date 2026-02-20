@@ -128,12 +128,12 @@ class Blog extends BaseModel
         return $this->morphMany(ContentPerformance::class, 'contentable');
     }
 
+    /**
+     * Link identifier for headless (slug only; frontend builds URL).
+     */
     public function getLinkUrlAttribute(): string
     {
-        if (empty($this->slug)) {
-            return '#';
-        }
-        return route('blog.show', ['blog' => $this->slug]);
+        return $this->slug ?? '';
     }
 
     public function sluggable(): array

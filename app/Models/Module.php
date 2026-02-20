@@ -96,9 +96,12 @@ class Module extends BaseModel
         return $this->belongsToMany(Feature::class, 'module_feature');
     }
 
+    /**
+     * Link identifier for headless (slug only; frontend builds URL).
+     */
     public function getLinkUrlAttribute(): string
     {
-        return route('module.show', ['module' => $this->slug]);
+        return $this->slug ?? '';
     }
 
     /**

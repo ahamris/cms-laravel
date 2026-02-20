@@ -12,12 +12,14 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('career.detail', $vacancy->slug) }}" 
+            @if(Route::has('career.detail'))
+            <a href="{{ route('career.detail', $vacancy->slug) }}"
                target="_blank"
                class="px-5 py-2 rounded-md bg-green-600 text-white text-sm hover:bg-green-700 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-external-link-alt"></i>
                 <span>View on Site</span>
             </a>
+            @endif
             <a href="{{ route('admin.vacancies.edit', $vacancy) }}" 
                class="px-5 py-2 rounded-md bg-yellow-600 text-white text-sm hover:bg-yellow-700 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
