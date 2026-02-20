@@ -272,6 +272,23 @@
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
+
+        @if((isset($parent) && $parent) || optional($megaMenu)->parent_id)
+        <!-- Align (child items only: left / right) -->
+        <div>
+            <label for="align" class="block text-sm font-medium text-gray-700 mb-2">Align</label>
+            <select name="align" id="align" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                <option value="1" {{ old('align', optional($megaMenu)->align ?? 1) == 1 ? 'selected' : '' }}>Left</option>
+                <option value="2" {{ old('align', optional($megaMenu)->align ?? 1) == 2 ? 'selected' : '' }}>Right</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Alignment of this child item in the dropdown (left or right column).</p>
+            @error('align')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+        @else
+        <input type="hidden" name="align" value="1">
+        @endif
     </div>
 </div>
 

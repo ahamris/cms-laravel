@@ -134,6 +134,7 @@ class MenuController extends Controller
             'page_type' => ! empty($item['page_id']) ? 'page' : 'custom',
             'order' => (int) ($item['order'] ?? 0),
             'tags' => $item['tags'] ?? [],
+            'align' => (int) ($item['align'] ?? 1),
         ];
 
         $children = $item['children'] ?? [];

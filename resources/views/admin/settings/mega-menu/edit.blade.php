@@ -259,6 +259,16 @@
                                 <p class="text-xs text-gray-500 mt-1">Optional. Comma-separated, e.g. dropdown-item</p>
                             </div>
 
+                            <!-- Align -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Align</label>
+                                <select name="align" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                                    <option value="1" selected>Left</option>
+                                    <option value="2">Right</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">Child alignment in dropdown (left or right column)</p>
+                            </div>
+
                             <!-- Active Status -->
                             <div class="flex items-center">
                                 <input type="checkbox" 
@@ -418,6 +428,16 @@
                                 <p class="text-xs text-gray-500 mt-1">Optional. Comma-separated</p>
                             </div>
 
+                            <!-- Align -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Align</label>
+                                <select x-model="editForm.align" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                                    <option value="1">Left</option>
+                                    <option value="2">Right</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">Child alignment in dropdown (left or right column)</p>
+                            </div>
+
                             <!-- Active Status -->
                             <div class="flex items-center space-x-4">
                                 <label class="flex items-center space-x-2 cursor-pointer">
@@ -483,7 +503,8 @@ function subItemManager() {
             icon_bg_color: '#3B82F6',
             is_active: true,
             open_in_new_tab: false,
-            tags: ''
+            tags: '',
+            align: 1
         },
         editLinkType: 'custom',
         editSelectedRoute: '',
@@ -533,7 +554,8 @@ function subItemManager() {
                         icon_bg_color: data.subItem.icon_bg_color || '#3B82F6',
                         is_active: data.subItem.is_active || false,
                         open_in_new_tab: data.subItem.open_in_new_tab || false,
-                        tags: Array.isArray(tags) ? tags.join(', ') : (tags || '')
+                        tags: Array.isArray(tags) ? tags.join(', ') : (tags || ''),
+                        align: data.subItem.align ?? 1
                     };
                     
                     // Determine link type and set appropriate values
@@ -613,6 +635,7 @@ function subItemManager() {
                 formData.append('is_active', this.editForm.is_active ? '1' : '0');
                 formData.append('open_in_new_tab', this.editForm.open_in_new_tab ? '1' : '0');
                 formData.append('tags', this.editForm.tags || '');
+                formData.append('align', this.editForm.align ?? '1');
                 
                 const response = await fetch(`{{ route('admin.settings.mega-menu.update-sub-item', [$megaMenu, '__SUBITEM__']) }}`.replace('__SUBITEM__', this.currentEditId), {
                     method: 'POST',

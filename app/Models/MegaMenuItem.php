@@ -16,6 +16,12 @@ class MegaMenuItem extends BaseModel
 
     public const CACHE_KEY = 'mega_menu_data';
 
+    /** Alignment for child items: left */
+    public const ALIGN_LEFT = 1;
+
+    /** Alignment for child items: right */
+    public const ALIGN_RIGHT = 2;
+
     protected $fillable = [
         'parent_id',
         'order',
@@ -39,6 +45,7 @@ class MegaMenuItem extends BaseModel
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
             'tags' => 'array',
+            'align' => 'integer',
             'order' => 'integer',
             'parent_id' => 'integer',
             'page_id' => 'integer',
