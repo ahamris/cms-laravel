@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SiteSettingsResource;
+use App\Models\Admin\AdminThemeSetting;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
