@@ -34,8 +34,6 @@ use App\Models\Setting;
 use App\Models\SocialSetting;
 use App\Models\Solution;
 use App\Models\StaticPage;
-use App\Models\Subscription;
-use App\Models\SubscriptionTrial;
 use App\Models\Translation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -87,8 +85,6 @@ class MorphMapServiceProvider extends ServiceProvider
             'setting' => Setting::class,
             'social_setting' => SocialSetting::class,
             'solution' => Solution::class,
-            'subscription' => Subscription::class,
-            'subscription_trial' => SubscriptionTrial::class,
             'translation' => Translation::class,
             'user' => User::class,
             'legal' => Legal::class,

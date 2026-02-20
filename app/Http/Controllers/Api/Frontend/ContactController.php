@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\SeoSetTrait;
-use App\Http\Requests\SubscriptionRequest;
 use App\Mail\ContactFormSubmittedMail;
-use App\Mail\DemoRequestSubmitted;
 use App\Models\ContactForm;
 use App\Models\Page;
-use App\Models\Subscription;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,60 +45,6 @@ class ContactController extends Controller
         }
 
         return response()->json(['data' => $page]);
-    }
-
-    #[OA\Post(path: '/api/contact/demo', summary: 'Submit demo request', tags: ['Contact'], responses: [
-        new OA\Response(response: 201, description: 'Demo request submitted'),
-        new OA\Response(response: 422, description: 'Validation error'),
-        new OA\Response(response: 500, description: 'Server error'),
-    ])]
-    public function storeDemo(SubscriptionRequest $request): JsonResponse
-    {
-        try {
-            $data = $request->validated();
-            $data['first_name'] = $data['firstName'] ?? $data['first_name'] ?? '';
-            $data['last_name'] = $data['lastName'] ?? $data['last_name'] ?? '';
-            $data['topic'] = $data['topic'] ?? '';
-
-            if (! empty($data['scheduled_date']) && ! empty($data['scheduled_time'])) {
-                $data['preferred_demo_date'] = $data['scheduled_date'];
-                $data['preferred_demo_time'] = $data['scheduled_time'];
-                $data['demo_scheduled_at'] = $data['scheduled_date'].' '.$data['scheduled_time'];
-                $data['status'] = 'demo_scheduled';
-            }
-
-            $data['source'] = 'website';
-            $data['preferred_contact_method'] = 'phone';
-
-            $subscription = Subscription::create($data);
-
-            try {
-                Mail::to($subscription->email)->send(new DemoRequestSubmitted($subscription, false));
-            } catch (Exception $e) {
-            }
-            try {
-                $adminEmail = config('mail.admin_email', 'admin@openpublication.eu');
-                Mail::to($adminEmail)->send(new DemoRequestSubmitted($subscription, true));
-            } catch (Exception $e) {
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Demo request submitted successfully!',
-                'data' => [
-                    'id' => $subscription->id,
-                    'full_name' => $subscription->full_name,
-                    'scheduled_date' => $subscription->preferred_demo_date?->format('F j, Y'),
-                    'scheduled_time' => $subscription->preferred_demo_time,
-                ],
-            ], 201);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to submit demo request. Please try again.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
     }
 
     #[OA\Post(path: '/api/contact/verstuur', summary: 'Submit contact form', tags: ['Contact'], responses: [

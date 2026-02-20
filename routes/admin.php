@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\Administrator\CustomerController;
 use App\Http\Controllers\Admin\Administrator\EmailLogController;
 use App\Http\Controllers\Admin\Administrator\PermissionController;
 use App\Http\Controllers\Admin\Administrator\RolesController;
-use App\Http\Controllers\Admin\Administrator\SubscriptionController;
 use App\Http\Controllers\Admin\Administrator\UserCrudController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ContactFormController;
@@ -387,13 +386,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::resource('email-logs', EmailLogController::class)->only(['index', 'show', 'destroy']);
             Route::post('email-logs/bulk-destroy', [EmailLogController::class, 'bulkDestroy'])->name('email-logs.bulk-destroy');
 
-            Route::group(['prefix' => 'subscriptions', 'as' => 'subscriptions.'], function () {
-                Route::get('export', [SubscriptionController::class, 'export'])->name('export');
-                Route::resource('', SubscriptionController::class)->parameters(['' => 'subscription']);
-                Route::post('{subscription}/status', [SubscriptionController::class, 'updateStatus'])->name('update-status');
-                Route::post('{subscription}/notes', [SubscriptionController::class, 'addNotes'])->name('add-notes');
-                Route::post('{subscription}/toggle-active', [SubscriptionController::class, 'toggleActive'])->name('toggle-active');
-            });
         });
 
         // Social Settings routes

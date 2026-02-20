@@ -15,7 +15,6 @@ Route::get('/zoeken', fn () => redirect('/api/documentation'))->name('search');
 
 // Contact
 Route::get('/contact', [ContactController::class, 'contactPage'])->name('contact');
-Route::post('/contact/demo', [ContactController::class, 'storeDemo'])->name('contact.demo.store');
 Route::post('/contact/verstuur', [ContactController::class, 'storeContact'])->name('contact.submit');
 
 // Blog (Blade listing/detail; load-more returns HTML for Blade)

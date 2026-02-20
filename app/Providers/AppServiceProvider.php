@@ -9,10 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use App\Listeners\LogSentEmail;
-use App\Models\Subscription;
 use App\Models\VacancyModule\JobApplication;
 use App\Observers\JobApplicationObserver;
-use App\Observers\SubscriptionObserver;
 use App\Services\TranslationService;
 use App\View\Components\Navigation\Breadcrumbs;
 use App\View\Components\UI\Accordion;
@@ -75,7 +73,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TranslationService::class);
 
         // Register Observers
-        Subscription::observe(SubscriptionObserver::class);
         JobApplication::observe(JobApplicationObserver::class);
 
         // Register Email Logging Listeners

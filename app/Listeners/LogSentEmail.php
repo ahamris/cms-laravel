@@ -40,13 +40,6 @@ class LogSentEmail
             if (isset($event->mailable)) {
                 $mailable = $event->mailable;
 
-                // Check if mailable has a subscription property
-                if (property_exists($mailable, 'subscription')) {
-                    $relatedType = get_class($mailable->subscription);
-                    $relatedId = $mailable->subscription->id;
-                    $metadata['demo_application_id'] = $mailable->subscription->id;
-                }
-
                 // Check if it's admin notification
                 if (property_exists($mailable, 'isAdminNotification')) {
                     $metadata['is_admin_notification'] = $mailable->isAdminNotification;

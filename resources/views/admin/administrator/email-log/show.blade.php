@@ -191,13 +191,6 @@
                             <label class="block text-xs font-medium text-gray-700 mb-1">ID</label>
                             <p class="text-sm text-gray-900 font-mono">{{ $emailLog->related_id }}</p>
                         </div>
-                        @if($emailLog->related_type === 'App\Models\Subscription')
-                            <a href="{{ route('admin.administrator.subscriptions.edit', $emailLog->related_id) }}"
-                               class="block w-full bg-primary text-white px-4 py-2 rounded-md text-sm text-center">
-                                <i class="fa-solid fa-eye mr-2"></i>
-                                View Subscription
-                            </a>
-                        @endif
                     </div>
                 </div>
             @endif

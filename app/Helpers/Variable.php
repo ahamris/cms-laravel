@@ -269,12 +269,6 @@ class Variable
         'contact_form_edit' => [self::ROLE_ADMIN],
         'contact_form_delete' => [self::ROLE_ADMIN],
 
-        'subscription_access' => [self::ROLE_ADMIN],
-        'subscription_show' => [self::ROLE_ADMIN],
-        'subscription_create' => [self::ROLE_ADMIN],
-        'subscription_edit' => [self::ROLE_ADMIN],
-        'subscription_delete' => [self::ROLE_ADMIN],
-
         'email_log_access' => [self::ROLE_ADMIN],
         'email_log_show' => [self::ROLE_ADMIN],
         'email_log_create' => [self::ROLE_ADMIN],

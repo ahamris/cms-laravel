@@ -53,7 +53,6 @@ Route::middleware('frontend.origins')->group(function () {
 
     // Contact
     Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
-    Route::post('/contact/demo', [ApiContactController::class, 'storeDemo'])->name('api.contact.demo.store');
     Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->name('api.contact.submit');
 
     // Blog (artikelen)
