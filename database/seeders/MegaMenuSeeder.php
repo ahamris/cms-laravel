@@ -37,7 +37,7 @@ class MegaMenuSeeder extends Seeder
             'description' => null,
             'icon' => 'fas fa-briefcase',
             'icon_bg_color' => '#10B981',
-            'url' => route('solutions.index'),
+            'url' => '/oplossing',
             'is_mega_menu' => true,
             'is_active' => true,
             'open_in_new_tab' => false,
