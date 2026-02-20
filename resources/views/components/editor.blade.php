@@ -316,7 +316,8 @@
             <div
                 x-ref="editor"
                 data-placeholder="{{ $placeholder }}"
-                class="prose prose-zinc dark:prose-invert max-w-none focus:outline-none min-h-[300px] p-4 border-l border-r border-b border-zinc-200 dark:border-zinc-700 rounded-b-md bg-white dark:bg-zinc-800"
+                @click="if (editorInstance && $event.target === $refs.editor) editorInstance.commands.focus()"
+                class="prose prose-zinc dark:prose-invert max-w-none focus:outline-none min-h-[300px] p-4 border-l border-r border-b border-zinc-200 dark:border-zinc-700 rounded-b-md bg-white dark:bg-zinc-800 cursor-text"
             ></div>
         </div>
 
@@ -346,9 +347,10 @@
 
 @push('styles')
 <style>
-    /* TipTap Editor Styles */
+    /* TipTap Editor Styles – editable area fills container so click-to-focus works anywhere */
     .tiptap-editor-wrapper .ProseMirror {
         outline: none;
+        min-height: calc(300px - 2rem);
     }
 
     .tiptap-editor-wrapper .ProseMirror p.is-editor-empty:first-child::before {
