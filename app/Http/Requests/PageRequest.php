@@ -28,6 +28,11 @@ class PageRequest extends FormRequest
             $value = false;
         }
         $this->merge(['is_active' => $value]);
+
+        $template = $this->input('template');
+        if ($template === null || $template === '') {
+            $this->merge(['template' => config('page_templates.default', 'default')]);
+        }
     }
 
     /**
@@ -55,6 +60,7 @@ class PageRequest extends FormRequest
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'icon' => 'nullable|string|max:255',
             'is_active' => 'required|boolean',
+            'template' => 'nullable|string|in:'.implode(',', array_keys(config('page_templates.templates', []))),
 
             // Marketing Automation fields
             'funnel_fase' => 'nullable|string|in:interesseer,overtuig,activeer,inspireer',
@@ -89,6 +95,7 @@ class PageRequest extends FormRequest
             'icon.max' => 'Icon may not be greater than 255 characters.',
             'is_active.required' => 'Active status is required.',
             'is_active.boolean' => 'Active status must be true or false.',
+            'template.in' => 'The selected template is invalid.',
 
             // Marketing Automation messages
             'funnel_fase.in' => 'Funnel phase must be one of: interesseer, overtuig, activeer, inspireer.',
@@ -118,6 +125,7 @@ class PageRequest extends FormRequest
             'image' => 'Image',
             'icon' => 'Icon',
             'is_active' => 'Active status',
+            'template' => 'Template',
 
             // Marketing Automation attributes
             'funnel_fase' => 'Funnel phase',

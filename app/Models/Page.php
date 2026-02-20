@@ -26,6 +26,7 @@ class Page extends BaseModel
         'image',
         'icon',
         'is_active',
+        'template',
         // Marketing Automation fields
         'funnel_fase',
         'marketing_persona_id',
@@ -92,6 +93,24 @@ class Page extends BaseModel
             },
             $value
         );
+    }
+
+    /**
+     * Effective template key (NULL/missing treated as default).
+     */
+    public function getEffectiveTemplateAttribute(): string
+    {
+        return $this->template ?? config('page_templates.default', 'default');
+    }
+
+    /**
+     * Config for the current template (label, sections).
+     */
+    public function getTemplateConfig(): ?array
+    {
+        $key = $this->effective_template;
+
+        return config("page_templates.templates.{$key}");
     }
 
     /**

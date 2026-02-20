@@ -34,9 +34,14 @@ class PageController extends AdminBaseController
             ->ordered()
             ->get();
 
+        $templates = config('page_templates.templates', []);
+        $currentTemplate = old('template', config('page_templates.default', 'default'));
+
         return view('admin.content.page.create', compact(
             'marketingPersonas',
-            'contentTypes'
+            'contentTypes',
+            'templates',
+            'currentTemplate'
         ));
     }
 
@@ -95,10 +100,15 @@ class PageController extends AdminBaseController
             ->ordered()
             ->get();
 
+        $templates = config('page_templates.templates', []);
+        $currentTemplate = old('template', $page->template ?? config('page_templates.default', 'default'));
+
         return view('admin.content.page.edit', compact(
             'page',
             'marketingPersonas',
-            'contentTypes'
+            'contentTypes',
+            'templates',
+            'currentTemplate'
         ));
     }
 

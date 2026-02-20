@@ -12,13 +12,24 @@
             </a>
         </div>
 
-        <form action="{{ route('admin.content.page.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.content.page.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
+            x-data="{
+                templates: {{ Js::from($templates ?? []) }},
+                currentTemplate: {{ Js::from($currentTemplate ?? 'default') }},
+                get visibleSections() {
+                    const t = this.templates[this.currentTemplate];
+                    const def = this.templates['default'];
+                    const fallback = ['page_info', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'seo'];
+                    return (t && t.sections) ? t.sections : (def && def.sections) ? def.sections : fallback;
+                }
+            }"
+        >
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-6">
                     {{-- Page Information --}}
-                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6">
+                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6" data-section="page_info" x-show="visibleSections.includes('page_info')" x-transition>
                         <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center">
                             <span class="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10 mr-2.5">
                                 <i class="fa-solid fa-file-lines text-primary text-xs"></i>
@@ -26,6 +37,15 @@
                             Page Information
                         </h3>
                         <div class="space-y-4">
+                            <div>
+                                <label for="template" class="block text-xs font-medium text-gray-600 mb-1.5">Template</label>
+                                <select id="template" name="template" x-model="currentTemplate"
+                                    class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 mb-4">
+                                    @foreach($templates ?? [] as $key => $config)
+                                        <option value="{{ $key }}">{{ $config['label'] ?? $key }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div>
                                 <label for="title" class="block text-xs font-medium text-gray-600 mb-1.5">Title <span class="text-red-500">*</span></label>
                                 <input type="text" id="title" name="title" value="{{ old('title') }}" required
@@ -48,7 +68,7 @@
                     </div>
 
                     {{-- Short Body & Long Body --}}
-                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6 space-y-6">
+                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6 space-y-6" data-section="body" x-show="visibleSections.includes('body')" x-transition>
                         <div>
                             <label for="short_body" class="block text-xs font-medium text-gray-700 mb-1">Short Body <span class="text-red-500">*</span></label>
                             <textarea id="short_body" name="short_body" rows="4" required
@@ -68,7 +88,7 @@
                     </div>
 
                     {{-- Marketing Automation --}}
-                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6">
+                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6" data-section="marketing" x-show="visibleSections.includes('marketing')" x-transition>
                         <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center">
                             <span class="flex items-center justify-center w-7 h-7 rounded-md bg-purple-50 mr-2.5">
                                 <i class="fa-solid fa-bullhorn text-purple-500 text-xs"></i>
@@ -124,7 +144,7 @@
                 {{-- Sidebar --}}
                 <div class="space-y-6">
                     {{-- Page Settings --}}
-                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6">
+                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6" data-section="sidebar_settings" x-show="visibleSections.includes('sidebar_settings')" x-transition>
                         <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center">
                             <span class="flex items-center justify-center w-7 h-7 rounded-md bg-gray-100 mr-2.5">
                                 <i class="fa-solid fa-cog text-gray-500 text-xs"></i>
@@ -142,7 +162,7 @@
                     </div>
 
                     {{-- Page Image --}}
-                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6">
+                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6" data-section="sidebar_image" x-show="visibleSections.includes('sidebar_image')" x-transition>
                         <x-image-upload
                             id="image"
                             name="image"
@@ -153,7 +173,7 @@
                     </div>
 
                     {{-- SEO Settings --}}
-                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6 space-y-4">
+                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6 space-y-4" data-section="seo" x-show="visibleSections.includes('seo')" x-transition>
                         <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center">
                             <span class="flex items-center justify-center w-7 h-7 rounded-md bg-blue-50 mr-2.5">
                                 <i class="fa-solid fa-search text-blue-500 text-xs"></i>
