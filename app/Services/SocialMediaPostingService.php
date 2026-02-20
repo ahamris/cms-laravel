@@ -4,9 +4,10 @@ namespace App\Services;
 
 use App\Models\SocialMediaPlatform;
 use App\Models\SocialMediaPost;
+use App\Services\SocialMediaAutoPostService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class SocialMediaPostingService
 {
@@ -219,7 +220,7 @@ class SocialMediaPostingService
     }
 
     /**
-     * Post immediately to social media platform
+     * Post immediately to social media platform using stored API credentials (auto-post package) when available.
      */
     public function postNow(SocialMediaPost $post): bool
     {
@@ -231,15 +232,20 @@ class SocialMediaPostingService
                 return false;
             }
 
-            // Here you would integrate with actual social media APIs
-            // For now, we'll simulate the posting
-            $success = $this->simulatePosting($post);
+            $url = $this->getShareUrlForPost($post);
+            $autoPost = app(SocialMediaAutoPostService::class);
+            $result = $autoPost->post(
+                $platform,
+                $post->content,
+                $url,
+                $post->media_urls ?? []
+            );
 
-            if ($success) {
+            if (!empty($result['success'])) {
                 $post->markAsPosted(
-                    'sim_' . uniqid(), // Simulated external post ID
-                    'https://example.com/post/' . uniqid(), // Simulated post URL
-                    ['simulated' => true, 'posted_at' => now()->toISOString()]
+                    $result['external_post_id'] ?? null,
+                    $result['external_post_url'] ?? null,
+                    $result['response_data'] ?? []
                 );
 
                 Log::info('Social media post successful', [
@@ -250,16 +256,32 @@ class SocialMediaPostingService
                 ]);
 
                 return true;
-            } else {
-                $post->markAsFailed('Simulated posting failed');
-                return false;
             }
+
+            $post->markAsFailed($result['error'] ?? 'Posting failed');
+            return false;
 
         } catch (\Exception $e) {
             $post->markAsFailed($e->getMessage());
 
             return false;
         }
+    }
+
+    /**
+     * Resolve a shareable URL for the post (e.g. from postable model).
+     */
+    private function getShareUrlForPost(SocialMediaPost $post): string
+    {
+        $postable = $post->postable;
+        if ($postable && method_exists($postable, 'getUrl')) {
+            return $postable->getUrl();
+        }
+        if ($postable && isset($postable->slug)) {
+            return url($postable->slug);
+        }
+
+        return '';
     }
 
     /**
@@ -317,16 +339,6 @@ class SocialMediaPostingService
             'failed' => $posts->where('status', 'failed')->count(),
             'draft' => $posts->where('status', 'draft')->count(),
         ];
-    }
-
-    /**
-     * Simulate posting to social media (for demo purposes)
-     * In production, this would be replaced with actual API calls
-     */
-    private function simulatePosting(SocialMediaPost $post): bool
-    {
-        // Simulate a 90% success rate
-        return rand(1, 10) <= 9;
     }
 
     /**

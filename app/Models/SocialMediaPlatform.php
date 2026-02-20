@@ -64,4 +64,32 @@ class SocialMediaPlatform extends BaseModel
     {
         return $this->socialMediaPosts()->where('status', 'failed')->count();
     }
+
+    /**
+     * Supported slugs for auto-posting (must match hamzahassanm/laravel-social-auto-post).
+     */
+    public static function supportedAutoPostSlugs(): array
+    {
+        return array_keys(config('social_platform_credentials', []));
+    }
+
+    /**
+     * Credential field definitions for a given slug (for CRUD forms).
+     *
+     * @return array<int, array{key: string, config: string, label: string, type: string}>
+     */
+    public static function getCredentialFieldsForSlug(string $slug): array
+    {
+        $all = config('social_platform_credentials', []);
+
+        return $all[$slug] ?? [];
+    }
+
+    /**
+     * Whether this platform slug is supported for auto-posting.
+     */
+    public function supportsAutoPost(): bool
+    {
+        return in_array($this->slug, self::supportedAutoPostSlugs(), true);
+    }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b1e43d27e89ff3ebdd24d4f89797b33b",
+    "content-hash": "05d52e96e87b951eb5ccfc58f35f59b4",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1509,6 +1509,68 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "hamzahassanm/laravel-social-auto-post",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HamzaHassanM/laravel-social-auto-post.git",
+                "reference": "4a81a038b970697f931b8d773c8de7383a4034fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HamzaHassanM/laravel-social-auto-post/zipball/4a81a038b970697f931b8d773c8de7383a4034fc",
+                "reference": "4a81a038b970697f931b8d773c8de7383a4034fc",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^12.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0",
+                "phpunit/phpunit": "^11.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "TikTok": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\TikTok",
+                        "Twitter": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\Twitter",
+                        "YouTube": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\YouTube",
+                        "FaceBook": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\FaceBook",
+                        "LinkedIn": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\LinkedIn",
+                        "Telegram": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\Telegram",
+                        "Instagram": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\Instagram",
+                        "Pinterest": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\Pinterest",
+                        "SocialMedia": "HamzaHassanM\\LaravelSocialAutoPost\\Facades\\SocialMedia"
+                    },
+                    "providers": [
+                        "HamzaHassanM\\LaravelSocialAutoPost\\SocialShareServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "HamzaHassanM\\LaravelSocialAutoPost\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "HamzaHassanM",
+                    "email": "hamza.hassan.dev@gmail.com"
+                }
+            ],
+            "description": "Laravel social media auto post package - Complete solution for posting to 8 major social media platforms",
+            "support": {
+                "issues": "https://github.com/HamzaHassanM/laravel-social-auto-post/issues",
+                "source": "https://github.com/HamzaHassanM/laravel-social-auto-post/tree/v2.1.0"
+            },
+            "time": "2025-10-24T15:13:25+00:00"
         },
         {
             "name": "laravel/framework",
