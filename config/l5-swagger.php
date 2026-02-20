@@ -50,7 +50,6 @@ return [
                 'annotations' => [
                     base_path('app/OpenApi'),
                     base_path('app/Http/Controllers/Api/Frontend'),
-                    base_path('app/Http/Controllers/BlogController.php'),
                 ],
             ],
         ],

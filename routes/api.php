@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\Frontend\AboutController as ApiAboutController;
+use App\Http\Controllers\Api\Frontend\AcademyController as ApiAcademyController;
+use App\Http\Controllers\Api\Frontend\BlogController as ApiBlogController;
+use App\Http\Controllers\Api\Frontend\ChangelogController as ApiChangelogController;
+use App\Http\Controllers\Api\Frontend\CommentController as ApiCommentController;
+use App\Http\Controllers\Api\Frontend\ContactController as ApiContactController;
 use App\Http\Controllers\Api\Frontend\DocController as ApiDocController;
 use App\Http\Controllers\Api\Frontend\FeatureController as ApiFeatureController;
 use App\Http\Controllers\Api\Frontend\HomepageController;
@@ -8,20 +14,23 @@ use App\Http\Controllers\Api\Frontend\LiveSessionController as ApiLiveSessionCon
 use App\Http\Controllers\Api\Frontend\MenuController as ApiMenuController;
 use App\Http\Controllers\Api\Frontend\ModuleController as ApiModuleController;
 use App\Http\Controllers\Api\Frontend\PageController as ApiPageController;
+use App\Http\Controllers\Api\Frontend\PricingController as ApiPricingController;
 use App\Http\Controllers\Api\Frontend\SitemapController as ApiSitemapController;
 use App\Http\Controllers\Api\Frontend\SolutionController as ApiSolutionController;
 use App\Http\Controllers\Api\Frontend\StaticPageController as ApiStaticPageController;
+use App\Http\Controllers\Api\Frontend\TrialController as ApiTrialController;
 use App\Http\Controllers\Api\Frontend\VacancyController as ApiVacancyController;
 use App\Http\Controllers\Api\AnalyticsTrackingController;
-use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Api\Frontend\SearchController as ApiSearchController;
 use Illuminate\Support\Facades\Route;
 
 // Frontend content API (public, no auth; only allowed origins – documented in Swagger)
 Route::middleware('frontend.origins')->group(function () {
     Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
     Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/blog-posts', [BlogController::class, 'apiPosts'])->name('api.blog-posts');
-    Route::get('/blog/{slug}', [BlogController::class, 'apiShow'])->name('api.blog.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
+    Route::get('/blog-posts', [ApiBlogController::class, 'apiPosts'])->name('api.blog-posts');
+    Route::get('/blog/{slug}', [ApiBlogController::class, 'apiShow'])->name('api.blog.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/legal/{slug}', [ApiLegalController::class, 'show'])->name('api.legal.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('api.static.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/settings', [HomepageController::class, 'settings'])->name('api.settings');
@@ -40,6 +49,43 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitemap');
     Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
     Route::get('/vacancies/{slug}', [ApiVacancyController::class, 'show'])->name('api.vacancies.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/vacancies/{slug}/apply', [ApiVacancyController::class, 'apply'])->name('api.vacancies.apply')->where('slug', '[a-z0-9\-]+');
+    Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])->name('api.vacancies.submit')->where('slug', '[a-z0-9\-]+');
+
+    // Contact
+    Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
+    Route::post('/contact/demo', [ApiContactController::class, 'storeDemo'])->name('api.contact.demo.store');
+    Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->name('api.contact.submit');
+
+    // Blog (artikelen)
+    Route::get('/artikelen/load-more', [ApiBlogController::class, 'loadMore'])->name('api.blog.load-more');
+    Route::post('/artikelen/reactie', [ApiCommentController::class, 'store'])->name('api.comment.store');
+    Route::post('/artikelen/reactie/{comment}/like', [ApiCommentController::class, 'like'])->name('api.comment.like');
+    Route::post('/artikelen/reactie/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.comment.dislike');
+
+    // Pricing (prijzen)
+    Route::get('/prijzen', [ApiPricingController::class, 'index'])->name('api.pricing.index');
+    Route::get('/prijzen/configurator', [ApiPricingController::class, 'configurator'])->name('api.pricing.configurator');
+    Route::get('/prijzen/{slug}', [ApiPricingController::class, 'show'])->name('api.pricing.show')->where('slug', '[a-z0-9\-]+');
+
+    // Changelog
+    Route::get('/changelog', [ApiChangelogController::class, 'index'])->name('api.changelog.index');
+    Route::get('/changelog/{slug}', [ApiChangelogController::class, 'show'])->name('api.changelog.show')->where('slug', '[a-z0-9\-]+');
+
+    // Trial (proefversie)
+    Route::get('/proefversie', [ApiTrialController::class, 'index'])->name('api.trial.index');
+    Route::get('/proefversie/success', [ApiTrialController::class, 'success'])->name('api.trial.success');
+
+    // About (over-ons)
+    Route::get('/over-ons', ApiAboutController::class)->name('api.about');
+
+    // Academy
+    Route::get('/academy', [ApiAcademyController::class, 'index'])->name('api.academy.index');
+    Route::get('/academy/categories', [ApiAcademyController::class, 'categories'])->name('api.academy.categories');
+    Route::get('/academy/category/{slug}', [ApiAcademyController::class, 'showCategory'])->name('api.academy.category.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/academy/video/{slug}', [ApiAcademyController::class, 'showVideo'])->name('api.academy.video.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/academy/live-sessions/recordings', [ApiLiveSessionController::class, 'recordings'])->name('api.live-sessions.recordings');
+    Route::post('/academy/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->name('api.live-sessions.register')->where('slug', '[a-z0-9\-]+');
 
     // Header and footer menu structures
     Route::get('/menus', [ApiMenuController::class, 'index'])->name('api.menus.index');

@@ -8,16 +8,16 @@ use App\Models\MegaMenuItem;
 use App\Models\Setting;
 use App\Models\StickyMenuItem;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 /**
  * Frontend API: header and footer menu structures for headless consumption.
  */
 class MenuController extends Controller
 {
-    /**
-     * Header menu (mega menu) structure: nested tree with resolved URLs.
-     * Uses cached data; no DB query until menu is created/updated/deleted.
-     */
+    #[OA\Get(path: '/api/menus/header', summary: 'Header menu', description: 'Mega menu tree with resolved URLs and header settings.', tags: ['Menus'], responses: [
+        new OA\Response(response: 200, description: 'Header menu', content: new OA\JsonContent(ref: '#/components/schemas/HeaderMenuResponse')),
+    ])]
     public function header(): JsonResponse
     {
         $cached = MegaMenuItem::getCached();
@@ -35,9 +35,9 @@ class MenuController extends Controller
         return response()->json($payload);
     }
 
-    /**
-     * Footer menu structure: links grouped by column.
-     */
+    #[OA\Get(path: '/api/menus/footer', summary: 'Footer menu', description: 'Footer links grouped by column.', tags: ['Menus'], responses: [
+        new OA\Response(response: 200, description: 'Footer menu', content: new OA\JsonContent(ref: '#/components/schemas/FooterMenuResponse')),
+    ])]
     public function footer(): JsonResponse
     {
         $cached = FooterLink::getCached();
@@ -61,10 +61,9 @@ class MenuController extends Controller
         return response()->json($payload);
     }
 
-    /**
-     * Combined menus: header + footer in one response.
-     * Header uses cached data; no DB query until menu is edited.
-     */
+    #[OA\Get(path: '/api/menus', summary: 'All menus', description: 'Header and footer menus in one response.', tags: ['Menus'], responses: [
+        new OA\Response(response: 200, description: 'Header and footer menus'),
+    ])]
     public function index(): JsonResponse
     {
         $headerCached = MegaMenuItem::getCached();
@@ -97,9 +96,9 @@ class MenuController extends Controller
         return response()->json($payload);
     }
 
-    /**
-     * Sticky menu items (e.g. for mobile or secondary nav).
-     */
+    #[OA\Get(path: '/api/menus/sticky', summary: 'Sticky menu', description: 'Sticky menu items for mobile or secondary nav.', tags: ['Menus'], responses: [
+        new OA\Response(response: 200, description: 'Sticky items', content: new OA\JsonContent(properties: [new OA\Property(property: 'items', type: 'array', items: new OA\Items(ref: '#/components/schemas/StickyMenuItem'))])),
+    ])]
     public function sticky(): JsonResponse
     {
         $items = StickyMenuItem::getActiveItems();

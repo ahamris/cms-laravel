@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\SeoSetTrait;
 use App\Http\Resources\BlogListResource;
 use App\Http\Resources\BlogResource;
@@ -17,39 +18,30 @@ class BlogController extends Controller
     use SeoSetTrait;
 
     /**
-     * Display the blog listing page.
+     * Blog listing page (Blade, for web).
      */
     public function index(Request $request): View
     {
-        // Set SEO tags for blog index
         $this->setSeoTags([
-            'google_title' => 'Blog & Artikelen - ' . get_setting('site_name'),
+            'google_title' => 'Blog & Artikelen - '.get_setting('site_name'),
             'google_description' => 'Ontdek onze laatste artikelen, tips en nieuws over OpenPublicatie.',
             'google_image' => asset('images/blog-og-image.jpg'),
         ]);
 
         $perPage = 6;
-
-        // Get featured blog (first active featured blog or latest)
         $featuredArticle = Blog::with(['blog_category', 'author'])
             ->where('is_active', true)
             ->where('is_featured', true)
             ->latest()
             ->first();
-
-        // If no featured blog, get the latest one
-        if (!$featuredArticle) {
+        if (! $featuredArticle) {
             $featuredArticle = Blog::with(['blog_category', 'author'])
                 ->where('is_active', true)
                 ->latest()
                 ->first();
         }
 
-        // Get regular articles (excluding featured)
-        $articlesQuery = Blog::with(['blog_category', 'author'])
-            ->where('is_active', true);
-
-        // Apply search filter if present
+        $articlesQuery = Blog::with(['blog_category', 'author'])->where('is_active', true);
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $articlesQuery->where(function ($q) use ($searchTerm) {
@@ -59,38 +51,25 @@ class BlogController extends Controller
                     ->orWhere('long_body', 'like', "%{$searchTerm}%");
             });
         }
-
-        // Apply category filter if present
         if ($request->filled('category')) {
-            $categorySlug = $request->category;
-            $articlesQuery->whereHas('blog_category', function ($q) use ($categorySlug) {
-                $q->where('slug', $categorySlug);
-            });
+            $articlesQuery->whereHas('blog_category', fn ($q) => $q->where('slug', $request->category));
         }
-
-        if ($featuredArticle && !$request->filled('search') && !$request->filled('category')) {
+        if ($featuredArticle && ! $request->filled('search') && ! $request->filled('category')) {
             $articlesQuery->where('id', '!=', $featuredArticle->id);
         }
 
-        // First page: 5 articles when featured (1+5=6 cards for grid-cols-3), else 6
-        $hasFeaturedOnFirstPage = $featuredArticle && !$request->filled('search') && !$request->filled('category');
+        $hasFeaturedOnFirstPage = $featuredArticle && ! $request->filled('search') && ! $request->filled('category');
         $firstPageSize = $hasFeaturedOnFirstPage ? 5 : 6;
         $total = (clone $articlesQuery)->count();
         $articles = $articlesQuery->latest()->take($firstPageSize)->get();
         $hasMorePages = $total > $firstPageSize;
 
-        // Get all categories with their blogs for category sections
         $categories = BlogCategory::where('is_active', true)
-            ->withCount([
-                'blogs' => function ($query) {
-                    $query->where('is_active', true);
-                }
-            ])
+            ->withCount(['blogs' => fn ($query) => $query->where('is_active', true)])
             ->having('blogs_count', '>', 0)
             ->orderBy('name')
             ->get();
 
-        // Get blogs grouped by category (3 per category)
         $categorySections = [];
         foreach ($categories->take(4) as $category) {
             $categoryBlogs = Blog::with(['blog_category'])
@@ -99,29 +78,20 @@ class BlogController extends Controller
                 ->latest()
                 ->take(3)
                 ->get();
-
             if ($categoryBlogs->count() > 0) {
                 $categorySections[$category->name] = $categoryBlogs;
             }
         }
 
-        // Get recent articles for sidebar
-        $recentArticles = Blog::where('is_active', true)
-            ->latest()
-            ->take(3)
-            ->get();
-
-        // Extract unique tags from all active blogs
+        $recentArticles = Blog::where('is_active', true)->latest()->take(3)->get();
         $allTags = Blog::where('is_active', true)
             ->whereNotNull('meta_keywords')
             ->pluck('meta_keywords')
-            ->flatMap(function ($keywords) {
-                return array_map('trim', explode(',', $keywords));
-            })
+            ->flatMap(fn ($keywords) => array_map('trim', explode(',', $keywords)))
             ->filter()
             ->unique()
             ->values()
-            ->take(20) // Limit to 20 tags
+            ->take(20)
             ->toArray();
 
         return view('front.blog.index', compact(
@@ -136,7 +106,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Display a specific blog post.
+     * Single blog post page (Blade, for web).
      */
     public function show(string $slug): View
     {
@@ -145,14 +115,12 @@ class BlogController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        // Set SEO tags for blog post
         $this->setSeoTags([
             'google_title' => $blog->meta_title ?: $blog->title,
             'google_description' => $blog->meta_body ?: $blog->short_body,
             'google_image' => get_image($blog->image, asset('images/blog-og-image.jpg')),
         ]);
 
-        // Get related articles from same category
         $relatedArticles = Blog::with(['blog_category'])
             ->where('is_active', true)
             ->where('blog_category_id', $blog->blog_category_id)
@@ -161,75 +129,21 @@ class BlogController extends Controller
             ->take(3)
             ->get();
 
-        // Get approved parent comments with replies
         $comments = $blog->comments()
             ->parents()
             ->approved()
             ->with(['user', 'replies.user'])
             ->latest()
             ->get();
-
         $totalReviews = $blog->comments()->approved()->count();
 
         return view('front.blog.show', compact('blog', 'relatedArticles', 'comments', 'totalReviews'));
     }
 
-    #[OA\Get(
-        path: '/api/blog-posts',
-        summary: 'List latest blog posts',
-        description: 'Returns the latest 3 active blog posts (for dynamic blog section / page builder).',
-        tags: ['Blog'],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'List of blog posts',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BlogListItem')),
-                    ]
-                )
-            ),
-        ]
-    )]
-    public function apiPosts()
-    {
-        $blogs = Blog::with(['blog_category', 'author'])
-            ->where('is_active', true)
-            ->latest()
-            ->take(3)
-            ->get();
-
-        return BlogListResource::collection($blogs);
-    }
-
-    #[OA\Get(
-        path: '/api/blog/{slug}',
-        summary: 'Get a blog post by slug',
-        description: 'Returns a single active blog post by slug (for React SPA).',
-        tags: ['Blog'],
-        parameters: [
-            new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'), description: 'Blog post slug'),
-        ],
-        responses: [
-            new OA\Response(response: 200, description: 'Blog post', content: new OA\JsonContent(ref: '#/components/schemas/Blog')),
-            new OA\Response(response: 404, description: 'Blog post not found'),
-        ]
-    )]
-    public function apiShow(string $slug)
-    {
-        $blog = Blog::with(['blog_category', 'author'])
-            ->where('slug', $slug)
-            ->where('is_active', true)
-            ->firstOrFail();
-
-        return new BlogResource($blog);
-    }
-
     /**
-     * Load more blog posts (for "Daha fazla blog yazısı" button).
-     * Same filters as index (search, category), returns next page of 6 as HTML + hasMore.
+     * Load more blog posts (web: returns HTML for Blade; used by blog index).
      */
-    public function loadMore(Request $request): JsonResponse
+    public function loadMoreHtml(Request $request): JsonResponse
     {
         $perPage = 6;
         $page = max(1, (int) $request->input('page', 2));
@@ -239,16 +153,14 @@ class BlogController extends Controller
             ->where('is_featured', true)
             ->latest()
             ->first();
-        if (!$featuredArticle) {
+        if (! $featuredArticle) {
             $featuredArticle = Blog::with(['blog_category', 'author'])
                 ->where('is_active', true)
                 ->latest()
                 ->first();
         }
 
-        $articlesQuery = Blog::with(['blog_category', 'author'])
-            ->where('is_active', true);
-
+        $articlesQuery = Blog::with(['blog_category', 'author'])->where('is_active', true);
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $articlesQuery->where(function ($q) use ($searchTerm) {
@@ -259,23 +171,14 @@ class BlogController extends Controller
             });
         }
         if ($request->filled('category')) {
-            $categorySlug = $request->category;
-            $articlesQuery->whereHas('blog_category', function ($q) use ($categorySlug) {
-                $q->where('slug', $categorySlug);
-            });
+            $articlesQuery->whereHas('blog_category', fn ($q) => $q->where('slug', $request->category));
         }
-        if ($featuredArticle && !$request->filled('search') && !$request->filled('category')) {
+        if ($featuredArticle && ! $request->filled('search') && ! $request->filled('category')) {
             $articlesQuery->where('id', '!=', $featuredArticle->id);
         }
 
-        // When no search/category: first page had 5 (featured+5=6), so page 2 = skip 5 take 6, page 3 = skip 11 take 6
-        $hasFeaturedMode = !$request->filled('search') && !$request->filled('category') && $featuredArticle;
-        $perPage = 6;
-        if ($hasFeaturedMode && $page >= 2) {
-            $offset = 5 + ($page - 2) * $perPage;
-        } else {
-            $offset = ($page - 1) * $perPage;
-        }
+        $hasFeaturedMode = ! $request->filled('search') && ! $request->filled('category') && $featuredArticle;
+        $offset = $hasFeaturedMode && $page >= 2 ? 5 + ($page - 2) * $perPage : ($page - 1) * $perPage;
 
         $total = (clone $articlesQuery)->count();
         $items = $articlesQuery->latest()->skip($offset)->take($perPage)->get();
@@ -289,9 +192,94 @@ class BlogController extends Controller
             ])->render();
         }
 
+        return response()->json(['html' => $html, 'hasMore' => $hasMore]);
+    }
+
+    #[OA\Get(path: '/api/blog-posts', summary: 'List latest blog posts', description: 'Returns the latest 3 active blog posts.', tags: ['Blog'], responses: [
+        new OA\Response(response: 200, description: 'List of blog posts', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BlogListItem')),
+        ])),
+    ])]
+    public function apiPosts()
+    {
+        $blogs = Blog::with(['blog_category', 'author'])
+            ->where('is_active', true)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return BlogListResource::collection($blogs);
+    }
+
+    #[OA\Get(path: '/api/blog/{slug}', summary: 'Get a blog post by slug', tags: ['Blog'], parameters: [
+        new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Blog post', content: new OA\JsonContent(ref: '#/components/schemas/Blog')),
+        new OA\Response(response: 404, description: 'Not found'),
+    ])]
+    public function apiShow(string $slug)
+    {
+        $blog = Blog::with(['blog_category', 'author'])
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return new BlogResource($blog);
+    }
+
+    #[OA\Get(path: '/api/artikelen/load-more', summary: 'Load more blog posts (JSON)', description: 'Paginated blog list. Query: page, per_page, search, category.', tags: ['Blog'], parameters: [
+        new OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 2)),
+        new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 6)),
+        new OA\Parameter(name: 'search', in: 'query', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'category', in: 'query', schema: new OA\Schema(type: 'string')),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Blog list with has_more, next_page'),
+    ])]
+    public function loadMore(Request $request): JsonResponse
+    {
+        $perPage = max(1, min((int) $request->input('per_page', 6), 24));
+        $page = max(1, (int) $request->input('page', 2));
+
+        $featuredArticle = Blog::with(['blog_category', 'author'])
+            ->where('is_active', true)
+            ->where('is_featured', true)
+            ->latest()
+            ->first();
+        if (! $featuredArticle) {
+            $featuredArticle = Blog::with(['blog_category', 'author'])
+                ->where('is_active', true)
+                ->latest()
+                ->first();
+        }
+
+        $articlesQuery = Blog::with(['blog_category', 'author'])->where('is_active', true);
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $articlesQuery->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('meta_keywords', 'like', "%{$searchTerm}%")
+                    ->orWhere('short_body', 'like', "%{$searchTerm}%")
+                    ->orWhere('long_body', 'like', "%{$searchTerm}%");
+            });
+        }
+        if ($request->filled('category')) {
+            $articlesQuery->whereHas('blog_category', fn ($q) => $q->where('slug', $request->category));
+        }
+        if ($featuredArticle && ! $request->filled('search') && ! $request->filled('category')) {
+            $articlesQuery->where('id', '!=', $featuredArticle->id);
+        }
+
+        $hasFeaturedMode = ! $request->filled('search') && ! $request->filled('category') && $featuredArticle;
+        $offset = $hasFeaturedMode && $page >= 2 ? 5 + ($page - 2) * $perPage : ($page - 1) * $perPage;
+
+        $total = (clone $articlesQuery)->count();
+        $items = $articlesQuery->latest()->skip($offset)->take($perPage)->get();
+        $hasMore = $total > $offset + $items->count();
+
         return response()->json([
-            'html' => $html,
-            'hasMore' => $hasMore,
+            'data' => BlogListResource::collection($items),
+            'has_more' => $hasMore,
+            'next_page' => $hasMore ? $page + 1 : null,
         ]);
     }
 }

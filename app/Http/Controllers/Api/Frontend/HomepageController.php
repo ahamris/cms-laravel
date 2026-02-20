@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api\Frontend;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SiteSettingsResource;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class HomepageController extends Controller
 {
-    /**
-     * Site settings + theme for frontend (homepage, branding).
-     */
+    #[OA\Get(path: '/api/settings', summary: 'Site settings', description: 'Site name, tagline, logo, theme (base_color, accent_color) for frontend.', tags: ['Settings'], responses: [
+        new OA\Response(response: 200, description: 'Site and theme settings'),
+    ])]
     public function settings(Request $request)
     {
         $theme = AdminThemeSetting::getSettings();

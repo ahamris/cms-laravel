@@ -9,12 +9,13 @@ use App\Models\DocPage;
 use App\Models\DocSection;
 use App\Models\DocVersion;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class DocController extends Controller
 {
-    /**
-     * List active doc versions (with sections + pages tree).
-     */
+    #[OA\Get(path: '/api/docs', summary: 'List doc versions', description: 'Active doc versions with sections and pages tree.', tags: ['Docs'], responses: [
+        new OA\Response(response: 200, description: 'Doc versions collection'),
+    ])]
     public function index()
     {
         $versions = DocVersion::active()
@@ -27,9 +28,12 @@ class DocController extends Controller
         return DocVersionResource::collection($versions);
     }
 
-    /**
-     * Single version with sections and pages.
-     */
+    #[OA\Get(path: '/api/docs/{version}', summary: 'Doc version by slug', tags: ['Docs'], parameters: [
+        new OA\Parameter(name: 'version', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Version with sections and pages'),
+        new OA\Response(response: 404, description: 'Not found'),
+    ])]
     public function showVersion(string $version)
     {
         $versionModel = DocVersion::where('version', $version)
@@ -43,9 +47,14 @@ class DocController extends Controller
         return new DocVersionResource($versionModel);
     }
 
-    /**
-     * Single doc page by version, section, page slugs.
-     */
+    #[OA\Get(path: '/api/docs/{version}/{section}/{page}', summary: 'Doc page', description: 'Single doc page by version, section, page slugs.', tags: ['Docs'], parameters: [
+        new OA\Parameter(name: 'version', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'section', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'page', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Doc page'),
+        new OA\Response(response: 404, description: 'Not found'),
+    ])]
     public function showPage(string $version, string $section, string $page)
     {
         $versionModel = DocVersion::where('version', $version)->where('is_active', true)->firstOrFail();
@@ -63,9 +72,12 @@ class DocController extends Controller
         return new DocPageResource($pageModel);
     }
 
-    /**
-     * Search doc pages (JSON).
-     */
+    #[OA\Get(path: '/api/docs/search', summary: 'Search doc pages', description: 'Query: q (min 2 chars), version (optional).', tags: ['Docs'], parameters: [
+        new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2)),
+        new OA\Parameter(name: 'version', in: 'query', schema: new OA\Schema(type: 'string')),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Results with query and count'),
+    ])]
     public function search(Request $request)
     {
         $query = $request->input('q', '');

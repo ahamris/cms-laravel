@@ -8,12 +8,13 @@ use App\Models\Page;
 use App\Models\Solution;
 use App\Models\VacancyModule\Vacancy;
 use Illuminate\Support\Facades\Route;
+use OpenApi\Attributes as OA;
 
 class SitemapController extends Controller
 {
-    /**
-     * Sitemap as JSON for SPA routing / sitemap.
-     */
+    #[OA\Get(path: '/api/sitemap', summary: 'Sitemap', description: 'Sitemap as JSON: array of { url, loc, priority } for SPA routing.', tags: ['Sitemap'], responses: [
+        new OA\Response(response: 200, description: 'URLs with loc and priority'),
+    ])]
     public function index()
     {
         $urls = [];

@@ -23,7 +23,14 @@ class AllowFrontendOrigins
         $origin = $request->header('Origin');
         $referer = $request->header('Referer');
 
-        $requestOrigin = $origin ?: ($referer ? parse_url($referer, PHP_URL_ORIGIN) : null);
+        $requestOrigin = $origin;
+        if (! $requestOrigin && $referer) {
+            $parts = parse_url($referer);
+            $scheme = $parts['scheme'] ?? 'https';
+            $host = $parts['host'] ?? null;
+            $port = $parts['port'] ?? null;
+            $requestOrigin = $host ? $scheme.'://'.$host.(isset($port) && (($scheme === 'https' && $port != 443) || ($scheme === 'http' && $port != 80)) ? ':'.$port : '') : null;
+        }
 
         if ($requestOrigin === null) {
             return $next($request);

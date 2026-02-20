@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\SeoSetTrait;
 use App\Http\Requests\SubscriptionRequest;
 use App\Mail\ContactFormSubmittedMail;
@@ -13,56 +14,55 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\View\View;
+use OpenApi\Attributes as OA;
 
 class ContactController extends Controller
 {
     use SeoSetTrait;
 
-    /**
-     * Display the contact page.
-     */
-    public function index(): View
+    #[OA\Get(path: '/api/contact', summary: 'Contact page data', description: 'Contact page content for headless frontend.', tags: ['Contact'], responses: [
+        new OA\Response(response: 200, description: 'Contact page data', content: new OA\JsonContent(properties: [new OA\Property(property: 'data', ref: '#/components/schemas/ContactPageData')])),
+    ])]
+    public function index(): JsonResponse
     {
-        // Get the contact page content from the database
-        $page = Page::where('slug', 'contact')
-            ->where('is_active', true)
-            ->first();
+        $page = Page::where('slug', 'contact')->where('is_active', true)->first();
 
-        // Set SEO tags for contact page
-        $this->setSeoTags([
-            'google_title' => $page ? ($page->meta_title ?: $page->title) : 'Contact - '.get_setting('site_name'),
-            'google_description' => $page ? ($page->meta_body ?: $page->short_body) : 'Neem contact met ons op voor vragen of een demo.',
-            'google_image' => get_image($page->image ?? null, asset('images/contact-og-image.jpg')),
-        ]);
-
-        // If no page found, use default values
         if (! $page) {
             $page = (object) [
-                'title' => 'Hulp nodig bij de uitvoering <br> van de Wet open overheid?',
-                'short_body' => 'Laat hier je gegevens achter. <br> Een van onze Woo-specialisten denkt graag met je mee.',
+                'title' => 'Hulp nodig bij de uitvoering van de Wet open overheid?',
+                'short_body' => 'Laat hier je gegevens achter. Een van onze Woo-specialisten denkt graag met je mee.',
                 'long_body' => '',
                 'image' => null,
             ];
+        } else {
+            $page = [
+                'id' => $page->id,
+                'title' => $page->title,
+                'short_body' => $page->short_body,
+                'long_body' => $page->long_body,
+                'image' => $page->image,
+                'image_url' => get_image($page->image, null),
+                'meta_title' => $page->meta_title,
+                'meta_body' => $page->meta_body,
+            ];
         }
 
-        return view('front.contact.index', compact('page'));
+        return response()->json(['data' => $page]);
     }
 
-    /**
-     * Store a demo application.
-     */
+    #[OA\Post(path: '/api/contact/demo', summary: 'Submit demo request', tags: ['Contact'], responses: [
+        new OA\Response(response: 201, description: 'Demo request submitted'),
+        new OA\Response(response: 422, description: 'Validation error'),
+        new OA\Response(response: 500, description: 'Server error'),
+    ])]
     public function storeDemo(SubscriptionRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
-
-            // Map form fields to model fields
             $data['first_name'] = $data['firstName'] ?? $data['first_name'] ?? '';
             $data['last_name'] = $data['lastName'] ?? $data['last_name'] ?? '';
             $data['topic'] = $data['topic'] ?? '';
 
-            // Combine date and time if provided
             if (! empty($data['scheduled_date']) && ! empty($data['scheduled_time'])) {
                 $data['preferred_demo_date'] = $data['scheduled_date'];
                 $data['preferred_demo_time'] = $data['scheduled_time'];
@@ -70,25 +70,18 @@ class ContactController extends Controller
                 $data['status'] = 'demo_scheduled';
             }
 
-            // Set source tracking
             $data['source'] = 'website';
             $data['preferred_contact_method'] = 'phone';
 
-            // Create the demo application
             $subscription = Subscription::create($data);
 
-            // Send email to customer
             try {
-                Mail::to($subscription->email)
-                    ->send(new DemoRequestSubmitted($subscription, false));
+                Mail::to($subscription->email)->send(new DemoRequestSubmitted($subscription, false));
             } catch (Exception $e) {
             }
-
-            // Send email to admin
             try {
                 $adminEmail = config('mail.admin_email', 'admin@openpublication.eu');
-                Mail::to($adminEmail)
-                    ->send(new DemoRequestSubmitted($subscription, true));
+                Mail::to($adminEmail)->send(new DemoRequestSubmitted($subscription, true));
             } catch (Exception $e) {
             }
 
@@ -102,7 +95,6 @@ class ContactController extends Controller
                     'scheduled_time' => $subscription->preferred_demo_time,
                 ],
             ], 201);
-
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -112,12 +104,13 @@ class ContactController extends Controller
         }
     }
 
-    /**
-     * Store a contact form submission.
-     */
+    #[OA\Post(path: '/api/contact/verstuur', summary: 'Submit contact form', tags: ['Contact'], responses: [
+        new OA\Response(response: 201, description: 'Contact form submitted'),
+        new OA\Response(response: 422, description: 'Validation error'),
+        new OA\Response(response: 500, description: 'Server error'),
+    ])]
     public function storeContact(Request $request): JsonResponse
     {
-        // Conditional validation for file upload
         $rules = [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -130,8 +123,6 @@ class ContactController extends Controller
             'avg-optin' => 'required',
             'contact_preference' => 'required|in:call,query',
         ];
-
-        // If reden is 'ondersteuning', make bijlage required
         if ($request->input('reden') === 'ondersteuning') {
             $rules['bijlage'] = 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,txt,doc,docx,xls,xlsx,ppt,pptx';
         }
@@ -147,15 +138,11 @@ class ContactController extends Controller
         }
 
         try {
-            // Handle file upload
             $bijlagePath = null;
             if ($request->hasFile('bijlage')) {
-                $file = $request->file('bijlage');
-                $originalName = $file->getClientOriginalName();
-                $bijlagePath = $file->storeAs('contact-forms', $originalName, 'public');
+                $bijlagePath = $request->file('bijlage')->storeAs('contact-forms', $request->file('bijlage')->getClientOriginalName(), 'public');
             }
 
-            // Create contact form entry
             $contactForm = ContactForm::create([
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
@@ -171,18 +158,13 @@ class ContactController extends Controller
                 'status' => 'new',
             ]);
 
-            // Send email to customer
             try {
-                Mail::to($contactForm->email)
-                    ->send(new ContactFormSubmittedMail($contactForm, false));
+                Mail::to($contactForm->email)->send(new ContactFormSubmittedMail($contactForm, false));
             } catch (Exception $e) {
             }
-
-            // Send email to admin
             try {
                 $adminEmail = config('mail.admin_email', 'admin@openpublication.eu');
-                Mail::to($adminEmail)
-                    ->send(new ContactFormSubmittedMail($contactForm, true));
+                Mail::to($adminEmail)->send(new ContactFormSubmittedMail($contactForm, true));
             } catch (Exception $e) {
             }
 
@@ -191,12 +173,8 @@ class ContactController extends Controller
                 'message' => $validated['contact_preference'] === 'call'
                     ? 'We will call you back shortly!'
                     : 'We will respond to your query within one business day!',
-                'data' => [
-                    'id' => $contactForm->id,
-                    'full_name' => $contactForm->full_name,
-                ],
+                'data' => ['id' => $contactForm->id, 'full_name' => $contactForm->full_name],
             ], 201);
-
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
