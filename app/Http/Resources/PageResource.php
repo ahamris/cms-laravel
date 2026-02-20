@@ -25,7 +25,7 @@ class PageResource extends JsonResource
             'meta_keywords' => $this->meta_keywords,
             'image' => $this->image ? asset($this->image) : null,
             'icon' => $this->icon,
-            'url' => route('page.show', $this->slug),
+            'url' => route('api.pages.show', ['slug' => $this->slug]),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

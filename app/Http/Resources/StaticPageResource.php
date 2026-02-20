@@ -23,7 +23,7 @@ class StaticPageResource extends JsonResource
             'meta_description' => $this->meta_description,
             'keywords' => $this->keywords,
             'image' => $this->image ? asset($this->image) : null,
-            'url' => route('static.show', $this->slug),
+            'url' => route('api.static.show', ['slug' => $this->slug]),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

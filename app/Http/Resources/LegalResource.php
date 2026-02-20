@@ -23,7 +23,7 @@ class LegalResource extends JsonResource
             'meta_description' => $this->meta_description,
             'keywords' => $this->keywords,
             'image' => $this->image ? asset($this->image) : null,
-            'url' => route('legal.show', $this->slug),
+            'url' => route('api.legal.show', ['slug' => $this->slug]),
             'current_version' => $this->current_version,
             'versioning_enabled' => $this->versioning_enabled,
             'created_at' => $this->created_at?->toIso8601String(),
