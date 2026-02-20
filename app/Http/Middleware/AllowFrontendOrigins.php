@@ -36,9 +36,15 @@ class AllowFrontendOrigins
             return $next($request);
         }
 
-        $requestHost = parse_url($requestOrigin, PHP_URL_HOST);
+        $requestHost = parse_url($requestOrigin, \PHP_URL_HOST);
         if ($requestHost === null) {
             $requestHost = $requestOrigin;
+        }
+
+        // Always allow same-origin (e.g. Swagger UI on the same backend)
+        $appHost = $request->getHost();
+        if (strtolower($requestHost) === strtolower($appHost)) {
+            return $next($request);
         }
 
         foreach ($allowed as $domain) {
