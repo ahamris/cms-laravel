@@ -157,11 +157,14 @@ class AcademyVideo extends BaseModel
     }
 
     /**
-     * Get the thumbnail URL.
+     * Get the thumbnail URL (remote URL, local storage, or YouTube/Vimeo fallback).
      */
     public function getThumbnailUrlAttribute(): ?string
     {
         if ($this->thumbnail_path) {
+            if (str_starts_with($this->thumbnail_path, 'http://') || str_starts_with($this->thumbnail_path, 'https://')) {
+                return $this->thumbnail_path;
+            }
             return Storage::url($this->thumbnail_path);
         }
 

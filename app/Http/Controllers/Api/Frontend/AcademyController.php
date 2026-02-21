@@ -3,6 +3,12 @@
 namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AcademyCategoryListResource;
+use App\Http\Resources\AcademyCategoryResource;
+use App\Http\Resources\AcademyVideoListResource;
+use App\Http\Resources\AcademyVideoResource;
+use App\Http\Resources\LiveSessionListResource;
+use App\Http\Resources\LiveSessionResource;
 use App\Models\AcademyCategory;
 use App\Models\AcademyVideo;
 use App\Models\LiveSession;
@@ -16,7 +22,7 @@ class AcademyController extends Controller
     #[OA\Get(path: '/api/academy', summary: 'Academy index', description: 'Featured session, upcoming, recent videos, presenters, categories. Optional q= for search.', tags: ['Academy'], parameters: [
         new OA\Parameter(name: 'q', in: 'query', schema: new OA\Schema(type: 'string'), description: 'Search term'),
     ], responses: [
-        new OA\Response(response: 200, description: 'Academy data'),
+        new OA\Response(response: 200, description: 'Academy data', content: new OA\JsonContent(ref: '#/components/schemas/AcademyIndexResponse')),
     ])]
     public function index(Request $request): JsonResponse
     {
@@ -68,13 +74,22 @@ class AcademyController extends Controller
         $totalSeconds = $allVideos->sum('duration_seconds');
         $heroDuration = $totalSeconds > 0 ? sprintf('%d hr %d min', (int) floor($totalSeconds / 3600), (int) floor(($totalSeconds % 3600) / 60)) : null;
 
+        $upcomingArr = LiveSessionListResource::collection($upcomingSessions)->toArray($request);
+        $recentVideosArr = AcademyVideoListResource::collection($recentVideos)->toArray($request);
+        $categoriesArr = AcademyCategoryListResource::collection($academyCategories)->toArray($request);
+
         return response()->json([
             'data' => [
-                'featured_session' => $featuredSession,
-                'upcoming_sessions' => $upcomingSessions,
-                'recent_videos' => $recentVideos,
-                'presenters' => $presenters,
-                'categories' => $academyCategories,
+                'featured_session' => $featuredSession ? (new LiveSessionResource($featuredSession))->toArray($request) : null,
+                'upcoming_sessions' => isset($upcomingArr['data']) ? $upcomingArr['data'] : $upcomingArr,
+                'recent_videos' => isset($recentVideosArr['data']) ? $recentVideosArr['data'] : $recentVideosArr,
+                'presenters' => $presenters->map(fn ($p) => [
+                    'id' => $p->id,
+                    'name' => $p->name ?? $p->title,
+                    'avatar' => get_image($p->avatar ?? null),
+                    'sort_order' => $p->sort_order ?? 0,
+                ])->values()->all(),
+                'categories' => isset($categoriesArr['data']) ? $categoriesArr['data'] : $categoriesArr,
                 'search_query' => $searchQuery,
                 'stats' => [
                     'video_count' => $videoCount,
@@ -86,9 +101,11 @@ class AcademyController extends Controller
     }
 
     #[OA\Get(path: '/api/academy/categories', summary: 'Academy categories', tags: ['Academy'], responses: [
-        new OA\Response(response: 200, description: 'Categories with video counts'),
+        new OA\Response(response: 200, description: 'Categories with video counts', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/AcademyCategoryListItem')),
+        ])),
     ])]
-    public function categories(): JsonResponse
+    public function categories(Request $request): JsonResponse
     {
         $categories = AcademyCategory::active()
             ->ordered()
@@ -96,13 +113,19 @@ class AcademyController extends Controller
             ->withSum(['videos' => fn ($q) => $q->active()], 'duration_seconds')
             ->get();
 
-        return response()->json(['data' => $categories]);
+        $categoriesArr = AcademyCategoryListResource::collection($categories)->toArray($request);
+
+        return response()->json([
+            'data' => isset($categoriesArr['data']) ? $categoriesArr['data'] : $categoriesArr,
+        ]);
     }
 
     #[OA\Get(path: '/api/academy/category/{slug}', summary: 'Academy category by slug', tags: ['Academy'], parameters: [
         new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
-        new OA\Response(response: 200, description: 'Category with chapters and videos'),
+        new OA\Response(response: 200, description: 'Category with chapters and videos', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', ref: '#/components/schemas/AcademyCategory'),
+        ])),
         new OA\Response(response: 404, description: 'Not found'),
     ])]
     public function showCategory(string $slug): JsonResponse
@@ -111,13 +134,15 @@ class AcademyController extends Controller
             ->with(['chapters' => fn ($q) => $q->orderBy('sort_order'), 'videos' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order')->orderBy('title')])
             ->firstOrFail();
 
-        return response()->json(['data' => $category]);
+        return response()->json([
+            'data' => (new AcademyCategoryResource($category))->toArray($request),
+        ]);
     }
 
     #[OA\Get(path: '/api/academy/video/{slug}', summary: 'Academy video by slug', tags: ['Academy'], parameters: [
         new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
-        new OA\Response(response: 200, description: 'Video with related videos'),
+        new OA\Response(response: 200, description: 'Video with related videos', content: new OA\JsonContent(ref: '#/components/schemas/AcademyVideoResponse')),
         new OA\Response(response: 404, description: 'Not found'),
     ])]
     public function showVideo(string $slug): JsonResponse
@@ -131,9 +156,11 @@ class AcademyController extends Controller
             ->limit(6)
             ->get();
 
+        $relatedArr = AcademyVideoListResource::collection($relatedVideos)->toArray($request);
+
         return response()->json([
-            'data' => $video,
-            'related_videos' => $relatedVideos,
+            'data' => (new AcademyVideoResource($video))->toArray($request),
+            'related_videos' => isset($relatedArr['data']) ? $relatedArr['data'] : $relatedArr,
         ]);
     }
 }

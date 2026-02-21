@@ -94,19 +94,19 @@ class AcademyVideoController extends AdminBaseController
         $data['academy_chapter_id'] = $request->filled('academy_chapter_id') ? $request->input('academy_chapter_id') : null;
 
         if ($request->has('remove_video') && $request->input('remove_video') === '1') {
-            if ($academyVideo->video_path) {
+            if ($this->isLocalStoragePath($academyVideo->video_path)) {
                 Storage::disk('public')->delete($academyVideo->video_path);
             }
             $data['video_path'] = null;
             $data['video_url'] = null;
         } elseif ($request->hasFile('video')) {
-            if ($academyVideo->video_path) {
+            if ($this->isLocalStoragePath($academyVideo->video_path)) {
                 Storage::disk('public')->delete($academyVideo->video_path);
             }
             $data['video_path'] = $request->file('video')->store('academy-videos', 'public');
             $data['video_url'] = null;
         } else {
-            if ($academyVideo->video_path) {
+            if ($this->isLocalStoragePath($academyVideo->video_path)) {
                 Storage::disk('public')->delete($academyVideo->video_path);
             }
             $data['video_path'] = null;
@@ -114,12 +114,12 @@ class AcademyVideoController extends AdminBaseController
         }
 
         if ($request->has('remove_thumbnail') && $request->input('remove_thumbnail') === '1') {
-            if ($academyVideo->thumbnail_path) {
+            if ($this->isLocalStoragePath($academyVideo->thumbnail_path)) {
                 Storage::disk('public')->delete($academyVideo->thumbnail_path);
             }
             $data['thumbnail_path'] = null;
         } elseif ($request->hasFile('thumbnail')) {
-            if ($academyVideo->thumbnail_path) {
+            if ($this->isLocalStoragePath($academyVideo->thumbnail_path)) {
                 Storage::disk('public')->delete($academyVideo->thumbnail_path);
             }
             $data['thumbnail_path'] = $request->file('thumbnail')->store('academy-thumbnails', 'public');
@@ -136,10 +136,10 @@ class AcademyVideoController extends AdminBaseController
      */
     public function destroy(AcademyVideo $academyVideo)
     {
-        if ($academyVideo->video_path) {
+        if ($this->isLocalStoragePath($academyVideo->video_path)) {
             Storage::disk('public')->delete($academyVideo->video_path);
         }
-        if ($academyVideo->thumbnail_path) {
+        if ($this->isLocalStoragePath($academyVideo->thumbnail_path)) {
             Storage::disk('public')->delete($academyVideo->thumbnail_path);
         }
         $academyVideo->delete();
@@ -159,5 +159,13 @@ class AcademyVideoController extends AdminBaseController
             'is_active' => $academyVideo->is_active,
             'message' => $academyVideo->is_active ? 'Video activated.' : 'Video deactivated.',
         ]);
+    }
+
+    private function isLocalStoragePath(?string $path): bool
+    {
+        if (empty($path)) {
+            return false;
+        }
+        return ! str_starts_with($path, 'http://') && ! str_starts_with($path, 'https://');
     }
 }

@@ -63,7 +63,7 @@ class AcademyCategoryController extends AdminBaseController
             'slug' => $academyCategory->slug,
             'description' => $academyCategory->description,
             'image_path' => $academyCategory->image_path,
-            'image_url' => $academyCategory->image_path ? asset('storage/' . $academyCategory->image_path) : null,
+            'image_url' => $academyCategory->image_url,
             'sort_order' => $academyCategory->sort_order,
             'is_active' => $academyCategory->is_active,
             'created_at' => $academyCategory->created_at?->toIso8601String(),
@@ -105,12 +105,12 @@ class AcademyCategoryController extends AdminBaseController
         ];
 
         if ($request->hasFile('image')) {
-            if ($academyCategory->image_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($academyCategory->image_path)) {
+            if ($this->isLocalImagePath($academyCategory->image_path)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($academyCategory->image_path);
             }
             $payload['image_path'] = $request->file('image')->store('academy-categories', 'public');
         } elseif ($request->boolean('remove_image')) {
-            if ($academyCategory->image_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($academyCategory->image_path)) {
+            if ($this->isLocalImagePath($academyCategory->image_path)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($academyCategory->image_path);
             }
             $payload['image_path'] = null;
@@ -127,7 +127,7 @@ class AcademyCategoryController extends AdminBaseController
      */
     public function destroy(AcademyCategory $academyCategory)
     {
-        if ($academyCategory->image_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($academyCategory->image_path)) {
+        if ($this->isLocalImagePath($academyCategory->image_path)) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($academyCategory->image_path);
         }
 
@@ -149,5 +149,13 @@ class AcademyCategoryController extends AdminBaseController
             'is_active' => $academyCategory->is_active,
             'message' => $academyCategory->is_active ? 'Category activated.' : 'Category deactivated.',
         ]);
+    }
+
+    private function isLocalImagePath(?string $path): bool
+    {
+        if (empty($path)) {
+            return false;
+        }
+        return ! str_starts_with($path, 'http://') && ! str_starts_with($path, 'https://');
     }
 }
