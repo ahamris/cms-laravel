@@ -47,7 +47,11 @@ class PricingController extends Controller
     ])]
     public function show(string $slug): JsonResponse
     {
-        $plan = PricingPlan::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $plan = PricingPlan::where('slug', $slug)->where('is_active', true)->first();
+        if (! $plan) {
+            return response()->json(['message' => 'Plan not found.'], 404);
+        }
+
         $plans = PricingPlan::getCached();
         $boosters = PricingBooster::getCached();
         $features = PricingFeature::active()

@@ -48,7 +48,11 @@ class PageController extends Controller
     )]
     public function show(string $slug)
     {
-        $page = Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $page = Page::where('slug', $slug)->where('is_active', true)->first();
+        if (! $page) {
+            return response()->json(['message' => 'Page not found.'], 404);
+        }
+
         $page->load(['marketingPersona', 'contentType']);
 
         return new PageResource($page);

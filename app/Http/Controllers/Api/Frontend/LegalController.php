@@ -24,7 +24,10 @@ class LegalController extends Controller
     )]
     public function show(string $slug)
     {
-        $legal = Legal::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $legal = Legal::where('slug', $slug)->where('is_active', true)->first();
+        if (! $legal) {
+            return response()->json(['message' => 'Legal page not found.'], 404);
+        }
 
         return new LegalResource($legal);
     }

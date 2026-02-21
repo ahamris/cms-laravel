@@ -132,7 +132,10 @@ class AcademyController extends Controller
     {
         $category = AcademyCategory::where('slug', $slug)->where('is_active', true)
             ->with(['chapters' => fn ($q) => $q->orderBy('sort_order'), 'videos' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order')->orderBy('title')])
-            ->firstOrFail();
+            ->first();
+        if (! $category) {
+            return response()->json(['message' => 'Category not found.'], 404);
+        }
 
         return response()->json([
             'data' => (new AcademyCategoryResource($category))->toArray($request),
@@ -147,7 +150,11 @@ class AcademyController extends Controller
     ])]
     public function showVideo(string $slug): JsonResponse
     {
-        $video = AcademyVideo::where('slug', $slug)->where('is_active', true)->with('category')->firstOrFail();
+        $video = AcademyVideo::where('slug', $slug)->where('is_active', true)->with('category')->first();
+        if (! $video) {
+            return response()->json(['message' => 'Video not found.'], 404);
+        }
+
         $relatedVideos = AcademyVideo::active()
             ->where('academy_category_id', $video->academy_category_id)
             ->where('id', '!=', $video->id)

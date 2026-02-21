@@ -31,7 +31,10 @@ class FeatureController extends Controller
         $feature = Feature::with('modules')
             ->active()
             ->where('anchor', $anchor)
-            ->firstOrFail();
+            ->first();
+        if (! $feature) {
+            return response()->json(['message' => 'Feature not found.'], 404);
+        }
 
         return new FeatureResource($feature);
     }

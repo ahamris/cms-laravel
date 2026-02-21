@@ -50,7 +50,10 @@ class ChangelogController extends Controller
     ])]
     public function show(string $slug): JsonResponse
     {
-        $changelog = Changelog::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $changelog = Changelog::where('slug', $slug)->where('is_active', true)->first();
+        if (! $changelog) {
+            return response()->json(['message' => 'Changelog entry not found.'], 404);
+        }
 
         return response()->json(['data' => $changelog]);
     }

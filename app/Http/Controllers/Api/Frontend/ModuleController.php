@@ -37,7 +37,10 @@ class ModuleController extends Controller
                 'features' => fn ($q) => $q->where('is_active', true)->ordered(),
                 'solutions' => fn ($q) => $q->where('is_active', true)->ordered(),
             ])
-            ->firstOrFail();
+            ->first();
+        if (! $module) {
+            return response()->json(['message' => 'Module not found.'], 404);
+        }
 
         return new ModuleResource($module);
     }

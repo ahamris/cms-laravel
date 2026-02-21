@@ -38,7 +38,10 @@ class DocController extends Controller
     {
         $versionModel = DocVersion::where('version', $version)
             ->where('is_active', true)
-            ->firstOrFail();
+            ->first();
+        if (! $versionModel) {
+            return response()->json(['message' => 'Version not found.'], 404);
+        }
 
         $versionModel->load(['activeSections' => function ($q) {
             $q->with(['version', 'activePages']);
@@ -57,17 +60,27 @@ class DocController extends Controller
     ])]
     public function showPage(string $version, string $section, string $page)
     {
-        $versionModel = DocVersion::where('version', $version)->where('is_active', true)->firstOrFail();
+        $versionModel = DocVersion::where('version', $version)->where('is_active', true)->first();
+        if (! $versionModel) {
+            return response()->json(['message' => 'Version not found.'], 404);
+        }
+
         $sectionModel = DocSection::where('slug', $section)
             ->where('doc_version_id', $versionModel->id)
             ->where('is_active', true)
-            ->firstOrFail();
+            ->first();
+        if (! $sectionModel) {
+            return response()->json(['message' => 'Section not found.'], 404);
+        }
 
         $pageModel = DocPage::where('slug', $page)
             ->where('doc_section_id', $sectionModel->id)
             ->where('is_active', true)
             ->with(['section.version'])
-            ->firstOrFail();
+            ->first();
+        if (! $pageModel) {
+            return response()->json(['message' => 'Page not found.'], 404);
+        }
 
         return new DocPageResource($pageModel);
     }

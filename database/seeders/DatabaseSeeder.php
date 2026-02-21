@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             BlogContentSeeder::class,
             AcademySeeder::class,
             ChangelogSeeder::class,
+            VacancySeeder::class,
         ]);
     }
 }

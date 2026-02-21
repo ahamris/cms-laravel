@@ -113,7 +113,10 @@ class BlogController extends Controller
         $blog = Blog::with(['blog_category', 'author'])
             ->where('slug', $slug)
             ->where('is_active', true)
-            ->firstOrFail();
+            ->first();
+        if (! $blog) {
+            return response()->json(['message' => 'Blog post not found.'], 404);
+        }
 
         $this->setSeoTags([
             'google_title' => $blog->meta_title ?: $blog->title,
@@ -222,7 +225,10 @@ class BlogController extends Controller
         $blog = Blog::with(['blog_category', 'author'])
             ->where('slug', $slug)
             ->where('is_active', true)
-            ->firstOrFail();
+            ->first();
+        if (! $blog) {
+            return response()->json(['message' => 'Blog post not found.'], 404);
+        }
 
         return new BlogResource($blog);
     }

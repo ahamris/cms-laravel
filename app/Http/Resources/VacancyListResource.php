@@ -18,6 +18,7 @@ class VacancyListResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
+            'api_path' => route('api.vacancies.show', $this->slug),
             'location' => $this->location,
             'type' => $this->type,
             'department' => $this->department,

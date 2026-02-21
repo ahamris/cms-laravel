@@ -35,7 +35,10 @@ class SolutionController extends Controller
     ])]
     public function show(string $anchor)
     {
-        $solution = Solution::where('anchor', $anchor)->where('is_active', true)->firstOrFail();
+        $solution = Solution::where('anchor', $anchor)->where('is_active', true)->first();
+        if (! $solution) {
+            return response()->json(['message' => 'Solution not found.'], 404);
+        }
 
         $solution->load([
             'modules' => function ($q) {

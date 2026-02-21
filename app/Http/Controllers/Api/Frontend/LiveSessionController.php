@@ -62,7 +62,10 @@ class LiveSessionController extends Controller
     ])]
     public function show(string $slug)
     {
-        $session = LiveSession::where('slug', $slug)->where('is_active', true)->with(['presenters'])->firstOrFail();
+        $session = LiveSession::where('slug', $slug)->where('is_active', true)->with(['presenters'])->first();
+        if (! $session) {
+            return response()->json(['message' => 'Live session not found.'], 404);
+        }
 
         return new LiveSessionResource($session);
     }
@@ -75,7 +78,10 @@ class LiveSessionController extends Controller
     ])]
     public function register(Request $request, string $slug): JsonResponse
     {
-        $session = LiveSession::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $session = LiveSession::where('slug', $slug)->where('is_active', true)->first();
+        if (! $session) {
+            return response()->json(['message' => 'Live session not found.'], 404);
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',

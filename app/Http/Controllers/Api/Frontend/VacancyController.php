@@ -83,7 +83,10 @@ class VacancyController extends Controller
     ])]
     public function show(string $slug)
     {
-        $vacancy = Vacancy::where('slug', $slug)->active()->firstOrFail();
+        $vacancy = Vacancy::where('slug', $slug)->active()->first();
+        if (! $vacancy) {
+            return response()->json(['message' => 'Vacancy not found.'], 404);
+        }
 
         return new VacancyResource($vacancy);
     }
@@ -96,7 +99,10 @@ class VacancyController extends Controller
     ])]
     public function apply(string $slug): JsonResponse
     {
-        $vacancy = Vacancy::where('slug', $slug)->active()->firstOrFail();
+        $vacancy = Vacancy::where('slug', $slug)->active()->first();
+        if (! $vacancy) {
+            return response()->json(['message' => 'Vacancy not found.'], 404);
+        }
 
         return response()->json(['data' => new VacancyResource($vacancy)]);
     }
@@ -110,7 +116,10 @@ class VacancyController extends Controller
     ])]
     public function submit(Request $request, string $slug): JsonResponse
     {
-        $vacancy = Vacancy::where('slug', $slug)->active()->firstOrFail();
+        $vacancy = Vacancy::where('slug', $slug)->active()->first();
+        if (! $vacancy) {
+            return response()->json(['message' => 'Vacancy not found.'], 404);
+        }
 
         try {
             $validated = $request->validate([
