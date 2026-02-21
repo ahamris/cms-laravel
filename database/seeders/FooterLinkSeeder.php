@@ -12,6 +12,10 @@ class FooterLinkSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $links = [
             // Column 1: Services & Support
             ['title' => 'Services', 'url' => '/services', 'column' => 1, 'order' => 1],

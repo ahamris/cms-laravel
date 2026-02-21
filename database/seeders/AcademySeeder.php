@@ -15,6 +15,9 @@ class AcademySeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
 
         if (AcademyCategory::count() > 0) {
             return;

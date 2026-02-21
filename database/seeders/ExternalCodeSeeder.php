@@ -12,6 +12,10 @@ class ExternalCodeSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         // External code seeder is disabled by default
         // Uncomment and customize the code below to add external scripts/widgets
 

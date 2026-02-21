@@ -13,6 +13,10 @@ class ChangelogSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         if (Changelog::count() > 0) {
             return;
         }

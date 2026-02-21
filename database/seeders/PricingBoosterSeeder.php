@@ -12,6 +12,10 @@ class PricingBoosterSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         if (PricingBooster::count() > 0) {
             return;
         }

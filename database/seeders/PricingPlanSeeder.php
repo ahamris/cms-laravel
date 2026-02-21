@@ -12,6 +12,10 @@ class PricingPlanSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         if (PricingPlan::count() > 0) {
             return;
         }

@@ -17,6 +17,10 @@ class BlogContentSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         if (Blog::query()->exists()) {
             return;
         }

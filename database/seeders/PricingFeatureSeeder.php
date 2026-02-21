@@ -12,6 +12,10 @@ class PricingFeatureSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         if (PricingFeature::count() > 0) {
             return;
         }

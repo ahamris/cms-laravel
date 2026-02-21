@@ -13,6 +13,10 @@ class PageSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         if (Page::query()->exists()) {
             return;
         }
