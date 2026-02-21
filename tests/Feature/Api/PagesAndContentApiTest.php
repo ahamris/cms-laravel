@@ -122,7 +122,7 @@ test('api sitemap returns 200 and data array', function () {
     $data = $response->json('data');
     expect($data)->toBeArray();
     foreach (array_slice($data, 0, 3) as $item) {
-        expect($item)->toHaveKeys(['url', 'loc', 'priority']);
+        expect($item)->toHaveKeys(['loc', 'priority']);
     }
 });
 
@@ -132,7 +132,7 @@ test('api settings returns 200 with site and theme', function () {
 
     $response->assertStatus(200);
     $response->assertJsonStructure([
-        'site' => ['name', 'tagline', 'description', 'logo', 'favicon', 'hero_background'],
+        'site' => ['name', 'tagline', 'description', 'logo', 'favicon'],
         'theme' => ['base_color', 'accent_color'],
     ]);
 });

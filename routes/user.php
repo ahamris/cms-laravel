@@ -24,7 +24,7 @@ Route::group(['prefix' => 'user', 'as' => 'dashboard.auth.'], function () {
 });
 
 // Dashboard Routes (Protected)
-Route::group(['prefix' => 'user', 'as' => 'dashboard.', 'middleware' => 'user_role'], function () {
+Route::group(['prefix' => 'user', 'as' => 'dashboard.', 'middleware' => 'user'], function () {
 
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
     Route::get('/verify-email', [UserAuthController::class, 'showEmailVerificationNotice'])->name('verification.notice');

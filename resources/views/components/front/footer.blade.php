@@ -94,7 +94,7 @@
                 <a href="{{ url('/legal/toegankelijkheid') }}" class="hover:text-white focus:outline-none focus:underline">Toegankelijkheid</a>
                 <a href="{{ url('/legal/privacy') }}" class="hover:text-white focus:outline-none focus:underline">Privacy</a>
                 <a href="{{ url('/legal/cookies') }}" class="hover:text-white focus:outline-none focus:underline">Cookies</a>
-                <a href="{{ route('contact') }}" class="hover:text-white focus:outline-none focus:underline">Contact</a>
+                <a href="{{ url('/contact') }}" class="hover:text-white focus:outline-none focus:underline">Contact</a>
             </div>
             @if(get_setting('copyright_footer'))
                 <div class="flex items-start">

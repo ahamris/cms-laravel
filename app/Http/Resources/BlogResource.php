@@ -26,7 +26,7 @@ class BlogResource extends JsonResource
             'image' => get_image($this->image, asset('front/images/blog.png')),
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
-            'url' => route('blog.show', $this->slug),
+            'url' => '/artikelen/'.$this->slug,
             'date' => $this->created_at?->format('M j, Y'),
             'date_attr' => $this->created_at?->format('Y-m-d'),
             'published_at' => $this->published_at?->toIso8601String(),

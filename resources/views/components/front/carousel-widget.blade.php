@@ -15,7 +15,7 @@
         <div class="relative">
             <div class="overflow-x-auto scroll-smooth snap-x snap-mandatory flex gap-6 pb-4 -mx-4 px-4" style="scrollbar-width: none; -ms-overflow-style: none;">
                 @foreach($items as $article)
-                    <a href="{{ route('blog.show', $article->slug) }}"
+                    <a href="{{ url('/artikelen/' . $article->slug) }}"
                        class="flex-shrink-0 w-72 snap-start rounded-xl bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                         <x-picture-with-webp
                             :src="$article->image"
@@ -35,7 +35,7 @@
                 @endforeach
 
                 @if($carouselWidget->show_view_all_button && $items->isNotEmpty())
-                    <a href="{{ route('blog.index') }}"
+                    <a href="{{ url('/artikelen') }}"
                        class="flex-shrink-0 w-72 snap-start rounded-xl border-2 border-dashed border-gray-300 dark:border-zinc-600 flex flex-col items-center justify-center gap-2 p-6 text-gray-600 dark:text-gray-400 hover:border-purple-500 hover:text-purple-600 transition-colors">
                         <span class="text-4xl"><i class="fa fa-arrow-right"></i></span>
                         <span class="font-semibold">{{ $carouselWidget->view_all_title ?? __('View all') }}</span>

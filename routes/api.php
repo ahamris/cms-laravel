@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Frontend\FeatureController as ApiFeatureController;
 use App\Http\Controllers\Api\Frontend\HomepageController;
 use App\Http\Controllers\Api\Frontend\LegalController as ApiLegalController;
 use App\Http\Controllers\Api\Frontend\LiveSessionController as ApiLiveSessionController;
+use App\Http\Controllers\Api\Frontend\MediaController as ApiMediaController;
 use App\Http\Controllers\Api\Frontend\MenuController as ApiMenuController;
 use App\Http\Controllers\Api\Frontend\ModuleController as ApiModuleController;
 use App\Http\Controllers\Api\Frontend\PageController as ApiPageController;
@@ -47,6 +48,7 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/solutions', [ApiSolutionController::class, 'index'])->name('api.solutions.index');
     Route::get('/solutions/{anchor}', [ApiSolutionController::class, 'show'])->name('api.solutions.show')->where('anchor', '[a-z0-9\-]+');
     Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitemap');
+    Route::get('/media', [ApiMediaController::class, 'index'])->name('api.media.index');
     Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
     Route::get('/vacancies/{slug}', [ApiVacancyController::class, 'show'])->name('api.vacancies.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/vacancies/{slug}/apply', [ApiVacancyController::class, 'apply'])->name('api.vacancies.apply')->where('slug', '[a-z0-9\-]+');

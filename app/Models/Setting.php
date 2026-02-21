@@ -33,7 +33,9 @@ class Setting extends BaseModel
     public static function getValue($key, $default = null)
     {
         return Cache::remember("settings.{$key}", 60 * 60, function () use ($key, $default) {
-            return self::where('key', $key)->first()->value ?? $default;
+            $setting = self::where('key', $key)->first();
+
+            return $setting?->value ?? $default;
         });
     }
 

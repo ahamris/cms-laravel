@@ -24,7 +24,7 @@ test('non-admin user cannot access admin index', function () {
 
     $response = $this->actingAs($user)->get(route('admin.index'));
 
-    $response->assertRedirect('/');
+    $response->assertStatus(403);
 });
 
 test('admin user can access admin index', function () {

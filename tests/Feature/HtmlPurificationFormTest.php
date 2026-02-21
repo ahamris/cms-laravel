@@ -27,7 +27,7 @@ test('comment store purifies body and does not store script tags', function () {
 
     $xssBody = '<p>Nice post!</p><script>alert("xss")</script><img src=x onerror="alert(1)">';
 
-    $response = $this->post(route('comment.store'), [
+    $response = $this->postJson(route('api.comment.store'), [
         'body' => $xssBody,
         'entity_type' => Blog::class,
         'entity_id' => $blog->id,
@@ -35,8 +35,7 @@ test('comment store purifies body and does not store script tags', function () {
         'guest_email' => 'test@example.com',
     ]);
 
-    $response->assertRedirect();
-    $response->assertSessionHasNoErrors();
+    $response->assertStatus(201);
     $comment = Comment::latest()->first();
     expect($comment)->not->toBeNull('Expected a comment to be created');
     expect($comment->entity_id)->toBe($blog->id);
@@ -57,13 +56,13 @@ test('vacancy apply submit purifies cover_letter and does not store script tags'
 
     $xssCoverLetter = '<p>I am interested.</p><script>alert("xss")</script>';
 
-    $response = $this->post(route('career.apply.submit', $vacancy), [
+    $response = $this->postJson(route('api.vacancies.submit', ['slug' => $vacancy->slug]), [
         'name' => 'Applicant',
         'email' => 'applicant@example.com',
         'cover_letter' => $xssCoverLetter,
     ]);
 
-    $response->assertRedirect();
+    $response->assertStatus(201);
     $application = JobApplication::where('vacancy_id', $vacancy->id)->latest()->first();
     expect($application)->not->toBeNull();
     expect($application->cover_letter)->not->toContain('<script>');

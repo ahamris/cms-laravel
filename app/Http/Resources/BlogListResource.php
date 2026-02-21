@@ -19,7 +19,7 @@ class BlogListResource extends JsonResource
         return [
             'title' => $this->title,
             'slug' => $this->slug,
-            'url' => route('blog.show', $this->slug),
+            'url' => '/artikelen/'.$this->slug,
             'image' => get_image($this->image, asset('front/images/blog.png')),
             'short_body' => \Illuminate\Support\Str::limit(strip_tags($this->short_body ?? ''), 160),
             'date' => $this->created_at?->format('M j, Y'),

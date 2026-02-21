@@ -328,34 +328,4 @@ if (! function_exists('format_localized_date_long')) {
     }
 }
 
-// Backward compatibility aliases for Dutch dates
-if (! function_exists('format_dutch_date')) {
-    /**
-     * @deprecated Use format_localized_date() instead
-     */
-    function format_dutch_date($date, string $format = 'd M Y'): string
-    {
-        return format_localized_date($date, $format, 'nl');
-    }
-}
-
-if (! function_exists('format_dutch_datetime')) {
-    /**
-     * @deprecated Use format_localized_datetime() instead
-     */
-    function format_dutch_datetime($date): string
-    {
-        return format_localized_datetime($date, 'nl');
-    }
-}
-
-if (! function_exists('format_dutch_date_long')) {
-    /**
-     * @deprecated Use format_localized_date_long() instead
-     */
-    function format_dutch_date_long($date): string
-    {
-        return format_localized_date_long($date, 'nl');
-    }
-}
 

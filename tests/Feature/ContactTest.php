@@ -11,7 +11,7 @@ beforeEach(function () {
 });
 
 test('contact form submit fails when required fields are missing', function () {
-    $response = $this->postJson(route('contact.submit'), []);
+    $response = $this->postJson(route('api.contact.submit'), []);
 
     $response->assertStatus(422);
     $response->assertJson(['success' => false]);
@@ -19,7 +19,7 @@ test('contact form submit fails when required fields are missing', function () {
 });
 
 test('contact form submit succeeds with valid data', function () {
-    $response = $this->postJson(route('contact.submit'), [
+    $response = $this->postJson(route('api.contact.submit'), [
         'first_name' => 'Jan',
         'last_name' => 'Jansen',
         'company_name' => '',

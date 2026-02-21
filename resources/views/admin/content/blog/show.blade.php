@@ -14,7 +14,7 @@
                 <i class="fa-solid fa-edit"></i>
                 Edit
             </a>
-            <a href="{{ route('blog.show', $blog->slug) }}" target="_blank" class="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90">
+            <a href="{{ url('/artikelen/' . $blog->slug) }}" target="_blank" class="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90">
                 <i class="fa-solid fa-external-link-alt"></i>
                 View Article
             </a>

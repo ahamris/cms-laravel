@@ -21,7 +21,8 @@ class Table extends Component
 
     protected array $resources = [];
 
-    public string $resource; // Resource key (e.g., 'users', 'orders') - deprecated, use model prop instead
+    /** Resource key or model class (e.g. 'users', \App\Models\Blog::class). Prefer passing model class in mount(). */
+    public string $resource;
 
     public array $columns = []; // Column definitions
 

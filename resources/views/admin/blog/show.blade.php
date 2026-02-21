@@ -206,7 +206,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         @foreach($relatedBlogs as $relatedBlog)
                             <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
-                                <a href="{{ route('blog.show', $relatedBlog->slug) }}" class="block">
+                                <a href="{{ url('/artikelen/' . $relatedBlog->slug) }}" class="block">
                                     <img src="{{ $relatedBlog->get_image }}"
                                          alt="{{ $relatedBlog->title }}"
                                          class="w-full h-48 object-cover">
@@ -218,7 +218,7 @@
                                         </span>
                                     @endif
                                     <h3 class="text-xl font-bold text-gray-900 mb-2">
-                                        <a href="{{ route('blog.show', $relatedBlog->slug) }}" class="hover:text-primary-600 transition-colors">
+                                        <a href="{{ url('/artikelen/' . $relatedBlog->slug) }}" class="hover:text-primary-600 transition-colors">
                                             {{ $relatedBlog->title }}
                                         </a>
                                     </h3>
@@ -239,7 +239,7 @@
                                     <p class="text-gray-600 line-clamp-2">
                                         {{ Str::limit(strip_tags($relatedBlog->description), 120) }}
                                     </p>
-                                    <a href="{{ route('blog.show', $relatedBlog->slug) }}" class="inline-flex items-center text-primary-600 hover:text-primary-800 font-medium mt-4">
+                                    <a href="{{ url('/artikelen/' . $relatedBlog->slug) }}" class="inline-flex items-center text-primary-600 hover:text-primary-800 font-medium mt-4">
                                         {{ __('ui.read_more') }}
                                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

@@ -20,9 +20,10 @@ Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)) a
 5. [Changelog](#changelog)
 6. [Search](#search)
 7. [Contact](#contact)
-8. [Analytics](#analytics)
-9. [Errors](#errors)
-10. [CORS and security](#cors-and-security)
+8. [Media and assets](#media-and-assets)
+9. [Analytics](#analytics)
+10. [Errors](#errors)
+11. [CORS and security](#cors-and-security)
 
 ---
 
@@ -297,65 +298,33 @@ GET /api/static/faq
 
 ## Changelog
 
-Changelog entries (product updates). Two flavours: general changelog and “API” changelog.
+Changelog entries (product updates). Use the JSON API under `/api/changelog`.
 
-### Changelog index (general)
+### Changelog index
 
-**GET** `/changelog`
+**GET** `/api/changelog`
 
-- With **HTML request:** returns the changelog index page (HTML).
-- With **AJAX request** (e.g. `X-Requested-With: XMLHttpRequest` or `Accept: application/json`): returns JSON.
+**Auth:** None (public). Restricted by allowed origins.
 
-**Query parameters (for AJAX):**
+Returns a list of **active** changelog entries (paginated). Query parameters: `per_page`, `page`.
 
-| Parameter | Type   | Default | Description      |
-|----------|--------|--------|------------------|
-| `offset` | number | 0      | Offset for list. |
-| (implicit limit) | 10 |        | Entries per response. |
+**Example request:** `GET /api/changelog?per_page=10&page=1`
 
-**Example (AJAX):** `GET /changelog?offset=0` with header `Accept: application/json` or `X-Requested-With: XMLHttpRequest`.
-
-**Example response:** `200 OK`
-
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "title": "Nieuwe feature X",
-      "slug": "nieuwe-feature-x",
-      "description": "Korte omschrijving",
-      "content": "<p>HTML...</p>",
-      "date": "2025-02-15",
-      "status": "product",
-      "features": [],
-      "steps": [],
-      "is_active": true,
-      "sort_order": 0,
-      "created_at": "...",
-      "updated_at": "..."
-    }
-  ],
-  "has_more": true,
-  "next_offset": 10,
-  "html": "<div class=\"changelog-item\">...</div>"
-}
-```
-
-`data` contains raw Changelog models; `html` is pre-rendered HTML for drop-in use.
+**Example response:** `200 OK` — structure follows the ChangelogController (data array + meta for pagination).
 
 ---
 
-### Changelog index (API status)
+### Get changelog entry by slug
 
-**GET** `/changelog/api`
+**GET** `/api/changelog/{slug}`
 
-Same behaviour as the general changelog index, but only entries with `status === 'api'`.  
-Use for a dedicated “API changelog” or “Developer updates” section.
+**Auth:** None (public). Restricted by allowed origins.
 
-**Example (AJAX):** `GET /changelog/api?offset=0` with `Accept: application/json` or `X-Requested-With: XMLHttpRequest`.
+Returns a single **active** changelog entry by slug.
 
-Response shape is the same as above.
+**Example request:** `GET /api/changelog/nieuwe-feature-x`
+
+**Error:** `404 Not Found` if no active changelog exists for the slug.
 
 ---
 
@@ -407,58 +376,39 @@ If `q` is shorter than 2 characters, `suggestions` is an empty array; `mostSearc
 
 ## Contact
 
-Contact/demo forms. Both endpoints expect **POST** with JSON or form body.
+Contact page data and form submission. All under `/api/contact`.
 
-### Demo request
+### Contact page data
 
-**POST** `/contact/demo`
+**GET** `/api/contact`
 
-Submit a demo request.
+**Auth:** None (public). Restricted by allowed origins.
 
-**Body (JSON or form):**  
-Required fields depend on your form; typically include at least:  
-`name`, `email`, `company`, `phone`, `preferred_demo_date`, `preferred_demo_time`, etc.
+Returns contact page content for the headless frontend (title, body, image, meta). If no "contact" page exists in the CMS, a fallback object is returned.
 
-**Example response:** `201 Created`
+**Example request:** `GET /api/contact`
 
-```json
-{
-  "success": true,
-  "message": "Demo request submitted successfully!",
-  "data": {
-    "id": 42,
-    "full_name": "Jan Jansen",
-    "scheduled_date": "February 25, 2025",
-    "scheduled_time": "10:00"
-  }
-}
-```
-
-**Error:** `500` with `success: false` and `message` on failure.
+**Example response:** `200 OK` — `{"data": { "title": "...", "short_body": "...", "long_body": "...", "image": null, "image_url": "...", "meta_title": "...", "meta_body": "..." }}`
 
 ---
 
-### Contact form
+### Submit contact form
 
-**POST** `/contact/verstuur`
+**POST** `/api/contact/verstuur`
 
-Submit the main contact form.
+Submit the main contact form. Expects **POST** with JSON or form body.
 
 **Body (JSON or form):**  
-Required fields typically include:  
-`first_name`, `last_name`, `email`, `phone`, `reden`, `bericht`, `avg-optin`, `contact_preference` (`"call"` or `"query"`).  
-If `reden === 'ondersteuning'`, `bijlage` (file) may be required.
+Required: `first_name`, `last_name`, `email`, `phone`, `reden`, `bericht`, `avg-optin`, `contact_preference` (`"call"` or `"query"`).  
+Optional: `company_name`, `country_code`.  
+If `reden === 'ondersteuning'`, `bijlage` (file) is required (max 10MB; pdf, jpg, png, txt, doc, xls, ppt, etc.).
 
 **Example response:** `201 Created`
 
 ```json
 {
   "success": true,
-  "message": "We will call you back shortly!",
-  "data": {
-    "id": 10,
-    "full_name": "Jan Jansen"
-  }
+  "message": "Bedankt! Uw reactie is geplaatst en wordt na controle gepubliceerd."
 }
 ```
 
@@ -473,6 +423,22 @@ If `reden === 'ondersteuning'`, `bijlage` (file) may be required.
   }
 }
 ```
+
+---
+
+## Media and assets
+
+There is no dedicated media library table; images are embedded in content (pages, blog, settings). Use the fields `image`, `icon`, or `image_url` returned by pages, blog posts, and `GET /api/settings` for stable asset URLs (e.g. `https://your-cms.test/storage/...`).
+
+### List media (placeholder)
+
+**GET** `/api/media`
+
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a paginated list of media assets. Currently returns an empty list; this endpoint is reserved for a future media library. Query parameters: `per_page` (1–100, default 12), `page`.
+
+**Example response:** `200 OK` — `{"data": [], "meta": {"current_page": 1, "last_page": 1, "per_page": 12, "total": 0, "from": null, "to": null}}`
 
 ---
 
@@ -588,13 +554,14 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 | GET | `/api/solutions` | — | List solutions |
 | GET | `/api/solutions/{anchor}` | — | Single solution by anchor |
 | GET | `/api/sitemap` | — | Sitemap as JSON (urls for SPA) |
+| GET | `/api/media` | — | Media list (placeholder; empty for now) |
 | GET | `/api/vacancies` | — | List vacancies (paginated, filterable) |
 | GET | `/api/vacancies/{slug}` | — | Single vacancy |
-| GET | `/changelog` (AJAX) | — | Changelog index (general) |
-| GET | `/changelog/api` (AJAX) | — | Changelog index (API status) |
+| GET | `/api/changelog` | — | Changelog index (paginated) |
+| GET | `/api/changelog/{slug}` | — | Single changelog entry by slug |
+| GET | `/api/contact` | — | Contact page data |
 | GET | `/api/search/suggestions?q=` | — | Search suggestions |
-| POST | `/contact/demo` | — | Submit demo request |
-| POST | `/contact/verstuur` | — | Submit contact form |
+| POST | `/api/contact/verstuur` | — | Submit contact form |
 | POST | `/api/analytics/track` | — | Track page view |
 | POST | `/api/analytics/batch-track` | — | Batch track (SPA) |
 | POST | `/api/analytics/guest-activity` | — | Guest activity |

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Blog;
 use App\Models\Comment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,11 @@ use OpenApi\Attributes as OA;
 
 class CommentController extends Controller
 {
+    /** @var list<class-string> Allowed entity types for comments (must have comments() relation). */
+    protected static array $allowedEntityTypes = [
+        Blog::class,
+    ];
+
     #[OA\Post(path: '/api/artikelen/reactie', summary: 'Store comment', description: 'Create a comment on an entity (blog etc.). Body: body, entity_type, entity_id, parent_id?, guest_name?, guest_email?', tags: ['Comments'], responses: [
         new OA\Response(response: 201, description: 'Comment stored'),
         new OA\Response(response: 422, description: 'Validation error'),
@@ -32,7 +38,7 @@ class CommentController extends Controller
         ]);
 
         $entityClass = $request->entity_type;
-        if (! class_exists($entityClass)) {
+        if (! in_array($entityClass, self::$allowedEntityTypes, true)) {
             return response()->json(['success' => false, 'message' => 'Ongeldig itemtype.'], 422);
         }
 
