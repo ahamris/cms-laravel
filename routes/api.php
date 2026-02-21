@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('frontend.origins')->group(function () {
     Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
     Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/search', [ApiSearchController::class, 'index'])->name('api.search');
     Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
     Route::get('/blog-posts', [ApiBlogController::class, 'apiPosts'])->name('api.blog-posts');
     Route::get('/blog/{slug}', [ApiBlogController::class, 'apiShow'])->name('api.blog.show')->where('slug', '[a-z0-9\-]+');

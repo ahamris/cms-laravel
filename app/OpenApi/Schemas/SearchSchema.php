@@ -28,6 +28,35 @@ use OpenApi\Attributes as OA;
         )),
     ]
 )]
+#[OA\Schema(
+    schema: 'SearchResultItem',
+    title: 'Search result item',
+    properties: [
+        new OA\Property(property: 'type', type: 'string', description: 'page, blog, solution, doc, academy_video, academy_category, changelog'),
+        new OA\Property(property: 'title', type: 'string'),
+        new OA\Property(property: 'excerpt', type: 'string'),
+        new OA\Property(property: 'url', type: 'string', format: 'uri'),
+        new OA\Property(property: 'slug', type: 'string', nullable: true),
+        new OA\Property(property: 'anchor', type: 'string', nullable: true, description: 'For solutions'),
+        new OA\Property(property: 'version', type: 'string', nullable: true, description: 'For docs'),
+        new OA\Property(property: 'section', type: 'string', nullable: true, description: 'For docs'),
+    ]
+)]
+#[OA\Schema(
+    schema: 'SearchResponse',
+    title: 'Search response',
+    properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/SearchResultItem')),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+            new OA\Property(property: 'query', type: 'string'),
+            new OA\Property(property: 'type', type: 'string'),
+            new OA\Property(property: 'total', type: 'integer'),
+            new OA\Property(property: 'current_page', type: 'integer'),
+            new OA\Property(property: 'last_page', type: 'integer'),
+            new OA\Property(property: 'per_page', type: 'integer'),
+        ]),
+    ]
+)]
 class SearchSchema
 {
 }
