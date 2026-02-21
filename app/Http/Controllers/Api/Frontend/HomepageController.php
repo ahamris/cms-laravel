@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\AdminThemeSetting;
+use App\Models\ExternalCode;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
@@ -91,6 +92,7 @@ class HomepageController extends Controller
                 'cta_button_text' => get_setting('footer_cta_button_text'),
                 'cta_button_url' => get_setting('footer_cta_button_url'),
             ],
+            'external_codes' => ExternalCode::getCached(),
         ];
     }
 }
