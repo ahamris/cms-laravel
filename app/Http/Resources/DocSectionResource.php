@@ -14,7 +14,7 @@ class DocSectionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
@@ -25,6 +25,6 @@ class DocSectionResource extends JsonResource
                 'section' => $this->slug,
             ])),
             'pages' => DocPageListResource::collection($this->whenLoaded('activePages')),
-        ];
+        ]);
     }
 }

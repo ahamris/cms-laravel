@@ -17,7 +17,7 @@ class BlogResource extends JsonResource
         $author = $this->author;
         $category = $this->blog_category;
 
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
@@ -42,6 +42,6 @@ class BlogResource extends JsonResource
             ] : null,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
-        ];
+        ]);
     }
 }

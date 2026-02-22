@@ -14,7 +14,7 @@ class VacancyListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
@@ -25,6 +25,6 @@ class VacancyListResource extends JsonResource
             'category' => $this->category,
             'closing_date' => $this->closing_date?->toDateString(),
             'created_at' => $this->created_at?->toIso8601String(),
-        ];
+        ]);
     }
 }

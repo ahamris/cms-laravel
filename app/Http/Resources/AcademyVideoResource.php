@@ -14,7 +14,7 @@ class AcademyVideoResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
@@ -40,6 +40,6 @@ class AcademyVideoResource extends JsonResource
             ] : null),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
-        ];
+        ]);
     }
 }

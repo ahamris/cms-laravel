@@ -14,7 +14,7 @@ class ModuleListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
@@ -23,6 +23,6 @@ class ModuleListResource extends JsonResource
             'url' => route('module.show', $this->slug),
             'sort_order' => $this->sort_order,
             'created_at' => $this->created_at?->toIso8601String(),
-        ];
+        ]);
     }
 }

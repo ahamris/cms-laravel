@@ -14,7 +14,7 @@ class LiveSessionListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
@@ -25,6 +25,6 @@ class LiveSessionListResource extends JsonResource
             'url' => route('academy.live-sessions.show', $this->slug),
             'is_upcoming' => $this->session_date && $this->session_date->isFuture(),
             'created_at' => $this->created_at?->toIso8601String(),
-        ];
+        ]);
     }
 }

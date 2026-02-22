@@ -18,7 +18,7 @@ class DocPageListResource extends JsonResource
         $versionSlug = $section && $section->relationLoaded('version') ? $section->version->version : '';
         $sectionSlug = $section?->slug ?? '';
 
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
@@ -28,6 +28,6 @@ class DocPageListResource extends JsonResource
                 'section' => $sectionSlug,
                 'page' => $this->slug,
             ]) : null,
-        ];
+        ]);
     }
 }

@@ -369,6 +369,7 @@ if (! function_exists('resource_urls_to_paths')) {
     /**
      * Recursively convert all full URLs in a resource response to path-only (no domain).
      * Use for API responses so the frontend receives domain-agnostic paths.
+     * Only recurses into arrays; objects (e.g. Resource collections) are left unchanged.
      *
      * @param  mixed  $data  Array, object, or string (e.g. JsonResource::toArray() or response array)
      * @return mixed Same structure with full URL strings replaced by path-only strings
@@ -380,12 +381,7 @@ if (! function_exists('resource_urls_to_paths')) {
         }
 
         if (is_object($data)) {
-            $out = [];
-            foreach ((array) $data as $key => $value) {
-                $out[$key] = resource_urls_to_paths($value);
-            }
-
-            return (object) $out;
+            return $data;
         }
 
         if (is_string($data) && filter_var($data, FILTER_VALIDATE_URL)) {

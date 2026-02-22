@@ -17,7 +17,7 @@ class FeatureListResource extends JsonResource
     {
         $anchor = $this->anchor ?? Str::slug($this->title);
 
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'anchor' => $anchor,
@@ -25,6 +25,6 @@ class FeatureListResource extends JsonResource
             'icon' => get_image($this->icon, asset('images/features-og-image.jpg')),
             'url' => route('features.show', $anchor),
             'sort_order' => $this->sort_order,
-        ];
+        ]);
     }
 }

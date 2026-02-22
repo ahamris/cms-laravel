@@ -16,7 +16,7 @@ class BlogListResource extends JsonResource
     {
         $author = $this->author;
 
-        return [
+        return resource_urls_to_paths([
             'title' => $this->title,
             'slug' => $this->slug,
             'url' => '/artikelen/'.$this->slug,
@@ -28,6 +28,6 @@ class BlogListResource extends JsonResource
             'category_slug' => $this->blog_category?->slug ?? null,
             'author_name' => $author ? ($author->full_name ?? $author->name ?? 'Author') : 'Author',
             'author_avatar' => $author ? get_image($author->avatar, 'https://ui-avatars.com/api/?name=' . urlencode($author->name ?? 'Author') . '&size=80') : 'https://ui-avatars.com/api/?name=Author&size=80',
-        ];
+        ]);
     }
 }

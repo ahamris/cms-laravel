@@ -17,7 +17,7 @@ class FeatureResource extends JsonResource
     {
         $anchor = $this->anchor ?? Str::slug($this->title);
 
-        return [
+        return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
             'anchor' => $anchor,
@@ -28,6 +28,6 @@ class FeatureResource extends JsonResource
             'modules' => ModuleListResource::collection($this->whenLoaded('modules')),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
-        ];
+        ]);
     }
 }
