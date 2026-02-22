@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             RobotsTxtSeeder::class,
             MegaMenuSeeder::class,
             PageSeeder::class,
+            HomepageSectionSeeder::class,
             BlogContentSeeder::class,
             AcademySeeder::class,
             ChangelogSeeder::class,

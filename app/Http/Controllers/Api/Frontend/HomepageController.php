@@ -5,11 +5,52 @@ namespace App\Http\Controllers\Api\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\AdminThemeSetting;
 use App\Models\ExternalCode;
+use App\Models\HomepageSection;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class HomepageController extends Controller
 {
+    #[OA\Get(path: '/api/homepage', summary: 'Homepage content sections', description: 'Editable homepage sections (hero, feature cards, about OPMS, how it works, user features, competition, latest updates title, bottom CTA). Header and footer come from GET /api/settings.', tags: ['Homepage'], responses: [
+        new OA\Response(response: 200, description: 'Sections keyed by section_key'),
+    ])]
+    public function homepage(Request $request)
+    {
+        $sections = HomepageSection::getAllForApi();
+        return self::resolveImageUrls($sections);
+    }
+
+    /**
+     * Resolve relative image paths to full URLs in section content.
+     *
+     * @param  array<string, array<string, mixed>>  $sections
+     * @return array<string, array<string, mixed>>
+     */
+    private static function resolveImageUrls(array $sections): array
+    {
+        foreach ($sections as $key => $content) {
+            if (! is_array($content)) {
+                continue;
+            }
+            if (! empty($content['image'])) {
+                $sections[$key]['image'] = get_image($content['image']);
+            }
+            if ($key === 'hero' || $key === 'about_opms') {
+                continue;
+            }
+            if (isset($content['cards']) && is_array($content['cards'])) {
+                foreach ($content['cards'] as $i => $card) {
+                    if (! empty($card['icon']) && str_starts_with((string) $card['icon'], 'http')) {
+                        continue;
+                    }
+                    if (! empty($card['icon'])) {
+                        $sections[$key]['cards'][$i]['icon'] = $card['icon'];
+                    }
+                }
+            }
+        }
+        return $sections;
+    }
     #[OA\Get(path: '/api/settings', summary: 'Site settings', description: 'Grouped site, theme, SEO, contact/map, cookie, hero, header and footer settings for frontend.', tags: ['Settings'], responses: [
         new OA\Response(response: 200, description: 'Grouped settings'),
     ])]

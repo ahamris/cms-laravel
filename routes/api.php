@@ -35,6 +35,7 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/legal/{slug}', [ApiLegalController::class, 'show'])->name('api.legal.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('api.static.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/settings', [HomepageController::class, 'settings'])->name('api.settings');
+    Route::get('/homepage', [HomepageController::class, 'homepage'])->name('api.homepage');
     Route::get('/docs', [ApiDocController::class, 'index'])->name('api.docs.index');
     Route::get('/docs/search', [ApiDocController::class, 'search'])->name('api.docs.search');
     Route::get('/docs/{version}', [ApiDocController::class, 'showVersion'])->name('api.docs.version')->where('version', '[a-z0-9\.\-]+');

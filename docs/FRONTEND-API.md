@@ -20,10 +20,11 @@ Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)) a
 5. [Changelog](#changelog)
 6. [Search](#search)
 7. [Contact](#contact)
-8. [Media and assets](#media-and-assets)
-9. [Analytics](#analytics)
-10. [Errors](#errors)
-11. [CORS and security](#cors-and-security)
+8. [Homepage content](#homepage-content)
+9. [Media and assets](#media-and-assets)
+10. [Analytics](#analytics)
+11. [Errors](#errors)
+12. [CORS and security](#cors-and-security)
 
 ---
 
@@ -426,6 +427,97 @@ If `reden === 'ondersteuning'`, `bijlage` (file) is required (max 10MB; pdf, jpg
 
 ---
 
+## Homepage content
+
+Editable homepage sections for the React SPA (hero, feature cards, about OPMS, how it works, user features, competition, latest updates section title, bottom CTA). **Header and footer** are not part of this endpoint; use **GET /api/settings** for header/footer and site/theme settings.
+
+### Get homepage sections
+
+**GET** `/api/homepage`
+
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns an object whose keys are section identifiers and values are the section content (arrays/objects). Any stored image path is returned as a full URL.
+
+**Section keys:** `hero`, `feature_cards`, `about_opms`, `how_it_works`, `user_features`, `competition`, `latest_updates`, `bottom_cta`.
+
+**Example request:** `GET /api/homepage`
+
+**Example response:** `200 OK`
+
+```json
+{
+  "hero": {
+    "label": "OPMS OPEN PUBLICATION PLATFORM",
+    "heading": "Grip op informatie van bron tot burger",
+    "paragraph": "...",
+    "bullets": [
+      { "icon": "check", "text": "Bullet 1" },
+      { "icon": "check", "text": "Bullet 2" },
+      { "icon": "check", "text": "Bullet 3" }
+    ],
+    "cta_primary_text": "Demo aanvragen",
+    "cta_primary_url": "/demo",
+    "cta_secondary_text": "Meer informatie",
+    "cta_secondary_url": "/info",
+    "image": "https://your-cms.test/storage/homepage/hero.jpg"
+  },
+  "feature_cards": {
+    "cards": [
+      { "icon": "cog", "title": "Een platform", "description": "...", "link_text": "Read more", "link_url": "/..." },
+      { "icon": "clock", "title": "Binnen 30 minuten live", "description": "...", "link_text": "Read more", "link_url": "/..." },
+      { "icon": "network-wired", "title": "GWV koppeling", "description": "...", "link_text": "Read more", "link_url": "/..." }
+    ]
+  },
+  "about_opms": {
+    "label": "OVER OPMS",
+    "heading": "Slimmer besturen met OPMS",
+    "paragraph": "...",
+    "bullets": [...],
+    "link_text": "Meer over OPMS",
+    "link_url": "/over-opms",
+    "image": "https://your-cms.test/storage/homepage/about.jpg"
+  },
+  "how_it_works": {
+    "title": "Hoe het werkt",
+    "steps": [
+      { "number": "1", "title": "Contact OPMS", "description": "..." },
+      { "number": "2", "title": "Ontwerpen", "description": "..." },
+      { "number": "3", "title": "Voldoen aan", "description": "..." }
+    ]
+  },
+  "user_features": {
+    "left_title": "Voor de ontwikkelaar",
+    "left_items": ["API", "SDK", "Webhook", "REST API", "Open source"],
+    "right_title": "Voor de gebruiker",
+    "right_items": ["Makkelijk te gebruiken", "Intuïtief", "Snel", "Betrouwbaar"]
+  },
+  "competition": {
+    "heading": "Waarom OPMS de concurrentie uitschakelt",
+    "paragraph": "...",
+    "boxes": [
+      { "value": "100%", "label": "..." },
+      { "value": "GWV", "label": "..." },
+      { "value": "30m", "label": "..." },
+      { "value": "API", "label": "..." }
+    ]
+  },
+  "latest_updates": { "title": "Laatste updates" },
+  "bottom_cta": {
+    "heading": "Slimmer werken begint met een demo.",
+    "subtext": "...",
+    "cta_primary_text": "Demo aanvragen",
+    "cta_primary_url": "/demo",
+    "cta_secondary_text": "Meer informatie",
+    "cta_secondary_url": "/info"
+  }
+}
+```
+
+Articles for “Latest updates” are not included here; use **GET /api/blog-posts** (or your blog endpoint) to fetch the latest posts and display them under this section title.
+
+---
+
 ## Media and assets
 
 There is no dedicated media library table; images are embedded in content (pages, blog, settings). Use the fields `image`, `icon`, or `image_url` returned by pages, blog posts, and `GET /api/settings` for stable asset URLs (e.g. `https://your-cms.test/storage/...`).
@@ -540,7 +632,8 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 | GET | `/api/blog/{slug}` | — | Single blog post by slug |
 | GET | `/api/legal/{slug}` | — | Single legal page by slug |
 | GET | `/api/static/{slug}` | — | Single static page by slug |
-| GET | `/api/settings` | — | Site + theme settings (homepage) |
+| GET | `/api/settings` | — | Site + theme settings (header, footer, etc.) |
+| GET | `/api/homepage` | — | Homepage content sections (hero, feature cards, etc.) |
 | GET | `/api/docs` | — | Doc versions with sections/pages tree |
 | GET | `/api/docs/search?q=` | — | Search documentation |
 | GET | `/api/docs/{version}` | — | Single doc version with sections/pages |

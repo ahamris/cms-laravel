@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\Content\DocVersionController;
 use App\Http\Controllers\Admin\Content\EventController;
 use App\Http\Controllers\Admin\Content\ExternalCodeController;
 use App\Http\Controllers\Admin\Content\FeatureController;
+use App\Http\Controllers\Admin\Content\HomepageContentController;
 use App\Http\Controllers\Admin\Content\HomepageFaqController;
 use App\Http\Controllers\Admin\Content\LegalController;
 use App\Http\Controllers\Admin\Content\LiveSessionController;
@@ -218,6 +219,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // API Changelog
             Route::get('api-changelog', [ApiChangelogController::class, 'index'])->name('api-changelog.index');
             Route::get('api-changelog/{changelog}', [ApiChangelogController::class, 'show'])->name('api-changelog.show');
+
+            // Homepage content (hero, feature cards, about OPMS, etc. – single edit page)
+            Route::get('homepage', [HomepageContentController::class, 'edit'])->name('homepage.edit');
+            Route::put('homepage', [HomepageContentController::class, 'update'])->name('homepage.update');
 
             // Homepage FAQs
             Route::resource('faq-module', HomepageFaqController::class)->parameters(['faq-module' => 'faq']);
