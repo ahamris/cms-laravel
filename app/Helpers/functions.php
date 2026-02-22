@@ -328,4 +328,72 @@ if (! function_exists('format_localized_date_long')) {
     }
 }
 
+if (! function_exists('url_to_path')) {
+    /**
+     * Convert a full URL to path-only (no scheme/host). Leaves relative paths unchanged.
+     *
+     * @param  string  $url  Full URL (e.g. https://example.com/foo?bar=1) or path (e.g. /foo)
+     * @return string Path with leading slash, e.g. /foo?bar=1, or original string if not a full URL
+     */
+    function url_to_path(string $url): string
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return $url;
+        }
+
+        $parsed = parse_url($url);
+        if ($parsed === false || ! isset($parsed['host'])) {
+            return $url;
+        }
+
+        $path = $parsed['path'] ?? '/';
+        if ($path === '') {
+            $path = '/';
+        }
+        if (! str_starts_with($path, '/')) {
+            $path = '/'.$path;
+        }
+        if (isset($parsed['query']) && $parsed['query'] !== '') {
+            $path .= '?'.$parsed['query'];
+        }
+        if (isset($parsed['fragment']) && $parsed['fragment'] !== '') {
+            $path .= '#'.$parsed['fragment'];
+        }
+
+        return $path;
+    }
+}
+
+if (! function_exists('resource_urls_to_paths')) {
+    /**
+     * Recursively convert all full URLs in a resource response to path-only (no domain).
+     * Use for API responses so the frontend receives domain-agnostic paths.
+     *
+     * @param  mixed  $data  Array, object, or string (e.g. JsonResource::toArray() or response array)
+     * @return mixed Same structure with full URL strings replaced by path-only strings
+     */
+    function resource_urls_to_paths(mixed $data): mixed
+    {
+        if (is_array($data)) {
+            return array_map('resource_urls_to_paths', $data);
+        }
+
+        if (is_object($data)) {
+            $out = [];
+            foreach ((array) $data as $key => $value) {
+                $out[$key] = resource_urls_to_paths($value);
+            }
+
+            return (object) $out;
+        }
+
+        if (is_string($data) && filter_var($data, FILTER_VALIDATE_URL)) {
+            return url_to_path($data);
+        }
+
+        return $data;
+    }
+}
+
 
