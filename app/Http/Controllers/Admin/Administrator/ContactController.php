@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Administrator;
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\ContactRequest;
 use App\Models\Contact;
-use App\Models\OrganizationName;
 use Illuminate\View\View;
 
 class ContactController extends AdminBaseController
@@ -23,14 +22,7 @@ class ContactController extends AdminBaseController
      */
     public function create(): View
     {
-        $organizationOptions = OrganizationName::active()->ordered()->get()->map(fn ($org) => [
-            'value' => $org->name,
-            'label' => $org->name,
-            'abbreviation' => $org->abbreviation ?? '',
-            'email' => $org->email ?? '',
-        ])->values()->toArray();
-
-        return view('admin.administrator.contacts.create', compact('organizationOptions'));
+        return view('admin.administrator.contacts.create');
     }
 
     /**
@@ -65,17 +57,7 @@ class ContactController extends AdminBaseController
      */
     public function edit(Contact $contact): View
     {
-        $organizationOptions = OrganizationName::active()->ordered()->get()->map(fn ($org) => [
-            'value' => $org->name,
-            'label' => $org->name,
-            'abbreviation' => $org->abbreviation ?? '',
-            'email' => $org->email ?? '',
-        ])->values()->toArray();
-
-        $organizationFieldsLocked = $contact->organization_name
-            && OrganizationName::where('name', $contact->organization_name)->exists();
-
-        return view('admin.administrator.contacts.edit', compact('contact', 'organizationOptions', 'organizationFieldsLocked'));
+        return view('admin.administrator.contacts.edit', compact('contact'));
     }
 
     /**

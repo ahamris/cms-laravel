@@ -32,102 +32,47 @@
                     </div>
 
                     <div class="space-y-6">
-                        <div
-                            class="space-y-6"
-                            x-data="{
-                                fieldsLocked: @js($organizationFieldsLocked),
-                                generateSlug(text) {
-                                    if (!text) return '';
-                                    return text.toLowerCase()
-                                        .replace(/[^a-z0-9 -]/g, '')
-                                        .replace(/\s+/g, '-')
-                                        .replace(/-+/g, '-')
-                                        .replace(/^-+|-+$/g, '');
-                                },
-                                lockFields() {
-                                    this.fieldsLocked = true;
-                                    ['alias', 'slug', 'email', 'phone', 'website'].forEach(id => {
-                                        const el = document.getElementById(id);
-                                        if (el) el.readOnly = true;
-                                    });
-                                },
-                                unlockFields() {
-                                    this.fieldsLocked = false;
-                                    ['alias', 'slug', 'email', 'phone', 'website'].forEach(id => {
-                                        const el = document.getElementById(id);
-                                        if (el) el.readOnly = false;
-                                    });
-                                },
-                                fillFromOrg(opt) {
-                                    const aliasEl = document.getElementById('alias');
-                                    const slugEl = document.getElementById('slug');
-                                    const emailEl = document.getElementById('email');
-                                    const phoneEl = document.getElementById('phone');
-                                    const websiteEl = document.getElementById('website');
-                                    if (aliasEl) aliasEl.value = opt.abbreviation || '';
-                                    if (slugEl) slugEl.value = this.generateSlug(opt.value || '');
-                                    if (emailEl) emailEl.value = opt.email || '';
-                                    if (phoneEl) phoneEl.value = '';
-                                    if (websiteEl) websiteEl.value = '';
-                                    this.lockFields();
-                                },
-                                clearFields() {
-                                    ['alias', 'slug', 'email', 'phone', 'website'].forEach(id => {
-                                        const el = document.getElementById(id);
-                                        if (el) { el.value = ''; el.readOnly = false; }
-                                    });
-                                    this.fieldsLocked = false;
-                                }
-                            }"
-                            x-init="if (fieldsLocked) { $nextTick(() => { lockFields(); }); }"
-                            @combobox-selected.window="fillFromOrg($event.detail)"
-                            @combobox-cleared.window="clearFields(); unlockFields()"
-                        >
-                            {{-- Organization Name --}}
-                            <x-ui.combobox
-                                id="organization_name"
-                                name="organization_name"
-                                :value="old('organization_name', $contact->organization_name)"
-                                label="Organization Name"
-                                :options="$organizationOptions"
-                                placeholder="Search organization name..."
-                                :required="true"
-                                :clearable="true"
-                                :error="$errors->has('organization_name')"
-                                :errorMessage="$errors->first('organization_name')"
-                                search-placeholder="Search organization name..."
-                                no-results-text="No organizations found"
+                        {{-- Organization Name --}}
+                        <x-ui.input
+                            id="organization_name"
+                            name="organization_name"
+                            :value="old('organization_name', $contact->organization_name)"
+                            label="Organization Name"
+                            placeholder="Organization or company name"
+                            :required="true"
+                            :error="$errors->has('organization_name')"
+                            :errorMessage="$errors->first('organization_name')"
+                        />
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Alias --}}
+                            <x-ui.input
+                                id="alias"
+                                name="alias"
+                                :value="old('alias', $contact->alias)"
+                                label="Alias"
+                                placeholder="Short name or alias"
                             />
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {{-- Alias --}}
-                                <x-ui.input
-                                    id="alias"
-                                    name="alias"
-                                    :value="old('alias', $contact->alias)"
-                                    label="Alias"
-                                    placeholder="Short name or alias"
-                                />
+                            {{-- Slug --}}
+                            <x-ui.input
+                                id="slug"
+                                name="slug"
+                                :value="old('slug', $contact->slug)"
+                                slug-from="organization_name"
+                                label="Slug"
+                                hint="URL-friendly version of the organization name. Auto-generated from organization name if left blank."
+                                placeholder="url-friendly-name"
+                            />
+                        </div>
 
-                                {{-- Slug --}}
-                                <x-ui.input
-                                    id="slug"
-                                    name="slug"
-                                    :value="old('slug', $contact->slug)"
-                                    slug-from="organization_name"
-                                    label="Slug"
-                                    hint="URL-friendly version of the organization name. Auto-generated from organization name if left blank."
-                                    placeholder="url-friendly-name"
-                                />
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {{-- Email --}}
-                                <x-ui.input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    :value="old('email', $contact->email)"
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Email --}}
+                            <x-ui.input
+                                type="email"
+                                id="email"
+                                name="email"
+                                :value="old('email', $contact->email)"
                                     label="Email"
                                     placeholder="contact@organization.com"
                                 />

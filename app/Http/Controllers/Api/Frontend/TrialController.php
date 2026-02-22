@@ -3,24 +3,21 @@
 namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\OrganizationName;
 use App\Models\Solution;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 
 class TrialController extends Controller
 {
-    #[OA\Get(path: '/api/proefversie', summary: 'Trial page data', description: 'Organisations and solutions for trial form.', tags: ['Trial'], responses: [
-        new OA\Response(response: 200, description: 'Organisations and solutions'),
+    #[OA\Get(path: '/api/proefversie', summary: 'Trial page data', description: 'Solutions for trial form.', tags: ['Trial'], responses: [
+        new OA\Response(response: 200, description: 'Trial form data'),
     ])]
     public function index(): JsonResponse
     {
-        $organisations = OrganizationName::get(['id', 'name', 'abbreviation', 'email', 'address']);
         $solutions = Solution::get(['id', 'title', 'subtitle']);
 
         return response()->json([
             'data' => [
-                'organisations' => $organisations,
                 'solutions' => $solutions,
             ],
         ]);

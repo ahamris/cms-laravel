@@ -30,7 +30,6 @@ use App\Http\Controllers\Admin\Content\HomepageFaqController;
 use App\Http\Controllers\Admin\Content\LegalController;
 use App\Http\Controllers\Admin\Content\LiveSessionController;
 use App\Http\Controllers\Admin\Content\ModuleController;
-use App\Http\Controllers\Admin\Content\OrganizationNameController;
 use App\Http\Controllers\Admin\Content\PageController;
 use App\Http\Controllers\Admin\Content\PresenterController;
 use App\Http\Controllers\Admin\Content\PricingBoosterController;
@@ -190,13 +189,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // Solutions
             Route::resource('solution', SolutionController::class);
             Route::post('solution/{solution}/toggle-active', [SolutionController::class, 'toggleActive'])->name('solution.toggle-active');
-
-            // Organization Names
-            Route::post('organization-name/update-order', [OrganizationNameController::class, 'updateOrder'])->name('organization-name.update-order');
-            Route::patch('organization-name/{organizationName}/toggle-active', [OrganizationNameController::class, 'toggleActive'])->name('organization-name.toggle-active');
-            Route::get('organization-name/search', [OrganizationNameController::class, 'search'])->name('organization-name.search');
-            Route::get('organization-name/{organizationName}/json', [OrganizationNameController::class, 'getJson'])->name('organization-name.json');
-            Route::resource('organization-name', OrganizationNameController::class);
 
             // Modules
             Route::resource('module', ModuleController::class);

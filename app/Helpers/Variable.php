@@ -140,12 +140,6 @@ class Variable
         'feature_edit' => [self::ROLE_ADMIN],
         'feature_delete' => [self::ROLE_ADMIN],
 
-        'organization_name_access' => [self::ROLE_ADMIN],
-        'organization_name_show' => [self::ROLE_ADMIN],
-        'organization_name_create' => [self::ROLE_ADMIN],
-        'organization_name_edit' => [self::ROLE_ADMIN],
-        'organization_name_delete' => [self::ROLE_ADMIN],
-
         'doc_version_access' => [self::ROLE_ADMIN],
         'doc_version_show' => [self::ROLE_ADMIN],
         'doc_version_create' => [self::ROLE_ADMIN],

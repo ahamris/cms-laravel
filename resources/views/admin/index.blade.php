@@ -86,9 +86,6 @@
                             <x-button variant="outline-primary" size="sm" icon="plus" :href="route('admin.content.page.create')" class="justify-center">
                                 New Page
                             </x-button>
-                            <x-button variant="outline-primary" size="sm" icon="building" :href="route('admin.content.organization-name.index')" class="justify-center">
-                                Organizations
-                            </x-button>
                             <x-button variant="outline-primary" size="sm" icon="chart-line" :href="route('admin.analytics.index')" class="justify-center">
                                 Analytics
                             </x-button>

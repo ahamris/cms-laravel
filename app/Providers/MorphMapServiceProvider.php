@@ -23,7 +23,6 @@ use App\Models\MarketingPersona;
 use App\Models\MarketingTestimonial;
 use App\Models\MegaMenuItem;
 use App\Models\Module;
-use App\Models\OrganizationName;
 use App\Models\Page;
 use App\Models\PricingBooster;
 use App\Models\PricingFeature;
@@ -75,7 +74,6 @@ class MorphMapServiceProvider extends ServiceProvider
             'marketing_testimonial' => MarketingTestimonial::class,
             'mega_menu_item' => MegaMenuItem::class,
             'module' => Module::class,
-            'organization_name' => OrganizationName::class,
             'page' => Page::class,
             'pricing_booster' => PricingBooster::class,
             'pricing_feature' => PricingFeature::class,

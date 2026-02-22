@@ -83,7 +83,6 @@ class Sidebar extends Component
                 'slug' => 'crm',
                 'icon' => 'graduation-cap',
                 'children' => [
-                    ['label' => 'Organization Names', 'route_name' => 'admin.content.organization-name.index', 'icon' => 'building', 'permission' => 'organization_name_access'],
                     ['label' => 'Entries', 'route_name' => 'admin.administrator.contact-forms.index', 'icon' => 'envelope', 'permission' => 'contact_form_access'],
                     ['label' => 'Contacts', 'route_name' => 'admin.administrator.contacts.index', 'icon' => 'users', 'permission' => 'contact_access'],
                 ],
