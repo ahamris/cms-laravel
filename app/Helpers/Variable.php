@@ -22,13 +22,16 @@ class Variable
         self::ROLE_USER,
     ];
 
+    /** Default/random password for seeded admin account (change in production). */
+    public const string DEFAULT_ADMIN_PASSWORD = 'k8mQ2pw4nRj';
+
     public static function expiresAt(): CarbonInterface
     {
         return now()->addSeconds(self::CACHE_TTL);
     }
 
     public const array DEFAULT_ACCOUNTS = [
-        ['Admin', 'Account', 'admin@opub.nl', 'xn57iiYl9vz', self::ROLE_ADMIN],
+        ['Admin', 'Account', 'admin@openpublication.eu', self::DEFAULT_ADMIN_PASSWORD, self::ROLE_ADMIN],
 //        ['Webmaster', 'Account', 'selim@code-labs.nl', '@14396Oem!!', self::ROLE_ADMIN],
 
     ]; // default admin accounts
