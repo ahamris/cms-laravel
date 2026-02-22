@@ -6,12 +6,14 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * Homepage content sections for the React SPA (hero, feature cards, about OPMS, how it works, etc.).
+ * 
  * Each section has a unique section_key and flexible content (JSON).
  *
  * @property int $id
  * @property string|null $section_key
  * @property array|null $content
  * @property bool $is_active
+ * @mixin IdeHelperHomepageSection
  */
 class HomepageSection extends BaseModel
 {
