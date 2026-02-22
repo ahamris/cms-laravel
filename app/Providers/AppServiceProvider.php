@@ -27,6 +27,7 @@ use App\View\Components\UI\Divider;
 use App\View\Components\UI\Dropdown;
 use App\View\Components\UI\IconPicker;
 use App\View\Components\UI\ImageUpload;
+use App\View\Components\UI\UrlSelector;
 use App\View\Components\UI\Input;
 use App\View\Components\UI\Modal;
 use App\View\Components\UI\Pagination;
@@ -104,6 +105,7 @@ class AppServiceProvider extends ServiceProvider
         Blade::component(IconPicker::class, 'ui.icon-picker');
         Blade::component(ImageUpload::class, 'image-upload');
         Blade::component(ImageUpload::class, 'ui.image-upload');
+        Blade::component(UrlSelector::class, 'ui.url-selector');
 
         // Layout Components
         Blade::component(Card::class, 'ui.card');

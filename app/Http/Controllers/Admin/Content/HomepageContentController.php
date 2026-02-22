@@ -68,7 +68,10 @@ class HomepageContentController extends AdminBaseController
                     $content['cta_primary_url'] = $data['cta_primary_url'] ?? $content['cta_primary_url'] ?? '';
                     $content['cta_secondary_text'] = $data['cta_secondary_text'] ?? $content['cta_secondary_text'] ?? '';
                     $content['cta_secondary_url'] = $data['cta_secondary_url'] ?? $content['cta_secondary_url'] ?? '';
-                    if ($request->hasFile("sections.{$key}.image")) {
+                    if ($request->filled('remove_hero_image') && ! empty($content['image'])) {
+                        $this->deleteImage($content['image']);
+                        $content['image'] = '';
+                    } elseif ($request->hasFile("sections.{$key}.image")) {
                         if (! empty($content['image'])) {
                             $this->deleteImage($content['image']);
                         }
@@ -95,7 +98,10 @@ class HomepageContentController extends AdminBaseController
                     $content['bullets'] = $data['bullets'] ?? $content['bullets'] ?? [];
                     $content['link_text'] = $data['link_text'] ?? $content['link_text'] ?? '';
                     $content['link_url'] = $data['link_url'] ?? $content['link_url'] ?? '';
-                    if ($request->hasFile("sections.{$key}.image")) {
+                    if ($request->filled('remove_about_opms_image') && ! empty($content['image'])) {
+                        $this->deleteImage($content['image']);
+                        $content['image'] = '';
+                    } elseif ($request->hasFile("sections.{$key}.image")) {
                         if (! empty($content['image'])) {
                             $this->deleteImage($content['image']);
                         }

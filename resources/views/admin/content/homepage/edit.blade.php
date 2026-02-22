@@ -16,248 +16,215 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.content.homepage.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-        @csrf
-        @method('PUT')
+    <div class="bg-gray-50/50 dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10">
+        <form action="{{ route('admin.content.homepage.update') }}" method="POST" enctype="multipart/form-data" class="space-y-0">
+            @csrf
+            @method('PUT')
 
-        <x-ui.accordion :exclusive="false" class="space-y-2">
             @php
                 $hero = $sections['hero']->content ?? [];
                 $heroBullets = $hero['bullets'] ?? [['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => '']];
                 $heroBullets = array_slice($heroBullets, 0, 3);
             @endphp
-            <x-ui.accordion-item heading="Hero" icon="image" :expanded="true">
-                <div class="space-y-4 pt-2">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Label (uppercase)</label>
-                        <input type="text" name="sections[hero][label]" value="{{ old('sections.hero.label', $hero['label'] ?? '') }}"
-                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md" placeholder="e.g. OPMS OPEN PUBLICATION PLATFORM">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Heading</label>
-                        <input type="text" name="sections[hero][heading]" value="{{ old('sections.hero.heading', $hero['heading'] ?? '') }}"
-                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md" placeholder="Main headline">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Paragraph</label>
-                        <textarea name="sections[hero][paragraph]" rows="3" class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md">{{ old('sections.hero.paragraph', $hero['paragraph'] ?? '') }}</textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-2">Bullets (3)</label>
-                        @foreach($heroBullets as $i => $b)
-                            <div class="flex gap-2 mb-2">
-                                <input type="text" name="sections[hero][bullets][{{ $i }}][icon]" value="{{ old("sections.hero.bullets.{$i}.icon", $b['icon'] ?? 'check') }}" placeholder="Icon (e.g. check)" class="w-24 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                <input type="text" name="sections[hero][bullets][{{ $i }}][text]" value="{{ old("sections.hero.bullets.{$i}.text", $b['text'] ?? '') }}" placeholder="Bullet text" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
+
+            {{-- Hero --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-image text-primary text-sm"></i></span>
+                    Hero
+                </h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <x-ui.input name="sections[hero][label]" id="hero_label" label="Label (uppercase)" :value="old('sections.hero.label', $hero['label'] ?? '')" placeholder="e.g. OPMS OPEN PUBLICATION PLATFORM" />
+                        <x-ui.input name="sections[hero][heading]" id="hero_heading" label="Heading" :value="old('sections.hero.heading', $hero['heading'] ?? '')" placeholder="Main headline" />
+                        <x-ui.textarea name="sections[hero][paragraph]" id="hero_paragraph" label="Paragraph" :value="old('sections.hero.paragraph', $hero['paragraph'] ?? '')" :rows="3" />
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Primary CTA text</label>
-                            <input type="text" name="sections[hero][cta_primary_text]" value="{{ old('sections.hero.cta_primary_text', $hero['cta_primary_text'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bullets (3)</label>
+                            @foreach($heroBullets as $i => $b)
+                                <div class="flex gap-2 mb-2">
+                                    <x-ui.input name="sections[hero][bullets][{{ $i }}][icon]" :id="'hero_bullet_icon_'.$i" :value="old('sections.hero.bullets.'.$i.'.icon', $b['icon'] ?? 'check')" placeholder="Icon" />
+                                    <x-ui.input name="sections[hero][bullets][{{ $i }}][text]" :id="'hero_bullet_text_'.$i" :value="old('sections.hero.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Bullet text" class="flex-1" />
+                                </div>
+                            @endforeach
                         </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Primary CTA URL</label>
-                            <input type="text" name="sections[hero][cta_primary_url]" value="{{ old('sections.hero.cta_primary_url', $hero['cta_primary_url'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Secondary CTA text</label>
-                            <input type="text" name="sections[hero][cta_secondary_text]" value="{{ old('sections.hero.cta_secondary_text', $hero['cta_secondary_text'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Secondary CTA URL</label>
-                            <input type="text" name="sections[hero][cta_secondary_url]" value="{{ old('sections.hero.cta_secondary_url', $hero['cta_secondary_url'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <x-ui.input name="sections[hero][cta_primary_text]" id="hero_cta_primary_text" label="Primary CTA text" :value="old('sections.hero.cta_primary_text', $hero['cta_primary_text'] ?? '')" />
+                            <x-ui.url-selector name="sections[hero][cta_primary_url]" id="hero_cta_primary_url" label="Primary CTA URL" :value="old('sections.hero.cta_primary_url', $hero['cta_primary_url'] ?? '')" />
+                            <x-ui.input name="sections[hero][cta_secondary_text]" id="hero_cta_secondary_text" label="Secondary CTA text" :value="old('sections.hero.cta_secondary_text', $hero['cta_secondary_text'] ?? '')" />
+                            <x-ui.url-selector name="sections[hero][cta_secondary_url]" id="hero_cta_secondary_url" label="Secondary CTA URL" :value="old('sections.hero.cta_secondary_url', $hero['cta_secondary_url'] ?? '')" />
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Hero image</label>
-                        @if(!empty($hero['image']))
-                            <div class="mb-2"><img src="{{ get_image($hero['image']) }}" alt="" class="h-24 object-cover rounded border"></div>
-                        @endif
-                        <input type="file" name="sections[hero][image]" accept="image/*" class="w-full text-sm">
+                        <x-ui.image-upload
+                            id="hero_image"
+                            name="sections[hero][image]"
+                            label="Hero image"
+                            :current-image="!empty($hero['image']) ? get_image($hero['image']) : null"
+                            current-image-alt="Hero"
+                            help-text="JPEG, PNG, WebP up to 2MB"
+                            :max-size="2048"
+                            :required="false"
+                        />
                     </div>
                 </div>
-            </x-ui.accordion-item>
+            </div>
 
             @php $cards = $sections['feature_cards']->content['cards'] ?? array_fill(0, 3, ['icon' => '', 'title' => '', 'description' => '', 'link_text' => 'Read more', 'link_url' => '']); $cards = array_slice($cards, 0, 3); @endphp
-            <x-ui.accordion-item heading="Feature cards (3)" icon="th-large">
-                <div class="space-y-6 pt-2">
+            {{-- Feature cards --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-th-large text-primary text-sm"></i></span>
+                    Feature cards (3)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @foreach($cards as $i => $c)
-                        <div class="p-4 bg-gray-50 rounded border border-gray-200">
-                            <h4 class="text-sm font-medium mb-3">Card {{ $i + 1 }}</h4>
-                            <div class="space-y-3">
-                                <input type="text" name="sections[feature_cards][cards][{{ $i }}][icon]" value="{{ old("sections.feature_cards.cards.{$i}.icon", $c['icon'] ?? '') }}" placeholder="Icon (e.g. cog)" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                <input type="text" name="sections[feature_cards][cards][{{ $i }}][title]" value="{{ old("sections.feature_cards.cards.{$i}.title", $c['title'] ?? '') }}" placeholder="Title" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                <textarea name="sections[feature_cards][cards][{{ $i }}][description]" rows="2" placeholder="Description" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">{{ old("sections.feature_cards.cards.{$i}.description", $c['description'] ?? '') }}</textarea>
-                                <div class="flex gap-2">
-                                    <input type="text" name="sections[feature_cards][cards][{{ $i }}][link_text]" value="{{ old("sections.feature_cards.cards.{$i}.link_text", $c['link_text'] ?? 'Read more') }}" placeholder="Link text" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                    <input type="text" name="sections[feature_cards][cards][{{ $i }}][link_url]" value="{{ old("sections.feature_cards.cards.{$i}.link_url", $c['link_url'] ?? '') }}" placeholder="Link URL" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                </div>
-                            </div>
+                        <div class="bg-white dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10 p-4 space-y-3">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Card {{ $i + 1 }}</h4>
+                            <x-ui.input name="sections[feature_cards][cards][{{ $i }}][icon]" :id="'card_'.$i.'_icon'" label="Icon" :value="old('sections.feature_cards.cards.'.$i.'.icon', $c['icon'] ?? '')" placeholder="e.g. cog" />
+                            <x-ui.input name="sections[feature_cards][cards][{{ $i }}][title]" :id="'card_'.$i.'_title'" label="Title" :value="old('sections.feature_cards.cards.'.$i.'.title', $c['title'] ?? '')" />
+                            <x-ui.textarea name="sections[feature_cards][cards][{{ $i }}][description]" :id="'card_'.$i.'_description'" label="Description" :value="old('sections.feature_cards.cards.'.$i.'.description', $c['description'] ?? '')" :rows="2" />
+                            <x-ui.input name="sections[feature_cards][cards][{{ $i }}][link_text]" :id="'card_'.$i.'_link_text'" label="Link text" :value="old('sections.feature_cards.cards.'.$i.'.link_text', $c['link_text'] ?? 'Read more')" />
+                            <x-ui.url-selector name="sections[feature_cards][cards][{{ $i }}][link_url]" :id="'card_'.$i.'_link_url'" label="Link URL" :value="old('sections.feature_cards.cards.'.$i.'.link_url', $c['link_url'] ?? '')" />
                         </div>
                     @endforeach
                 </div>
-            </x-ui.accordion-item>
+            </div>
 
-            @php
-                $about = $sections['about_opms']->content ?? [];
-                $aboutBullets = $about['bullets'] ?? [['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => '']];
-                $aboutBullets = array_slice($aboutBullets, 0, 3);
-            @endphp
-            <x-ui.accordion-item heading="About OPMS (Slimmer besturen)" icon="info-circle">
-                <div class="space-y-4 pt-2">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Label</label>
-                        <input type="text" name="sections[about_opms][label]" value="{{ old('sections.about_opms.label', $about['label'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Heading</label>
-                        <input type="text" name="sections[about_opms][heading]" value="{{ old('sections.about_opms.heading', $about['heading'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Paragraph</label>
-                        <textarea name="sections[about_opms][paragraph]" rows="3" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">{{ old('sections.about_opms.paragraph', $about['paragraph'] ?? '') }}</textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-2">Bullets (3)</label>
-                        @foreach($aboutBullets as $i => $b)
-                            <div class="flex gap-2 mb-2">
-                                <input type="text" name="sections[about_opms][bullets][{{ $i }}][icon]" value="{{ old("sections.about_opms.bullets.{$i}.icon", $b['icon'] ?? 'check') }}" class="w-24 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                <input type="text" name="sections[about_opms][bullets][{{ $i }}][text]" value="{{ old("sections.about_opms.bullets.{$i}.text", $b['text'] ?? '') }}" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="flex-1">
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Link text</label>
-                            <input type="text" name="sections[about_opms][link_text]" value="{{ old('sections.about_opms.link_text', $about['link_text'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
+            @php $about = $sections['about_opms']->content ?? []; $aboutBullets = $about['bullets'] ?? [['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => '']]; $aboutBullets = array_slice($aboutBullets, 0, 3); @endphp
+            {{-- About OPMS --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-info-circle text-primary text-sm"></i></span>
+                    About OPMS (Slimmer besturen)
+                </h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <x-ui.input name="sections[about_opms][label]" id="about_label" label="Label" :value="old('sections.about_opms.label', $about['label'] ?? '')" />
+                        <x-ui.input name="sections[about_opms][heading]" id="about_heading" label="Heading" :value="old('sections.about_opms.heading', $about['heading'] ?? '')" />
+                        <x-ui.textarea name="sections[about_opms][paragraph]" id="about_paragraph" label="Paragraph" :value="old('sections.about_opms.paragraph', $about['paragraph'] ?? '')" :rows="3" />
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bullets (3)</label>
+                            @foreach($aboutBullets as $i => $b)
+                                <div class="flex gap-2 mb-2">
+                                    <x-ui.input name="sections[about_opms][bullets][{{ $i }}][icon]" :id="'about_bullet_icon_'.$i" :value="old('sections.about_opms.bullets.'.$i.'.icon', $b['icon'] ?? 'check')" placeholder="Icon" />
+                                    <x-ui.input name="sections[about_opms][bullets][{{ $i }}][text]" :id="'about_bullet_text_'.$i" :value="old('sections.about_opms.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Text" class="flex-1" />
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="flex-1">
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Link URL</label>
-                            <input type="text" name="sections[about_opms][link_url]" value="{{ old('sections.about_opms.link_url', $about['link_url'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        </div>
+                        <x-ui.input name="sections[about_opms][link_text]" id="about_link_text" label="Link text" :value="old('sections.about_opms.link_text', $about['link_text'] ?? '')" />
+                        <x-ui.url-selector name="sections[about_opms][link_url]" id="about_link_url" label="Link URL" :value="old('sections.about_opms.link_url', $about['link_url'] ?? '')" />
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Image</label>
-                        @if(!empty($about['image']))
-                            <div class="mb-2"><img src="{{ get_image($about['image']) }}" alt="" class="h-24 object-cover rounded border"></div>
-                        @endif
-                        <input type="file" name="sections[about_opms][image]" accept="image/*" class="w-full text-sm">
+                        <x-ui.image-upload
+                            id="about_opms_image"
+                            name="sections[about_opms][image]"
+                            label="Image"
+                            :current-image="!empty($about['image']) ? get_image($about['image']) : null"
+                            current-image-alt="About OPMS"
+                            help-text="JPEG, PNG, WebP up to 2MB"
+                            :max-size="2048"
+                            :required="false"
+                        />
                     </div>
                 </div>
-            </x-ui.accordion-item>
+            </div>
 
             @php $steps = $sections['how_it_works']->content['steps'] ?? array_fill(0, 3, ['number' => '', 'title' => '', 'description' => '']); $steps = array_slice($steps, 0, 3); @endphp
-            <x-ui.accordion-item heading="How it works" icon="list-ol">
-                <div class="space-y-4 pt-2">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Section title</label>
-                        <input type="text" name="sections[how_it_works][title]" value="{{ old('sections.how_it_works.title', $sections['how_it_works']->content['title'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md" placeholder="Hoe het werkt">
-                    </div>
+            {{-- How it works --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-list-ol text-primary text-sm"></i></span>
+                    How it works
+                </h3>
+                <x-ui.input name="sections[how_it_works][title]" id="how_title" label="Section title" :value="old('sections.how_it_works.title', $sections['how_it_works']->content['title'] ?? '')" placeholder="Hoe het werkt" class="mb-4" />
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     @foreach($steps as $i => $s)
-                        <div class="p-4 bg-gray-50 rounded border">
-                            <h4 class="text-sm font-medium mb-2">Step {{ $i + 1 }}</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <input type="text" name="sections[how_it_works][steps][{{ $i }}][number]" value="{{ old("sections.how_it_works.steps.{$i}.number", $s['number'] ?? (string)($i + 1)) }}" placeholder="Number" class="px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                <input type="text" name="sections[how_it_works][steps][{{ $i }}][title]" value="{{ old("sections.how_it_works.steps.{$i}.title", $s['title'] ?? '') }}" placeholder="Title" class="px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                <textarea name="sections[how_it_works][steps][{{ $i }}][description]" rows="1" placeholder="Description" class="px-3 py-2 text-sm border border-gray-200 rounded-md">{{ old("sections.how_it_works.steps.{$i}.description", $s['description'] ?? '') }}</textarea>
-                            </div>
+                        <div class="bg-white dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10 p-4 space-y-2">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Step {{ $i + 1 }}</h4>
+                            <x-ui.input name="sections[how_it_works][steps][{{ $i }}][number]" :id="'step_'.$i.'_number'" label="Number" :value="old('sections.how_it_works.steps.'.$i.'.number', $s['number'] ?? (string)($i + 1))" />
+                            <x-ui.input name="sections[how_it_works][steps][{{ $i }}][title]" :id="'step_'.$i.'_title'" label="Title" :value="old('sections.how_it_works.steps.'.$i.'.title', $s['title'] ?? '')" />
+                            <x-ui.textarea name="sections[how_it_works][steps][{{ $i }}][description]" :id="'step_'.$i.'_description'" label="Description" :value="old('sections.how_it_works.steps.'.$i.'.description', $s['description'] ?? '')" :rows="2" />
                         </div>
                     @endforeach
                 </div>
-            </x-ui.accordion-item>
+            </div>
 
-            @php
-                $uf = $sections['user_features']->content ?? [];
-                $leftItems = $uf['left_items'] ?? [];
-                $rightItems = $uf['right_items'] ?? [];
-            @endphp
-            <x-ui.accordion-item heading="User features (developer / user)" icon="users">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Left column title (e.g. Voor de ontwikkelaar)</label>
-                        <input type="text" name="sections[user_features][left_title]" value="{{ old('sections.user_features.left_title', $uf['left_title'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        <label class="block text-xs font-medium text-gray-700 mt-3 mb-1">Left items (one per line)</label>
-                        <textarea name="sections[user_features][left_items_text]" rows="6" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md" placeholder="API&#10;SDK&#10;Webhook">@foreach($leftItems as $item){{ $item }}{{ "\n" }}@endforeach</textarea>
-                        <p class="text-xs text-gray-500 mt-1">Enter one feature per line; saved as list.</p>
+            @php $uf = $sections['user_features']->content ?? []; $leftItems = $uf['left_items'] ?? []; $rightItems = $uf['right_items'] ?? []; @endphp
+            {{-- User features --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-users text-primary text-sm"></i></span>
+                    User features (developer / user)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <x-ui.input name="sections[user_features][left_title]" id="uf_left_title" label="Left column title" :value="old('sections.user_features.left_title', $uf['left_title'] ?? '')" placeholder="e.g. Voor de ontwikkelaar" />
+                        <x-ui.textarea name="sections[user_features][left_items_text]" id="uf_left_items" label="Left items (one per line)" :value="old('sections.user_features.left_items_text', implode("\n", $leftItems))" :rows="6" placeholder="API&#10;SDK&#10;Webhook" />
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Enter one feature per line; saved as list.</p>
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Right column title (e.g. Voor de gebruiker)</label>
-                        <input type="text" name="sections[user_features][right_title]" value="{{ old('sections.user_features.right_title', $uf['right_title'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        <label class="block text-xs font-medium text-gray-700 mt-3 mb-1">Right items (one per line)</label>
-                        <textarea name="sections[user_features][right_items_text]" rows="6" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">@foreach($rightItems as $item){{ $item }}{{ "\n" }}@endforeach</textarea>
+                    <div class="space-y-3">
+                        <x-ui.input name="sections[user_features][right_title]" id="uf_right_title" label="Right column title" :value="old('sections.user_features.right_title', $uf['right_title'] ?? '')" placeholder="e.g. Voor de gebruiker" />
+                        <x-ui.textarea name="sections[user_features][right_items_text]" id="uf_right_items" label="Right items (one per line)" :value="old('sections.user_features.right_items_text', implode("\n", $rightItems))" :rows="6" />
                     </div>
                 </div>
-            </x-ui.accordion-item>
+            </div>
 
             @php $boxes = $sections['competition']->content['boxes'] ?? array_fill(0, 4, ['value' => '', 'label' => '']); $boxes = array_slice($boxes, 0, 4); $comp = $sections['competition']->content ?? []; @endphp
-            <x-ui.accordion-item heading="Why OPMS eliminates competition" icon="trophy">
-                <div class="space-y-4 pt-2">
+            {{-- Competition --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-trophy text-primary text-sm"></i></span>
+                    Why OPMS eliminates competition
+                </h3>
+                <div class="space-y-4">
+                    <x-ui.input name="sections[competition][heading]" id="comp_heading" label="Heading" :value="old('sections.competition.heading', $comp['heading'] ?? '')" />
+                    <x-ui.textarea name="sections[competition][paragraph]" id="comp_paragraph" label="Paragraph" :value="old('sections.competition.paragraph', $comp['paragraph'] ?? '')" :rows="3" />
                     <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Heading</label>
-                        <input type="text" name="sections[competition][heading]" value="{{ old('sections.competition.heading', $comp['heading'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Paragraph</label>
-                        <textarea name="sections[competition][paragraph]" rows="3" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">{{ old('sections.competition.paragraph', $comp['paragraph'] ?? '') }}</textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-2">Metric boxes (4)</label>
-                        @foreach($boxes as $i => $box)
-                            <div class="flex gap-2 mb-2">
-                                <input type="text" name="sections[competition][boxes][{{ $i }}][value]" value="{{ old("sections.competition.boxes.{$i}.value", $box['value'] ?? '') }}" placeholder="Value (e.g. 100%, GWV)" class="w-32 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                                <input type="text" name="sections[competition][boxes][{{ $i }}][label]" value="{{ old("sections.competition.boxes.{$i}.label", $box['label'] ?? '') }}" placeholder="Label" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md">
-                            </div>
-                        @endforeach
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Metric boxes (4)</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            @foreach($boxes as $i => $box)
+                                <div class="flex gap-2">
+                                    <x-ui.input name="sections[competition][boxes][{{ $i }}][value]" :id="'comp_box_value_'.$i" label="Value" :value="old('sections.competition.boxes.'.$i.'.value', $box['value'] ?? '')" placeholder="e.g. 100%, GWV" />
+                                    <x-ui.input name="sections[competition][boxes][{{ $i }}][label]" :id="'comp_box_label_'.$i" label="Label" :value="old('sections.competition.boxes.'.$i.'.label', $box['label'] ?? '')" />
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
-            </x-ui.accordion-item>
+            </div>
 
-            <x-ui.accordion-item heading="Latest updates (section title only)" icon="newspaper">
-                <div class="pt-2">
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Section title</label>
-                    <input type="text" name="sections[latest_updates][title]" value="{{ old('sections.latest_updates.title', $sections['latest_updates']->content['title'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md" placeholder="Laatste updates">
-                    <p class="text-xs text-gray-500 mt-1">Articles are loaded from the blog API; only the section title is stored here.</p>
-                </div>
-            </x-ui.accordion-item>
+            {{-- Latest updates --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-newspaper text-primary text-sm"></i></span>
+                    Latest updates (section title only)
+                </h3>
+                <x-ui.input name="sections[latest_updates][title]" id="latest_title" label="Section title" :value="old('sections.latest_updates.title', $sections['latest_updates']->content['title'] ?? '')" placeholder="Laatste updates" />
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Articles are loaded from the blog API; only the section title is stored here.</p>
+            </div>
 
             @php $cta = $sections['bottom_cta']->content ?? []; @endphp
-            <x-ui.accordion-item heading="Bottom CTA" icon="hand-pointer">
-                <div class="space-y-4 pt-2">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Heading</label>
-                        <input type="text" name="sections[bottom_cta][heading]" value="{{ old('sections.bottom_cta.heading', $cta['heading'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md" placeholder="Slimmer werken begint met een demo.">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Subtext</label>
-                        <textarea name="sections[bottom_cta][subtext]" rows="2" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">{{ old('sections.bottom_cta.subtext', $cta['subtext'] ?? '') }}</textarea>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Primary CTA text</label>
-                            <input type="text" name="sections[bottom_cta][cta_primary_text]" value="{{ old('sections.bottom_cta.cta_primary_text', $cta['cta_primary_text'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Primary CTA URL</label>
-                            <input type="text" name="sections[bottom_cta][cta_primary_url]" value="{{ old('sections.bottom_cta.cta_primary_url', $cta['cta_primary_url'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Secondary CTA text</label>
-                            <input type="text" name="sections[bottom_cta][cta_secondary_text]" value="{{ old('sections.bottom_cta.cta_secondary_text', $cta['cta_secondary_text'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Secondary CTA URL</label>
-                            <input type="text" name="sections[bottom_cta][cta_secondary_url]" value="{{ old('sections.bottom_cta.cta_secondary_url', $cta['cta_secondary_url'] ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md">
-                        </div>
+            {{-- Bottom CTA --}}
+            <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-hand-pointer text-primary text-sm"></i></span>
+                    Bottom CTA
+                </h3>
+                <div class="space-y-4">
+                    <x-ui.input name="sections[bottom_cta][heading]" id="cta_heading" label="Heading" :value="old('sections.bottom_cta.heading', $cta['heading'] ?? '')" placeholder="Slimmer werken begint met een demo." />
+                    <x-ui.textarea name="sections[bottom_cta][subtext]" id="cta_subtext" label="Subtext" :value="old('sections.bottom_cta.subtext', $cta['subtext'] ?? '')" :rows="2" />
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <x-ui.input name="sections[bottom_cta][cta_primary_text]" id="cta_primary_text" label="Primary CTA text" :value="old('sections.bottom_cta.cta_primary_text', $cta['cta_primary_text'] ?? '')" />
+                        <x-ui.url-selector name="sections[bottom_cta][cta_primary_url]" id="cta_primary_url" label="Primary CTA URL" :value="old('sections.bottom_cta.cta_primary_url', $cta['cta_primary_url'] ?? '')" />
+                        <x-ui.input name="sections[bottom_cta][cta_secondary_text]" id="cta_secondary_text" label="Secondary CTA text" :value="old('sections.bottom_cta.cta_secondary_text', $cta['cta_secondary_text'] ?? '')" />
+                        <x-ui.url-selector name="sections[bottom_cta][cta_secondary_url]" id="cta_secondary_url" label="Secondary CTA URL" :value="old('sections.bottom_cta.cta_secondary_url', $cta['cta_secondary_url'] ?? '')" />
                     </div>
                 </div>
-            </x-ui.accordion-item>
-        </x-ui.accordion>
+            </div>
 
-        <div class="flex justify-end gap-2 pt-4">
-            <button type="submit" class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:opacity-90 transition-colors">
-                Save homepage
-            </button>
-        </div>
-    </form>
+            <div class="p-6 flex justify-end">
+                <x-ui.button type="submit" variant="primary">Save homepage</x-ui.button>
+            </div>
+        </form>
+    </div>
 </x-layouts.admin>
