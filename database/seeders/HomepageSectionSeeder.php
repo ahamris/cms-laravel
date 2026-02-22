@@ -13,11 +13,6 @@ class HomepageSectionSeeder extends Seeder
      */
     public function run(): void
     {
-
-        if (HomepageSection::count() > 0) {
-            return;
-        }
-
         $sections = [
             'hero' => [
                 'section_name' => 'Hero',
@@ -139,7 +134,7 @@ class HomepageSectionSeeder extends Seeder
                 continue;
             }
 
-            HomepageSection::updateOrCreate(
+            HomepageSection::createOrFirst(
                 ['section_key' => $sectionKey],
                 [
                     'section_name' => $data['section_name'],
