@@ -205,8 +205,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         // Documentation
         Route::resource('doc-versions', DocVersionController::class)->parameters(['doc-versions' => 'docVersion']);
         Route::post('doc-versions/{docVersion}/set-default', [DocVersionController::class, 'setDefault'])->name('doc-versions.set-default');
+        Route::post('doc-versions/{docVersion}/toggle-active', [DocVersionController::class, 'toggleActive'])->name('doc-versions.toggle-active');
         Route::resource('doc-sections', DocSectionController::class)->parameters(['doc-sections' => 'docSection']);
+        Route::post('doc-sections/{docSection}/toggle-active', [DocSectionController::class, 'toggleActive'])->name('doc-sections.toggle-active');
         Route::resource('doc-pages', DocPageController::class)->parameters(['doc-pages' => 'docPage']);
+        Route::post('doc-pages/{docPage}/toggle-active', [DocPageController::class, 'toggleActive'])->name('doc-pages.toggle-active');
 
         // API Changelog
         Route::get('api-changelog', [ApiChangelogController::class, 'index'])->name('api-changelog.index');

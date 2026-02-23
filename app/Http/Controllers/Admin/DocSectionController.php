@@ -17,6 +17,7 @@ class DocSectionController extends AdminBaseController
     public function index(): View
     {
         $sections = DocSection::with('version')
+            ->withCount('pages')
             ->orderBy('doc_version_id')
             ->orderBy('sort_order')
             ->get();

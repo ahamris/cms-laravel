@@ -121,6 +121,18 @@ class Sidebar extends Component
                         ],
                     ],
                     [
+                        'label' => 'Documentation',
+                        'route_name' => 'admin.doc-versions.index',
+                        'icon' => 'book',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.doc-versions*,admin.doc-sections*,admin.doc-pages*',
+                        'children' => [
+                            ['label' => 'Versions', 'route_name' => 'admin.doc-versions.index', 'icon' => 'code-branch', 'permission' => 'page_access'],
+                            ['label' => 'Sections', 'route_name' => 'admin.doc-sections.index', 'icon' => 'folder', 'permission' => 'page_access'],
+                            ['label' => 'Pages', 'route_name' => 'admin.doc-pages.index', 'icon' => 'file-alt', 'permission' => 'page_access'],
+                        ],
+                    ],
+                    [
                         'label' => 'Solution & Modules',
                         'route_name' => 'admin.solution.index',
                         'icon' => 'puzzle-piece',
