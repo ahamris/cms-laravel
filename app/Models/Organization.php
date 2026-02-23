@@ -68,6 +68,6 @@ class Organization extends BaseModel
             return null;
         }
 
-        return get_image('storage/' . $this->logo);
+        return asset('storage/' . $this->logo);
     }
 }
