@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\SeoSetTrait;
+use App\Jobs\SendToPerfexCrmJob;
 use App\Mail\ContactFormSubmittedMail;
 use App\Models\ContactForm;
 use App\Models\Page;
+use App\Services\PerfexCrmService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -126,6 +128,11 @@ class ContactController extends Controller
                 'avg_optin' => in_array($validated['avg-optin'], [true, '1', 1, 'true', 'on'], true),
                 'status' => 'new',
             ]);
+
+            if (app(PerfexCrmService::class)->isConfigured()) {
+                $isDemo = strtolower((string) $contactForm->reden) === 'demo';
+                SendToPerfexCrmJob::dispatch($contactForm, $isDemo ? 'demo' : 'contact');
+            }
 
             try {
                 Mail::to($contactForm->email)->send(new ContactFormSubmittedMail($contactForm, false));
