@@ -376,11 +376,11 @@ if (! function_exists('url_to_path')) {
 if (! function_exists('resource_urls_to_paths')) {
     /**
      * Recursively convert full URLs in a resource response to path-only (no domain).
-     * Image URLs are left unchanged (full URL) so the frontend can use them directly.
+     * External URLs and image URLs are left unchanged (full URL) so the frontend can use them directly.
      * Only recurses into arrays; objects (e.g. Resource collections) are left unchanged.
      *
      * @param  mixed  $data  Array, object, or string (e.g. JsonResource::toArray() or response array)
-     * @return mixed Same structure with non-image URL strings replaced by path-only; image URLs unchanged
+     * @return mixed Same structure with same-origin non-image URL strings replaced by path-only; external and image URLs unchanged
      */
     function resource_urls_to_paths(mixed $data): mixed
     {
@@ -393,7 +393,7 @@ if (! function_exists('resource_urls_to_paths')) {
         }
 
         if (is_string($data) && filter_var($data, FILTER_VALIDATE_URL)) {
-            if (resource_url_is_image($data)) {
+            if (resource_url_should_keep_full($data)) {
                 return $data;
             }
 
@@ -404,9 +404,31 @@ if (! function_exists('resource_urls_to_paths')) {
     }
 }
 
+if (! function_exists('resource_url_should_keep_full')) {
+    /**
+     * Whether the given URL should be left as full URL (not stripped to path) in API responses.
+     * True for external URLs (different host, e.g. ui-avatars.com) and for same-origin image URLs.
+     */
+    function resource_url_should_keep_full(string $url): bool
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        if ($host === null || $host === '') {
+            return false;
+        }
+
+        $appUrl = config('app.url', '');
+        $appHost = $appUrl !== '' ? parse_url($appUrl, PHP_URL_HOST) : null;
+        if ($appHost !== null && strtolower($host) !== strtolower($appHost)) {
+            return true;
+        }
+
+        return resource_url_is_image($url);
+    }
+}
+
 if (! function_exists('resource_url_is_image')) {
     /**
-     * Whether the given URL is considered an image URL (should not be stripped to path).
+     * Whether the given URL is considered an image URL (path has image extension or /storage/ or /images/).
      */
     function resource_url_is_image(string $url): bool
     {
