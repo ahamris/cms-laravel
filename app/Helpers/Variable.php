@@ -266,6 +266,12 @@ class Variable
         'contact_form_edit' => [self::ROLE_ADMIN],
         'contact_form_delete' => [self::ROLE_ADMIN],
 
+        'organization_access' => [self::ROLE_ADMIN],
+        'organization_show' => [self::ROLE_ADMIN],
+        'organization_create' => [self::ROLE_ADMIN],
+        'organization_edit' => [self::ROLE_ADMIN],
+        'organization_delete' => [self::ROLE_ADMIN],
+
         'email_log_access' => [self::ROLE_ADMIN],
         'email_log_show' => [self::ROLE_ADMIN],
         'email_log_create' => [self::ROLE_ADMIN],

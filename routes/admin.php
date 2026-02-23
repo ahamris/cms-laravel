@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\HomepageFaqController;
 use App\Http\Controllers\Admin\LegalController;
 use App\Http\Controllers\Admin\LiveSessionController;
 use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PresenterController;
 use App\Http\Controllers\Admin\PricingBoosterController;
@@ -171,6 +172,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('blog-category/{blogCategory}/json', [BlogCategoryController::class, 'getJson'])->name('blog-category.json');
         Route::resource('blog-category', BlogCategoryController::class);
         Route::post('blog-category/{blogCategory}/toggle-active', [BlogCategoryController::class, 'toggleActive'])->name('blog-category.toggle-active');
+
+        // Organizations
+        Route::get('organization/{organization}/json', [OrganizationController::class, 'getJson'])->name('organization.json');
+        Route::post('organization/import', [OrganizationController::class, 'import'])->name('organization.import');
+        Route::resource('organization', OrganizationController::class);
 
         // Blogs
         Route::resource('blog', BlogController::class);
