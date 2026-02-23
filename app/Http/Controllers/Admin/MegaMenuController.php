@@ -55,7 +55,9 @@ class MegaMenuController extends AdminBaseController
         // Get system content for dropdown
         $systemContent = MegaMenuItem::getSystemContent();
 
-        return view('admin.settings.mega-menu.create', compact('parent', 'rootItems', 'availableRoutes', 'systemContent'));
+        $megaMenu = null; // Form is shared with edit; create has no existing model.
+
+        return view('admin.settings.mega-menu.create', compact('parent', 'rootItems', 'availableRoutes', 'systemContent', 'megaMenu'));
     }
 
     /**

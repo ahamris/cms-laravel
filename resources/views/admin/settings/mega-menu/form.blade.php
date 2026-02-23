@@ -1,3 +1,6 @@
+@php
+    $megaMenu = $megaMenu ?? null;
+@endphp
 <div class="bg-white rounded-lg shadow p-6 space-y-6" x-data="megaMenuForm()">
     <!-- Basic Settings -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -19,7 +22,7 @@
                     @if(isset($rootItems))
                         @foreach($rootItems as $item)
                             @if($item->is_mega_menu)
-                                <option value="{{ $item->id }}" {{ old('parent_id', $megaMenu->parent_id ?? '') == $item->id ? 'selected' : '' }}>
+                                <option value="{{ $item->id }}" {{ old('parent_id', optional($megaMenu)->parent_id ?? '') == $item->id ? 'selected' : '' }}>
                                     {{ $item->title }} (Mega Menu)
                                 </option>
                             @endif
@@ -36,7 +39,7 @@
         <!-- Order -->
         <div>
             <label for="order" class="block text-sm font-medium text-gray-700 mb-2">Order <span class="text-red-500">*</span></label>
-            <input type="number" name="order" id="order" value="{{ old('order', $megaMenu->order ?? 0) }}" min="0" required
+            <input type="number" name="order" id="order" value="{{ old('order', optional($megaMenu)->order ?? 0) }}" min="0" required
                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
             @error('order')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -53,7 +56,7 @@
             <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" name="is_mega_menu" value="1" 
                        x-model="isMegaMenu"
-                       {{ old('is_mega_menu', $megaMenu->is_mega_menu ?? false) ? 'checked' : '' }}
+                       {{ old('is_mega_menu', optional($megaMenu)->is_mega_menu ?? false) ? 'checked' : '' }}
                        class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
                 <span class="text-sm font-medium text-gray-700">📋 Enable Mega Menu (with sub-items)</span>
             </label>
@@ -73,7 +76,7 @@
             <!-- Title -->
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title <span class="text-red-500">*</span></label>
-                <input type="text" name="title" id="title" value="{{ old('title', $megaMenu->title ?? '') }}" required
+                <input type="text" name="title" id="title" value="{{ old('title', optional($megaMenu)->title ?? '') }}" required
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
                 @error('title')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -83,7 +86,7 @@
             <!-- Subtitle -->
             <div>
                 <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
-                <input type="text" name="subtitle" id="subtitle" value="{{ old('subtitle', $megaMenu->subtitle ?? '') }}"
+                <input type="text" name="subtitle" id="subtitle" value="{{ old('subtitle', optional($megaMenu)->subtitle ?? '') }}"
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
             </div>
         </div>
@@ -92,7 +95,7 @@
         <div>
             <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea name="description" id="description" rows="2"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">{{ old('description', $megaMenu->description ?? '') }}</textarea>
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">{{ old('description', optional($megaMenu)->description ?? '') }}</textarea>
         </div>
 
         <!-- Icon Settings -->
@@ -101,7 +104,7 @@
                 <x-icon-picker
                     id="icon"
                     name="icon"
-                    :value="old('icon', $megaMenu->icon ?? '')"
+                    :value="old('icon', optional($megaMenu)->icon ?? '')"
                     label="Icon Class (Font Awesome)"
                     help-text="Example: fas fa-rocket, fas fa-chart-line"
                     :required="false"
@@ -110,7 +113,7 @@
 
             <div>
                 <label for="icon_bg_color" class="block text-sm font-medium text-gray-700 mb-2">Icon Background Color</label>
-                <input type="color" name="icon_bg_color" id="icon_bg_color" value="{{ old('icon_bg_color', $megaMenu->icon_bg_color ?? '#3B82F6') }}"
+                <input type="color" name="icon_bg_color" id="icon_bg_color" value="{{ old('icon_bg_color', optional($megaMenu)->icon_bg_color ?? '#3B82F6') }}"
                        class="w-full h-10 border border-gray-300 rounded-lg">
             </div>
         </div>
@@ -165,7 +168,7 @@
                 @endphp
                 @foreach($pages as $page)
                     <option value="{{ $page->id }}" 
-                            {{ old('page_id', $megaMenu->page_id ?? '') == $page->id ? 'selected' : '' }}
+                            {{ old('page_id', optional($megaMenu)->page_id ?? '') == $page->id ? 'selected' : '' }}
                             data-url="{{ $page->link_url }}">
                         {{ $page->title }} ({{ $page->slug }})
                     </option>
@@ -249,13 +252,13 @@
         
         <x-ui.toggle 
             name="is_active"
-            :checked="old('is_active', $megaMenu->is_active ?? true)"
+            :checked="old('is_active', optional($megaMenu)->is_active ?? true)"
             label="Active (visible in menu)"
         />
 
         <label class="flex items-center space-x-2 cursor-pointer">
             <input type="checkbox" name="open_in_new_tab" value="1" 
-                   {{ old('open_in_new_tab', $megaMenu->open_in_new_tab ?? false) ? 'checked' : '' }}
+                   {{ old('open_in_new_tab', optional($megaMenu)->open_in_new_tab ?? false) ? 'checked' : '' }}
                    class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
             <span class="text-sm text-gray-700">Open in new tab</span>
         </label>
@@ -295,12 +298,12 @@
 @push('scripts')
 <script>
 function megaMenuForm() {
-    const currentUrl = '{{ old('url', $megaMenu->url ?? '') }}';
+    const currentUrl = '{{ old('url', optional($megaMenu)->url ?? '') }}';
     const availableRoutes = @json($availableRoutes ?? []);
     const systemContent = @json($systemContent ?? []);
     
     // Get page ID if exists
-    const currentPageId = {{ old('page_id', $megaMenu->page_id ?? 'null') ?? 'null' }};
+    const currentPageId = {{ old('page_id', optional($megaMenu)->page_id ?? 'null') ?? 'null' }};
     
     // Determine initial link type and values
     let initialLinkType = 'custom';
@@ -348,7 +351,7 @@ function megaMenuForm() {
     }
     
     return {
-        isMegaMenu: {{ old('is_mega_menu', $megaMenu->is_mega_menu ?? false) ? 'true' : 'false' }},
+        isMegaMenu: {{ old('is_mega_menu', optional($megaMenu)->is_mega_menu ?? false) ? 'true' : 'false' }},
         linkType: initialLinkType,
         selectedPageId: initialSelectedPageId,
         selectedRoute: initialSelectedRoute,
