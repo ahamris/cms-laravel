@@ -69,9 +69,9 @@ class CommentController extends Controller
         new OA\Response(response: 200, description: 'Updated likes/dislikes'),
         new OA\Response(response: 404, description: 'Blog post or comment not found'),
     ])]
-    public function like(string $slug, Comment $comment, Request $request): JsonResponse
+    public function like(string $slug, int|string $comment, Request $request): JsonResponse
     {
-        return $this->handleVote($slug, $comment, $request, 'like');
+        return $this->handleVote($slug, (int) $comment, $request, 'like');
     }
 
     #[OA\Post(path: '/api/blog/{slug}/comments/{comment}/dislike', summary: 'Dislike a comment on a blog post', description: 'Record a dislike for the given comment. The comment must belong to the blog post identified by {slug}.', tags: ['Blog'], parameters: [
@@ -81,18 +81,20 @@ class CommentController extends Controller
         new OA\Response(response: 200, description: 'Updated likes/dislikes'),
         new OA\Response(response: 404, description: 'Blog post or comment not found'),
     ])]
-    public function dislike(string $slug, Comment $comment, Request $request): JsonResponse
+    public function dislike(string $slug, int|string $comment, Request $request): JsonResponse
     {
-        return $this->handleVote($slug, $comment, $request, 'dislike');
+        return $this->handleVote($slug, (int) $comment, $request, 'dislike');
     }
 
-    private function handleVote(string $slug, Comment $comment, Request $request, string $type): JsonResponse
+    private function handleVote(string $slug, int $commentId, Request $request, string $type): JsonResponse
     {
         $blog = Blog::where('slug', $slug)->where('is_active', true)->first();
         if (! $blog) {
             return response()->json(['message' => 'Blog post not found.'], 404);
         }
-        if ($comment->entity_type !== Blog::class || (string) $comment->entity_id !== (string) $blog->id) {
+
+        $comment = $blog->comments()->find($commentId);
+        if (! $comment) {
             return response()->json(['message' => 'Comment not found for this blog post.'], 404);
         }
 

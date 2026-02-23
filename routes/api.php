@@ -61,8 +61,8 @@ Route::middleware('frontend.origins')->group(function () {
 
     // Blog (posts + comments — comments scoped to blog by slug)
     Route::post('/blog/{slug}/comments', [ApiCommentController::class, 'store'])->middleware('throttle:forms')->name('api.blog.comments.store')->where('slug', '[a-z0-9\-]+');
-    Route::post('/blog/{slug}/comments/{comment}/like', [ApiCommentController::class, 'like'])->name('api.blog.comments.like')->where('slug', '[a-z0-9\-]+');
-    Route::post('/blog/{slug}/comments/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.blog.comments.dislike')->where('slug', '[a-z0-9\-]+');
+    Route::post('/blog/{slug}/comments/{comment}/like', [ApiCommentController::class, 'like'])->name('api.blog.comments.like')->where(['slug' => '[a-zA-Z0-9\-_]+', 'comment' => '[0-9]+']);
+    Route::post('/blog/{slug}/comments/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.blog.comments.dislike')->where(['slug' => '[a-zA-Z0-9\-_]+', 'comment' => '[0-9]+']);
 
     // Pricing (prijzen)
     Route::get('/prijzen', [ApiPricingController::class, 'index'])->name('api.pricing.index');
