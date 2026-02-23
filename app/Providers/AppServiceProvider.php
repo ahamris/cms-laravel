@@ -8,12 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use App\Listeners\LogSentEmail;
+use App\Mail\Transport\SummaryLogTransport;
 use App\Models\VacancyModule\JobApplication;
 use App\Observers\JobApplicationObserver;
 use App\Services\TranslationService;
+use Illuminate\Log\LogManager;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
+use Psr\Log\LoggerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -52,6 +56,18 @@ class AppServiceProvider extends ServiceProvider
 
         // Register Email Logging Listeners
         Event::listen(MessageSent::class, LogSentEmail::class);
+
+        // Use summary-only log transport so full email content is not written to the log file
+        Mail::extend('log', function (array $config) {
+            $logger = $this->app->make(LoggerInterface::class);
+            if ($logger instanceof LogManager) {
+                $logger = $logger->channel(
+                    $config['channel'] ?? $this->app['config']->get('mail.log_channel')
+                );
+            }
+
+            return new SummaryLogTransport($logger);
+        });
     }
 
     /**
