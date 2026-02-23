@@ -28,7 +28,7 @@ class BlogController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.blog.index');
+        return view('admin.blog.index');
     }
 
     /**
@@ -55,7 +55,7 @@ class BlogController extends AdminBaseController
             ->ordered()
             ->get();
 
-        return view('admin.content.blog.create', compact(
+        return view('admin.blog.create', compact(
             'blogCategories', 
             'authors', 
             'marketingPersonas', 
@@ -99,7 +99,7 @@ class BlogController extends AdminBaseController
     {
         $blog->load(['blog_category', 'author']);
 
-        return view('admin.content.blog.show', compact('blog'));
+        return view('admin.blog.show', compact('blog'));
     }
 
     /**
@@ -138,7 +138,7 @@ class BlogController extends AdminBaseController
         $seoRecommendations = $intelligence->getOptimizationRecommendations($blog);
         $internalLinkSuggestions = $intelligence->getInternalLinkSuggestions($blog);
 
-        return view('admin.content.blog.edit', compact(
+        return view('admin.blog.edit', compact(
             'blog', 
             'blogCategories', 
             'authors', 

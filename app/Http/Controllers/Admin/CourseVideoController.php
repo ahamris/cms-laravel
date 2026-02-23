@@ -17,7 +17,7 @@ class CourseVideoController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.course-video.index');
+        return view('admin.course-video.index');
     }
 
     /**
@@ -31,7 +31,7 @@ class CourseVideoController extends AdminBaseController
         if ($initialCategoryId) {
             $chapterOptions += Course::where('course_category_id', $initialCategoryId)->ordered()->get()->mapWithKeys(fn ($c) => [$c->id => $c->name])->all();
         }
-        return view('admin.content.course-video.create', compact('categories', 'chapterOptions'));
+        return view('admin.course-video.create', compact('categories', 'chapterOptions'));
     }
 
     /**
@@ -69,7 +69,7 @@ class CourseVideoController extends AdminBaseController
     public function show(CourseVideo $courseVideo): View
     {
         $courseVideo->load('category');
-        return view('admin.content.course-video.show', compact('courseVideo'));
+        return view('admin.course-video.show', compact('courseVideo'));
     }
 
     /**
@@ -79,7 +79,7 @@ class CourseVideoController extends AdminBaseController
     {
         $categories = CourseCategory::active()->ordered()->get();
         $chapterOptions = ['' => 'Select chapter'] + Course::where('course_category_id', $courseVideo->course_category_id)->ordered()->get()->mapWithKeys(fn ($c) => [$c->id => $c->name])->all();
-        return view('admin.content.course-video.edit', compact('courseVideo', 'categories', 'chapterOptions'));
+        return view('admin.course-video.edit', compact('courseVideo', 'categories', 'chapterOptions'));
     }
 
     /**

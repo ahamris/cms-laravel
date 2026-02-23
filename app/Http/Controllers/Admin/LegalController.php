@@ -17,7 +17,7 @@ class LegalController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.legal.index');
+        return view('admin.legal.index');
     }
 
     /**
@@ -25,7 +25,7 @@ class LegalController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.legal.create');
+        return view('admin.legal.create');
     }
 
     /**
@@ -57,7 +57,7 @@ class LegalController extends AdminBaseController
      */
     public function show(Legal $legal): View
     {
-        return view('admin.content.legal.show', compact('legal'));
+        return view('admin.legal.show', compact('legal'));
     }
 
     /**
@@ -65,7 +65,7 @@ class LegalController extends AdminBaseController
      */
     public function edit(Legal $legal): View
     {
-        return view('admin.content.legal.edit', compact('legal'));
+        return view('admin.legal.edit', compact('legal'));
     }
 
     /**
@@ -168,7 +168,7 @@ class LegalController extends AdminBaseController
             ->latest('version_number')
             ->get();
 
-        return view('admin.content.legal.versions.index', compact('legal', 'versions'));
+        return view('admin.legal.versions.index', compact('legal', 'versions'));
     }
 
     /**
@@ -184,7 +184,7 @@ class LegalController extends AdminBaseController
 
         $version->load('creator');
 
-        return view('admin.content.legal.versions.show', compact('legal', 'version'));
+        return view('admin.legal.versions.show', compact('legal', 'version'));
     }
 
     /**

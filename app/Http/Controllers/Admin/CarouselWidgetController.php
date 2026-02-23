@@ -20,7 +20,7 @@ class CarouselWidgetController extends AdminBaseController
             ->ordered()
             ->paginate(20);
 
-        return view('admin.content.carousel-widgets.index', compact('carouselWidgets'));
+        return view('admin.carousel-widgets.index', compact('carouselWidgets'));
     }
 
     /**
@@ -32,7 +32,7 @@ class CarouselWidgetController extends AdminBaseController
             ->orderBy('name')
             ->get();
 
-        return view('admin.content.carousel-widgets.create', compact('blogCategories'));
+        return view('admin.carousel-widgets.create', compact('blogCategories'));
     }
 
     /**
@@ -59,7 +59,7 @@ class CarouselWidgetController extends AdminBaseController
     {
         $carouselWidget->load('blogCategory');
 
-        return view('admin.content.carousel-widgets.show', compact('carouselWidget'));
+        return view('admin.carousel-widgets.show', compact('carouselWidget'));
     }
 
     /**
@@ -71,7 +71,7 @@ class CarouselWidgetController extends AdminBaseController
             ->orderBy('name')
             ->get();
 
-        return view('admin.content.carousel-widgets.edit', compact('carouselWidget', 'blogCategories'));
+        return view('admin.carousel-widgets.edit', compact('carouselWidget', 'blogCategories'));
     }
 
     /**

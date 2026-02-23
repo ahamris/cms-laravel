@@ -20,7 +20,7 @@ class FeatureController extends AdminBaseController
     {
         $features = Feature::ordered()->paginate(20);
 
-        return view('admin.content.feature.index', compact('features'));
+        return view('admin.feature.index', compact('features'));
     }
 
     /**
@@ -29,7 +29,7 @@ class FeatureController extends AdminBaseController
     public function create(): View
     {
         $modules = Module::active()->ordered()->get();
-        return view('admin.content.feature.create', compact('modules'));
+        return view('admin.feature.create', compact('modules'));
     }
 
     /**
@@ -70,7 +70,7 @@ class FeatureController extends AdminBaseController
      */
     public function show(Feature $feature): View
     {
-        return view('admin.content.feature.show', compact('feature'));
+        return view('admin.feature.show', compact('feature'));
     }
 
     /**
@@ -79,7 +79,7 @@ class FeatureController extends AdminBaseController
     public function edit(Feature $feature): View
     {
         $modules = Module::active()->ordered()->get();
-        return view('admin.content.feature.edit', compact('feature', 'modules'));
+        return view('admin.feature.edit', compact('feature', 'modules'));
     }
 
     /**

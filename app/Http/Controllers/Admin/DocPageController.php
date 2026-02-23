@@ -21,7 +21,7 @@ class DocPageController extends AdminBaseController
             ->orderBy('sort_order')
             ->get();
 
-        return view('admin.content.doc-page.index', compact('pages'));
+        return view('admin.doc-page.index', compact('pages'));
     }
 
     /**
@@ -40,7 +40,7 @@ class DocPageController extends AdminBaseController
                 return $section->version->name;
             });
 
-        return view('admin.content.doc-page.create', compact('sections'));
+        return view('admin.doc-page.create', compact('sections'));
     }
 
     /**
@@ -80,7 +80,7 @@ class DocPageController extends AdminBaseController
     {
         $docPage->load(['section.version']);
 
-        return view('admin.content.doc-page.show', compact('docPage'));
+        return view('admin.doc-page.show', compact('docPage'));
     }
 
     /**
@@ -99,7 +99,7 @@ class DocPageController extends AdminBaseController
                 return $section->version->name;
             });
 
-        return view('admin.content.doc-page.edit', compact('docPage', 'sections'));
+        return view('admin.doc-page.edit', compact('docPage', 'sections'));
     }
 
     /**

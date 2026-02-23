@@ -17,7 +17,7 @@ class EventController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.event.index');
+        return view('admin.event.index');
     }
 
     /**
@@ -29,7 +29,7 @@ class EventController extends AdminBaseController
             ->orderBy('name')
             ->get();
 
-        return view('admin.content.event.create', compact('users'));
+        return view('admin.event.create', compact('users'));
     }
 
     /**
@@ -62,7 +62,7 @@ class EventController extends AdminBaseController
     {
         $event->load(['user']);
 
-        return view('admin.content.event.show', compact('event'));
+        return view('admin.event.show', compact('event'));
     }
 
     /**
@@ -76,7 +76,7 @@ class EventController extends AdminBaseController
             ->orderBy('name')
             ->get();
 
-        return view('admin.content.event.edit', compact('event', 'users'));
+        return view('admin.event.edit', compact('event', 'users'));
     }
 
     /**

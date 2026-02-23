@@ -20,7 +20,7 @@ class ModuleController extends AdminBaseController
     {
         $modules = Module::ordered()->paginate(20);
 
-        return view('admin.content.module.index', compact('modules'));
+        return view('admin.module.index', compact('modules'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ModuleController extends AdminBaseController
         $features = Feature::active()->ordered()->get();
         $solutions = Solution::active()->ordered()->get();
 
-        return view('admin.content.module.create', compact('features', 'solutions'));
+        return view('admin.module.create', compact('features', 'solutions'));
     }
 
     /**
@@ -94,7 +94,7 @@ class ModuleController extends AdminBaseController
      */
     public function show(Module $module): View
     {
-        return view('admin.content.module.show', compact('module'));
+        return view('admin.module.show', compact('module'));
     }
 
     /**
@@ -105,7 +105,7 @@ class ModuleController extends AdminBaseController
         $features = Feature::active()->ordered()->get();
         $solutions = Solution::active()->ordered()->get();
 
-        return view('admin.content.module.edit', compact('module', 'features', 'solutions'));
+        return view('admin.module.edit', compact('module', 'features', 'solutions'));
     }
 
     /**

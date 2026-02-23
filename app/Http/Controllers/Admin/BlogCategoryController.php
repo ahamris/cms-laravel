@@ -14,7 +14,7 @@ class BlogCategoryController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.blog-category.index');
+        return view('admin.blog-category.index');
     }
 
     /**
@@ -22,7 +22,7 @@ class BlogCategoryController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.blog-category.create');
+        return view('admin.blog-category.create');
     }
 
     /**
@@ -71,7 +71,7 @@ class BlogCategoryController extends AdminBaseController
      */
     public function show(BlogCategory $blogCategory): View
     {
-        return view('admin.content.blog-category.show', compact('blogCategory'));
+        return view('admin.blog-category.show', compact('blogCategory'));
     }
 
     /**
@@ -79,7 +79,7 @@ class BlogCategoryController extends AdminBaseController
      */
     public function edit(BlogCategory $blogCategory): View
     {
-        return view('admin.content.blog-category.edit', compact('blogCategory'));
+        return view('admin.blog-category.edit', compact('blogCategory'));
     }
 
     /**

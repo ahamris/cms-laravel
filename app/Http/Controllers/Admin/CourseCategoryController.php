@@ -14,7 +14,7 @@ class CourseCategoryController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.course-category.index');
+        return view('admin.course-category.index');
     }
 
     /**
@@ -22,7 +22,7 @@ class CourseCategoryController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.course-category.create');
+        return view('admin.course-category.create');
     }
 
     /**
@@ -77,7 +77,7 @@ class CourseCategoryController extends AdminBaseController
     public function show(CourseCategory $courseCategory): View
     {
         $courseCategory->loadCount('videos');
-        return view('admin.content.course-category.show', compact('courseCategory'));
+        return view('admin.course-category.show', compact('courseCategory'));
     }
 
     /**
@@ -85,7 +85,7 @@ class CourseCategoryController extends AdminBaseController
      */
     public function edit(CourseCategory $courseCategory): View
     {
-        return view('admin.content.course-category.edit', compact('courseCategory'));
+        return view('admin.course-category.edit', compact('courseCategory'));
     }
 
     /**

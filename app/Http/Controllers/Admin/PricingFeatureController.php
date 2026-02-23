@@ -17,7 +17,7 @@ class PricingFeatureController extends AdminBaseController
     {
         $features = PricingFeature::ordered()->paginate(20);
 
-        return view('admin.content.pricing-feature.index', compact('features'));
+        return view('admin.pricing-feature.index', compact('features'));
     }
 
     /**
@@ -25,7 +25,7 @@ class PricingFeatureController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.pricing-feature.create');
+        return view('admin.pricing-feature.create');
     }
 
     /**
@@ -58,7 +58,7 @@ class PricingFeatureController extends AdminBaseController
      */
     public function show(PricingFeature $pricingFeature): View
     {
-        return view('admin.content.pricing-feature.show', compact('pricingFeature'));
+        return view('admin.pricing-feature.show', compact('pricingFeature'));
     }
 
     /**
@@ -66,7 +66,7 @@ class PricingFeatureController extends AdminBaseController
      */
     public function edit(PricingFeature $pricingFeature): View
     {
-        return view('admin.content.pricing-feature.edit', compact('pricingFeature'));
+        return view('admin.pricing-feature.edit', compact('pricingFeature'));
     }
 
     /**

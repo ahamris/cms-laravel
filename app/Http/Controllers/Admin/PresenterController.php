@@ -16,7 +16,7 @@ class PresenterController extends AdminBaseController
      */
     public function index()
     {
-        return view('admin.content.presenter.index');
+        return view('admin.presenter.index');
     }
 
     /**
@@ -24,7 +24,7 @@ class PresenterController extends AdminBaseController
      */
     public function create()
     {
-        return view('admin.content.presenter.create');
+        return view('admin.presenter.create');
     }
 
     /**
@@ -55,7 +55,7 @@ class PresenterController extends AdminBaseController
             $query->orderBy('session_date', 'desc');
         }]);
 
-        return view('admin.content.presenter.show', compact('presenter'));
+        return view('admin.presenter.show', compact('presenter'));
     }
 
     /**
@@ -63,7 +63,7 @@ class PresenterController extends AdminBaseController
      */
     public function edit(Presenter $presenter)
     {
-        return view('admin.content.presenter.edit', compact('presenter'));
+        return view('admin.presenter.edit', compact('presenter'));
     }
 
     /**

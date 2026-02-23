@@ -17,7 +17,7 @@ class DocVersionController extends AdminBaseController
     {
         $versions = DocVersion::ordered()->get();
 
-        return view('admin.content.doc-version.index', compact('versions'));
+        return view('admin.doc-version.index', compact('versions'));
     }
 
     /**
@@ -25,7 +25,7 @@ class DocVersionController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.doc-version.create');
+        return view('admin.doc-version.create');
     }
 
     /**
@@ -61,7 +61,7 @@ class DocVersionController extends AdminBaseController
     {
         $docVersion->load('sections.pages');
 
-        return view('admin.content.doc-version.show', compact('docVersion'));
+        return view('admin.doc-version.show', compact('docVersion'));
     }
 
     /**
@@ -69,7 +69,7 @@ class DocVersionController extends AdminBaseController
      */
     public function edit(DocVersion $docVersion): View
     {
-        return view('admin.content.doc-version.edit', compact('docVersion'));
+        return view('admin.doc-version.edit', compact('docVersion'));
     }
 
     /**

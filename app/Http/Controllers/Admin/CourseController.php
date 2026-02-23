@@ -17,7 +17,7 @@ class CourseController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.course.index');
+        return view('admin.course.index');
     }
 
     /**
@@ -41,7 +41,7 @@ class CourseController extends AdminBaseController
     public function create(): View
     {
         $categories = CourseCategory::active()->ordered()->get();
-        return view('admin.content.course.create', compact('categories'));
+        return view('admin.course.create', compact('categories'));
     }
 
     /**
@@ -64,7 +64,7 @@ class CourseController extends AdminBaseController
     public function edit(Course $course): View
     {
         $categories = CourseCategory::active()->ordered()->get();
-        return view('admin.content.course.edit', compact('course', 'categories'));
+        return view('admin.course.edit', compact('course', 'categories'));
     }
 
     /**

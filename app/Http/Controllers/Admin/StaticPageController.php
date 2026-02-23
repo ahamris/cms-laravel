@@ -18,7 +18,7 @@ class StaticPageController extends AdminBaseController
     {
         $staticPages = StaticPage::orderBy('created_at', 'desc')->paginate(15);
         
-        return view('admin.content.static-page.index', compact('staticPages'));
+        return view('admin.static-page.index', compact('staticPages'));
     }
 
     /**
@@ -26,7 +26,7 @@ class StaticPageController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.static-page.create');
+        return view('admin.static-page.create');
     }
 
     /**
@@ -55,7 +55,7 @@ class StaticPageController extends AdminBaseController
      */
     public function show(StaticPage $staticPage): View
     {
-        return view('admin.content.static-page.show', compact('staticPage'));
+        return view('admin.static-page.show', compact('staticPage'));
     }
 
     /**
@@ -63,7 +63,7 @@ class StaticPageController extends AdminBaseController
      */
     public function edit(StaticPage $staticPage): View
     {
-        return view('admin.content.static-page.edit', compact('staticPage'));
+        return view('admin.static-page.edit', compact('staticPage'));
     }
 
     /**

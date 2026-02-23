@@ -21,7 +21,7 @@ class DocSectionController extends AdminBaseController
             ->orderBy('sort_order')
             ->get();
 
-        return view('admin.content.doc-section.index', compact('sections'));
+        return view('admin.doc-section.index', compact('sections'));
     }
 
     /**
@@ -31,7 +31,7 @@ class DocSectionController extends AdminBaseController
     {
         $versions = DocVersion::active()->ordered()->get();
 
-        return view('admin.content.doc-section.create', compact('versions'));
+        return view('admin.doc-section.create', compact('versions'));
     }
 
     /**
@@ -70,7 +70,7 @@ class DocSectionController extends AdminBaseController
     {
         $docSection->load(['version', 'pages']);
 
-        return view('admin.content.doc-section.show', compact('docSection'));
+        return view('admin.doc-section.show', compact('docSection'));
     }
 
     /**
@@ -80,7 +80,7 @@ class DocSectionController extends AdminBaseController
     {
         $versions = DocVersion::active()->ordered()->get();
 
-        return view('admin.content.doc-section.edit', compact('docSection', 'versions'));
+        return view('admin.doc-section.edit', compact('docSection', 'versions'));
     }
 
     /**

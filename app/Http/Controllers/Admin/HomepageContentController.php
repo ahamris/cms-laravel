@@ -29,7 +29,7 @@ class HomepageContentController extends AdminBaseController
             return [$key => $section];
         });
 
-        return view('admin.content.homepage.edit', compact('sections'));
+        return view('admin.homepage.edit', compact('sections'));
     }
 
     /**

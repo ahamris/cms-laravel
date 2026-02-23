@@ -15,7 +15,7 @@ class ChangelogController extends AdminBaseController
      */
     public function index()
     {
-        return view('admin.content.changelog.index');
+        return view('admin.changelog.index');
     }
 
     /**
@@ -23,7 +23,7 @@ class ChangelogController extends AdminBaseController
      */
     public function create()
     {
-        return view('admin.content.changelog.create');
+        return view('admin.changelog.create');
     }
 
     /**
@@ -85,7 +85,7 @@ class ChangelogController extends AdminBaseController
      */
     public function show(Changelog $changelog)
     {
-        return view('admin.content.changelog.show', compact('changelog'));
+        return view('admin.changelog.show', compact('changelog'));
     }
 
     /**
@@ -93,7 +93,7 @@ class ChangelogController extends AdminBaseController
      */
     public function edit(Changelog $changelog)
     {
-        return view('admin.content.changelog.edit', compact('changelog'));
+        return view('admin.changelog.edit', compact('changelog'));
     }
 
     /**

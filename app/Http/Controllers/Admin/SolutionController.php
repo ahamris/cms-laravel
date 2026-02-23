@@ -20,7 +20,7 @@ class SolutionController extends AdminBaseController
     {
         $solutions = Solution::ordered()->paginate(20);
 
-        return view('admin.content.solution.index', compact('solutions'));
+        return view('admin.solution.index', compact('solutions'));
     }
 
     /**
@@ -30,7 +30,7 @@ class SolutionController extends AdminBaseController
     {
         $modules = Module::active()->ordered()->get();
 
-        return view('admin.content.solution.create', compact('modules'));
+        return view('admin.solution.create', compact('modules'));
     }
 
     /**
@@ -86,7 +86,7 @@ class SolutionController extends AdminBaseController
      */
     public function show(Solution $solution): View
     {
-        return view('admin.content.solution.show', compact('solution'));
+        return view('admin.solution.show', compact('solution'));
     }
 
     /**
@@ -96,7 +96,7 @@ class SolutionController extends AdminBaseController
     {
         $modules = Module::active()->ordered()->get();
 
-        return view('admin.content.solution.edit', compact('solution', 'modules'));
+        return view('admin.solution.edit', compact('solution', 'modules'));
     }
 
     /**

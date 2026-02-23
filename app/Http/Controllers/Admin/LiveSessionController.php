@@ -17,7 +17,7 @@ class LiveSessionController extends AdminBaseController
      */
     public function index()
     {
-        return view('admin.content.live-session.index');
+        return view('admin.live-session.index');
     }
 
     /**
@@ -27,7 +27,7 @@ class LiveSessionController extends AdminBaseController
     {
         $presenters = Presenter::active()->ordered()->get();
 
-        return view('admin.content.live-session.create', compact('presenters'));
+        return view('admin.live-session.create', compact('presenters'));
     }
 
     /**
@@ -69,7 +69,7 @@ class LiveSessionController extends AdminBaseController
     {
         $liveSession->load(['presenters', 'registrations']);
 
-        return view('admin.content.live-session.show', compact('liveSession'));
+        return view('admin.live-session.show', compact('liveSession'));
     }
 
     /**
@@ -80,7 +80,7 @@ class LiveSessionController extends AdminBaseController
         $presenters = Presenter::active()->ordered()->get();
         $liveSession->load('presenters');
 
-        return view('admin.content.live-session.edit', compact('liveSession', 'presenters'));
+        return view('admin.live-session.edit', compact('liveSession', 'presenters'));
     }
 
     /**

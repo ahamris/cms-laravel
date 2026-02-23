@@ -16,7 +16,7 @@ class StickyMenuItemController extends AdminBaseController
     {
         $stickyMenuItems = StickyMenuItem::ordered()->paginate(15);
 
-        return view('admin.content.sticky-menu-item.index', compact('stickyMenuItems'));
+        return view('admin.sticky-menu-item.index', compact('stickyMenuItems'));
     }
 
     /**
@@ -24,7 +24,7 @@ class StickyMenuItemController extends AdminBaseController
      */
     public function create()
     {
-        return view('admin.content.sticky-menu-item.create');
+        return view('admin.sticky-menu-item.create');
     }
 
     /**
@@ -46,7 +46,7 @@ class StickyMenuItemController extends AdminBaseController
      */
     public function edit(StickyMenuItem $stickyMenuItem)
     {
-        return view('admin.content.sticky-menu-item.edit', compact('stickyMenuItem'));
+        return view('admin.sticky-menu-item.edit', compact('stickyMenuItem'));
     }
 
     /**

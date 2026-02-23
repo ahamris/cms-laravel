@@ -13,7 +13,7 @@ class CommentController extends AdminBaseController
      */
     public function index()
     {
-        return view('admin.content.comment.index');
+        return view('admin.comment.index');
     }
 
     /**
@@ -21,7 +21,7 @@ class CommentController extends AdminBaseController
      */
     public function show(Comment $comment)
     {
-        return view('admin.content.comment.show', compact('comment'));
+        return view('admin.comment.show', compact('comment'));
     }
 
     /**

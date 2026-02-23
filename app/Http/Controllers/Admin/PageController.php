@@ -18,7 +18,7 @@ class PageController extends AdminBaseController
      */
     public function index(): View
     {
-        return view('admin.content.page.index');
+        return view('admin.page.index');
     }
 
     /**
@@ -37,7 +37,7 @@ class PageController extends AdminBaseController
         $templates = config('page_templates.templates', []);
         $currentTemplate = old('template', config('page_templates.default', 'default'));
 
-        return view('admin.content.page.create', compact(
+        return view('admin.page.create', compact(
             'marketingPersonas',
             'contentTypes',
             'templates',
@@ -82,7 +82,7 @@ class PageController extends AdminBaseController
      */
     public function show(Page $page): View
     {
-        return view('admin.content.page.show', compact('page'));
+        return view('admin.page.show', compact('page'));
     }
 
     /**
@@ -103,7 +103,7 @@ class PageController extends AdminBaseController
         $templates = config('page_templates.templates', []);
         $currentTemplate = old('template', $page->template ?? config('page_templates.default', 'default'));
 
-        return view('admin.content.page.edit', compact(
+        return view('admin.page.edit', compact(
             'page',
             'marketingPersonas',
             'contentTypes',

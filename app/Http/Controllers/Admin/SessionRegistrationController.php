@@ -16,7 +16,7 @@ class SessionRegistrationController extends AdminBaseController
      */
     public function index()
     {
-        return view('admin.content.session-registration.index');
+        return view('admin.session-registration.index');
     }
 
     /**
@@ -27,7 +27,7 @@ class SessionRegistrationController extends AdminBaseController
         $liveSessions = LiveSession::active()->ordered()->get();
         $selectedSessionId = $request->get('session_id');
 
-        return view('admin.content.session-registration.create', compact('liveSessions', 'selectedSessionId'));
+        return view('admin.session-registration.create', compact('liveSessions', 'selectedSessionId'));
     }
 
     /**
@@ -49,7 +49,7 @@ class SessionRegistrationController extends AdminBaseController
     {
         $sessionRegistration->load('liveSession');
 
-        return view('admin.content.session-registration.show', compact('sessionRegistration'));
+        return view('admin.session-registration.show', compact('sessionRegistration'));
     }
 
     /**
@@ -60,7 +60,7 @@ class SessionRegistrationController extends AdminBaseController
         $liveSessions = LiveSession::active()->ordered()->get();
         $sessionRegistration->load('liveSession');
 
-        return view('admin.content.session-registration.edit', compact('sessionRegistration', 'liveSessions'));
+        return view('admin.session-registration.edit', compact('sessionRegistration', 'liveSessions'));
     }
 
     /**

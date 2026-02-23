@@ -19,7 +19,7 @@ class ApiChangelogController extends AdminBaseController
             ->orderBy('date', 'desc')
             ->paginate(15);
 
-        return view('admin.content.api-changelog.index', compact('changelogs'));
+        return view('admin.api-changelog.index', compact('changelogs'));
     }
 
     /**
@@ -32,6 +32,6 @@ class ApiChangelogController extends AdminBaseController
             abort(404, 'API changelog not found');
         }
 
-        return view('admin.content.api-changelog.show', compact('changelog'));
+        return view('admin.api-changelog.show', compact('changelog'));
     }
 }

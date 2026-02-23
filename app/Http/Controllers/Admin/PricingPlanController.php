@@ -17,7 +17,7 @@ class PricingPlanController extends AdminBaseController
     {
         $plans = PricingPlan::ordered()->paginate(20);
 
-        return view('admin.content.pricing-plan.index', compact('plans'));
+        return view('admin.pricing-plan.index', compact('plans'));
     }
 
     /**
@@ -25,7 +25,7 @@ class PricingPlanController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.pricing-plan.create');
+        return view('admin.pricing-plan.create');
     }
 
     /**
@@ -65,7 +65,7 @@ class PricingPlanController extends AdminBaseController
      */
     public function show(PricingPlan $pricingPlan): View
     {
-        return view('admin.content.pricing-plan.show', compact('pricingPlan'));
+        return view('admin.pricing-plan.show', compact('pricingPlan'));
     }
 
     /**
@@ -73,7 +73,7 @@ class PricingPlanController extends AdminBaseController
      */
     public function edit(PricingPlan $pricingPlan): View
     {
-        return view('admin.content.pricing-plan.edit', compact('pricingPlan'));
+        return view('admin.pricing-plan.edit', compact('pricingPlan'));
     }
 
     /**

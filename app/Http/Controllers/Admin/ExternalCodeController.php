@@ -18,7 +18,7 @@ class ExternalCodeController extends AdminBaseController
     {
         $externalCodes = ExternalCode::ordered()->paginate(20);
 
-        return view('admin.content.external-code.index', compact('externalCodes'));
+        return view('admin.external-code.index', compact('externalCodes'));
     }
 
     /**
@@ -26,7 +26,7 @@ class ExternalCodeController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.external-code.create');
+        return view('admin.external-code.create');
     }
 
     /**
@@ -59,7 +59,7 @@ class ExternalCodeController extends AdminBaseController
      */
     public function show(ExternalCode $externalCode): View
     {
-        return view('admin.content.external-code.show', compact('externalCode'));
+        return view('admin.external-code.show', compact('externalCode'));
     }
 
     /**
@@ -67,7 +67,7 @@ class ExternalCodeController extends AdminBaseController
      */
     public function edit(ExternalCode $externalCode): View
     {
-        return view('admin.content.external-code.edit', compact('externalCode'));
+        return view('admin.external-code.edit', compact('externalCode'));
     }
 
     /**

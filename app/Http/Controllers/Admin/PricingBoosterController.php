@@ -17,7 +17,7 @@ class PricingBoosterController extends AdminBaseController
     {
         $boosters = PricingBooster::ordered()->paginate(20);
 
-        return view('admin.content.pricing-booster.index', compact('boosters'));
+        return view('admin.pricing-booster.index', compact('boosters'));
     }
 
     /**
@@ -25,7 +25,7 @@ class PricingBoosterController extends AdminBaseController
      */
     public function create(): View
     {
-        return view('admin.content.pricing-booster.create');
+        return view('admin.pricing-booster.create');
     }
 
     /**
@@ -59,7 +59,7 @@ class PricingBoosterController extends AdminBaseController
      */
     public function show(PricingBooster $pricingBooster): View
     {
-        return view('admin.content.pricing-booster.show', compact('pricingBooster'));
+        return view('admin.pricing-booster.show', compact('pricingBooster'));
     }
 
     /**
@@ -67,7 +67,7 @@ class PricingBoosterController extends AdminBaseController
      */
     public function edit(PricingBooster $pricingBooster): View
     {
-        return view('admin.content.pricing-booster.edit', compact('pricingBooster'));
+        return view('admin.pricing-booster.edit', compact('pricingBooster'));
     }
 
     /**

@@ -17,7 +17,7 @@ class HomepageFaqController extends AdminBaseController
                    ->orderBy('id', 'desc')
                    ->paginate(20);
 
-        return view('admin.content.homepage-faq.index', compact('faqs'));
+        return view('admin.homepage-faq.index', compact('faqs'));
     }
 
     /**
@@ -25,7 +25,7 @@ class HomepageFaqController extends AdminBaseController
      */
     public function create()
     {
-        return view('admin.content.homepage-faq.create');
+        return view('admin.homepage-faq.create');
     }
 
     /**
@@ -47,7 +47,7 @@ class HomepageFaqController extends AdminBaseController
      */
     public function show(Faq $faq)
     {
-        return view('admin.content.homepage-faq.show', compact('faq'));
+        return view('admin.homepage-faq.show', compact('faq'));
     }
 
     /**
@@ -55,7 +55,7 @@ class HomepageFaqController extends AdminBaseController
      */
     public function edit(Faq $faq)
     {
-        return view('admin.content.homepage-faq.edit', compact('faq'));
+        return view('admin.homepage-faq.edit', compact('faq'));
     }
 
     /**
