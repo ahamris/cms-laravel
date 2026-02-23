@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             ChangelogSeeder::class,
             VacancySeeder::class,
+            DocSeeder::class,
         ]);
     }
 }
