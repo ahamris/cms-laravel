@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class BlogListResource extends JsonResource
 {
     /**
-     * Transform the resource into an array (preview list item for blog-posts).
+     * Transform the resource into an array (preview list item for blog).
      *
      * @return array<string, mixed>
      */

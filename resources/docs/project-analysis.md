@@ -37,7 +37,7 @@ So: one Laravel app = API for the SPA + admin panel + Swagger.
 
 - **Content (public, no auth)** — All content endpoints are public. Access is restricted by the **allowed origins** check (middleware `frontend.origins`; config `config/frontend-api.php`, env `FRONTEND_ALLOWED_ORIGINS`). If the list is empty, all origins are allowed (development only).
   - **GET /api/pages**, **GET /api/pages/{slug}** — Paginated list and single published page by slug.
-  - **GET /api/blog-posts**, **GET /api/blog/{slug}** — Blog preview and single post.
+  - **GET /api/blog**, **GET /api/blog/{slug}** — Blog preview and single post.
   - **GET /api/legal/{slug}**, **GET /api/static/{slug}** — Legal and static pages.
   - **GET /api/settings** — Site and theme settings (e.g. for homepage).
   - **GET /api/docs**, **GET /api/docs/search**, **GET /api/docs/{version}/{section}/{page}** — Documentation.

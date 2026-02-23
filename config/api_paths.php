@@ -26,7 +26,7 @@ return [
         'feature' => 'features/%s',
         'pricing' => 'prijzen',
         'changelog' => 'changelog',
-        'blog' => 'blog-posts',
+        'blog' => 'blog',
         'blog_post' => 'blog/%s',
         'contact' => 'contact',
         'trial' => 'proefversie',

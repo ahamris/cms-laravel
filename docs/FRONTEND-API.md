@@ -130,7 +130,7 @@ GET /api/pages/over-ons
 
 ### Latest blog posts (preview)
 
-**GET** `/api/blog-posts`  
+**GET** `/api/blog`  
 **Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
 
 Returns the **latest 3** active blog posts. Useful for “latest articles” blocks on the homepage or in a page builder.
@@ -138,7 +138,7 @@ Returns the **latest 3** active blog posts. Useful for “latest articles” blo
 **Example request:**
 
 ```http
-GET /api/blog-posts
+GET /api/blog
 ```
 
 **Example response:** `200 OK`
@@ -514,7 +514,7 @@ Returns an object whose keys are section identifiers and values are the section 
 }
 ```
 
-Articles for “Latest updates” are not included here; use **GET /api/blog-posts** (or your blog endpoint) to fetch the latest posts and display them under this section title.
+Articles for “Latest updates” are not included here; use **GET /api/blog** (or your blog endpoint) to fetch the latest posts and display them under this section title.
 
 ---
 
@@ -628,7 +628,7 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 |--------|----------|------|-------------|
 | GET | `/api/pages` | — | List active pages (paginated) |
 | GET | `/api/pages/{slug}` | — | Single page by slug |
-| GET | `/api/blog-posts` | — | Latest 3 blog posts |
+| GET | `/api/blog` | — | Latest 3 blog posts |
 | GET | `/api/blog/{slug}` | — | Single blog post by slug |
 | GET | `/api/legal/{slug}` | — | Single legal page by slug |
 | GET | `/api/static/{slug}` | — | Single static page by slug |
