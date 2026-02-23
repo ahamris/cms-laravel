@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\Frontend\AcademyController as ApiAcademyController;
 use App\Http\Controllers\Api\Frontend\BlogController as ApiBlogController;
+use App\Http\Controllers\Api\Frontend\CourseController as ApiCourseController;
 use App\Http\Controllers\Api\Frontend\ChangelogController as ApiChangelogController;
 use App\Http\Controllers\Api\Frontend\CommentController as ApiCommentController;
 use App\Http\Controllers\Api\Frontend\ContactController as ApiContactController;
@@ -40,8 +40,6 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/docs/search', [ApiDocController::class, 'search'])->name('api.docs.search');
     Route::get('/docs/{version}', [ApiDocController::class, 'showVersion'])->name('api.docs.version')->where('version', '[a-z0-9\.\-]+');
     Route::get('/docs/{version}/{section}/{page}', [ApiDocController::class, 'showPage'])->name('api.docs.page')->where(['version' => '[a-z0-9\.\-]+', 'section' => '[a-z0-9\-]+', 'page' => '[a-z0-9\-]+']);
-    Route::get('/live-sessions', [ApiLiveSessionController::class, 'index'])->name('api.live-sessions.index');
-    Route::get('/live-sessions/{slug}', [ApiLiveSessionController::class, 'show'])->name('api.live-sessions.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/modules', [ApiModuleController::class, 'index'])->name('api.modules.index');
     Route::get('/modules/{slug}', [ApiModuleController::class, 'show'])->name('api.modules.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/features', [ApiFeatureController::class, 'index'])->name('api.features.index');
@@ -78,13 +76,17 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/proefversie', [ApiTrialController::class, 'index'])->name('api.trial.index');
     Route::get('/proefversie/success', [ApiTrialController::class, 'success'])->name('api.trial.success');
 
-    // Academy
-    Route::get('/academy', [ApiAcademyController::class, 'index'])->name('api.academy.index');
-    Route::get('/academy/categories', [ApiAcademyController::class, 'categories'])->name('api.academy.categories');
-    Route::get('/academy/category/{slug}', [ApiAcademyController::class, 'showCategory'])->name('api.academy.category.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/academy/video/{slug}', [ApiAcademyController::class, 'showVideo'])->name('api.academy.video.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/academy/live-sessions/recordings', [ApiLiveSessionController::class, 'recordings'])->name('api.live-sessions.recordings');
-    Route::post('/academy/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->name('api.live-sessions.register')->where('slug', '[a-z0-9\-]+');
+    // Course (categories, videos, live sessions under single parent)
+    Route::prefix('course')->group(function () {
+        Route::get('/', [ApiCourseController::class, 'index'])->name('api.course.index');
+        Route::get('/categories', [ApiCourseController::class, 'categories'])->name('api.course.categories');
+        Route::get('/category/{slug}', [ApiCourseController::class, 'showCategory'])->name('api.course.category.show')->where('slug', '[a-z0-9\-]+');
+        Route::get('/video/{slug}', [ApiCourseController::class, 'showVideo'])->name('api.course.video.show')->where('slug', '[a-z0-9\-]+');
+        Route::get('/live-sessions', [ApiLiveSessionController::class, 'index'])->name('api.course.live-sessions.index');
+        Route::get('/live-sessions/recordings', [ApiLiveSessionController::class, 'recordings'])->name('api.course.live-sessions.recordings');
+        Route::get('/live-sessions/{slug}', [ApiLiveSessionController::class, 'show'])->name('api.course.live-sessions.show')->where('slug', '[a-z0-9\-]+');
+        Route::post('/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->name('api.course.live-sessions.register')->where('slug', '[a-z0-9\-]+');
+    });
 
     // Header and footer menu structures
     Route::get('/menus', [ApiMenuController::class, 'index'])->name('api.menus.index');

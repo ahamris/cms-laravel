@@ -127,28 +127,28 @@ test('api proefversie success returns 200', function () {
     $response->assertStatus(200);
 });
 
-// ---- Academy ----
-test('api academy index returns 200', function () {
-    $response = $this->getJson(route('api.academy.index'));
+// ---- Course ----
+test('api course index returns 200', function () {
+    $response = $this->getJson(route('api.course.index'));
 
     $response->assertStatus(200);
 });
 
-test('api academy categories returns 200', function () {
-    $response = $this->getJson(route('api.academy.categories'));
+test('api course categories returns 200', function () {
+    $response = $this->getJson(route('api.course.categories'));
 
     $response->assertStatus(200);
 });
 
-// ---- Live sessions ----
-test('api live-sessions index returns 200', function () {
-    $response = $this->getJson(route('api.live-sessions.index'));
+// ---- Live sessions (under course) ----
+test('api course live-sessions index returns 200', function () {
+    $response = $this->getJson(route('api.course.live-sessions.index'));
 
     $response->assertStatus(200);
 });
 
-test('api live-sessions recordings returns 200', function () {
-    $response = $this->getJson(route('api.live-sessions.recordings'));
+test('api course live-sessions recordings returns 200', function () {
+    $response = $this->getJson(route('api.course.live-sessions.recordings'));
 
     $response->assertStatus(200);
 });

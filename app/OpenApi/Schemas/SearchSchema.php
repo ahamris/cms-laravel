@@ -32,7 +32,7 @@ use OpenApi\Attributes as OA;
     schema: 'SearchResultItem',
     title: 'Search result item',
     properties: [
-        new OA\Property(property: 'type', type: 'string', description: 'page, blog, solution, doc, academy_video, academy_category, changelog'),
+        new OA\Property(property: 'type', type: 'string', description: 'page, blog, solution, doc, course_video, course_category, changelog'),
         new OA\Property(property: 'title', type: 'string'),
         new OA\Property(property: 'excerpt', type: 'string'),
         new OA\Property(property: 'url', type: 'string', format: 'uri'),

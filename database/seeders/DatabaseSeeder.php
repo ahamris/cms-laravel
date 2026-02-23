@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             PageSeeder::class,
             HomepageSectionSeeder::class,
             BlogContentSeeder::class,
-            AcademySeeder::class,
+            CourseSeeder::class,
             ChangelogSeeder::class,
             VacancySeeder::class,
         ]);

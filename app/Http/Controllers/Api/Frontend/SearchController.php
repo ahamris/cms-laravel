@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\AcademyCategory;
-use App\Models\AcademyVideo;
+use App\Models\CourseCategory;
+use App\Models\CourseVideo;
 use App\Models\Blog;
 use App\Models\Changelog;
 use App\Models\DocPage;
@@ -19,11 +19,11 @@ use OpenApi\Attributes as OA;
 
 class SearchController extends Controller
 {
-    public const SEARCH_TYPES = ['all', 'pages', 'blog', 'solutions', 'docs', 'academy', 'changelog'];
+    public const SEARCH_TYPES = ['all', 'pages', 'blog', 'solutions', 'docs', 'course', 'changelog'];
 
-    #[OA\Get(path: '/api/search', summary: 'Search', description: 'Full-text search across pages, blog, solutions, docs, academy, and changelog. Use type to filter or "all" for combined results.', tags: ['Search'], parameters: [
+    #[OA\Get(path: '/api/search', summary: 'Search', description: 'Full-text search across pages, blog, solutions, docs, course, and changelog. Use type to filter or "all" for combined results.', tags: ['Search'], parameters: [
         new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2), description: 'Search query'),
-        new OA\Parameter(name: 'type', in: 'query', schema: new OA\Schema(type: 'string', enum: ['all', 'pages', 'blog', 'solutions', 'docs', 'academy', 'changelog'], default: 'all'), description: 'Content type to search'),
+        new OA\Parameter(name: 'type', in: 'query', schema: new OA\Schema(type: 'string', enum: ['all', 'pages', 'blog', 'solutions', 'docs', 'course', 'changelog'], default: 'all'), description: 'Content type to search'),
         new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 15, minimum: 1, maximum: 50)),
         new OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)),
     ], responses: [
@@ -134,14 +134,14 @@ class SearchController extends Controller
             }
         }
 
-        if (in_array('academy', $types)) {
-            $videoQuery = AcademyVideo::where('is_active', true)->where(function ($q) use ($like) {
+        if (in_array('course', $types)) {
+            $videoQuery = CourseVideo::where('is_active', true)->where(function ($q) use ($like) {
                 $q->where('title', 'like', $like)->orWhere('description', 'like', $like);
             });
-            $categoryQuery = AcademyCategory::where('is_active', true)->where(function ($q) use ($like) {
+            $categoryQuery = CourseCategory::where('is_active', true)->where(function ($q) use ($like) {
                 $q->where('name', 'like', $like)->orWhere('description', 'like', $like);
             });
-            $totals['academy'] = $videoQuery->count() + $categoryQuery->count();
+            $totals['course'] = $videoQuery->count() + $categoryQuery->count();
             $videos = $videoQuery->orderBy('title')
                 ->when($type === 'all', fn ($q) => $q->limit(5))
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
@@ -151,10 +151,10 @@ class SearchController extends Controller
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
                 ->get();
             foreach ($videos as $item) {
-                $results->push($this->formatResult('academy_video', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->description ?? ''), 160), route('api.academy.video.show', $item->slug), ['slug' => $item->slug]));
+                $results->push($this->formatResult('course_video', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->description ?? ''), 160), route('api.course.video.show', $item->slug), ['slug' => $item->slug]));
             }
             foreach ($categories as $item) {
-                $results->push($this->formatResult('academy_category', $item->name, \Illuminate\Support\Str::limit(strip_tags($item->description ?? ''), 160), route('api.academy.category.show', $item->slug), ['slug' => $item->slug]));
+                $results->push($this->formatResult('course_category', $item->name, \Illuminate\Support\Str::limit(strip_tags($item->description ?? ''), 160), route('api.course.category.show', $item->slug), ['slug' => $item->slug]));
             }
         }
 

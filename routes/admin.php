@@ -10,9 +10,9 @@ use App\Http\Controllers\Admin\Administrator\UserCrudController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ContactFormController;
 use App\Http\Controllers\Admin\ContactPageSettingsController;
-use App\Http\Controllers\Admin\Content\AcademyCategoryController;
-use App\Http\Controllers\Admin\Content\AcademyChapterController;
-use App\Http\Controllers\Admin\Content\AcademyVideoController;
+use App\Http\Controllers\Admin\Content\CourseCategoryController;
+use App\Http\Controllers\Admin\Content\CourseController;
+use App\Http\Controllers\Admin\Content\CourseVideoController;
 use App\Http\Controllers\Admin\Content\ApiChangelogController;
 use App\Http\Controllers\Admin\Content\BlogCategoryController;
 use App\Http\Controllers\Admin\Content\BlogController;
@@ -317,18 +317,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::resource('pricing-feature', PricingFeatureController::class);
             Route::post('pricing-features/update-order', [PricingFeatureController::class, 'updateOrder'])->name('pricing-features.update-order');
 
-            // Academy - Categories (video categories)
-            Route::get('academy-category/{academyCategory}/json', [AcademyCategoryController::class, 'getJson'])->name('academy-category.json');
-            Route::post('academy-category/{academyCategory}/toggle-active', [AcademyCategoryController::class, 'toggleActive'])->name('academy-category.toggle-active');
-            Route::resource('academy-category', AcademyCategoryController::class);
+            // Course - Categories (video categories)
+            Route::get('course-category/{course_category}/json', [CourseCategoryController::class, 'getJson'])->name('course-category.json');
+            Route::post('course-category/{course_category}/toggle-active', [CourseCategoryController::class, 'toggleActive'])->name('course-category.toggle-active');
+            Route::resource('course-category', CourseCategoryController::class);
 
-            // Academy - Chapters (full CRUD + JSON API for video form dropdown)
-            Route::get('academy-chapters/by-category', [AcademyChapterController::class, 'getByCategory'])->name('academy-chapters.by-category');
-            Route::resource('academy-chapter', AcademyChapterController::class);
+            // Course - Chapters (full CRUD + JSON API for video form dropdown)
+            Route::get('courses/by-category', [CourseController::class, 'getByCategory'])->name('courses.by-category');
+            Route::resource('course', CourseController::class);
 
-            // Academy - Videos
-            Route::post('academy-video/{academyVideo}/toggle-active', [AcademyVideoController::class, 'toggleActive'])->name('academy-video.toggle-active');
-            Route::resource('academy-video', AcademyVideoController::class);
+            // Course - Videos
+            Route::post('course-video/{course_video}/toggle-active', [CourseVideoController::class, 'toggleActive'])->name('course-video.toggle-active');
+            Route::resource('course-video', CourseVideoController::class);
 
             // Academy - Live Sessions
             Route::resource('live-session', LiveSessionController::class);

@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
 
 class LiveSessionController extends Controller
 {
-    #[OA\Get(path: '/api/live-sessions', summary: 'List live sessions', description: 'Upcoming and past live sessions.', tags: ['Live sessions'], responses: [
+    #[OA\Get(path: '/api/course/live-sessions', summary: 'List live sessions', description: 'Upcoming and past live sessions.', tags: ['Academy'], responses: [
         new OA\Response(response: 200, description: 'Upcoming and past with past_meta'),
     ])]
     public function index()
@@ -33,7 +33,7 @@ class LiveSessionController extends Controller
         ]);
     }
 
-    #[OA\Get(path: '/api/academy/live-sessions/recordings', summary: 'Live session recordings', description: 'Paginated past sessions.', tags: ['Live sessions'], parameters: [
+    #[OA\Get(path: '/api/course/live-sessions/recordings', summary: 'Live session recordings', description: 'Paginated past sessions.', tags: ['Academy'], parameters: [
         new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 12)),
     ], responses: [
         new OA\Response(response: 200, description: 'Past sessions with meta'),
@@ -54,7 +54,7 @@ class LiveSessionController extends Controller
         ]);
     }
 
-    #[OA\Get(path: '/api/live-sessions/{slug}', summary: 'Live session by slug', tags: ['Live sessions'], parameters: [
+    #[OA\Get(path: '/api/course/live-sessions/{slug}', summary: 'Live session by slug', tags: ['Academy'], parameters: [
         new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
         new OA\Response(response: 200, description: 'Live session'),
@@ -70,7 +70,7 @@ class LiveSessionController extends Controller
         return new LiveSessionResource($session);
     }
 
-    #[OA\Post(path: '/api/academy/live-sessions/{slug}/register', summary: 'Register for live session', description: 'Body: name, email, organization, marketing_consent?', tags: ['Live sessions'], parameters: [
+    #[OA\Post(path: '/api/course/live-sessions/{slug}/register', summary: 'Register for live session', description: 'Body: name, email, organization, marketing_consent?', tags: ['Academy'], parameters: [
         new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
         new OA\Response(response: 201, description: 'Registered'),
