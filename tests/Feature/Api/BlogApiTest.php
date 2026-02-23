@@ -105,6 +105,52 @@ test('api blog comment store succeeds as guest with valid data', function () {
     expect($blog->comments()->count())->toBe(1);
 });
 
+test('api blog comment store returns stored comment object in response', function () {
+    $blog = Blog::factory()->create([
+        'slug' => 'comment-returns-data-api',
+        'is_active' => true,
+        'blog_category_id' => $this->category->id,
+    ]);
+
+    $payload = [
+        'body' => 'Comment that should be returned.',
+        'guest_name' => 'Jane Doe',
+        'guest_email' => 'jane@example.com',
+    ];
+
+    $response = $this->postJson(route('api.blog.comments.store', ['slug' => $blog->slug]), $payload);
+
+    $response->assertStatus(201);
+    $response->assertJsonStructure([
+        'success',
+        'message',
+        'data' => [
+            'id',
+            'body',
+            'author_name',
+            'created_at',
+            'likes',
+            'dislikes',
+            'replies',
+        ],
+    ]);
+    $response->assertJsonPath('success', true);
+    $response->assertJsonPath('data.body', 'Comment that should be returned.');
+    $response->assertJsonPath('data.author_name', 'Jane Doe');
+    $response->assertJsonPath('data.likes', 0);
+    $response->assertJsonPath('data.dislikes', 0);
+    $response->assertJsonPath('data.replies', []);
+
+    $data = $response->json('data');
+    expect($data['id'])->toBeInt();
+    expect($data['created_at'])->toBeString();
+
+    $blog->refresh();
+    $comment = $blog->comments()->first();
+    expect($comment)->not->toBeNull();
+    expect($comment->id)->toBe($data['id']);
+});
+
 test('api blog comment store fails when required fields missing', function () {
     $blog = Blog::factory()->create(['slug' => 'missing-fields-api', 'is_active' => true, 'blog_category_id' => $this->category->id]);
 

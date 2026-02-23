@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CommentResource;
 use App\Models\Blog;
 use App\Models\Comment;
 use Illuminate\Http\JsonResponse;
@@ -45,7 +46,7 @@ class CommentController extends Controller
             'guest_email' => Auth::check() ? 'nullable' : 'required|email|max:255',
         ]);
 
-        $blog->comments()->create([
+        $comment = $blog->comments()->create([
             'user_id' => Auth::id(),
             'guest_name' => Auth::check() ? null : $validated['guest_name'],
             'guest_email' => Auth::check() ? null : $validated['guest_email'],
@@ -57,6 +58,7 @@ class CommentController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Bedankt! Uw reactie is geplaatst en wordt na controle gepubliceerd.',
+            'data' => new CommentResource($comment),
         ], 201);
     }
 
