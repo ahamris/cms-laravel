@@ -14,7 +14,7 @@ class AllowFrontendOrigins
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $allowed = config('frontend-api.allowed_origins', []);
+        $allowed = config('cors.allowed_origins', []);
 
         if ($allowed === [] || in_array('*', $allowed, true)) {
             return $next($request);

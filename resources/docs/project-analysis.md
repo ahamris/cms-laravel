@@ -35,7 +35,7 @@ So: one Laravel app = API for the SPA + admin panel + Swagger.
 
 ### 3.1 Headless CMS API (`/api/*`)
 
-- **Content (public, no auth)** — All content endpoints are public. Access is restricted by the **allowed origins** check (middleware `frontend.origins`; config `config/frontend-api.php`, env `FRONTEND_ALLOWED_ORIGINS`). If the list is empty, all origins are allowed (development only).
+- **Content (public, no auth)** — All content endpoints are public. Access is restricted by the **allowed origins** check (middleware `frontend.origins`; config `config/cors.php`, env `CORS_ALLOWED_ORIGINS` or `FRONTEND_ALLOWED_ORIGINS`). If the list is empty, all origins are allowed (development only).
   - **GET /api/pages**, **GET /api/pages/{slug}** — Paginated list and single published page by slug.
   - **GET /api/blog**, **GET /api/blog/{slug}** — Blog preview and single post.
   - **GET /api/legal/{slug}**, **GET /api/static/{slug}** — Legal and static pages.
