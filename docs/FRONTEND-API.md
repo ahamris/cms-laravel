@@ -1,12 +1,12 @@
 # Frontend API documentation
 
-This document describes the **JSON API** for the headless CMS so a React SPA (or any frontend) can fetch content. **Content endpoints (pages, blog, legal, static, docs, live-sessions, modules, features, solutions, sitemap, vacancies, settings) are public** — no authentication is required. Access is restricted by **allowed origins** (Origin/Referer check). Configure `FRONTEND_ALLOWED_ORIGINS` in `.env`; if empty, all origins are allowed (suitable for development only).
+This document describes the **JSON API** for the headless CMS so a React SPA (or any frontend) can fetch content. **Content endpoints are public** — no authentication is required. Access is restricted by **allowed origins** (Origin/Referer check). Configure `FRONTEND_ALLOWED_ORIGINS` in `.env`; if empty, all origins are allowed (suitable for development only).
 
 **Base URL:** Use your app URL, e.g. `https://your-cms.test` or `https://cms.example.com`.  
 Content endpoints live under `/api/`.  
-Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)) and are also public (rate-limited).
+Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)); they are public and rate-limited.
 
-**Response format:** JSON.  
+**Response format:** JSON (unless noted).  
 **Character encoding:** UTF-8.
 
 ---
@@ -21,10 +21,19 @@ Analytics endpoints live under `/api/analytics/` (see [Analytics](#analytics)) a
 6. [Search](#search)
 7. [Contact](#contact)
 8. [Homepage content](#homepage-content)
-9. [Media and assets](#media-and-assets)
-10. [Analytics](#analytics)
-11. [Errors](#errors)
-12. [CORS and security](#cors-and-security)
+9. [Settings](#settings)
+10. [Menus](#menus)
+11. [Documentation](#documentation)
+12. [Course / Academy](#course--academy)
+13. [Pricing](#pricing)
+14. [Trial](#trial)
+15. [Vacancies](#vacancies)
+16. [Sitemap and robots](#sitemap-and-robots)
+17. [Media](#media)
+18. [Analytics](#analytics)
+19. [Errors](#errors)
+20. [CORS and security](#cors-and-security)
+21. [Quick reference](#quick-reference)
 
 ---
 
@@ -90,7 +99,7 @@ List items do **not** include `long_body` (only the single-page response does).
 ### Get page by slug
 
 **GET** `/api/pages/{slug}`  
-**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
+**Auth:** None (public). Restricted by allowed origins.
 
 Returns a single **active** page by slug. Includes full `long_body` (HTML).
 
@@ -128,37 +137,51 @@ GET /api/pages/over-ons
 
 ## Blog
 
-### Latest blog posts (preview)
+### List blog posts
 
 **GET** `/api/blog`  
-**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
+**Auth:** None (public). Restricted by allowed origins.
 
-Returns the **latest 3** active blog posts. Useful for “latest articles” blocks on the homepage or in a page builder.
+Returns a paginated list of **active** blog posts. When not filtering by search or category, the first “featured” article (if any) is excluded from the main list; the response still uses cursor-style pagination with `has_more` and `next_page`.
+
+**Query parameters:**
+
+| Parameter   | Type   | Default | Description                              |
+|------------|--------|--------|------------------------------------------|
+| `per_page` | number | 6      | Items per page (1–24).                   |
+| `page`     | number | 1      | Page number.                             |
+| `search`   | string | —      | Filter by title/body/keywords.            |
+| `category` | string | —      | Filter by category slug.                  |
 
 **Example request:**
 
 ```http
-GET /api/blog
+GET /api/blog?per_page=6&page=1
+GET /api/blog?search=prijzen&category=nieuws
 ```
 
 **Example response:** `200 OK`
 
 ```json
-[
-  {
-    "title": "Artikel titel",
-    "slug": "artikel-titel",
-    "url": "https://your-cms.test/artikelen/artikel-titel",
-    "image": "https://your-cms.test/storage/blog/thumb.jpg",
-    "short_body": "Eerste 160 tekens...",
-    "date": "Feb 19, 2025",
-    "date_attr": "2025-02-19",
-    "category": "Nieuws",
-    "category_slug": "nieuws",
-    "author_name": "Jan Jansen",
-    "author_avatar": "https://..."
-  }
-]
+{
+  "data": [
+    {
+      "title": "Artikel titel",
+      "slug": "artikel-titel",
+      "url": "https://your-cms.test/api/blog/artikel-titel",
+      "image": "https://your-cms.test/storage/blog/thumb.jpg",
+      "short_body": "Eerste 160 tekens...",
+      "date": "Feb 19, 2025",
+      "date_attr": "2025-02-19",
+      "category": "Nieuws",
+      "category_slug": "nieuws",
+      "author_name": "Jan Jansen",
+      "author_avatar": "https://..."
+    }
+  ],
+  "has_more": true,
+  "next_page": 2
+}
 ```
 
 ---
@@ -166,9 +189,9 @@ GET /api/blog
 ### Get blog post by slug
 
 **GET** `/api/blog/{slug}`  
-**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
+**Auth:** None (public). Restricted by allowed origins.
 
-Returns a single **active** blog post by slug, including full body and author/category.
+Returns a single **active** blog post by slug, including full body, author, category, and approved comments (with replies).
 
 **Example request:**
 
@@ -189,7 +212,7 @@ GET /api/blog/artikel-titel
     "image": "https://your-cms.test/storage/blog/thumb.jpg",
     "meta_title": "Artikel titel | Site",
     "meta_description": "Omschrijving voor SEO",
-    "url": "https://your-cms.test/artikelen/artikel-titel",
+    "url": "https://your-cms.test/api/blog/artikel-titel",
     "date": "Feb 19, 2025",
     "date_attr": "2025-02-19",
     "published_at": "2025-02-19T08:00:00.000000Z",
@@ -203,6 +226,7 @@ GET /api/blog/artikel-titel
       "name": "Jan Jansen",
       "avatar": "https://..."
     },
+    "comments": [],
     "created_at": "2025-02-19T08:00:00.000000Z",
     "updated_at": "2025-02-19T09:00:00.000000Z"
   }
@@ -213,6 +237,49 @@ GET /api/blog/artikel-titel
 
 ---
 
+### Post comment
+
+**POST** `/api/blog/{slug}/comments`  
+**Auth:** None (public). Rate-limited (`throttle:forms`).
+
+Submit a comment (or reply) on a blog post. Send as **form data** (application/x-www-form-urlencoded or multipart/form-data).
+
+**Body (form):**
+
+| Field       | Type    | Required | Description                              |
+|------------|---------|----------|------------------------------------------|
+| `body`     | string  | yes      | Comment text (max 2000).                 |
+| `parent_id`| integer | no       | Parent comment ID for replies.           |
+| `guest_name`  | string | yes*     | Name (required when not authenticated). |
+| `guest_email` | string | yes*     | Email (required when not authenticated). |
+| `hp_phone` | string  | no       | Honeypot; leave empty.                   |
+
+*When the user is not logged in, `guest_name` and `guest_email` are required.
+
+**Example response:** `201 Created`
+
+```json
+{
+  "success": true,
+  "message": "Bedankt! Uw reactie is geplaatst en wordt na controle gepubliceerd."
+}
+```
+
+**Errors:** `404` (post not found), `422` (validation failed).
+
+---
+
+### Like / dislike comment
+
+**POST** `/api/blog/{slug}/comments/{comment}/like`  
+**POST** `/api/blog/{slug}/comments/{comment}/dislike`  
+
+**Auth:** None (public).
+
+Record a like or dislike on a comment. Response shape is implementation-specific; typically `200 OK` with a status or updated counts.
+
+---
+
 ## Legal pages
 
 Legal/content pages (e.g. privacy, terms) with optional versioning.
@@ -220,7 +287,7 @@ Legal/content pages (e.g. privacy, terms) with optional versioning.
 ### Get legal page by slug
 
 **GET** `/api/legal/{slug}`  
-**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
+**Auth:** None (public). Restricted by allowed origins.
 
 Returns a single **active** legal page by slug.
 
@@ -263,7 +330,7 @@ Static/info pages managed in the CMS.
 ### Get static page by slug
 
 **GET** `/api/static/{slug}`  
-**Auth:** None (public). Restricted by allowed origins (see [CORS and security](#cors-and-security)).
+**Auth:** None (public). Restricted by allowed origins.
 
 Returns a single **active** static page by slug.
 
@@ -299,26 +366,60 @@ GET /api/static/faq
 
 ## Changelog
 
-Changelog entries (product updates). Use the JSON API under `/api/changelog`.
+Changelog entries (product updates).
 
 ### Changelog index
 
-**GET** `/api/changelog`
-
+**GET** `/api/changelog`  
 **Auth:** None (public). Restricted by allowed origins.
 
-Returns a list of **active** changelog entries (paginated). Query parameters: `per_page`, `page`.
+Returns a paginated list of **active** changelog entries.
 
-**Example request:** `GET /api/changelog?per_page=10&page=1`
+**Query parameters:**
 
-**Example response:** `200 OK` — structure follows the ChangelogController (data array + meta for pagination).
+| Parameter   | Type   | Default | Description                                    |
+|------------|--------|--------|------------------------------------------------|
+| `per_page` | number | 10     | Items per page (1–50).                         |
+| `status`   | string | api    | `api` = API changelog only; `all` = all statuses. |
+
+**Example request:**
+
+```http
+GET /api/changelog?per_page=10&page=1&status=api
+```
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "Nieuwe feature X",
+      "slug": "nieuwe-feature-x",
+      "description": "...",
+      "content": "...",
+      "date": "2025-02-01",
+      "status": "api",
+      "is_active": true,
+      "created_at": "...",
+      "updated_at": "..."
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 10,
+    "total": 5
+  }
+}
+```
 
 ---
 
 ### Get changelog entry by slug
 
-**GET** `/api/changelog/{slug}`
-
+**GET** `/api/changelog/{slug}`  
 **Auth:** None (public). Restricted by allowed origins.
 
 Returns a single **active** changelog entry by slug.
@@ -331,11 +432,69 @@ Returns a single **active** changelog entry by slug.
 
 ## Search
 
+### Full-text search
+
+**GET** `/api/search`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Search across pages, blog, solutions, docs, course (videos/categories), and changelog. Results are paginated and typed.
+
+**Query parameters:**
+
+| Parameter   | Type   | Required | Default | Description                                                                 |
+|------------|--------|----------|--------|-----------------------------------------------------------------------------|
+| `q`        | string | yes      | —      | Search query (min. 2 characters).                                           |
+| `type`     | string | no       | all   | Scope: `all`, `pages`, `blog`, `solutions`, `docs`, `course`, `changelog`.  |
+| `per_page` | number | no       | 15    | Results per page (1–50).                                                    |
+| `page`     | number | no       | 1     | Page number.                                                               |
+
+**Example request:**
+
+```http
+GET /api/search?q=prijzen&type=blog&per_page=10&page=1
+```
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": [
+    {
+      "type": "blog",
+      "title": "Prijzen en pakketten",
+      "excerpt": "Eerste 160 tekens...",
+      "url": "https://your-cms.test/api/blog/prijzen-en-pakketten",
+      "slug": "prijzen-en-pakketten"
+    },
+    {
+      "type": "page",
+      "title": "Prijzen",
+      "excerpt": "...",
+      "url": "https://your-cms.test/api/pages/prijzen",
+      "slug": "prijzen"
+    }
+  ],
+  "meta": {
+    "query": "prijzen",
+    "type": "blog",
+    "total": 12,
+    "current_page": 1,
+    "last_page": 2,
+    "per_page": 10
+  }
+}
+```
+
+If `q` is shorter than 2 characters, `data` is an empty array and `meta.total` is 0.
+
+---
+
 ### Search suggestions
 
-**GET** `/api/search/suggestions`
+**GET** `/api/search/suggestions`  
+**Auth:** None (public). Restricted by allowed origins.
 
-Returns quick search suggestions (solutions, blog articles). Intended for autocomplete/typeahead.
+Returns quick search suggestions (solutions, blog articles) for autocomplete/typeahead, plus “most searched” terms.
 
 **Query parameters:**
 
@@ -357,17 +516,20 @@ GET /api/search/suggestions?q=prijzen
     {
       "title": "Prijzen",
       "type": "Oplossing",
-      "url": "https://your-cms.test/oplossing/prijzen",
+      "url": "https://your-cms.test/api/solutions/prijzen",
       "icon": "fa-briefcase"
     },
     {
       "title": "Prijzen en pakketten",
       "type": "Artikel",
-      "url": "https://your-cms.test/artikelen/prijzen-en-pakketten",
+      "url": "https://your-cms.test/api/blog/prijzen-en-pakketten",
       "icon": "fa-newspaper"
     }
   ],
-  "mostSearched": ["term1", "term2"]
+  "mostSearched": [
+    { "term": "Boekhouden", "icon": "fa-bookmark", "url": "https://your-cms.test/api/solutions" },
+    { "term": "BTW-aangifte", "icon": "fa-calculator", "url": "https://your-cms.test/api/solutions" }
+  ]
 }
 ```
 
@@ -377,32 +539,57 @@ If `q` is shorter than 2 characters, `suggestions` is an empty array; `mostSearc
 
 ## Contact
 
-Contact page data and form submission. All under `/api/contact`.
+Contact page data and form submission.
 
 ### Contact page data
 
-**GET** `/api/contact`
-
+**GET** `/api/contact`  
 **Auth:** None (public). Restricted by allowed origins.
 
-Returns contact page content for the headless frontend (title, body, image, meta). If no "contact" page exists in the CMS, a fallback object is returned.
+Returns contact page content for the headless frontend (title, body, image, meta). If no “contact” page exists in the CMS, a fallback object is returned.
 
 **Example request:** `GET /api/contact`
 
-**Example response:** `200 OK` — `{"data": { "title": "...", "short_body": "...", "long_body": "...", "image": null, "image_url": "...", "meta_title": "...", "meta_body": "..." }}`
+**Example response:** `200 OK`
+
+```json
+{
+  "data": {
+    "title": "Hulp nodig bij de uitvoering van de Wet open overheid?",
+    "short_body": "Laat hier je gegevens achter...",
+    "long_body": "<p>...</p>",
+    "image": null,
+    "image_url": "https://...",
+    "meta_title": "...",
+    "meta_body": "..."
+  }
+}
+```
 
 ---
 
 ### Submit contact form
 
-**POST** `/api/contact/verstuur`
+**POST** `/api/contact/verstuur`  
+**Auth:** None (public). Rate-limited (`throttle:forms`).
 
-Submit the main contact form. Expects **POST** with JSON or form body.
+Submit the main contact form. Send as **JSON** or **form data** (application/x-www-form-urlencoded or multipart/form-data for file attachment).
 
-**Body (JSON or form):**  
-Required: `first_name`, `last_name`, `email`, `phone`, `reden`, `bericht`, `avg-optin`, `contact_preference` (`"call"` or `"query"`).  
-Optional: `company_name`, `country_code`.  
-If `reden === 'ondersteuning'`, `bijlage` (file) is required (max 10MB; pdf, jpg, png, txt, doc, xls, ppt, etc.).
+**Body (JSON or form):**
+
+| Field               | Type   | Required | Description                                      |
+|--------------------|--------|----------|--------------------------------------------------|
+| `first_name` / `voornaam`   | string | yes | First name.                                      |
+| `last_name` / `achternaam`  | string | yes | Last name.                                       |
+| `email`            | string | yes      | Email.                                            |
+| `phone`            | string | no       | Phone.                                            |
+| `reden` / `onderwerp` | string | yes | Subject/reason.                                |
+| `company_name` / `organisatie` | string | no | Company.                                    |
+| `bericht`          | string | yes      | Message.                                          |
+| `avg-optin`        | —      | yes      | Privacy consent (1 or true when agreed).          |
+| `contact_preference` | string | yes   | `"call"` or `"query"`.                           |
+| `country_code`     | string | no       | Optional.                                         |
+| `bijlage`          | file   | conditional | Required when `reden === 'ondersteuning'`. Max 10MB; pdf, jpg, png, txt, doc, docx, xls, xlsx, ppt, pptx. |
 
 **Example response:** `201 Created`
 
@@ -429,17 +616,16 @@ If `reden === 'ondersteuning'`, `bijlage` (file) is required (max 10MB; pdf, jpg
 
 ## Homepage content
 
-Editable homepage sections for the React SPA (hero, feature cards, about OPMS, how it works, user features, competition, latest updates section title, bottom CTA). **Header and footer** are not part of this endpoint; use **GET /api/settings** for header/footer and site/theme settings.
+Editable homepage sections for the SPA (hero, feature cards, about, how it works, user features, competition, latest updates title, bottom CTA). **Header and footer** are not part of this endpoint; use **GET /api/settings** and **GET /api/menus** for site/theme and menu data.
 
 ### Get homepage sections
 
-**GET** `/api/homepage`
-
+**GET** `/api/homepage`  
 **Auth:** None (public). Restricted by allowed origins.
 
-Returns an object whose keys are section identifiers and values are the section content (arrays/objects). Any stored image path is returned as a full URL.
+Returns an object whose keys are section identifiers and values are the section content. Stored image paths are returned as full URLs.
 
-**Section keys:** `hero`, `feature_cards`, `about_opms`, `how_it_works`, `user_features`, `competition`, `latest_updates`, `bottom_cta`.
+**Section keys:** `hero`, `feature_cards`, `about_opms`, `how_it_works`, `user_features`, `competition`, `latest_updates`, `bottom_cta` (and any others configured in the CMS).
 
 **Example request:** `GET /api/homepage`
 
@@ -453,8 +639,7 @@ Returns an object whose keys are section identifiers and values are the section 
     "paragraph": "...",
     "bullets": [
       { "icon": "check", "text": "Bullet 1" },
-      { "icon": "check", "text": "Bullet 2" },
-      { "icon": "check", "text": "Bullet 3" }
+      { "icon": "check", "text": "Bullet 2" }
     ],
     "cta_primary_text": "Demo aanvragen",
     "cta_primary_url": "/demo",
@@ -464,83 +649,689 @@ Returns an object whose keys are section identifiers and values are the section 
   },
   "feature_cards": {
     "cards": [
-      { "icon": "cog", "title": "Een platform", "description": "...", "link_text": "Read more", "link_url": "/..." },
-      { "icon": "clock", "title": "Binnen 30 minuten live", "description": "...", "link_text": "Read more", "link_url": "/..." },
-      { "icon": "network-wired", "title": "GWV koppeling", "description": "...", "link_text": "Read more", "link_url": "/..." }
+      { "icon": "cog", "title": "Een platform", "description": "...", "link_text": "Read more", "link_url": "/..." }
     ]
   },
-  "about_opms": {
-    "label": "OVER OPMS",
-    "heading": "Slimmer besturen met OPMS",
-    "paragraph": "...",
-    "bullets": [...],
-    "link_text": "Meer over OPMS",
-    "link_url": "/over-opms",
-    "image": "https://your-cms.test/storage/homepage/about.jpg"
-  },
-  "how_it_works": {
-    "title": "Hoe het werkt",
-    "steps": [
-      { "number": "1", "title": "Contact OPMS", "description": "..." },
-      { "number": "2", "title": "Ontwerpen", "description": "..." },
-      { "number": "3", "title": "Voldoen aan", "description": "..." }
-    ]
-  },
-  "user_features": {
-    "left_title": "Voor de ontwikkelaar",
-    "left_items": ["API", "SDK", "Webhook", "REST API", "Open source"],
-    "right_title": "Voor de gebruiker",
-    "right_items": ["Makkelijk te gebruiken", "Intuïtief", "Snel", "Betrouwbaar"]
-  },
-  "competition": {
-    "heading": "Waarom OPMS de concurrentie uitschakelt",
-    "paragraph": "...",
-    "boxes": [
-      { "value": "100%", "label": "..." },
-      { "value": "GWV", "label": "..." },
-      { "value": "30m", "label": "..." },
-      { "value": "API", "label": "..." }
-    ]
-  },
+  "about_opms": { "label": "OVER OPMS", "heading": "...", "paragraph": "...", "bullets": [], "link_text": "...", "link_url": "...", "image": "..." },
+  "how_it_works": { "title": "Hoe het werkt", "steps": [] },
+  "user_features": { "left_title": "...", "left_items": [], "right_title": "...", "right_items": [] },
+  "competition": { "heading": "...", "paragraph": "...", "boxes": [] },
   "latest_updates": { "title": "Laatste updates" },
-  "bottom_cta": {
-    "heading": "Slimmer werken begint met een demo.",
-    "subtext": "...",
-    "cta_primary_text": "Demo aanvragen",
-    "cta_primary_url": "/demo",
-    "cta_secondary_text": "Meer informatie",
-    "cta_secondary_url": "/info"
+  "bottom_cta": { "heading": "...", "subtext": "...", "cta_primary_text": "...", "cta_primary_url": "...", "cta_secondary_text": "...", "cta_secondary_url": "..." }
+}
+```
+
+Articles for “Latest updates” are not included; use **GET /api/blog** to fetch the latest posts.
+
+---
+
+## Settings
+
+Site, theme, SEO, contact/map, cookie, hero images, header/footer CTA, and external codes.
+
+### Get settings
+
+**GET** `/api/settings`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns grouped settings for the frontend. Response is a JSON object (not wrapped in `data`).
+
+**Example request:** `GET /api/settings`
+
+**Example response:** `200 OK`
+
+```json
+{
+  "site": {
+    "name": "My Site",
+    "tagline": "...",
+    "description": "...",
+    "logo": "https://...",
+    "favicon": "https://...",
+    "email": "...",
+    "phone": "...",
+    "address": "...",
+    "copyright_footer": "..."
+  },
+  "theme": {
+    "base_color": "...",
+    "accent_color": "...",
+    "primary_color": "...",
+    "secondary_color": "...",
+    "natural_color": "...",
+    "font_sans": "...",
+    "font_outfit": "...",
+    "font_size_h1": "...",
+    "font_size_h2": "...",
+    "font_size_h3": "...",
+    "font_size_h4": "...",
+    "font_size_h5": "...",
+    "font_size_h6": "...",
+    "font_size_p": "..."
+  },
+  "seo": {
+    "meta_title": "...",
+    "meta_description": "...",
+    "meta_keywords": "...",
+    "google_analytics_id": "..."
+  },
+  "contact": {
+    "map_latitude": "...",
+    "map_longitude": "...",
+    "map_zoom": 13
+  },
+  "cookie": {
+    "banner_enabled": true,
+    "intro_title": "...",
+    "intro_summary": "...",
+    "preferences_title": "...",
+    "preferences_summary": "...",
+    "settings_label": "...",
+    "settings_url": "...",
+    "policy_url": "...",
+    "category_functional_label": "...",
+    "category_functional_description": "...",
+    "category_analytics_label": "...",
+    "category_analytics_description": "...",
+    "category_marketing_label": "...",
+    "category_marketing_description": "..."
+  },
+  "hero": {
+    "contact": "https://...",
+    "blog": "https://...",
+    "solutions_index": "https://...",
+    "solutions_show": "https://...",
+    "modules_index": "https://...",
+    "modules_show": "https://...",
+    "academy": "https://..."
+  },
+  "header": {
+    "cta_button_text": "...",
+    "cta_button_url": "..."
+  },
+  "footer": {
+    "cta_title": "...",
+    "cta_subtitle": "...",
+    "cta_description": "...",
+    "cta_button_text": "...",
+    "cta_button_url": "..."
+  },
+  "external_codes": []
+}
+```
+
+---
+
+## Menus
+
+Header (mega menu), footer, and sticky menu structures for headless consumption.
+
+### All menus
+
+**GET** `/api/menus`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns header and footer menus in one response.
+
+**Example response:** `200 OK`
+
+```json
+{
+  "header": {
+    "items": [
+      {
+        "id": 1,
+        "title": "Oplossingen",
+        "subtitle": null,
+        "description": null,
+        "url": "/oplossingen",
+        "slug": null,
+        "page_type": "custom",
+        "order": 0,
+        "tags": [],
+        "align": 1,
+        "children": []
+      }
+    ],
+    "settings": {
+      "sticky": false,
+      "login_link_enabled": true,
+      "login_link_url": "#"
+    }
+  },
+  "footer": {
+    "columns": [
+      {
+        "column": 1,
+        "links": [
+          { "id": 1, "title": "Privacy", "url": "/legal/privacy", "order": 0 }
+        ]
+      }
+    ]
   }
 }
 ```
 
-Articles for “Latest updates” are not included here; use **GET /api/blog** (or your blog endpoint) to fetch the latest posts and display them under this section title.
+---
+
+### Header menu
+
+**GET** `/api/menus/header`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns the mega menu tree plus header settings (sticky, login link).
+
+**Response:** `items` (array of menu nodes with `children`), `settings` (sticky, login_link_enabled, login_link_url).
 
 ---
 
-## Media and assets
+### Footer menu
 
-There is no dedicated media library table; images are embedded in content (pages, blog, settings). Use the fields `image`, `icon`, or `image_url` returned by pages, blog posts, and `GET /api/settings` for stable asset URLs (e.g. `https://your-cms.test/storage/...`).
+**GET** `/api/menus/footer`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns footer links grouped by column.
+
+**Response:** `columns` (array of `{ column, links }` where each link has `id`, `title`, `url`, `order`).
+
+---
+
+### Sticky menu
+
+**GET** `/api/menus/sticky`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns sticky menu items (e.g. for mobile or secondary nav).
+
+**Response:** `items` (array of `id`, `title`, `icon`, `link`, `link_type`, `is_external`, `sort_order`).
+
+---
+
+## Documentation
+
+Documentation versions, sections, and pages.
+
+### List doc versions
+
+**GET** `/api/docs`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns active doc versions with their sections and pages tree.
+
+**Example response:** `200 OK` — Collection of doc version resources (structure depends on `DocVersionResource`).
+
+---
+
+### Search documentation
+
+**GET** `/api/docs/search`  
+**Auth:** None (public). Restricted by allowed origins.
+
+**Query parameters:**
+
+| Parameter  | Type   | Required | Description                |
+|-----------|--------|----------|----------------------------|
+| `q`       | string | yes      | Search query (min. 2 chars). |
+| `version` | string | no       | Limit to doc version slug.  |
+
+**Example response:** `200 OK`
+
+```json
+{
+  "results": [
+    {
+      "id": 1,
+      "title": "Getting started",
+      "url": "https://...",
+      "section": "Introduction",
+      "version": "1.0",
+      "excerpt": "..."
+    }
+  ],
+  "query": "getting",
+  "count": 5
+}
+```
+
+---
+
+### Get doc version by slug
+
+**GET** `/api/docs/{version}`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a single active doc version with its sections and pages.
+
+**Error:** `404 Not Found` if version not found or inactive.
+
+---
+
+### Get doc page
+
+**GET** `/api/docs/{version}/{section}/{page}`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a single doc page by version slug, section slug, and page slug.
+
+**Example:** `GET /api/docs/1.0/intro/getting-started`
+
+**Error:** `404 Not Found` if any part of the path is missing or inactive.
+
+---
+
+## Course / Academy
+
+Course categories, videos, and live sessions (including registration).
+
+### Course index
+
+**GET** `/api/course`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns featured session, upcoming sessions, recent videos, presenters, categories, and stats. Optional search via `q`.
+
+**Query parameters:**
+
+| Parameter | Type   | Description        |
+|----------|--------|--------------------|
+| `q`      | string | Search term (min. 2 chars). |
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": {
+    "featured_session": { ... },
+    "upcoming_sessions": [ ... ],
+    "recent_videos": [ ... ],
+    "presenters": [ { "id": 1, "name": "...", "avatar": "https://...", "sort_order": 0 } ],
+    "categories": [ ... ],
+    "search_query": "",
+    "stats": {
+      "video_count": 42,
+      "total_duration_seconds": 36000,
+      "hero_duration": "10 hr 0 min"
+    }
+  }
+}
+```
+
+---
+
+### Course categories
+
+**GET** `/api/course/categories`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns list of active course categories (structure depends on resource).
+
+---
+
+### Course category by slug
+
+**GET** `/api/course/category/{slug}`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a single category with its videos.
+
+**Error:** `404 Not Found` if slug not found or inactive.
+
+---
+
+### Course video by slug
+
+**GET** `/api/course/video/{slug}`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a single video with metadata.
+
+**Error:** `404 Not Found` if slug not found or inactive.
+
+---
+
+### Live sessions
+
+**GET** `/api/course/live-sessions`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns upcoming live sessions (full list) and past sessions (paginated), plus `past_meta`.
+
+**Example response:** `200 OK`
+
+```json
+{
+  "upcoming": [ ... ],
+  "past": [ ... ],
+  "past_meta": {
+    "current_page": 1,
+    "last_page": 2,
+    "per_page": 12,
+    "total": 15
+  }
+}
+```
+
+---
+
+### Live session recordings
+
+**GET** `/api/course/live-sessions/recordings`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns paginated past (recorded) live sessions.
+
+**Query parameters:** `per_page` (1–50, default 12).
+
+**Response:** `data` (array), `meta` (current_page, last_page, per_page, total).
+
+---
+
+### Live session by slug
+
+**GET** `/api/course/live-sessions/{slug}`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a single live session with presenters.
+
+**Error:** `404 Not Found` if slug not found or inactive.
+
+---
+
+### Register for live session
+
+**POST** `/api/course/live-sessions/{slug}/register`  
+**Auth:** None (public). Rate-limited (`throttle:forms`).
+
+Register for a live session.
+
+**Body (JSON or form):**
+
+| Field              | Type    | Required | Description        |
+|--------------------|---------|----------|--------------------|
+| `name`             | string  | yes      | Full name.         |
+| `email`            | string  | yes      | Email.             |
+| `organization`     | string  | yes      | Organization.      |
+| `marketing_consent`| boolean | no       | Newsletter/consent. |
+
+**Example response:** `201 Created`
+
+```json
+{
+  "success": true,
+  "message": "Je bent aangemeld voor deze sessie."
+}
+```
+
+**Errors:** `404` (session not found), `422` (validation failed).
+
+---
+
+## Pricing
+
+Pricing plans, boosters, and configurator.
+
+### Pricing index
+
+**GET** `/api/prijzen`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns plans, boosters, and features (cached).
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": {
+    "plans": [ ... ],
+    "boosters": [ ... ],
+    "features": [ ... ]
+  }
+}
+```
+
+---
+
+### Pricing configurator
+
+**GET** `/api/prijzen/configurator`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns boosters for the configurator.
+
+**Response:** `data.boosters` (array).
+
+---
+
+### Pricing plan by slug
+
+**GET** `/api/prijzen/{slug}`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a single plan plus plans, boosters, and features available for that plan.
+
+**Error:** `404 Not Found` if slug not found or inactive.
+
+---
+
+## Trial
+
+Trial (proefversie) page data and success message.
+
+### Trial page data
+
+**GET** `/api/proefversie`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns data for the trial form (e.g. list of solutions).
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": {
+    "solutions": [
+      { "id": 1, "title": "...", "subtitle": "..." }
+    ]
+  }
+}
+```
+
+---
+
+### Trial success
+
+**GET** `/api/proefversie/success`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a success message after trial request.
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": {
+    "message": "Aanvraag ontvangen. We nemen zo snel mogelijk contact met je op."
+  }
+}
+```
+
+---
+
+## Vacancies
+
+Job vacancies and applications.
+
+### List vacancies
+
+**GET** `/api/vacancies`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns paginated vacancies with optional filters and available filter values.
+
+**Query parameters:**
+
+| Parameter   | Type   | Description                    |
+|------------|--------|--------------------------------|
+| `search`   | string | Search in title/description/department. |
+| `type`     | string | Filter by type.                |
+| `location` | string | Filter by location.            |
+| `department` | string | Filter by department.        |
+| `category` | string | Filter by category.            |
+| `per_page` | number | Items per page (1–50, default 10). |
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 2,
+    "per_page": 10,
+    "total": 15,
+    "from": 1,
+    "to": 10
+  },
+  "filters": {
+    "departments": ["Engineering", "Sales"],
+    "locations": ["Amsterdam", "Remote"],
+    "categories": ["Full-time", "Part-time"]
+  }
+}
+```
+
+---
+
+### Vacancy by slug
+
+**GET** `/api/vacancies/{slug}`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns a single active vacancy.
+
+**Error:** `404 Not Found` if slug not found or inactive.
+
+---
+
+### Vacancy apply data
+
+**GET** `/api/vacancies/{slug}/apply`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns vacancy details for the application form (same as single vacancy, wrapped in `data`).
+
+**Error:** `404 Not Found` if slug not found or inactive.
+
+---
+
+### Submit job application
+
+**POST** `/api/vacancies/{slug}/apply`  
+**Auth:** None (public). Rate-limited (`throttle:forms`).
+
+Submit a job application. Send as **form data** or **JSON**; use multipart/form-data if including a resume file.
+
+**Body:**
+
+| Field         | Type   | Required | Description                    |
+|---------------|--------|----------|--------------------------------|
+| `name`        | string | yes      | Full name.                     |
+| `email`       | string | yes      | Email.                         |
+| `phone`       | string | no       | Phone (max 20).                |
+| `cover_letter`| string | no       | Cover letter text.             |
+| `resume`      | file   | no       | PDF or DOC/DOCX, max 5MB.      |
+| `linkedin_url`| string | no       | LinkedIn URL.                  |
+| `portfolio_url` | string | no     | Portfolio URL.                 |
+| `repo_url`    | string | no       | Repository URL.                 |
+
+**Example response:** `201 Created`
+
+```json
+{
+  "success": true,
+  "message": "Je sollicitatie is succesvol verzonden!",
+  "data": { "id": 123 }
+}
+```
+
+**Errors:** `404` (vacancy not found), `422` (validation failed).
+
+---
+
+## Sitemap and robots
+
+### Sitemap (JSON)
+
+**GET** `/api/sitemap`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns sitemap as JSON: array of `{ loc, priority }`. Paths are API-relative; the frontend can build full URLs from its own origin.
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": [
+    { "loc": "/api/homepage", "priority": "1.0" },
+    { "loc": "/api/contact", "priority": "0.8" },
+    { "loc": "/api/blog", "priority": "0.9" },
+    { "loc": "/api/pages/over-ons", "priority": "0.6" }
+  ]
+}
+```
+
+---
+
+### Robots.txt
+
+**GET** `/api/robots-txt`  
+**Auth:** None (public). Restricted by allowed origins.
+
+Returns the robots.txt content as **plain text** (`Content-Type: text/plain; charset=UTF-8`). Content is managed in the admin and cached.
+
+**Example response:** `200 OK` (body is raw text, e.g. `User-agent: *\nAllow: /\n`).
+
+---
+
+## Media
+
+There is no dedicated media library table; images are embedded in content (pages, blog, settings). Use the fields `image`, `icon`, or `image_url` returned by pages, blog posts, and **GET /api/settings** for stable asset URLs.
 
 ### List media (placeholder)
 
-**GET** `/api/media`
-
+**GET** `/api/media`  
 **Auth:** None (public). Restricted by allowed origins.
 
-Returns a paginated list of media assets. Currently returns an empty list; this endpoint is reserved for a future media library. Query parameters: `per_page` (1–100, default 12), `page`.
+Returns a paginated list of media assets. **Currently returns an empty list**; this endpoint is reserved for a future media library.
 
-**Example response:** `200 OK` — `{"data": [], "meta": {"current_page": 1, "last_page": 1, "per_page": 12, "total": 0, "from": null, "to": null}}`
+**Query parameters:** `per_page` (1–100, default 12), `page`.
+
+**Example response:** `200 OK`
+
+```json
+{
+  "data": [],
+  "meta": {
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 12,
+    "total": 0,
+    "from": null,
+    "to": null
+  }
+}
+```
 
 ---
 
 ## Analytics
 
-Analytics endpoints are under **`/api/analytics/`** (see `routes/api.php`). They are rate-limited and public (no auth). Use them from the SPA to send page views and optional performance data.
+Analytics endpoints are under **`/api/analytics/`**. They are rate-limited (`throttle:api`) and public (no auth). Track, batch-track, guest-activity, and performance are best-effort: on failure they return `200` with `status: 'error'` so client code does not break.
 
 ### Track page view
 
-**POST** `/api/analytics/track`
+**POST** `/api/analytics/track`  
+**Auth:** None (public). Rate-limited.
 
 **Body (JSON):**
 
@@ -552,46 +1343,61 @@ Analytics endpoints are under **`/api/analytics/`** (see `routes/api.php`). They
 | `user_agent`| string | no       | User agent.         |
 | `metadata`  | object | no       | Extra key-value.    |
 
-**Example response:** `200 OK`  
-`{"status": "tracked"}` or `{"status": "skipped"}` or `{"status": "error"}`.
+**Example response:** `200 OK`
+
+```json
+{ "status": "tracked" }
+```
+
+or `{ "status": "skipped" }` or `{ "status": "error" }`.
 
 ---
 
 ### Batch track (SPA)
 
-**POST** `/api/analytics/batch-track`
+**POST** `/api/analytics/batch-track`  
+**Auth:** None (public). Rate-limited.
 
 **Body (JSON):**  
-`views`: array of objects (max 10), each with at least `url`; optionally `page_title`, `referrer`.
+`views`: array of objects (max 10). Each object must have `url`; optional: `page_title`, `referrer`, `metadata`.
 
-**Example response:** `200 OK`  
-`{"status": "ok", "tracked": 3}`.
+**Example response:** `200 OK`
+
+```json
+{
+  "status": "tracked",
+  "count": 3
+}
+```
+
+or `{ "status": "error" }`.
 
 ---
 
 ### Guest activity
 
-**POST** `/api/analytics/guest-activity`
+**POST** `/api/analytics/guest-activity`  
+**Auth:** None (public). Rate-limited.
 
-**Body (JSON):**  
-Fields as defined in `AnalyticsTrackingController@guestActivity` (e.g. activity type, URL, metadata).
+Tracks guest activity (e.g. activity type, URL, metadata). Request body schema is defined in the controller. Returns `200` with `status`: `tracked`, `skipped`, or `error`.
 
 ---
 
 ### Performance
 
-**POST** `/api/analytics/performance`
+**POST** `/api/analytics/performance`  
+**Auth:** None (public). Rate-limited.
 
-**Body (JSON):**  
-Performance metrics (e.g. navigation timing, Core Web Vitals). Exact schema is defined in the controller.
+Submit performance metrics (e.g. navigation timing, Core Web Vitals). Exact schema is defined in the controller. Returns `200` with a status.
 
 ---
 
 ### Stats
 
-**GET** `/api/analytics/stats`
+**GET** `/api/analytics/stats`  
+**Auth:** None (public). Rate-limited.
 
-Returns aggregated stats (if implemented). Response shape depends on your app.
+Returns aggregated stats (if implemented). Response shape depends on the application.
 
 ---
 
@@ -601,24 +1407,24 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
   Returned when the request Origin/Referer is not in the allowed list (see [CORS and security](#cors-and-security)). Body: `{"message": "Origin not allowed."}`.
 
 - **404 Not Found**  
-  Returned when a single resource is requested by slug and no **active** item exists (e.g. `/api/pages/unknown`, `/api/blog/unknown`). Laravel may return HTML or JSON depending on `Accept` header; for SPA, send `Accept: application/json` to get JSON.
+  Returned when a single resource is requested by slug/path and no **active** item exists (e.g. `/api/pages/unknown`, `/api/blog/unknown`). Send `Accept: application/json` to get JSON.
 
 - **422 Unprocessable Entity**  
-  Validation errors (e.g. contact form). Body includes `message` and `errors` (field → array of messages).
+  Validation errors (e.g. contact form, vacancy apply). Body includes `message` and `errors` (field → array of messages).
 
 - **500 Internal Server Error**  
-  Server or unexpected error. Contact/demo may return `success: false` and `message` in the body.
+  Server or unexpected error. Some endpoints may return `success: false` and `message` in the body.
 
 - **429 Too Many Requests**  
-  Rate limiting (e.g. on analytics). Retry after the indicated period.
+  Rate limiting (e.g. analytics, forms). Retry after the indicated period.
 
 ---
 
 ## CORS and security
 
 - **Allowed origins:** Requests to content and analytics endpoints are checked against `FRONTEND_ALLOWED_ORIGINS` (comma-separated list in `.env`). If empty or not set, all origins are allowed. In production, set this to your SPA domain(s), e.g. `https://your-react-app.com`.
-- **Content endpoints** (pages, blog, legal, static, docs, live-sessions, modules, features, solutions, sitemap, vacancies, settings) are **public** — no login or Bearer token. Security is via origin restriction only.
-- Search suggestions (`/api/search/suggestions`), contact forms, and analytics are also public and rate-limited. Use HTTPS in production.
+- **Content endpoints** are **public** — no login or Bearer token. Security is via origin restriction only.
+- Search, contact forms, vacancy apply, blog comments, and live-session registration are public and rate-limited. Use HTTPS in production.
 
 ---
 
@@ -628,33 +1434,55 @@ Returns aggregated stats (if implemented). Response shape depends on your app.
 |--------|----------|------|-------------|
 | GET | `/api/pages` | — | List active pages (paginated) |
 | GET | `/api/pages/{slug}` | — | Single page by slug |
-| GET | `/api/blog` | — | Latest 3 blog posts |
+| GET | `/api/blog` | — | List blog posts (paginated, search, category) |
 | GET | `/api/blog/{slug}` | — | Single blog post by slug |
+| POST | `/api/blog/{slug}/comments` | — | Post comment |
+| POST | `/api/blog/{slug}/comments/{id}/like` | — | Like comment |
+| POST | `/api/blog/{slug}/comments/{id}/dislike` | — | Dislike comment |
 | GET | `/api/legal/{slug}` | — | Single legal page by slug |
 | GET | `/api/static/{slug}` | — | Single static page by slug |
-| GET | `/api/settings` | — | Site + theme settings (header, footer, etc.) |
-| GET | `/api/homepage` | — | Homepage content sections (hero, feature cards, etc.) |
+| GET | `/api/settings` | — | Site, theme, SEO, cookie, header/footer settings |
+| GET | `/api/homepage` | — | Homepage content sections |
+| GET | `/api/menus` | — | Header + footer menus |
+| GET | `/api/menus/header` | — | Header (mega) menu |
+| GET | `/api/menus/footer` | — | Footer menu |
+| GET | `/api/menus/sticky` | — | Sticky menu items |
 | GET | `/api/docs` | — | Doc versions with sections/pages tree |
 | GET | `/api/docs/search?q=` | — | Search documentation |
-| GET | `/api/docs/{version}` | — | Single doc version with sections/pages |
-| GET | `/api/docs/{version}/{section}/{page}` | — | Single doc page content |
-| GET | `/api/live-sessions` | — | Upcoming + past live sessions |
-| GET | `/api/live-sessions/{slug}` | — | Single live session |
-| GET | `/api/modules` | — | List modules (with features) |
+| GET | `/api/docs/{version}` | — | Single doc version |
+| GET | `/api/docs/{version}/{section}/{page}` | — | Single doc page |
+| GET | `/api/course` | — | Course index (sessions, videos, categories) |
+| GET | `/api/course/categories` | — | Course categories |
+| GET | `/api/course/category/{slug}` | — | Single category |
+| GET | `/api/course/video/{slug}` | — | Single video |
+| GET | `/api/course/live-sessions` | — | Upcoming + past live sessions |
+| GET | `/api/course/live-sessions/recordings` | — | Past sessions (paginated) |
+| GET | `/api/course/live-sessions/{slug}` | — | Single live session |
+| POST | `/api/course/live-sessions/{slug}/register` | — | Register for session |
+| GET | `/api/modules` | — | List modules |
 | GET | `/api/modules/{slug}` | — | Single module |
 | GET | `/api/features` | — | List features |
 | GET | `/api/features/{anchor}` | — | Single feature by anchor |
 | GET | `/api/solutions` | — | List solutions |
 | GET | `/api/solutions/{anchor}` | — | Single solution by anchor |
-| GET | `/api/sitemap` | — | Sitemap as JSON (urls for SPA) |
-| GET | `/api/media` | — | Media list (placeholder; empty for now) |
+| GET | `/api/prijzen` | — | Pricing index (plans, boosters, features) |
+| GET | `/api/prijzen/configurator` | — | Pricing configurator boosters |
+| GET | `/api/prijzen/{slug}` | — | Single pricing plan |
+| GET | `/api/proefversie` | — | Trial page data |
+| GET | `/api/proefversie/success` | — | Trial success message |
+| GET | `/api/sitemap` | — | Sitemap as JSON |
+| GET | `/api/robots-txt` | — | Robots.txt (text/plain) |
+| GET | `/api/media` | — | Media list (placeholder; empty) |
 | GET | `/api/vacancies` | — | List vacancies (paginated, filterable) |
 | GET | `/api/vacancies/{slug}` | — | Single vacancy |
+| GET | `/api/vacancies/{slug}/apply` | — | Vacancy apply form data |
+| POST | `/api/vacancies/{slug}/apply` | — | Submit job application |
 | GET | `/api/changelog` | — | Changelog index (paginated) |
-| GET | `/api/changelog/{slug}` | — | Single changelog entry by slug |
+| GET | `/api/changelog/{slug}` | — | Single changelog entry |
 | GET | `/api/contact` | — | Contact page data |
-| GET | `/api/search/suggestions?q=` | — | Search suggestions |
 | POST | `/api/contact/verstuur` | — | Submit contact form |
+| GET | `/api/search?q=` | — | Full-text search |
+| GET | `/api/search/suggestions?q=` | — | Search suggestions |
 | POST | `/api/analytics/track` | — | Track page view |
 | POST | `/api/analytics/batch-track` | — | Batch track (SPA) |
 | POST | `/api/analytics/guest-activity` | — | Guest activity |
