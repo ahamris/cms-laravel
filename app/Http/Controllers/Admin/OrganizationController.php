@@ -6,6 +6,7 @@ use App\Http\Requests\OrganizationRequest;
 use App\Models\Organization;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class OrganizationController extends AdminBaseController
@@ -124,9 +125,29 @@ class OrganizationController extends AdminBaseController
     }
 
     /**
+     * Download a sample JSON file for import.
+     * Format: array of objects with "name" (required). Optional: wrap in { "organizations": [...] }.
+     */
+    public function importSample(): Response
+    {
+        $sample = [
+            ['name' => 'Acme Inc'],
+            ['name' => 'Tech Corp'],
+            ['name' => 'Global Solutions'],
+        ];
+
+        $content = json_encode($sample, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        return response($content, 200, [
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="organizations-import-sample.json"',
+        ]);
+    }
+
+    /**
      * Import organizations from a JSON file.
-     * Expected format: array of objects with "name" (required) and optional "logo" (path or null).
-     * Or a single object with "organizations" key containing the array.
+     * Expected format: array of objects with "name" (required), e.g. [{"name":"Acme Inc"},...]
+     * or {"organizations":[{"name":"Acme Inc"},...]}.
      */
     public function import(Request $request): RedirectResponse
     {
@@ -163,22 +184,16 @@ class OrganizationController extends AdminBaseController
                     continue;
                 }
 
-                $logo = $row['logo'] ?? null;
-                if ($logo !== null && ! is_string($logo)) {
-                    $logo = null;
-                }
-
                 $exists = Organization::where('name', $name)->first();
                 if ($exists && ! $overwrite) {
                     $skipped++;
                     continue;
                 }
 
-                $payload = ['name' => $name, 'logo' => $logo];
                 if ($exists) {
-                    $exists->update($payload);
+                    $exists->update(['name' => $name]);
                 } else {
-                    Organization::create($payload);
+                    Organization::create(['name' => $name]);
                 }
                 $imported++;
             }

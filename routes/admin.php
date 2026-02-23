@@ -174,6 +174,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::post('blog-category/{blogCategory}/toggle-active', [BlogCategoryController::class, 'toggleActive'])->name('blog-category.toggle-active');
 
         // Organizations
+        Route::get('organization/import-sample', [OrganizationController::class, 'importSample'])->name('organization.import-sample');
         Route::get('organization/{organization}/json', [OrganizationController::class, 'getJson'])->name('organization.json');
         Route::post('organization/import', [OrganizationController::class, 'import'])->name('organization.import');
         Route::resource('organization', OrganizationController::class);
