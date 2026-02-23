@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AppServiceProvider::class,
+    App\Providers\BladeComponentsServiceProvider::class,
     App\Providers\CachedProvider::class,
     App\Providers\TranslationServiceProvider::class,
     App\Providers\MorphMapServiceProvider::class,

@@ -53,15 +53,15 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
     Route::get('/vacancies/{slug}', [ApiVacancyController::class, 'show'])->name('api.vacancies.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/vacancies/{slug}/apply', [ApiVacancyController::class, 'apply'])->name('api.vacancies.apply')->where('slug', '[a-z0-9\-]+');
-    Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])->name('api.vacancies.submit')->where('slug', '[a-z0-9\-]+');
+    Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])->middleware('throttle:forms')->name('api.vacancies.submit')->where('slug', '[a-z0-9\-]+');
 
     // Contact
     Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
-    Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->name('api.contact.submit');
+    Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->middleware('throttle:forms')->name('api.contact.submit');
 
     // Blog (artikelen)
     Route::get('/artikelen/load-more', [ApiBlogController::class, 'loadMore'])->name('api.blog.load-more');
-    Route::post('/artikelen/reactie', [ApiCommentController::class, 'store'])->name('api.comment.store');
+    Route::post('/artikelen/reactie', [ApiCommentController::class, 'store'])->middleware('throttle:forms')->name('api.comment.store');
     Route::post('/artikelen/reactie/{comment}/like', [ApiCommentController::class, 'like'])->name('api.comment.like');
     Route::post('/artikelen/reactie/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.comment.dislike');
 
@@ -87,7 +87,7 @@ Route::middleware('frontend.origins')->group(function () {
         Route::get('/live-sessions', [ApiLiveSessionController::class, 'index'])->name('api.course.live-sessions.index');
         Route::get('/live-sessions/recordings', [ApiLiveSessionController::class, 'recordings'])->name('api.course.live-sessions.recordings');
         Route::get('/live-sessions/{slug}', [ApiLiveSessionController::class, 'show'])->name('api.course.live-sessions.show')->where('slug', '[a-z0-9\-]+');
-        Route::post('/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->name('api.course.live-sessions.register')->where('slug', '[a-z0-9\-]+');
+        Route::post('/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->middleware('throttle:forms')->name('api.course.live-sessions.register')->where('slug', '[a-z0-9\-]+');
     });
 
     // Header and footer menu structures

@@ -18,7 +18,7 @@ Only your React SPA URL(s) are allowed to call the API. Two layers enforce this:
 ### CORS (browser)
 
 **Configuration:** `config/cors.php`  
-**Env:** `CORS_ALLOWED_ORIGINS`
+**Env:** `FRONTEND_ALLOWED_ORIGINS`
 
 Browsers only allow requests from the listed origin(s). Other sites get a CORS error and the response is blocked by the browser.
 
@@ -31,21 +31,21 @@ The API also checks the **Origin** or **Referer** header on every request. If th
 - Other websites’ frontends (they send their own Origin).
 - Non-browser clients (curl, Postman, other servers) that send an Origin/Referer that isn’t your React SPA URL.
 
-**Allowed list:** Same as CORS (`CORS_ALLOWED_ORIGINS`). One config, two checks.
+**Allowed list:** Same as CORS (`FRONTEND_ALLOWED_ORIGINS`). One config, two checks.
 
 **Requests with no Origin/Referer** (e.g. Swagger UI on the same domain, Postman without Origin, cron jobs) are **allowed**. So you can still use the API from your own server or from the same host.
 
 **Configuration:**
 
-- **Development:** Leave `CORS_ALLOWED_ORIGINS` unset or set to `*` so any origin is allowed (no blocking).
+- **Development:** Leave `FRONTEND_ALLOWED_ORIGINS` unset or set to `*` so any origin is allowed (no blocking).
 - **Production:** Set to **only** your React SPA URL(s), comma-separated:
 
 ```env
 # Only this origin can call the API (browser + server check)
-CORS_ALLOWED_ORIGINS=https://myapp.com
+FRONTEND_ALLOWED_ORIGINS=https://myapp.com
 
 # Multiple (e.g. app + preview)
-CORS_ALLOWED_ORIGINS=https://myapp.com,https://preview.myapp.com
+FRONTEND_ALLOWED_ORIGINS=https://myapp.com,https://preview.myapp.com
 ```
 
 Result: external requesters are blocked except when the request comes from your React SPA URL (or has no Origin/Referer).
@@ -107,14 +107,27 @@ So: **public content = no Sanctum**; **admin or future protected API = Sanctum**
 
 ---
 
-## 6. Checklist
+## 6. Securing form submissions (React → Laravel)
+
+Forms sent from React (contact, job applications, comments, live-session registration) are secured by:
+
+- **Allowed origins** (`FRONTEND_ALLOWED_ORIGINS` in `config/frontend-api.php`): only your React app origin(s) are accepted by `frontend.origins` middleware.
+- **Rate limiting**: form POSTs use `throttle:forms` — **10 requests per minute per IP**.
+- **Validation**: all form controllers validate input; invalid payloads return **422** with `errors`.
+- **Honeypot**: comment form uses `hp_phone`; you can add hidden fields in React for other forms.
+
+**In React:** Call the API from your app’s domain (so `Origin` is correct), use HTTPS in production, set `Accept: application/json`, and handle **422** (validation errors) and **429** (rate limited). API routes do **not** require CSRF; no need to call `/sanctum/csrf-cookie` for these endpoints. For file uploads use `FormData` and omit `Content-Type`.
+
+---
+
+## 7. Checklist
 
 | Measure | Purpose |
 |--------|---------|
 | **HTTPS** | Encrypt traffic between React and CMS. |
-| **CORS** (`CORS_ALLOWED_ORIGINS`) | Only your app’s origin(s) can call the API from the browser. |
+| **Allowed origins** (`FRONTEND_ALLOWED_ORIGINS`) | Only your app’s origin(s) can call the API (including forms). |
 | **API key** (`CMS_API_KEY`) | Optional; only clients with the key can read content. |
-| **Rate limit** (60/min) | Limit abuse and simple overload. |
+| **Rate limit** (60/min API; 10/min forms) | Limit abuse and overload; forms have a stricter limit. |
 | **Sanctum** | Only for admin / authenticated endpoints, not for public content. |
 
 Together, these give you a secure link between the React app and the headless CMS when the site does not require login to get data.
