@@ -47,113 +47,106 @@
             @endforeach
         </nav>
 
-        {{-- Content --}}
-        <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-700/50">
-                        <tr>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Name</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Size</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Modified</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                        @foreach ($folders as $folder)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-700/30 transition-colors">
-                                <td class="px-4 py-3">
-                                    <a href="{{ route('admin.media-library.index', ['path' => $folder['path_param']]) }}"
-                                       class="flex items-center gap-2 text-[var(--color-accent)] hover:underline font-medium">
-                                        <i class="fa-solid fa-folder text-amber-500 dark:text-amber-400"></i>
-                                        {{ $folder['name'] }}
-                                    </a>
-                                </td>
-                                <td class="px-4 py-3 text-zinc-500 dark:text-zinc-400">—</td>
-                                <td class="px-4 py-3 text-zinc-500 dark:text-zinc-400">{{ date('M j, Y H:i', $folder['modified']) }}</td>
-                                <td class="px-4 py-3 text-right">
-                                    <form action="{{ route('admin.media-library.destroy') }}" method="POST" class="inline"
-                                          onsubmit="return confirm('Delete this folder and all its contents?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="path" value="{{ $folder['path_param'] }}">
-                                        <button type="submit" class="text-red-600 dark:text-red-400 hover:underline text-sm"
-                                                title="Delete folder">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                        @foreach ($files as $file)
-                            @php
-                                $isImage = in_array($file['extension'], ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], true);
-                            @endphp
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-700/30 transition-colors">
-                                <td class="px-4 py-3">
-                                    @if ($isImage)
-                                        <button type="button"
-                                                @click="openPreview('{{ route('admin.media-library.preview', ['path' => $file['path_param']]) }}', '{{ addslashes($file['name']) }}', true)"
-                                                class="flex items-center gap-2 text-left font-medium text-zinc-900 dark:text-white hover:text-[var(--color-accent)] transition-colors">
-                                            <i class="fa-solid fa-image text-emerald-500 dark:text-emerald-400"></i>
-                                            {{ $file['name'] }}
-                                        </button>
-                                    @else
-                                        <span class="flex items-center gap-2 font-medium text-zinc-900 dark:text-white">
-                                            <i class="fa-solid {{ in_array($file['extension'], ['pdf'], true) ? 'fa-file-pdf text-red-500' : (in_array($file['extension'], ['doc', 'docx'], true) ? 'fa-file-word text-blue-500' : 'fa-file text-zinc-400') }}"></i>
-                                            {{ $file['name'] }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 text-zinc-500 dark:text-zinc-400">
-                                    {{ $file['size'] >= 1024 ? ($file['size'] >= 1048576 ? round($file['size'] / 1048576, 2) . ' MB' : round($file['size'] / 1024, 2) . ' KB') : $file['size'] . ' B' }}
-                                </td>
-                                <td class="px-4 py-3 text-zinc-500 dark:text-zinc-400">{{ date('M j, Y H:i', $file['modified']) }}</td>
-                                <td class="px-4 py-3 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        @if ($isImage && $file['extension'] !== 'svg')
-                                            <button type="button"
-                                                    @click="openResize('{{ $file['path_param'] }}', '{{ addslashes($file['name']) }}')"
-                                                    class="text-zinc-600 dark:text-zinc-400 hover:text-[var(--color-accent)] transition-colors"
-                                                    title="Resize">
-                                                <i class="fa-solid fa-expand"></i>
-                                            </button>
-                                        @endif
-                                        <a href="{{ route('admin.media-library.preview', ['path' => $file['path_param']]) }}"
-                                           target="_blank"
-                                           class="text-zinc-600 dark:text-zinc-400 hover:text-[var(--color-accent)] transition-colors"
-                                           title="Preview">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('admin.media-library.download', ['path' => $file['path_param']]) }}"
-                                           class="text-zinc-600 dark:text-zinc-400 hover:text-[var(--color-accent)] transition-colors"
-                                           title="Download">
-                                            <i class="fa-solid fa-download"></i>
-                                        </a>
-                                        <form action="{{ route('admin.media-library.destroy') }}" method="POST" class="inline"
-                                              onsubmit="return confirm('Delete this file?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <input type="hidden" name="path" value="{{ $file['path_param'] }}">
-                                            <button type="submit" class="text-red-600 dark:text-red-400 hover:underline"
-                                                    title="Delete">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            @if (empty($folders) && empty($files))
-                <div class="px-6 py-12 text-center text-zinc-500 dark:text-zinc-400">
-                    <i class="fa-solid fa-folder-open text-4xl mb-3 opacity-50"></i>
-                    <p>This folder is empty.</p>
+        {{-- File manager grid --}}
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+            @foreach ($folders as $folder)
+                <a href="{{ route('admin.media-library.index', ['path' => $folder['path_param']]) }}"
+                   class="group flex flex-col rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 overflow-hidden hover:border-[var(--color-accent)] hover:shadow-md transition-all">
+                    <div class="aspect-square flex items-center justify-center bg-zinc-100 dark:bg-zinc-700/50 text-amber-500 dark:text-amber-400">
+                        <i class="fa-solid fa-folder text-5xl sm:text-6xl"></i>
+                    </div>
+                    <div class="p-2 flex items-center justify-between gap-1 min-w-0">
+                        <span class="truncate text-sm font-medium text-zinc-900 dark:text-white" title="{{ $folder['name'] }}">{{ $folder['name'] }}</span>
+                        <form action="{{ route('admin.media-library.destroy') }}" method="POST" class="flex-shrink-0" onsubmit="return confirm('Delete this folder and all its contents?');" onclick="event.stopPropagation()">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="path" value="{{ $folder['path_param'] }}">
+                            <button type="submit" class="p-1 rounded text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10" title="Delete folder">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </form>
+                    </div>
+                </a>
+            @endforeach
+
+            @foreach ($files as $file)
+                @php
+                    $isImage = in_array($file['extension'], ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], true);
+                    $previewUrl = $isImage ? route('admin.media-library.preview', ['path' => $file['path_param']]) : null;
+                    $sizeFormatted = $file['size'] >= 1024 ? ($file['size'] >= 1048576 ? round($file['size'] / 1048576, 2) . ' MB' : round($file['size'] / 1024, 2) . ' KB') : $file['size'] . ' B';
+                    $fileIcon = match($file['extension'] ?? '') {
+                        'pdf' => 'fa-file-pdf text-red-500',
+                        'doc', 'docx' => 'fa-file-word text-blue-500',
+                        'xls', 'xlsx' => 'fa-file-excel text-green-600',
+                        'zip', 'rar' => 'fa-file-zipper text-amber-500',
+                        default => 'fa-file text-zinc-400',
+                    };
+                @endphp
+                <div class="group flex flex-col rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 overflow-hidden hover:border-[var(--color-accent)] hover:shadow-md transition-all">
+                    @if ($isImage)
+                        <button type="button"
+                                @click="openPreview('{{ $previewUrl }}', '{{ addslashes($file['name']) }}', true)"
+                                class="aspect-square w-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-700/50 overflow-hidden focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-inset">
+                            <img src="{{ $previewUrl }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy">
+                        </button>
+                    @else
+                        <a href="{{ route('admin.media-library.download', ['path' => $file['path_param']]) }}"
+                           class="aspect-square w-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-700/50 text-zinc-500 dark:text-zinc-400">
+                            <i class="fa-solid {{ $fileIcon }} text-4xl sm:text-5xl"></i>
+                        </a>
+                    @endif
+                    <div class="p-2 min-w-0">
+                        <p class="truncate text-sm font-medium text-zinc-900 dark:text-white" title="{{ $file['name'] }}">{{ $file['name'] }}</p>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $sizeFormatted }}</p>
+                        <div class="mt-1.5 flex items-center gap-1 flex-wrap">
+                            @if ($isImage)
+                                <button type="button"
+                                        @click="openPreview('{{ $previewUrl }}', '{{ addslashes($file['name']) }}', true)"
+                                        class="p-1.5 rounded text-zinc-400 hover:text-[var(--color-accent)] hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                                        title="Preview">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                                @if ($file['extension'] !== 'svg')
+                                    <button type="button"
+                                            @click="openResize('{{ $file['path_param'] }}', '{{ addslashes($file['name']) }}')"
+                                            class="p-1.5 rounded text-zinc-400 hover:text-[var(--color-accent)] hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                                            title="Resize">
+                                        <i class="fa-solid fa-expand text-xs"></i>
+                                    </button>
+                                @endif
+                            @endif
+                            <a href="{{ route('admin.media-library.preview', ['path' => $file['path_param']]) }}"
+                               target="_blank"
+                               class="p-1.5 rounded text-zinc-400 hover:text-[var(--color-accent)] hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                               title="Open">
+                                <i class="fa-solid fa-external-link text-xs"></i>
+                            </a>
+                            <a href="{{ route('admin.media-library.download', ['path' => $file['path_param']]) }}"
+                               class="p-1.5 rounded text-zinc-400 hover:text-[var(--color-accent)] hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                               title="Download">
+                                <i class="fa-solid fa-download text-xs"></i>
+                            </a>
+                            <form action="{{ route('admin.media-library.destroy') }}" method="POST" class="inline"
+                                  onsubmit="return confirm('Delete this file?');">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="path" value="{{ $file['path_param'] }}">
+                                <button type="submit" class="p-1.5 rounded text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10" title="Delete">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            @endif
+            @endforeach
         </div>
+
+        @if (empty($folders) && empty($files))
+            <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-6 py-16 text-center text-zinc-500 dark:text-zinc-400">
+                <i class="fa-solid fa-folder-open text-5xl mb-4 opacity-50"></i>
+                <p>This folder is empty.</p>
+            </div>
+        @endif
 
         {{-- Preview modal --}}
         <div x-show="previewOpen"
