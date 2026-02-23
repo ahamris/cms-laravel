@@ -7,20 +7,15 @@
                 <p class="text-zinc-600 dark:text-zinc-400">Manage organizations (name and logo)</p>
             </div>
             <div class="flex items-center gap-3">
-                <form action="{{ route('admin.organization.import') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
+                <form id="organization-import-form" action="{{ route('admin.organization.import') }}" method="POST" enctype="multipart/form-data" class="hidden">
                     @csrf
-                    <input type="file" name="file" accept=".json" required
-                        class="block text-sm text-zinc-500 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-200 dark:file:bg-zinc-700 dark:file:text-zinc-200 dark:hover:file:bg-zinc-600" />
-                    <label class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
-                        <input type="checkbox" name="overwrite" value="1" class="rounded border-zinc-300 dark:border-zinc-600" />
-                        Overwrite existing
-                    </label>
-                    <button type="submit"
-                        class="inline-flex items-center gap-2 rounded-md bg-zinc-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600 dark:bg-zinc-500 dark:hover:bg-zinc-400">
-                        <i class="fa-solid fa-file-import"></i>
-                        Import JSON
-                    </button>
+                    <input type="file" id="organization-import-file" name="file" accept=".json" required />
                 </form>
+                <button type="button" id="organization-import-btn"
+                    class="inline-flex items-center gap-2 rounded-md bg-zinc-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600 dark:bg-zinc-500 dark:hover:bg-zinc-400">
+                    <i class="fa-solid fa-file-import"></i>
+                    Import JSON
+                </button>
                 <a href="{{ route('admin.organization.create') }}"
                     class="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]">
                     <i class="fa-solid fa-plus"></i>
@@ -243,6 +238,16 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
+            var importBtn = document.getElementById('organization-import-btn');
+            var importFile = document.getElementById('organization-import-file');
+            var importForm = document.getElementById('organization-import-form');
+            if (importBtn && importFile && importForm) {
+                importBtn.addEventListener('click', function () { importFile.click(); });
+                importFile.addEventListener('change', function () {
+                    if (importFile.files && importFile.files.length) importForm.submit();
+                });
+            }
+
             const form = document.getElementById('organization-form');
             const drawer = document.getElementById('organization-drawer');
             if (form) {
