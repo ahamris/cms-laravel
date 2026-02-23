@@ -24,79 +24,77 @@ use App\Http\Controllers\Api\AnalyticsTrackingController;
 use App\Http\Controllers\Api\Frontend\SearchController as ApiSearchController;
 use Illuminate\Support\Facades\Route;
 
-// Frontend content API (public, no auth; only allowed origins – documented in Swagger)
-Route::middleware('frontend.origins')->group(function () {
-    Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
-    Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/search', [ApiSearchController::class, 'index'])->name('api.search');
-    Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
+// Frontend content API (public, no auth; CORS via config/cors.php)
+Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
+Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/search', [ApiSearchController::class, 'index'])->name('api.search');
+Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
 
-    // Blog (posts + comments)
-    Route::prefix('blog')->name('api.blog.')->group(function () {
-        Route::get('/', [ApiBlogController::class, 'index'])->name('index');
-        Route::get('/{slug}', [ApiBlogController::class, 'apiShow'])->name('show')->where('slug', '[a-zA-Z0-9\-_]+');
-        Route::post('/{slug}/comments', [ApiBlogController::class, 'storeComment'])->middleware('throttle:forms')->name('comments.store')->where('slug', '[a-zA-Z0-9\-_]+');
-        Route::post('/{slug}/comments/{comment}/like', [ApiBlogController::class, 'likeComment'])->name('comments.like')->where(['slug' => '[a-zA-Z0-9\-_]+', 'comment' => '[0-9]+']);
-        Route::post('/{slug}/comments/{comment}/dislike', [ApiBlogController::class, 'dislikeComment'])->name('comments.dislike')->where(['slug' => '[a-zA-Z0-9\-_]+', 'comment' => '[0-9]+']);
-    });
-
-    Route::get('/legal/{slug}', [ApiLegalController::class, 'show'])->name('api.legal.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('api.static.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/settings', [HomepageController::class, 'settings'])->name('api.settings');
-    Route::get('/homepage', [HomepageController::class, 'homepage'])->name('api.homepage');
-    Route::get('/docs', [ApiDocController::class, 'index'])->name('api.docs.index');
-    Route::get('/docs/search', [ApiDocController::class, 'search'])->name('api.docs.search');
-    Route::get('/docs/{version}', [ApiDocController::class, 'showVersion'])->name('api.docs.version')->where('version', '[a-z0-9\.\-]+');
-    Route::get('/docs/{version}/{section}/{page}', [ApiDocController::class, 'showPage'])->name('api.docs.page')->where(['version' => '[a-z0-9\.\-]+', 'section' => '[a-z0-9\-]+', 'page' => '[a-z0-9\-]+']);
-    Route::get('/modules', [ApiModuleController::class, 'index'])->name('api.modules.index');
-    Route::get('/modules/{slug}', [ApiModuleController::class, 'show'])->name('api.modules.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/features', [ApiFeatureController::class, 'index'])->name('api.features.index');
-    Route::get('/features/{anchor}', [ApiFeatureController::class, 'show'])->name('api.features.show')->where('anchor', '[a-z0-9\-]+');
-    Route::get('/solutions', [ApiSolutionController::class, 'index'])->name('api.solutions.index');
-    Route::get('/solutions/{anchor}', [ApiSolutionController::class, 'show'])->name('api.solutions.show')->where('anchor', '[a-z0-9\-]+');
-    Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitemap');
-    Route::get('/robots-txt', [ApiRobotsTxtController::class, 'index'])->name('api.robots-txt');
-    Route::get('/media', [ApiMediaController::class, 'index'])->name('api.media.index');
-    Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
-    Route::get('/vacancies/{slug}', [ApiVacancyController::class, 'show'])->name('api.vacancies.show')->where('slug', '[a-z0-9\-]+');
-    Route::get('/vacancies/{slug}/apply', [ApiVacancyController::class, 'apply'])->name('api.vacancies.apply')->where('slug', '[a-z0-9\-]+');
-    Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])->middleware('throttle:forms')->name('api.vacancies.submit')->where('slug', '[a-z0-9\-]+');
-
-    // Contact
-    Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
-    Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->middleware('throttle:forms')->name('api.contact.submit');
-
-    // Pricing (prijzen)
-    Route::get('/prijzen', [ApiPricingController::class, 'index'])->name('api.pricing.index');
-    Route::get('/prijzen/configurator', [ApiPricingController::class, 'configurator'])->name('api.pricing.configurator');
-    Route::get('/prijzen/{slug}', [ApiPricingController::class, 'show'])->name('api.pricing.show')->where('slug', '[a-z0-9\-]+');
-
-    // Changelog
-    Route::get('/changelog', [ApiChangelogController::class, 'index'])->name('api.changelog.index');
-    Route::get('/changelog/{slug}', [ApiChangelogController::class, 'show'])->name('api.changelog.show')->where('slug', '[a-z0-9\-]+');
-
-    // Trial (proefversie)
-    Route::get('/proefversie', [ApiTrialController::class, 'index'])->name('api.trial.index');
-    Route::get('/proefversie/success', [ApiTrialController::class, 'success'])->name('api.trial.success');
-
-    // Course (categories, videos, live sessions)
-    Route::prefix('course')->group(function () {
-        Route::get('/', [ApiCourseController::class, 'index'])->name('api.course.index');
-        Route::get('/categories', [ApiCourseController::class, 'categories'])->name('api.course.categories');
-        Route::get('/category/{slug}', [ApiCourseController::class, 'showCategory'])->name('api.course.category.show')->where('slug', '[a-z0-9\-]+');
-        Route::get('/video/{slug}', [ApiCourseController::class, 'showVideo'])->name('api.course.video.show')->where('slug', '[a-z0-9\-]+');
-        Route::get('/live-sessions', [ApiLiveSessionController::class, 'index'])->name('api.course.live-sessions.index');
-        Route::get('/live-sessions/recordings', [ApiLiveSessionController::class, 'recordings'])->name('api.course.live-sessions.recordings');
-        Route::get('/live-sessions/{slug}', [ApiLiveSessionController::class, 'show'])->name('api.course.live-sessions.show')->where('slug', '[a-z0-9\-]+');
-        Route::post('/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->middleware('throttle:forms')->name('api.course.live-sessions.register')->where('slug', '[a-z0-9\-]+');
-    });
-
-    // Header and footer menu structures
-    Route::get('/menus', [ApiMenuController::class, 'index'])->name('api.menus.index');
-    Route::get('/menus/header', [ApiMenuController::class, 'header'])->name('api.menus.header');
-    Route::get('/menus/footer', [ApiMenuController::class, 'footer'])->name('api.menus.footer');
-    Route::get('/menus/sticky', [ApiMenuController::class, 'sticky'])->name('api.menus.sticky');
+// Blog (posts + comments)
+Route::prefix('blog')->name('api.blog.')->group(function () {
+    Route::get('/', [ApiBlogController::class, 'index'])->name('index');
+    Route::get('/{slug}', [ApiBlogController::class, 'apiShow'])->name('show')->where('slug', '[a-zA-Z0-9\-_]+');
+    Route::post('/{slug}/comments', [ApiBlogController::class, 'storeComment'])->middleware('throttle:forms')->name('comments.store')->where('slug', '[a-zA-Z0-9\-_]+');
+    Route::post('/{slug}/comments/{comment}/like', [ApiBlogController::class, 'likeComment'])->name('comments.like')->where(['slug' => '[a-zA-Z0-9\-_]+', 'comment' => '[0-9]+']);
+    Route::post('/{slug}/comments/{comment}/dislike', [ApiBlogController::class, 'dislikeComment'])->name('comments.dislike')->where(['slug' => '[a-zA-Z0-9\-_]+', 'comment' => '[0-9]+']);
 });
+
+Route::get('/legal/{slug}', [ApiLegalController::class, 'show'])->name('api.legal.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('api.static.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/settings', [HomepageController::class, 'settings'])->name('api.settings');
+Route::get('/homepage', [HomepageController::class, 'homepage'])->name('api.homepage');
+Route::get('/docs', [ApiDocController::class, 'index'])->name('api.docs.index');
+Route::get('/docs/search', [ApiDocController::class, 'search'])->name('api.docs.search');
+Route::get('/docs/{version}', [ApiDocController::class, 'showVersion'])->name('api.docs.version')->where('version', '[a-z0-9\.\-]+');
+Route::get('/docs/{version}/{section}/{page}', [ApiDocController::class, 'showPage'])->name('api.docs.page')->where(['version' => '[a-z0-9\.\-]+', 'section' => '[a-z0-9\-]+', 'page' => '[a-z0-9\-]+']);
+Route::get('/modules', [ApiModuleController::class, 'index'])->name('api.modules.index');
+Route::get('/modules/{slug}', [ApiModuleController::class, 'show'])->name('api.modules.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/features', [ApiFeatureController::class, 'index'])->name('api.features.index');
+Route::get('/features/{anchor}', [ApiFeatureController::class, 'show'])->name('api.features.show')->where('anchor', '[a-z0-9\-]+');
+Route::get('/solutions', [ApiSolutionController::class, 'index'])->name('api.solutions.index');
+Route::get('/solutions/{anchor}', [ApiSolutionController::class, 'show'])->name('api.solutions.show')->where('anchor', '[a-z0-9\-]+');
+Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitemap');
+Route::get('/robots-txt', [ApiRobotsTxtController::class, 'index'])->name('api.robots-txt');
+Route::get('/media', [ApiMediaController::class, 'index'])->name('api.media.index');
+Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
+Route::get('/vacancies/{slug}', [ApiVacancyController::class, 'show'])->name('api.vacancies.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/vacancies/{slug}/apply', [ApiVacancyController::class, 'apply'])->name('api.vacancies.apply')->where('slug', '[a-z0-9\-]+');
+Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])->middleware('throttle:forms')->name('api.vacancies.submit')->where('slug', '[a-z0-9\-]+');
+
+// Contact
+Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
+Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->middleware('throttle:forms')->name('api.contact.submit');
+
+// Pricing (prijzen)
+Route::get('/prijzen', [ApiPricingController::class, 'index'])->name('api.pricing.index');
+Route::get('/prijzen/configurator', [ApiPricingController::class, 'configurator'])->name('api.pricing.configurator');
+Route::get('/prijzen/{slug}', [ApiPricingController::class, 'show'])->name('api.pricing.show')->where('slug', '[a-z0-9\-]+');
+
+// Changelog
+Route::get('/changelog', [ApiChangelogController::class, 'index'])->name('api.changelog.index');
+Route::get('/changelog/{slug}', [ApiChangelogController::class, 'show'])->name('api.changelog.show')->where('slug', '[a-z0-9\-]+');
+
+// Trial (proefversie)
+Route::get('/proefversie', [ApiTrialController::class, 'index'])->name('api.trial.index');
+Route::get('/proefversie/success', [ApiTrialController::class, 'success'])->name('api.trial.success');
+
+// Course (categories, videos, live sessions)
+Route::prefix('course')->group(function () {
+    Route::get('/', [ApiCourseController::class, 'index'])->name('api.course.index');
+    Route::get('/categories', [ApiCourseController::class, 'categories'])->name('api.course.categories');
+    Route::get('/category/{slug}', [ApiCourseController::class, 'showCategory'])->name('api.course.category.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/video/{slug}', [ApiCourseController::class, 'showVideo'])->name('api.course.video.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/live-sessions', [ApiLiveSessionController::class, 'index'])->name('api.course.live-sessions.index');
+    Route::get('/live-sessions/recordings', [ApiLiveSessionController::class, 'recordings'])->name('api.course.live-sessions.recordings');
+    Route::get('/live-sessions/{slug}', [ApiLiveSessionController::class, 'show'])->name('api.course.live-sessions.show')->where('slug', '[a-z0-9\-]+');
+    Route::post('/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->middleware('throttle:forms')->name('api.course.live-sessions.register')->where('slug', '[a-z0-9\-]+');
+});
+
+// Header and footer menu structures
+Route::get('/menus', [ApiMenuController::class, 'index'])->name('api.menus.index');
+Route::get('/menus/header', [ApiMenuController::class, 'header'])->name('api.menus.header');
+Route::get('/menus/footer', [ApiMenuController::class, 'footer'])->name('api.menus.footer');
+Route::get('/menus/sticky', [ApiMenuController::class, 'sticky'])->name('api.menus.sticky');
 
 // Analytics tracking routes (public, rate limited)
 Route::prefix('analytics')->middleware('throttle:api')->group(function () {

@@ -111,7 +111,7 @@ So: **public content = no Sanctum**; **admin or future protected API = Sanctum**
 
 Forms sent from React (contact, job applications, comments, live-session registration) are secured by:
 
-- **Allowed origins** (`CORS_ALLOWED_ORIGINS` or `FRONTEND_ALLOWED_ORIGINS` in `config/cors.php`): only your frontend origin(s) are accepted by `frontend.origins` middleware.
+- **Allowed origins** (`CORS_ALLOWED_ORIGINS` or `FRONTEND_ALLOWED_ORIGINS` in `config/cors.php`): Laravel’s CORS middleware sends `Access-Control-Allow-Origin` only for these origins; others are blocked by the browser.
 - **Rate limiting**: form POSTs use `throttle:forms` — **10 requests per minute per IP**.
 - **Validation**: all form controllers validate input; invalid payloads return **422** with `errors`.
 - **Honeypot**: comment form uses `hp_phone`; you can add hidden fields in React for other forms.

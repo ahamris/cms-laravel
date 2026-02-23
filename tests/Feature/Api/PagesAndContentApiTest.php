@@ -5,7 +5,7 @@ use App\Models\Page;
 use App\Models\StaticPage;
 
 beforeEach(function () {
-    // No Origin/Referer => frontend.origins allows request
+    // API is public; CORS handled by config/cors.php
 });
 
 // ---- Pages ----

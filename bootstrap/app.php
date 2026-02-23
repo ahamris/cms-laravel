@@ -25,7 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => CheckIfAdmin::class,
             'user' => CheckIfUser::class,
             'locale' => SetLocaleMiddleware::class,
-            'frontend.origins' => \App\Http\Middleware\AllowFrontendOrigins::class,
         ]);
     })->withSchedule(function (Schedule $schedule) {
         // Prune old datas from models daily at 01:15
