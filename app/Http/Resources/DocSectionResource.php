@@ -20,10 +20,9 @@ class DocSectionResource extends JsonResource
             'slug' => $this->slug,
             'description' => $this->description,
             'sort_order' => $this->sort_order,
-            'url' => $this->when($this->relationLoaded('version'), fn () => route('docs.section', [
-                'version' => $this->version->version,
-                'section' => $this->slug,
-            ])),
+            'url' => $this->when($this->relationLoaded('version'), function () {
+                return route('api.docs.version', ['version' => $this->version->version]);
+            }),
             'pages' => DocPageListResource::collection($this->whenLoaded('activePages')),
         ]);
     }
