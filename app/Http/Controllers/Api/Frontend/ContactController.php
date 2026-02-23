@@ -47,19 +47,45 @@ class ContactController extends Controller
         return response()->json(['data' => $page]);
     }
 
-    #[OA\Post(path: '/api/contact/verstuur', summary: 'Submit contact form', tags: ['Contact'], responses: [
+    #[OA\Post(path: '/api/contact/verstuur', summary: 'Submit contact form', description: 'Submit as form fields (application/x-www-form-urlencoded or multipart/form-data for file attachment). Accepts Dutch names: voornaam/achternaam, onderwerp, organisatie.', tags: ['Contact'], requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'application/x-www-form-urlencoded', schema: new OA\Schema(required: ['first_name', 'last_name', 'email', 'reden', 'bericht', 'avg-optin'], type: 'object', properties: [
+        new OA\Property(property: 'voornaam', type: 'string', maxLength: 255, description: 'Voornaam (or first_name)'),
+        new OA\Property(property: 'first_name', type: 'string', maxLength: 255, description: 'First name'),
+        new OA\Property(property: 'achternaam', type: 'string', maxLength: 255, description: 'Achternaam (or last_name)'),
+        new OA\Property(property: 'last_name', type: 'string', maxLength: 255, description: 'Last name'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', maxLength: 255, description: 'E-mailadres'),
+        new OA\Property(property: 'phone', type: 'string', maxLength: 50, description: 'Phone (optional)'),
+        new OA\Property(property: 'onderwerp', type: 'string', maxLength: 255, description: 'Onderwerp (or reden)'),
+        new OA\Property(property: 'reden', type: 'string', maxLength: 255, description: 'Subject/reason'),
+        new OA\Property(property: 'organisatie', type: 'string', maxLength: 255, description: 'Organisatie (optional, or company_name)'),
+        new OA\Property(property: 'company_name', type: 'string', maxLength: 255, description: 'Company name (optional)'),
+        new OA\Property(property: 'bericht', type: 'string', description: 'Bericht (message)'),
+        new OA\Property(property: 'avg-optin', type: 'string', description: 'Privacy: 1 or true when agreed'),
+        new OA\Property(property: 'contact_preference', type: 'string', enum: ['call', 'query'], description: 'Preferred contact (default: query)'),
+        new OA\Property(property: 'country_code', type: 'string', maxLength: 10, description: 'Optional'),
+        new OA\Property(property: 'bijlage', type: 'string', format: 'binary', description: 'File attachment (required when reden=ondersteuning; use multipart/form-data). Max 10MB; pdf, jpg, png, doc, xls, ppt, etc.'),
+        new OA\Property(property: 'nieuwsbrief', type: 'string', description: 'Newsletter opt-in (optional, not stored)'),
+    ]))), responses: [
         new OA\Response(response: 201, description: 'Contact form submitted'),
         new OA\Response(response: 422, description: 'Validation error'),
         new OA\Response(response: 500, description: 'Server error'),
     ])]
     public function storeContact(Request $request): JsonResponse
     {
+        // Normalize Dutch form field names to API names (React can send either)
+        $request->merge([
+            'first_name' => $request->input('first_name') ?? $request->input('voornaam'),
+            'last_name' => $request->input('last_name') ?? $request->input('achternaam'),
+            'reden' => $request->input('reden') ?? $request->input('onderwerp'),
+            'company_name' => $request->input('company_name') ?? $request->input('organisatie'),
+            'contact_preference' => $request->input('contact_preference') ?? 'query',
+        ]);
+
         $rules = [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:50',
+            'phone' => 'nullable|string|max:50',
             'country_code' => 'nullable|string|max:10',
             'reden' => 'required|string|max:255',
             'bericht' => 'required|string',
@@ -90,14 +116,14 @@ class ContactController extends Controller
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'company_name' => $validated['company_name'],
+                'phone' => $validated['phone'] ?? '',
+                'company_name' => $validated['company_name'] ?? null,
                 'country_code' => $validated['country_code'] ?? null,
                 'reden' => $validated['reden'],
                 'bericht' => $validated['bericht'],
                 'bijlage' => $bijlagePath,
                 'contact_preference' => $validated['contact_preference'],
-                'avg_optin' => $validated['avg-optin'] === '1',
+                'avg_optin' => in_array($validated['avg-optin'], [true, '1', 1, 'true', 'on'], true),
                 'status' => 'new',
             ]);
 
