@@ -73,7 +73,7 @@ class PageController extends AdminBaseController
         // Log activity
         $this->logCreate($page);
 
-        return redirect()->route('admin.content.page.index')
+        return redirect()->route('admin.page.index')
             ->with('success', 'Page created successfully!');
     }
 
@@ -154,7 +154,7 @@ class PageController extends AdminBaseController
         // Log activity
         $this->logUpdate($page);
 
-        return redirect()->route('admin.content.page.index')
+        return redirect()->route('admin.page.index')
             ->with('success', 'Page updated successfully!');
     }
 
@@ -172,7 +172,7 @@ class PageController extends AdminBaseController
 
         $page->delete();
 
-        return redirect()->route('admin.content.page.index')
+        return redirect()->route('admin.page.index')
             ->with('success', 'Page deleted successfully!');
     }
 

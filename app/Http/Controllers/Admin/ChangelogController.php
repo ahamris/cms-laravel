@@ -69,7 +69,7 @@ class ChangelogController extends AdminBaseController
             $changelog = Changelog::create($validated);
 
             return redirect()
-                ->route('admin.content.changelog.index')
+                ->route('admin.changelog.index')
                 ->with('success', 'Changelog entry created successfully.');
 
         } catch (\Exception $e) {
@@ -139,7 +139,7 @@ class ChangelogController extends AdminBaseController
             $changelog->update($validated);
 
             return redirect()
-                ->route('admin.content.changelog.index')
+                ->route('admin.changelog.index')
                 ->with('success', 'Changelog entry updated successfully.');
 
         } catch (\Exception $e) {
@@ -159,7 +159,7 @@ class ChangelogController extends AdminBaseController
             $changelog->delete();
 
             return redirect()
-                ->route('admin.content.changelog.index')
+                ->route('admin.changelog.index')
                 ->with('success', 'Changelog entry deleted successfully.');
 
         } catch (\Exception $e) {

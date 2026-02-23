@@ -11,7 +11,7 @@
                 <i class="fa-solid fa-external-link-alt"></i>
                 View
             </a>
-            <a href="{{ route('admin.content.live-session.index') }}"
+            <a href="{{ route('admin.live-session.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Sessions
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.content.live-session.update', $liveSession) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.live-session.update', $liveSession) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -69,7 +69,7 @@
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Publish</h2>
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save" icon-position="left">Update Session</x-button>
-                        <a href="{{ route('admin.content.live-session.index') }}" class="block">
+                        <a href="{{ route('admin.live-session.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                         
@@ -166,7 +166,7 @@
         </div>
     </form>
 
-    <form id="delete-form" action="{{ route('admin.content.live-session.destroy', $liveSession) }}" method="POST" class="hidden">
+    <form id="delete-form" action="{{ route('admin.live-session.destroy', $liveSession) }}" method="POST" class="hidden">
         @csrf
         @method('DELETE')
     </form>

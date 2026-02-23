@@ -21,7 +21,7 @@
                 ['key' => 'is_active', 'label' => 'Active', 'type' => 'toggle'],
                 ['key' => 'created_at', 'label' => 'Created', 'format' => 'date'],
             ]"
-            route-prefix="admin.content.changelog"
+            route-prefix="admin.changelog"
             search-placeholder="Search changelog entries..."
             :paginate="15"
             custom-actions-view="admin.changelog.partials.table-actions"

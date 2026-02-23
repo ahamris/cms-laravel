@@ -5,7 +5,7 @@
         $routeMap = ['blog' => 'blog'];
         $baseRoute = $routeMap[$type] ?? $type;
     @endphp
-    <a href="{{ route('admin.content.' . $baseRoute . '.show', $item->entity) }}"
+    <a href="{{ route('admin.' . $baseRoute . '.show', $item->entity) }}"
         class="text-sm text-[var(--color-accent)] hover:underline">
         {{ $item->entity->title ?? $item->entity->name ?? 'View ' . class_basename($item->entity_type) }}
     </a>

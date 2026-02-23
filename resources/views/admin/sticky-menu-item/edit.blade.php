@@ -7,12 +7,12 @@
                 <p class="text-sm text-zinc-500 dark:text-zinc-400">Update the details of this menu item.</p>
             </div>
             
-            <x-ui.button variant="secondary" icon="arrow-left" href="{{ route('admin.content.sticky-menu-item.index') }}">
+            <x-ui.button variant="secondary" icon="arrow-left" href="{{ route('admin.sticky-menu-item.index') }}">
                 Cancel & Return
             </x-ui.button>
         </div>
 
-        <form action="{{ route('admin.content.sticky-menu-item.update', $stickyMenuItem) }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <form action="{{ route('admin.sticky-menu-item.update', $stickyMenuItem) }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             @csrf
             @method('PUT')
 

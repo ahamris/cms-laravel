@@ -6,16 +6,16 @@
             <p class="text-zinc-600 dark:text-zinc-400">{{ $courseVideo->title }}</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.course-video.show', $courseVideo) }}">
+            <a href="{{ route('admin.course-video.show', $courseVideo) }}">
                 <x-button variant="secondary" icon="eye">View Details</x-button>
             </a>
-            <a href="{{ route('admin.content.course-video.index') }}">
+            <a href="{{ route('admin.course-video.index') }}">
                 <x-button variant="secondary" icon="arrow-left">Back to list</x-button>
             </a>
         </div>
     </div>
 
-    <form action="{{ route('admin.content.course-video.update', $courseVideo) }}" method="POST"
+    <form action="{{ route('admin.course-video.update', $courseVideo) }}" method="POST"
         enctype="multipart/form-data" id="course-video-form">
         @csrf
         @method('PUT')
@@ -29,7 +29,7 @@
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Basic Information</h2>
 
                     <div class="space-y-6" x-data="courseChapterForm()"
-                        data-chapters-url="{{ route('admin.content.courses.by-category') }}">
+                        data-chapters-url="{{ route('admin.courses.by-category') }}">
                         <x-ui.select name="course_category_id" label="Category" :options="['' => 'Select category'] + $categories->mapWithKeys(fn($c) => [$c->id => $c->name])->all()" :value="(string) old('course_category_id', $courseVideo->course_category_id)" required
                             :error="$errors->has('course_category_id')"
                             :errorMessage="$errors->first('course_category_id')" />
@@ -124,7 +124,7 @@
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save"
                             icon-position="left">Update Video</x-button>
-                        <a href="{{ route('admin.content.course-video.index') }}" class="block">
+                        <a href="{{ route('admin.course-video.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                     </div>

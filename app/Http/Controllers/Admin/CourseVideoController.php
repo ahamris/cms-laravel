@@ -59,7 +59,7 @@ class CourseVideoController extends AdminBaseController
 
         CourseVideo::create($data);
 
-        return redirect()->route('admin.content.course-video.index')
+        return redirect()->route('admin.course-video.index')
             ->with('success', 'Course video created successfully.');
     }
 
@@ -127,7 +127,7 @@ class CourseVideoController extends AdminBaseController
 
         $courseVideo->update($data);
 
-        return redirect()->route('admin.content.course-video.index')
+        return redirect()->route('admin.course-video.index')
             ->with('success', 'Course video updated successfully.');
     }
 
@@ -144,7 +144,7 @@ class CourseVideoController extends AdminBaseController
         }
         $courseVideo->delete();
 
-        return redirect()->route('admin.content.course-video.index')
+        return redirect()->route('admin.course-video.index')
             ->with('success', 'Course video deleted successfully.');
     }
 

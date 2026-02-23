@@ -76,11 +76,11 @@ class ModuleController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.module.edit', $module)
+            return redirect()->route('admin.module.edit', $module)
                 ->with('success', 'Module created successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.module.index')
+        return redirect()->route('admin.module.index')
             ->with('success', 'Module created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -167,11 +167,11 @@ class ModuleController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.module.edit', $module)
+            return redirect()->route('admin.module.edit', $module)
                 ->with('success', 'Module updated successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.module.index')
+        return redirect()->route('admin.module.index')
             ->with('success', 'Module updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -190,7 +190,7 @@ class ModuleController extends AdminBaseController
         
         $module->delete();
 
-        return redirect()->route('admin.content.module.index')
+        return redirect()->route('admin.module.index')
             ->with('success', 'Module deleted successfully.');
     }
 

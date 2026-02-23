@@ -58,7 +58,7 @@ class LiveSessionController extends AdminBaseController
         }
 
         return redirect()
-            ->route('admin.content.live-session.index')
+            ->route('admin.live-session.index')
             ->with('success', 'Live sessie succesvol aangemaakt.');
     }
 
@@ -123,7 +123,7 @@ class LiveSessionController extends AdminBaseController
         }
 
         return redirect()
-            ->route('admin.content.live-session.index')
+            ->route('admin.live-session.index')
             ->with('success', 'Live sessie succesvol bijgewerkt.');
     }
 
@@ -139,7 +139,7 @@ class LiveSessionController extends AdminBaseController
         $liveSession->delete();
 
         return redirect()
-            ->route('admin.content.live-session.index')
+            ->route('admin.live-session.index')
             ->with('success', 'Live sessie succesvol verwijderd.');
     }
 

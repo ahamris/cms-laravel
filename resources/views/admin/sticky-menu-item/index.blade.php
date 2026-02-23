@@ -22,7 +22,7 @@
                 ['key' => 'is_active', 'label' => 'Status', 'type' => 'toggle'],
                 ['key' => 'sort_order', 'label' => 'Order'],
             ]"
-            route-prefix="admin.content.sticky-menu-item"
+            route-prefix="admin.sticky-menu-item"
             :search-fields="['title', 'link']"
             :paginate="15"
         />

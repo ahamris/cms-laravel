@@ -38,7 +38,7 @@ class SessionRegistrationController extends AdminBaseController
         SessionRegistration::create($request->validated());
 
         return redirect()
-            ->route('admin.content.session-registration.index')
+            ->route('admin.session-registration.index')
             ->with('success', 'Registratie succesvol aangemaakt.');
     }
 
@@ -80,7 +80,7 @@ class SessionRegistrationController extends AdminBaseController
         $sessionRegistration->update($data);
 
         return redirect()
-            ->route('admin.content.session-registration.index')
+            ->route('admin.session-registration.index')
             ->with('success', 'Registratie succesvol bijgewerkt.');
     }
 
@@ -92,7 +92,7 @@ class SessionRegistrationController extends AdminBaseController
         $sessionRegistration->delete();
 
         return redirect()
-            ->route('admin.content.session-registration.index')
+            ->route('admin.session-registration.index')
             ->with('success', 'Registratie succesvol verwijderd.');
     }
 

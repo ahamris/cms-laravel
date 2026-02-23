@@ -11,7 +11,7 @@
                 <p>Create a new external code snippet</p>
             </div>
         </div>
-        <a href="{{ route('admin.content.external-code.index') }}"
+        <a href="{{ route('admin.external-code.index') }}"
            class="px-4 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm">
             <i class="fa-solid fa-arrow-left mr-2"></i>
             Back to List
@@ -19,7 +19,7 @@
     </div>
 
     {{-- Form --}}
-    <form action="{{ route('admin.content.external-code.store') }}" method="POST">
+    <form action="{{ route('admin.external-code.store') }}" method="POST">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

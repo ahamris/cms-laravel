@@ -56,7 +56,7 @@ class PricingPlanController extends AdminBaseController
 
         $plan = PricingPlan::create($validated);
 
-        return redirect()->route('admin.content.pricing-plan.index')
+        return redirect()->route('admin.pricing-plan.index')
             ->with('success', 'Pricing plan created successfully.');
     }
 
@@ -104,7 +104,7 @@ class PricingPlanController extends AdminBaseController
 
         $pricingPlan->update($validated);
 
-        return redirect()->route('admin.content.pricing-plan.index')
+        return redirect()->route('admin.pricing-plan.index')
             ->with('success', 'Pricing plan updated successfully.');
     }
 
@@ -115,7 +115,7 @@ class PricingPlanController extends AdminBaseController
     {
         $pricingPlan->delete();
 
-        return redirect()->route('admin.content.pricing-plan.index')
+        return redirect()->route('admin.pricing-plan.index')
             ->with('success', 'Pricing plan deleted successfully.');
     }
 

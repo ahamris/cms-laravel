@@ -42,7 +42,7 @@ class PresenterController extends AdminBaseController
         Presenter::create($data);
 
         return redirect()
-            ->route('admin.content.presenter.index')
+            ->route('admin.presenter.index')
             ->with('success', 'Presenter succesvol aangemaakt.');
     }
 
@@ -94,7 +94,7 @@ class PresenterController extends AdminBaseController
         $presenter->update($data);
 
         return redirect()
-            ->route('admin.content.presenter.index')
+            ->route('admin.presenter.index')
             ->with('success', 'Presenter succesvol bijgewerkt.');
     }
 
@@ -111,7 +111,7 @@ class PresenterController extends AdminBaseController
         $presenter->delete();
 
         return redirect()
-            ->route('admin.content.presenter.index')
+            ->route('admin.presenter.index')
             ->with('success', 'Presenter succesvol verwijderd.');
     }
 

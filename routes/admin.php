@@ -140,94 +140,92 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         });
 
         // Content Management
-        Route::prefix('content')->name('content.')->group(function () {
-            // Pages
-            Route::resource('page', PageController::class);
-            Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
+        // Pages
+        Route::resource('page', PageController::class);
+        Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
 
-            // Legal Pages
-            Route::resource('legal', LegalController::class);
-            Route::post('legal/{legal}/toggle-active', [LegalController::class, 'toggleActive'])->name('legal.toggle-active');
-            Route::post('legal/{legal}/faq', [LegalController::class, 'storeFaq'])->name('legal.store-faq');
-            Route::put('legal/{legal}/faq/{faqId}', [LegalController::class, 'updateFaq'])->name('legal.update-faq');
-            Route::delete('legal/{legal}/faq/{faqId}', [LegalController::class, 'destroyFaq'])->name('legal.destroy-faq');
-            Route::post('legal/{legal}/faq/{faqId}/toggle-active', [LegalController::class, 'toggleFaqActive'])->name('legal.toggle-faq-active');
+        // Legal Pages
+        Route::resource('legal', LegalController::class);
+        Route::post('legal/{legal}/toggle-active', [LegalController::class, 'toggleActive'])->name('legal.toggle-active');
+        Route::post('legal/{legal}/faq', [LegalController::class, 'storeFaq'])->name('legal.store-faq');
+        Route::put('legal/{legal}/faq/{faqId}', [LegalController::class, 'updateFaq'])->name('legal.update-faq');
+        Route::delete('legal/{legal}/faq/{faqId}', [LegalController::class, 'destroyFaq'])->name('legal.destroy-faq');
+        Route::post('legal/{legal}/faq/{faqId}/toggle-active', [LegalController::class, 'toggleFaqActive'])->name('legal.toggle-faq-active');
 
-            // Legal Page Versions
-            Route::get('legal/{legal}/versions', [LegalController::class, 'versions'])->name('legal.versions');
-            Route::get('legal/{legal}/versions/{versionNumber}', [LegalController::class, 'showVersion'])->name('legal.version.show');
-            Route::post('legal/{legal}/versions/{versionNumber}/restore', [LegalController::class, 'restoreVersion'])->name('legal.version.restore');
-            Route::post('legal/{legal}/versions/create', [LegalController::class, 'createVersion'])->name('legal.version.create');
+        // Legal Page Versions
+        Route::get('legal/{legal}/versions', [LegalController::class, 'versions'])->name('legal.versions');
+        Route::get('legal/{legal}/versions/{versionNumber}', [LegalController::class, 'showVersion'])->name('legal.version.show');
+        Route::post('legal/{legal}/versions/{versionNumber}/restore', [LegalController::class, 'restoreVersion'])->name('legal.version.restore');
+        Route::post('legal/{legal}/versions/create', [LegalController::class, 'createVersion'])->name('legal.version.create');
 
-            // Static Pages
-            Route::resource('static-page', StaticPageController::class);
-            Route::post('static-page/{staticPage}/toggle-active', [StaticPageController::class, 'toggleActive'])->name('static-page.toggle-active');
-            Route::post('static-page/{staticPage}/faq', [StaticPageController::class, 'storeFaq'])->name('static-page.store-faq');
-            Route::put('static-page/{staticPage}/faq/{faqId}', [StaticPageController::class, 'updateFaq'])->name('static-page.update-faq');
-            Route::delete('static-page/{staticPage}/faq/{faqId}', [StaticPageController::class, 'destroyFaq'])->name('static-page.destroy-faq');
-            Route::post('static-page/{staticPage}/faq/{faqId}/toggle-active', [StaticPageController::class, 'toggleFaqActive'])->name('static-page.toggle-faq-active');
+        // Static Pages
+        Route::resource('static-page', StaticPageController::class);
+        Route::post('static-page/{staticPage}/toggle-active', [StaticPageController::class, 'toggleActive'])->name('static-page.toggle-active');
+        Route::post('static-page/{staticPage}/faq', [StaticPageController::class, 'storeFaq'])->name('static-page.store-faq');
+        Route::put('static-page/{staticPage}/faq/{faqId}', [StaticPageController::class, 'updateFaq'])->name('static-page.update-faq');
+        Route::delete('static-page/{staticPage}/faq/{faqId}', [StaticPageController::class, 'destroyFaq'])->name('static-page.destroy-faq');
+        Route::post('static-page/{staticPage}/faq/{faqId}/toggle-active', [StaticPageController::class, 'toggleFaqActive'])->name('static-page.toggle-faq-active');
 
-            // Blog Categories
-            Route::get('blog-category/{blogCategory}/json', [BlogCategoryController::class, 'getJson'])->name('blog-category.json');
-            Route::resource('blog-category', BlogCategoryController::class);
-            Route::post('blog-category/{blogCategory}/toggle-active', [BlogCategoryController::class, 'toggleActive'])->name('blog-category.toggle-active');
+        // Blog Categories
+        Route::get('blog-category/{blogCategory}/json', [BlogCategoryController::class, 'getJson'])->name('blog-category.json');
+        Route::resource('blog-category', BlogCategoryController::class);
+        Route::post('blog-category/{blogCategory}/toggle-active', [BlogCategoryController::class, 'toggleActive'])->name('blog-category.toggle-active');
 
-            // Blogs
-            Route::resource('blog', BlogController::class);
-            Route::post('blog/{blog}/toggle-active', [BlogController::class, 'toggleActive'])->name('blog.toggle-active');
-            Route::post('blog/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('blog.toggle-featured');
-            Route::post('blog/{blog}/social-media-post', [BlogController::class, 'createSocialMediaPost'])->name('blog.social-media-post');
-            Route::get('blog/{blog}/social-media-posts', [BlogController::class, 'socialMediaPosts'])->name('blog.social-media-posts');
-            Route::post('blog/{blog}/analyze-seo', [BlogController::class, 'analyzeSEO'])->name('blog.analyze-seo');
-            Route::post('blog/generate-with-ai', [BlogController::class, 'generateWithAI'])->name('blog.generate-with-ai');
+        // Blogs
+        Route::resource('blog', BlogController::class);
+        Route::post('blog/{blog}/toggle-active', [BlogController::class, 'toggleActive'])->name('blog.toggle-active');
+        Route::post('blog/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('blog.toggle-featured');
+        Route::post('blog/{blog}/social-media-post', [BlogController::class, 'createSocialMediaPost'])->name('blog.social-media-post');
+        Route::get('blog/{blog}/social-media-posts', [BlogController::class, 'socialMediaPosts'])->name('blog.social-media-posts');
+        Route::post('blog/{blog}/analyze-seo', [BlogController::class, 'analyzeSEO'])->name('blog.analyze-seo');
+        Route::post('blog/generate-with-ai', [BlogController::class, 'generateWithAI'])->name('blog.generate-with-ai');
 
-            // Social Media Platforms API
-            Route::get('social-media-platforms', function () {
-                return SocialMediaPlatform::active()->ordered()->get();
-            });
-
-            // Solutions
-            Route::resource('solution', SolutionController::class);
-            Route::post('solution/{solution}/toggle-active', [SolutionController::class, 'toggleActive'])->name('solution.toggle-active');
-
-            // Modules
-            Route::resource('module', ModuleController::class);
-            Route::post('modules/update-order', [ModuleController::class, 'updateOrder'])->name('modules.update-order');
-
-            // Features
-            Route::resource('feature', FeatureController::class);
-            Route::post('features/update-order', [FeatureController::class, 'updateOrder'])->name('features.update-order');
-
-            // Changelog
-            Route::resource('changelog', ChangelogController::class);
-            Route::post('changelogs/update-order', [ChangelogController::class, 'updateOrder'])->name('changelogs.update-order');
-
-            // Documentation
-            Route::resource('doc-versions', DocVersionController::class)->parameters(['doc-versions' => 'docVersion']);
-            Route::post('doc-versions/{docVersion}/set-default', [DocVersionController::class, 'setDefault'])->name('doc-versions.set-default');
-            Route::resource('doc-sections', DocSectionController::class)->parameters(['doc-sections' => 'docSection']);
-            Route::resource('doc-pages', DocPageController::class)->parameters(['doc-pages' => 'docPage']);
-
-            // API Changelog
-            Route::get('api-changelog', [ApiChangelogController::class, 'index'])->name('api-changelog.index');
-            Route::get('api-changelog/{changelog}', [ApiChangelogController::class, 'show'])->name('api-changelog.show');
-
-            // Homepage content (hero, feature cards, about OPMS, etc. – single edit page)
-            Route::get('homepage', [HomepageContentController::class, 'edit'])->name('homepage.edit');
-            Route::put('homepage', [HomepageContentController::class, 'update'])->name('homepage.update');
-
-            // Homepage FAQs
-            Route::resource('faq-module', HomepageFaqController::class)->parameters(['faq-module' => 'faq']);
-            Route::post('faq-modules/update-order', [HomepageFaqController::class, 'updateOrder'])->name('faq-modules.update-order');
-
-            // External Codes
-            Route::resource('external-code', ExternalCodeController::class);
-            Route::post('external-codes/update-order', [ExternalCodeController::class, 'updateOrder'])->name('external-codes.update-order');
-
-            // Carousel Widgets
-            Route::resource('carousel-widgets', CarouselWidgetController::class);
-            Route::post('carousel-widgets/{carousel_widget}/toggle-active', [CarouselWidgetController::class, 'toggleActive'])->name('carousel-widgets.toggle-active');
+        // Social Media Platforms API
+        Route::get('social-media-platforms', function () {
+            return SocialMediaPlatform::active()->ordered()->get();
         });
+
+        // Solutions
+        Route::resource('solution', SolutionController::class);
+        Route::post('solution/{solution}/toggle-active', [SolutionController::class, 'toggleActive'])->name('solution.toggle-active');
+
+        // Modules
+        Route::resource('module', ModuleController::class);
+        Route::post('modules/update-order', [ModuleController::class, 'updateOrder'])->name('modules.update-order');
+
+        // Features
+        Route::resource('feature', FeatureController::class);
+        Route::post('features/update-order', [FeatureController::class, 'updateOrder'])->name('features.update-order');
+
+        // Changelog
+        Route::resource('changelog', ChangelogController::class);
+        Route::post('changelogs/update-order', [ChangelogController::class, 'updateOrder'])->name('changelogs.update-order');
+
+        // Documentation
+        Route::resource('doc-versions', DocVersionController::class)->parameters(['doc-versions' => 'docVersion']);
+        Route::post('doc-versions/{docVersion}/set-default', [DocVersionController::class, 'setDefault'])->name('doc-versions.set-default');
+        Route::resource('doc-sections', DocSectionController::class)->parameters(['doc-sections' => 'docSection']);
+        Route::resource('doc-pages', DocPageController::class)->parameters(['doc-pages' => 'docPage']);
+
+        // API Changelog
+        Route::get('api-changelog', [ApiChangelogController::class, 'index'])->name('api-changelog.index');
+        Route::get('api-changelog/{changelog}', [ApiChangelogController::class, 'show'])->name('api-changelog.show');
+
+        // Homepage content (hero, feature cards, about OPMS, etc. – single edit page)
+        Route::get('homepage', [HomepageContentController::class, 'edit'])->name('homepage.edit');
+        Route::put('homepage', [HomepageContentController::class, 'update'])->name('homepage.update');
+
+        // Homepage FAQs
+        Route::resource('faq-module', HomepageFaqController::class)->parameters(['faq-module' => 'faq']);
+        Route::post('faq-modules/update-order', [HomepageFaqController::class, 'updateOrder'])->name('faq-modules.update-order');
+
+        // External Codes
+        Route::resource('external-code', ExternalCodeController::class);
+        Route::post('external-codes/update-order', [ExternalCodeController::class, 'updateOrder'])->name('external-codes.update-order');
+
+        // Carousel Widgets
+        Route::resource('carousel-widgets', CarouselWidgetController::class);
+        Route::post('carousel-widgets/{carousel_widget}/toggle-active', [CarouselWidgetController::class, 'toggleActive'])->name('carousel-widgets.toggle-active');
 
         // Vacancy Management
         Route::prefix('vacancies')->name('vacancies.')->group(function () {
@@ -296,65 +294,62 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::put('content-plans/{contentPlan}/items/{item}', [ContentPlanController::class, 'updateItem'])->name('content-plans.update-item');
         });
 
-        Route::prefix('content')->name('content.')->group(function () {
-            // Events
-            Route::resource('event', EventController::class);
+        // Events
+        Route::resource('event', EventController::class);
 
-            // Comments
-            Route::resource('comment', CommentController::class)->only(['index', 'show']);
-            Route::post('comment/{comment}/toggle-approve', [CommentController::class, 'toggleApprove'])->name('comment.toggle-approve');
-            Route::post('event/{event}/toggle-active', [EventController::class, 'toggleActive'])->name('event.toggle-active');
+        // Comments
+        Route::resource('comment', CommentController::class)->only(['index', 'show']);
+        Route::post('comment/{comment}/toggle-approve', [CommentController::class, 'toggleApprove'])->name('comment.toggle-approve');
+        Route::post('event/{event}/toggle-active', [EventController::class, 'toggleActive'])->name('event.toggle-active');
 
-            // Pricing Plans
-            Route::resource('pricing-plan', PricingPlanController::class);
-            Route::post('pricing-plans/update-order', [PricingPlanController::class, 'updateOrder'])->name('pricing-plans.update-order');
+        // Pricing Plans
+        Route::resource('pricing-plan', PricingPlanController::class);
+        Route::post('pricing-plans/update-order', [PricingPlanController::class, 'updateOrder'])->name('pricing-plans.update-order');
 
-            // Pricing Boosters
-            Route::resource('pricing-booster', PricingBoosterController::class);
-            Route::post('pricing-boosters/update-order', [PricingBoosterController::class, 'updateOrder'])->name('pricing-boosters.update-order');
+        // Pricing Boosters
+        Route::resource('pricing-booster', PricingBoosterController::class);
+        Route::post('pricing-boosters/update-order', [PricingBoosterController::class, 'updateOrder'])->name('pricing-boosters.update-order');
 
-            // Pricing Features
-            Route::resource('pricing-feature', PricingFeatureController::class);
-            Route::post('pricing-features/update-order', [PricingFeatureController::class, 'updateOrder'])->name('pricing-features.update-order');
+        // Pricing Features
+        Route::resource('pricing-feature', PricingFeatureController::class);
+        Route::post('pricing-features/update-order', [PricingFeatureController::class, 'updateOrder'])->name('pricing-features.update-order');
 
-            // Course - Categories (video categories)
-            Route::get('course-category/{course_category}/json', [CourseCategoryController::class, 'getJson'])->name('course-category.json');
-            Route::post('course-category/{course_category}/toggle-active', [CourseCategoryController::class, 'toggleActive'])->name('course-category.toggle-active');
-            Route::resource('course-category', CourseCategoryController::class);
+        // Course - Categories (video categories)
+        Route::get('course-category/{course_category}/json', [CourseCategoryController::class, 'getJson'])->name('course-category.json');
+        Route::post('course-category/{course_category}/toggle-active', [CourseCategoryController::class, 'toggleActive'])->name('course-category.toggle-active');
+        Route::resource('course-category', CourseCategoryController::class);
 
-            // Course - Chapters (full CRUD + JSON API for video form dropdown)
-            Route::get('courses/by-category', [CourseController::class, 'getByCategory'])->name('courses.by-category');
-            Route::resource('course', CourseController::class);
+        // Course - Chapters (full CRUD + JSON API for video form dropdown)
+        Route::get('courses/by-category', [CourseController::class, 'getByCategory'])->name('courses.by-category');
+        Route::resource('course', CourseController::class);
 
-            // Course - Videos
-            Route::post('course-video/{course_video}/toggle-active', [CourseVideoController::class, 'toggleActive'])->name('course-video.toggle-active');
-            Route::resource('course-video', CourseVideoController::class);
+        // Course - Videos
+        Route::post('course-video/{course_video}/toggle-active', [CourseVideoController::class, 'toggleActive'])->name('course-video.toggle-active');
+        Route::resource('course-video', CourseVideoController::class);
 
-            // Academy - Live Sessions
-            Route::resource('live-session', LiveSessionController::class);
-            Route::post('live-sessions/update-order', [LiveSessionController::class, 'updateOrder'])->name('live-sessions.update-order');
-            Route::post('live-session/{liveSession}/toggle-status', [LiveSessionController::class, 'toggleStatus'])->name('live-session.toggle-status');
-            Route::post('live-session/{liveSession}/update-session-status', [LiveSessionController::class, 'updateSessionStatus'])->name('live-session.update-session-status');
+        // Academy - Live Sessions
+        Route::resource('live-session', LiveSessionController::class);
+        Route::post('live-sessions/update-order', [LiveSessionController::class, 'updateOrder'])->name('live-sessions.update-order');
+        Route::post('live-session/{liveSession}/toggle-status', [LiveSessionController::class, 'toggleStatus'])->name('live-session.toggle-status');
+        Route::post('live-session/{liveSession}/update-session-status', [LiveSessionController::class, 'updateSessionStatus'])->name('live-session.update-session-status');
 
-            // Academy - Presenters
-            Route::resource('presenter', PresenterController::class);
-            Route::post('presenters/update-order', [PresenterController::class, 'updateOrder'])->name('presenters.update-order');
-            Route::post('presenter/{presenter}/toggle-status', [PresenterController::class, 'toggleStatus'])->name('presenter.toggle-status');
-            Route::delete('presenter/{presenter}/remove-avatar', [PresenterController::class, 'removeAvatar'])->name('presenter.remove-avatar');
+        // Academy - Presenters
+        Route::resource('presenter', PresenterController::class);
+        Route::post('presenters/update-order', [PresenterController::class, 'updateOrder'])->name('presenters.update-order');
+        Route::post('presenter/{presenter}/toggle-status', [PresenterController::class, 'toggleStatus'])->name('presenter.toggle-status');
+        Route::delete('presenter/{presenter}/remove-avatar', [PresenterController::class, 'removeAvatar'])->name('presenter.remove-avatar');
 
-            // Academy - Session Registrations
-            Route::resource('session-registration', SessionRegistrationController::class);
-            Route::post('session-registration/{sessionRegistration}/mark-attended', [SessionRegistrationController::class, 'markAttended'])->name('session-registration.mark-attended');
-            Route::post('session-registration/{sessionRegistration}/mark-no-show', [SessionRegistrationController::class, 'markNoShow'])->name('session-registration.mark-no-show');
-            Route::post('session-registration/{sessionRegistration}/cancel', [SessionRegistrationController::class, 'cancel'])->name('session-registration.cancel');
-            Route::post('session-registrations/export', [SessionRegistrationController::class, 'export'])->name('session-registrations.export');
+        // Academy - Session Registrations
+        Route::resource('session-registration', SessionRegistrationController::class);
+        Route::post('session-registration/{sessionRegistration}/mark-attended', [SessionRegistrationController::class, 'markAttended'])->name('session-registration.mark-attended');
+        Route::post('session-registration/{sessionRegistration}/mark-no-show', [SessionRegistrationController::class, 'markNoShow'])->name('session-registration.mark-no-show');
+        Route::post('session-registration/{sessionRegistration}/cancel', [SessionRegistrationController::class, 'cancel'])->name('session-registration.cancel');
+        Route::post('session-registrations/export', [SessionRegistrationController::class, 'export'])->name('session-registrations.export');
 
-            // Sticky Menu Items
-            Route::resource('sticky-menu-item', StickyMenuItemController::class)->except(['show']);
-            Route::post('sticky-menu-items/update-order', [StickyMenuItemController::class, 'updateOrder'])->name('sticky-menu-items.update-order');
-            Route::post('sticky-menu-item/{stickyMenuItem}/toggle-status', [StickyMenuItemController::class, 'toggleStatus'])->name('sticky-menu-item.toggle-status');
-
-        });
+        // Sticky Menu Items
+        Route::resource('sticky-menu-item', StickyMenuItemController::class)->except(['show']);
+        Route::post('sticky-menu-items/update-order', [StickyMenuItemController::class, 'updateOrder'])->name('sticky-menu-items.update-order');
+        Route::post('sticky-menu-item/{stickyMenuItem}/toggle-status', [StickyMenuItemController::class, 'toggleStatus'])->name('sticky-menu-item.toggle-status');
 
         // Administrator Management
         Route::prefix('administrator')->name('administrator.')->group(function () {

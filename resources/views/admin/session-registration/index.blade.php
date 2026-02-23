@@ -21,7 +21,7 @@
                 ['key' => 'registered_at', 'label' => 'Registration Date', 'type' => 'custom', 'view' => 'admin.session-registration.partials.registered-at-column'],
                 ['key' => 'status', 'label' => 'Status', 'type' => 'custom', 'view' => 'admin.session-registration.partials.status-column'],
             ]"
-            route-prefix="admin.content.session-registration"
+            route-prefix="admin.session-registration"
             search-placeholder="Search by name, email, or organization..."
             :paginate="15"
             custom-actions-view="admin.session-registration.partials.table-actions"

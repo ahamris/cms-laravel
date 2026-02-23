@@ -73,7 +73,7 @@ class MarketingDashboardController extends AdminBaseController
             $suggestions[] = [
                 'type' => 'seo',
                 'message' => "{$lowSeoBlogs} blog post(s) need SEO improvement",
-                'action' => route('admin.content.blogs.index'),
+                'action' => route('admin.blog.index'),
             ];
         }
 

@@ -7,12 +7,12 @@
             <p class="text-gray-600">View page information and content</p>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.page.edit', $page) }}"
+            <a href="{{ route('admin.page.edit', $page) }}"
                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
                 <span>Edit</span>
             </a>
-            <a href="{{ route('admin.content.page.index') }}"
+            <a href="{{ route('admin.page.index') }}"
                class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to Pages</span>

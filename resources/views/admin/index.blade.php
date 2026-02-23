@@ -38,7 +38,7 @@
                 :value="number_format($contentStats['blogs'] ?? 0)"
                 variant="default"
                 :hover="false"
-                :action-url="route('admin.content.blog.index')"
+                :action-url="route('admin.blog.index')"
                 action-text="View all"
             />
 
@@ -50,7 +50,7 @@
                 :value="number_format($contentStats['pages'] ?? 0)"
                 variant="default"
                 :hover="false"
-                :action-url="route('admin.content.page.index')"
+                :action-url="route('admin.page.index')"
                 action-text="View all"
             />
 
@@ -80,10 +80,10 @@
                     </x-slot:header>
                     <x-slot:body>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <x-button variant="outline-primary" size="sm" icon="plus" :href="route('admin.content.blog.create')" class="justify-center">
+                            <x-button variant="outline-primary" size="sm" icon="plus" :href="route('admin.blog.create')" class="justify-center">
                                 New Blog
                             </x-button>
-                            <x-button variant="outline-primary" size="sm" icon="plus" :href="route('admin.content.page.create')" class="justify-center">
+                            <x-button variant="outline-primary" size="sm" icon="plus" :href="route('admin.page.create')" class="justify-center">
                                 New Page
                             </x-button>
                             <x-button variant="outline-primary" size="sm" icon="chart-line" :href="route('admin.analytics.index')" class="justify-center">

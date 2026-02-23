@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <a href="{{ route('admin.content.doc-sections.edit', $docSection) }}" 
+            <a href="{{ route('admin.doc-sections.edit', $docSection) }}" 
                class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
                 <span>Edit</span>
             </a>
-            <a href="{{ route('admin.content.doc-sections.index') }}" 
+            <a href="{{ route('admin.doc-sections.index') }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to List</span>
@@ -43,7 +43,7 @@
                                             <p class="text-xs text-gray-400 mt-1">Slug: {{ $page->slug }}</p>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <a href="{{ route('admin.content.doc-pages.edit', $page) }}"
+                                            <a href="{{ route('admin.doc-pages.edit', $page) }}"
                                                class="text-xs text-gray-600 hover:text-blue-600">
                                                 <i class="fa-solid fa-edit"></i>
                                             </a>
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('admin.content.doc-pages.create') }}?section={{ $docSection->id }}"
+            <a href="{{ route('admin.doc-pages.create') }}?section={{ $docSection->id }}"
                class="block w-full px-4 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 text-center">
                 <i class="fa-solid fa-plus mr-2"></i>
                 Add Page

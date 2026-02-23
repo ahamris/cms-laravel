@@ -9,12 +9,12 @@
             </div>
 
             <x-ui.button variant="secondary" icon="arrow-left"
-                href="{{ route('admin.content.sticky-menu-item.index') }}">
+                href="{{ route('admin.sticky-menu-item.index') }}">
                 Cancel & Return
             </x-ui.button>
         </div>
 
-        <form action="{{ route('admin.content.sticky-menu-item.store') }}" method="POST"
+        <form action="{{ route('admin.sticky-menu-item.store') }}" method="POST"
             class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             @csrf
 

@@ -48,7 +48,7 @@ class CarouselWidgetController extends AdminBaseController
         $this->logCreate($carouselWidget);
 
         return redirect()
-            ->route('admin.content.carousel-widgets.index')
+            ->route('admin.carousel-widgets.index')
             ->with('success', 'Carousel widget created successfully.');
     }
 
@@ -87,7 +87,7 @@ class CarouselWidgetController extends AdminBaseController
         $this->logUpdate($carouselWidget);
 
         return redirect()
-            ->route('admin.content.carousel-widgets.index')
+            ->route('admin.carousel-widgets.index')
             ->with('success', 'Carousel widget updated successfully.');
     }
 
@@ -101,7 +101,7 @@ class CarouselWidgetController extends AdminBaseController
         $this->logDelete($carouselWidget);
 
         return redirect()
-            ->route('admin.content.carousel-widgets.index')
+            ->route('admin.carousel-widgets.index')
             ->with('success', 'Carousel widget deleted successfully.');
     }
 

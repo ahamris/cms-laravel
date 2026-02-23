@@ -54,7 +54,7 @@ class CourseController extends AdminBaseController
 
         Course::create($validated);
 
-        return redirect()->route('admin.content.course.index')
+        return redirect()->route('admin.course.index')
             ->with('success', 'Chapter created successfully.');
     }
 
@@ -77,7 +77,7 @@ class CourseController extends AdminBaseController
 
         $course->update($validated);
 
-        return redirect()->route('admin.content.course.index')
+        return redirect()->route('admin.course.index')
             ->with('success', 'Chapter updated successfully.');
     }
 
@@ -88,7 +88,7 @@ class CourseController extends AdminBaseController
     {
         $course->delete();
 
-        return redirect()->route('admin.content.course.index')
+        return redirect()->route('admin.course.index')
             ->with('success', 'Chapter deleted successfully.');
     }
 }

@@ -13,7 +13,7 @@
         </div>
         <div class="flex items-center space-x-3">
             @if($version->version_number != $legal->current_version)
-                <form action="{{ route('admin.content.legal.version.restore', [$legal, $version->version_number]) }}"
+                <form action="{{ route('admin.legal.version.restore', [$legal, $version->version_number]) }}"
                       method="POST" class="inline"
                       onsubmit="return confirm('Are you sure you want to restore version {{ $version->version_number }}? This will create a new version with the current state before restoring.')">
                     @csrf
@@ -29,7 +29,7 @@
                     <span>Current Version</span>
                 </span>
             @endif
-            <a href="{{ route('admin.content.legal.versions', $legal) }}"
+            <a href="{{ route('admin.legal.versions', $legal) }}"
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to Versions</span>
@@ -170,7 +170,7 @@
 
                 <div class="space-y-2">
                     @if($version->version_number != $legal->current_version)
-                        <form action="{{ route('admin.content.legal.version.restore', [$legal, $version->version_number]) }}"
+                        <form action="{{ route('admin.legal.version.restore', [$legal, $version->version_number]) }}"
                               method="POST"
                               onsubmit="return confirm('Are you sure you want to restore version {{ $version->version_number }}? This will create a new version with the current state before restoring.')">
                             @csrf
@@ -182,13 +182,13 @@
                         </form>
                     @endif
 
-                    <a href="{{ route('admin.content.legal.versions', $legal) }}"
+                    <a href="{{ route('admin.legal.versions', $legal) }}"
                        class="w-full inline-flex items-center justify-center px-4 py-2 text-sm bg-white border border-gray-200 text-gray-700 rounded-md hover:bg-gray-50 transition-colors duration-200">
                         <i class="fa-solid fa-arrow-left mr-2"></i>
                         Back to Versions
                     </a>
 
-                    <a href="{{ route('admin.content.legal.edit', $legal) }}"
+                    <a href="{{ route('admin.legal.edit', $legal) }}"
                        class="w-full inline-flex items-center justify-center px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/80 transition-colors duration-200">
                         <i class="fa-solid fa-edit mr-2"></i>
                         Edit Current Page

@@ -45,7 +45,7 @@ class BlogCategoryController extends AdminBaseController
             ]);
         }
 
-        return redirect()->route('admin.content.blog-category.index')
+        return redirect()->route('admin.blog-category.index')
             ->with('success', 'Blog category created successfully!');
     }
 
@@ -102,7 +102,7 @@ class BlogCategoryController extends AdminBaseController
             ]);
         }
 
-        return redirect()->route('admin.content.blog-category.index')
+        return redirect()->route('admin.blog-category.index')
             ->with('success', 'Blog category updated successfully!');
     }
 
@@ -113,7 +113,7 @@ class BlogCategoryController extends AdminBaseController
     {
         $blogCategory->delete();
 
-        return redirect()->route('admin.content.blog-category.index')
+        return redirect()->route('admin.blog-category.index')
             ->with('success', 'Blog category deleted successfully!');
     }
 

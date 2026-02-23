@@ -11,7 +11,7 @@
                 <p>Manage documentation versions</p>
             </div>
         </div>
-        <a href="{{ route('admin.content.doc-versions.create') }}"
+        <a href="{{ route('admin.doc-versions.create') }}"
            class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2">
             <i class="fa-solid fa-plus"></i>
             <span>Add New Version</span>
@@ -67,16 +67,16 @@
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <a href="{{ route('admin.content.doc-versions.show', $version) }}"
+                                    <a href="{{ route('admin.doc-versions.show', $version) }}"
                                        class="text-xs text-gray-600 hover:text-primary transition-colors duration-200">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.content.doc-versions.edit', $version) }}"
+                                    <a href="{{ route('admin.doc-versions.edit', $version) }}"
                                        class="text-xs text-gray-600 hover:text-blue-600 transition-colors duration-200">
                                         <i class="fa-solid fa-edit"></i>
                                     </a>
                                     @if(!$version->is_default)
-                                        <form action="{{ route('admin.content.doc-versions.set-default', $version) }}"
+                                        <form action="{{ route('admin.doc-versions.set-default', $version) }}"
                                               method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="text-xs text-gray-600 hover:text-green-600 transition-colors duration-200" title="Set as Default">
@@ -84,7 +84,7 @@
                                             </button>
                                         </form>
                                     @endif
-                                    <form action="{{ route('admin.content.doc-versions.destroy', $version) }}"
+                                    <form action="{{ route('admin.doc-versions.destroy', $version) }}"
                                           method="POST" class="inline"
                                           onsubmit="return confirm('Are you sure you want to delete this version? All sections and pages will be deleted.')">
                                         @csrf

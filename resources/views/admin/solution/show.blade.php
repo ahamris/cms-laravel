@@ -6,11 +6,11 @@
             <p class="text-zinc-600 dark:text-zinc-400">View the solution information</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-            <a href="{{ route('admin.content.solution.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
+            <a href="{{ route('admin.solution.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Solutions
             </a>
-            <a href="{{ route('admin.content.solution.edit', $solution) }}" class="inline-flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-500">
+            <a href="{{ route('admin.solution.edit', $solution) }}" class="inline-flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-500">
                 <i class="fa-solid fa-edit"></i>
                 Edit
             </a>
@@ -198,7 +198,7 @@
                                             <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($module->short_body, 60) }}</div>
                                         @endif
                                     </div>
-                                    <a href="{{ route('admin.content.module.show', $module) }}" 
+                                    <a href="{{ route('admin.module.show', $module) }}" 
                                        class="flex-shrink-0 text-[var(--color-accent)] hover:text-[var(--color-accent)]/80 text-sm">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>

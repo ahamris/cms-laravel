@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <a href="{{ route('admin.content.doc-pages.edit', $docPage) }}" 
+            <a href="{{ route('admin.doc-pages.edit', $docPage) }}" 
                class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
                 <span>Edit</span>
             </a>
-            <a href="{{ route('admin.content.doc-pages.index') }}" 
+            <a href="{{ route('admin.doc-pages.index') }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to List</span>

@@ -48,7 +48,7 @@ class CourseCategoryController extends AdminBaseController
 
         CourseCategory::create($payload);
 
-        return redirect()->route('admin.content.course-category.index')
+        return redirect()->route('admin.course-category.index')
             ->with('success', 'Course category created successfully.');
     }
 
@@ -118,7 +118,7 @@ class CourseCategoryController extends AdminBaseController
 
         $courseCategory->update($payload);
 
-        return redirect()->route('admin.content.course-category.index')
+        return redirect()->route('admin.course-category.index')
             ->with('success', 'Course category updated successfully.');
     }
 
@@ -133,7 +133,7 @@ class CourseCategoryController extends AdminBaseController
 
         $courseCategory->delete();
 
-        return redirect()->route('admin.content.course-category.index')
+        return redirect()->route('admin.course-category.index')
             ->with('success', 'Course category deleted successfully.');
     }
 

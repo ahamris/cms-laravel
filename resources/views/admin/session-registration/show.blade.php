@@ -14,19 +14,19 @@
             </div>
             <p class="text-zinc-600 dark:text-zinc-400">
                 Participation details for
-                <a href="{{ route('admin.content.live-session.show', $sessionRegistration->liveSession) }}"
+                <a href="{{ route('admin.live-session.show', $sessionRegistration->liveSession) }}"
                     class="text-primary hover:text-primary/80 font-medium">
                     {{ $sessionRegistration->liveSession->title }}
                 </a>
             </p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.session-registration.index') }}"
+            <a href="{{ route('admin.session-registration.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to List
             </a>
-            <a href="{{ route('admin.content.session-registration.edit', $sessionRegistration) }}">
+            <a href="{{ route('admin.session-registration.edit', $sessionRegistration) }}">
                 <x-button variant="primary" icon="edit">Edit Registration</x-button>
             </a>
         </div>
@@ -64,7 +64,7 @@
             <div class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white">Session Information</h2>
-                    <a href="{{ route('admin.content.live-session.show', $sessionRegistration->liveSession) }}"
+                    <a href="{{ route('admin.live-session.show', $sessionRegistration->liveSession) }}"
                         class="text-sm text-primary hover:text-primary/80 hover:underline">
                         View Session <i class="fa-solid fa-arrow-right ml-1"></i>
                     </a>
@@ -116,7 +116,7 @@
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
                 <div class="space-y-3">
                     @if($sessionRegistration->status === 'registered')
-                        <form action="{{ route('admin.content.session-registration.mark-attended', $sessionRegistration) }}"
+                        <form action="{{ route('admin.session-registration.mark-attended', $sessionRegistration) }}"
                             method="POST">
                             @csrf
                             <button type="submit"
@@ -125,7 +125,7 @@
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.content.session-registration.mark-no-show', $sessionRegistration) }}"
+                        <form action="{{ route('admin.session-registration.mark-no-show', $sessionRegistration) }}"
                             method="POST">
                             @csrf
                             <button type="submit"
@@ -136,7 +136,7 @@
                     @endif
 
                     @if($sessionRegistration->status !== 'cancelled')
-                        <form action="{{ route('admin.content.session-registration.cancel', $sessionRegistration) }}"
+                        <form action="{{ route('admin.session-registration.cancel', $sessionRegistration) }}"
                             method="POST" onsubmit="return confirm('Are you sure?');">
                             @csrf
                             <button type="submit"
@@ -175,7 +175,7 @@
                         @endif
                     </div>
                     <div class="pt-2">
-                        <form action="{{ route('admin.content.session-registration.destroy', $sessionRegistration) }}"
+                        <form action="{{ route('admin.session-registration.destroy', $sessionRegistration) }}"
                             method="POST"
                             onsubmit="return confirm('Are you sure to delete this registration? This cannot be undone.')">
                             @csrf

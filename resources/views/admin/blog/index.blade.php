@@ -7,7 +7,7 @@
                 <p class="text-zinc-600 dark:text-zinc-400">Manage all blog posts in your system</p>
             </div>
             <div class="flex items-center gap-3">
-                <x-button variant="primary" icon="plus" icon-position="left" href="{{ route('admin.content.blog.create') }}">Add New Blog Post</x-button>
+                <x-button variant="primary" icon="plus" icon-position="left" href="{{ route('admin.blog.create') }}">Add New Blog Post</x-button>
             </div>
         </div>
 
@@ -24,7 +24,7 @@
                 ['key' => 'is_featured', 'type' => 'toggle'],
                 ['key' => 'social_media', 'type' => 'custom', 'view' => 'admin.blog.partials.social-media-column'],
             ]"
-            route-prefix="admin.content.blog"
+            route-prefix="admin.blog"
             search-placeholder="Search blogs..."
             :paginate="15"
             custom-actions-view="admin.blog.partials.table-actions"

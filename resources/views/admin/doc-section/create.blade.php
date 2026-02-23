@@ -11,7 +11,7 @@
                 <p>Add a new documentation section</p>
             </div>
         </div>
-        <a href="{{ route('admin.content.doc-sections.index') }}" 
+        <a href="{{ route('admin.doc-sections.index') }}" 
            class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
             <i class="fa-solid fa-arrow-left"></i>
             <span>Back to List</span>
@@ -19,7 +19,7 @@
     </div>
 
     <div class="bg-gray-50/50 rounded-md border border-gray-200">
-        <form action="{{ route('admin.content.doc-sections.store') }}" method="POST">
+        <form action="{{ route('admin.doc-sections.store') }}" method="POST">
             @csrf
             <div class="p-6 space-y-6">
                 <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6 space-y-6">
@@ -129,7 +129,7 @@
             </div>
 
             <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/80 flex justify-between rounded-b-md">
-                <a href="{{ route('admin.content.doc-sections.index') }}" class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200">
+                <a href="{{ route('admin.doc-sections.index') }}" class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200">
                     Cancel
                 </a>
                 <button type="submit" class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200">

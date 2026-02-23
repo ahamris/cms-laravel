@@ -6,16 +6,16 @@
             <p class="text-zinc-600 dark:text-zinc-400">Update registration information</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.session-registration.show', $sessionRegistration) }}">
+            <a href="{{ route('admin.session-registration.show', $sessionRegistration) }}">
                 <x-button variant="secondary" icon="eye">View Details</x-button>
             </a>
-            <a href="{{ route('admin.content.session-registration.index') }}">
+            <a href="{{ route('admin.session-registration.index') }}">
                 <x-button variant="secondary" icon="arrow-left">Back to List</x-button>
             </a>
         </div>
     </div>
 
-    <form action="{{ route('admin.content.session-registration.update', $sessionRegistration) }}" method="POST">
+    <form action="{{ route('admin.session-registration.update', $sessionRegistration) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -82,7 +82,7 @@
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save"
                             icon-position="left">Update Registration</x-button>
-                        <a href="{{ route('admin.content.session-registration.index') }}" class="block">
+                        <a href="{{ route('admin.session-registration.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                     </div>

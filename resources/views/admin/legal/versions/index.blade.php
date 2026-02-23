@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.legal.edit', $legal) }}"
+            <a href="{{ route('admin.legal.edit', $legal) }}"
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
                 <span>Edit Page</span>
             </a>
-            <a href="{{ route('admin.content.legal.index') }}"
+            <a href="{{ route('admin.legal.index') }}"
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to Legal Pages</span>
@@ -45,7 +45,7 @@
                 <p class="text-sm font-medium text-blue-900">Current Version: v{{ $legal->current_version }}</p>
                 <p class="text-xs text-blue-700 mt-1">Versioning: {{ $legal->versioning_enabled ? 'Enabled' : 'Disabled' }}</p>
             </div>
-            <form action="{{ route('admin.content.legal.version.create', $legal) }}" method="POST" class="inline">
+            <form action="{{ route('admin.legal.version.create', $legal) }}" method="POST" class="inline">
                 @csrf
                 <button type="submit"
                         class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2">
@@ -101,13 +101,13 @@
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <a href="{{ route('admin.content.legal.version.show', [$legal, $version->version_number]) }}"
+                                    <a href="{{ route('admin.legal.version.show', [$legal, $version->version_number]) }}"
                                        class="text-xs text-gray-600 hover:text-primary transition-colors duration-200"
                                        title="View Version">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                     @if($version->version_number != $legal->current_version)
-                                        <form action="{{ route('admin.content.legal.version.restore', [$legal, $version->version_number]) }}"
+                                        <form action="{{ route('admin.legal.version.restore', [$legal, $version->version_number]) }}"
                                               method="POST" class="inline"
                                               onsubmit="return confirm('Are you sure you want to restore version {{ $version->version_number }}? This will create a new version with the current state before restoring.')">
                                             @csrf

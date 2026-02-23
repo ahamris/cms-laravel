@@ -6,7 +6,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Pricing Plans</h1>
             <p class="text-gray-600">Manage subscription pricing plans (SMART, GROW, FLOW)</p>
         </div>
-        <a href="{{ route('admin.content.pricing-plan.create') }}"
+        <a href="{{ route('admin.pricing-plan.create') }}"
            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors duration-200">
             <i class="fa-solid fa-plus mr-2"></i>
             Create New Plan
@@ -85,7 +85,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
-                                        <a href="{{ route('admin.content.pricing-plan.edit', $plan) }}"
+                                        <a href="{{ route('admin.pricing-plan.edit', $plan) }}"
                                            class="text-blue-600 hover:text-blue-900"
                                            title="Edit">
                                             <i class="fa-solid fa-edit"></i>

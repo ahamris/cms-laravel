@@ -6,14 +6,14 @@
             <p class="text-zinc-600 dark:text-zinc-400">Edit feature: {{ $feature->title }}</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.feature.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
+            <a href="{{ route('admin.feature.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Features
             </a>
         </div>
     </div>
 
-    <form action="{{ route('admin.content.feature.update', $feature) }}" method="POST">
+    <form action="{{ route('admin.feature.update', $feature) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -120,7 +120,7 @@
                                 </div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">No modules available</p>
                                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                    <a href="{{ route('admin.content.module.create') }}" class="text-[var(--color-accent)] hover:underline">Create one first</a>
+                                    <a href="{{ route('admin.module.create') }}" class="text-[var(--color-accent)] hover:underline">Create one first</a>
                                 </p>
                             </div>
                         @endif
@@ -175,7 +175,7 @@
 
         {{-- Form Actions --}}
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-end gap-4 border-t border-gray-200 dark:border-white/10 pt-6">
-            <a href="{{ route('admin.content.feature.index') }}" class="text-sm/6 font-semibold text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300">Cancel</a>
+            <a href="{{ route('admin.feature.index') }}" class="text-sm/6 font-semibold text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300">Cancel</a>
             <button type="submit" name="action" value="save" class="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]">
                 <i class="fa-solid fa-check"></i>
                 Update Feature

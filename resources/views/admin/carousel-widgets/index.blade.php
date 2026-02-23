@@ -6,7 +6,7 @@
                 <h2 class="text-3xl font-bold text-gray-900">Carousel Widgets</h2>
                 <p class="text-gray-600 mt-2">Create and manage carousel widgets for displaying content</p>
             </div>
-            <a href="{{ route('admin.content.carousel-widgets.create') }}"
+            <a href="{{ route('admin.carousel-widgets.create') }}"
                class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
                 <i class="fa fa-plus mr-2"></i>
                 Create New Carousel
@@ -70,12 +70,12 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
-                                        <a href="{{ route('admin.content.carousel-widgets.show', $widget) }}"
+                                        <a href="{{ route('admin.carousel-widgets.show', $widget) }}"
                                            class="text-blue-600 hover:text-blue-900 transition-colors"
                                            title="View">
                                             <i class="fa fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.content.carousel-widgets.edit', $widget) }}"
+                                        <a href="{{ route('admin.carousel-widgets.edit', $widget) }}"
                                            class="text-purple-600 hover:text-purple-900 transition-colors"
                                            title="Edit">
                                             <i class="fa fa-edit"></i>
@@ -110,7 +110,7 @@
                 <p class="text-gray-600 mb-6 max-w-md mx-auto">
                     Get started by creating your first carousel widget. Display blogs, images, or custom content in beautiful carousels!
                 </p>
-                <a href="{{ route('admin.content.carousel-widgets.create') }}"
+                <a href="{{ route('admin.carousel-widgets.create') }}"
                    class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200">
                     <i class="fa fa-plus mr-2"></i>
                     Create Your First Carousel

@@ -6,7 +6,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Edit Pricing Plan</h1>
             <p class="text-gray-600">Update pricing plan details</p>
         </div>
-        <a href="{{ route('admin.content.pricing-plan.index') }}"
+        <a href="{{ route('admin.pricing-plan.index') }}"
            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
             <i class="fa-solid fa-arrow-left mr-2"></i>
             Back to List
@@ -14,7 +14,7 @@
     </div>
 
     {{-- Form --}}
-    <form action="{{ route('admin.content.pricing-plan.update', $pricingPlan) }}" method="POST" class="space-y-6">
+    <form action="{{ route('admin.pricing-plan.update', $pricingPlan) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
 

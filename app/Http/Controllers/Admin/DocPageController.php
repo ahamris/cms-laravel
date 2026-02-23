@@ -63,7 +63,7 @@ class DocPageController extends AdminBaseController
             $this->logCreate($page);
 
             return redirect()
-                ->route('admin.content.doc-pages.index')
+                ->route('admin.doc-pages.index')
                 ->with('success', 'Documentation page created successfully.');
         } catch (\Exception $e) {
             return redirect()
@@ -122,7 +122,7 @@ class DocPageController extends AdminBaseController
             $this->logUpdate($docPage);
 
             return redirect()
-                ->route('admin.content.doc-pages.index')
+                ->route('admin.doc-pages.index')
                 ->with('success', 'Documentation page updated successfully.');
         } catch (\Exception $e) {
             return redirect()
@@ -142,7 +142,7 @@ class DocPageController extends AdminBaseController
             $docPage->delete();
 
             return redirect()
-                ->route('admin.content.doc-pages.index')
+                ->route('admin.doc-pages.index')
                 ->with('success', 'Documentation page deleted successfully.');
         } catch (\Exception $e) {
             return redirect()

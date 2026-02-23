@@ -53,7 +53,7 @@ class DocSectionController extends AdminBaseController
             $this->logCreate($section);
 
             return redirect()
-                ->route('admin.content.doc-sections.index')
+                ->route('admin.doc-sections.index')
                 ->with('success', 'Documentation section created successfully.');
         } catch (\Exception $e) {
             return redirect()
@@ -102,7 +102,7 @@ class DocSectionController extends AdminBaseController
             $this->logUpdate($docSection);
 
             return redirect()
-                ->route('admin.content.doc-sections.index')
+                ->route('admin.doc-sections.index')
                 ->with('success', 'Documentation section updated successfully.');
         } catch (\Exception $e) {
             return redirect()
@@ -122,7 +122,7 @@ class DocSectionController extends AdminBaseController
             $docSection->delete();
 
             return redirect()
-                ->route('admin.content.doc-sections.index')
+                ->route('admin.doc-sections.index')
                 ->with('success', 'Documentation section deleted successfully.');
         } catch (\Exception $e) {
             return redirect()

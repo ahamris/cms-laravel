@@ -24,7 +24,7 @@
         ['key' => 'color', 'type' => 'color'],
         ['key' => 'is_active', 'type' => 'toggle'],
         ['key' => 'created_at', 'format' => 'date'],
-    ]" route-prefix="admin.content.blog-category"
+    ]" route-prefix="admin.blog-category"
             search-placeholder="Search blog categories..." :paginate="15"
             custom-actions-view="admin.blog-category.partials.table-actions"
             :search-fields="['name', 'slug', 'description']" />

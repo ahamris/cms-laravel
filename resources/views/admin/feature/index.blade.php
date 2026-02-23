@@ -21,7 +21,7 @@
                 ['key' => 'description', 'type' => 'custom', 'view' => 'admin.feature.partials.description-column'],
                 ['key' => 'is_active', 'type' => 'toggle'],
             ]"
-            route-prefix="admin.content.feature"
+            route-prefix="admin.feature"
             search-placeholder="Search features..."
             :paginate="15"
             custom-actions-view="admin.feature.partials.table-actions"

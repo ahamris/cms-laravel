@@ -6,7 +6,7 @@
             <p class="text-zinc-600 dark:text-zinc-400">Add a new blog post to your website</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.blog.index') }}"
+            <a href="{{ route('admin.blog.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Blogs
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.content.blog.store') }}" method="POST" enctype="multipart/form-data" id="blogForm">
+    <form action="{{ route('admin.blog.store') }}" method="POST" enctype="multipart/form-data" id="blogForm">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -237,7 +237,7 @@
                         Save & Continue Editing
                     </x-ui.button>
 
-                    <a href="{{ route('admin.content.blog.index') }}"
+                    <a href="{{ route('admin.blog.index') }}"
                         class="block w-full text-center text-sm font-semibold text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-all">
                         Discard Changes
                     </a>
@@ -278,7 +278,7 @@
                 btnIcon.classList.remove('fa-wand-magic-sparkles');
                 btnIcon.classList.add('fa-spinner', 'fa-spin');
 
-                fetch('{{ route('admin.content.blog.generate-with-ai') }}', {
+                fetch('{{ route('admin.blog.generate-with-ai') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

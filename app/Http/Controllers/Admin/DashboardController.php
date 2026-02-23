@@ -145,7 +145,7 @@ class DashboardController extends AdminBaseController
                 return [
                     'id' => 'solution_'.$item->id,
                     'title' => $item->title,
-                    'url' => route('admin.content.solution.edit', $item->id),
+                    'url' => route('admin.solution.edit', $item->id),
                     'category' => 'Solution',
                     'icon' => 'fa-lightbulb',
                 ];
@@ -161,7 +161,7 @@ class DashboardController extends AdminBaseController
                 return [
                     'id' => 'blog_'.$item->id,
                     'title' => $item->title,
-                    'url' => route('admin.content.blog.edit', $item->id),
+                    'url' => route('admin.blog.edit', $item->id),
                     'category' => 'Blog',
                     'icon' => 'fa-newspaper',
                 ];

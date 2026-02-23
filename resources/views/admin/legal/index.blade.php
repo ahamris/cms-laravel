@@ -22,7 +22,7 @@
                 ['key' => 'is_active', 'label' => 'Status', 'type' => 'toggle'],
                 ['key' => 'created_at', 'label' => 'Created', 'format' => 'date'],
             ]"
-            route-prefix="admin.content.legal"
+            route-prefix="admin.legal"
             search-placeholder="Search legal pages..."
             :paginate="15"
             custom-actions-view="admin.legal.partials.table-actions"

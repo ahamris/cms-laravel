@@ -115,7 +115,7 @@
                                             <p class="font-medium">{{ $item->content_data['title'] ?? 'Pillar Article' }}</p>
                                             <p class="text-sm text-gray-600">{{ $item->scheduled_at ? $item->scheduled_at->format('M d, Y H:i') : 'Not scheduled' }}</p>
                                             @if($item->relatedContent)
-                                                <a href="{{ route('admin.content.blog.edit', $item->relatedContent) }}" 
+                                                <a href="{{ route('admin.blog.edit', $item->relatedContent) }}" 
                                                    class="text-xs text-primary hover:underline mt-1 inline-block">
                                                     <i class="fa-solid fa-edit mr-1"></i>Edit Blog
                                                 </a>
@@ -140,7 +140,7 @@
                                             <p class="font-medium">{{ $item->content_data['title'] ?? 'Supporting Article' }}</p>
                                             <p class="text-sm text-gray-600">{{ $item->scheduled_at ? $item->scheduled_at->format('M d, Y H:i') : 'Not scheduled' }}</p>
                                             @if($item->relatedContent)
-                                                <a href="{{ route('admin.content.blog.edit', $item->relatedContent) }}" 
+                                                <a href="{{ route('admin.blog.edit', $item->relatedContent) }}" 
                                                    class="text-xs text-primary hover:underline mt-1 inline-block">
                                                     <i class="fa-solid fa-edit mr-1"></i>Edit Blog
                                                 </a>

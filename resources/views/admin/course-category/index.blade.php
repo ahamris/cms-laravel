@@ -7,7 +7,7 @@
                 <p class="text-zinc-600 dark:text-zinc-400">Manage video categories for the academy</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.content.course-category.create') }}">
+                <a href="{{ route('admin.course-category.create') }}">
                     <x-button variant="primary" icon="plus" icon-position="left">Add Category</x-button>
                 </a>
             </div>
@@ -22,7 +22,7 @@
         ['key' => 'sort_order', 'type' => 'number'],
         ['key' => 'is_active', 'type' => 'toggle'],
         ['key' => 'created_at', 'format' => 'date'],
-    ]" route-prefix="admin.content.course-category"
+    ]" route-prefix="admin.course-category"
             search-placeholder="Search categories..." :paginate="15"
             custom-actions-view="admin.course-category.partials.table-actions"
             :search-fields="['name', 'slug', 'description']" />

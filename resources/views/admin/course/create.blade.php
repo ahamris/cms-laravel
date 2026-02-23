@@ -1,5 +1,5 @@
 <x-layouts.admin title="Add Chapter">
-    <form action="{{ route('admin.content.course.store') }}" method="POST">
+    <form action="{{ route('admin.course.store') }}" method="POST">
         @csrf
 
         <div class="flex items-center justify-between mb-6">
@@ -7,7 +7,7 @@
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add Chapter</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Create a new chapter for a document category</p>
             </div>
-            <a href="{{ route('admin.content.course.index') }}">
+            <a href="{{ route('admin.course.index') }}">
                 <x-button variant="secondary" icon="arrow-left" class="justify-center">Back to list</x-button>
             </a>
         </div>
@@ -44,7 +44,7 @@
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Actions</h2>
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save">Create Chapter</x-button>
-                        <a href="{{ route('admin.content.course.index') }}" class="block">
+                        <a href="{{ route('admin.course.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                     </div>

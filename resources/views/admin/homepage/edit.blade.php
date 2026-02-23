@@ -17,7 +17,7 @@
     </div>
 
     <div class="bg-gray-50/50 dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10">
-        <form action="{{ route('admin.content.homepage.update') }}" method="POST" enctype="multipart/form-data" class="space-y-0">
+        <form action="{{ route('admin.homepage.update') }}" method="POST" enctype="multipart/form-data" class="space-y-0">
             @csrf
             @method('PUT')
 

@@ -166,7 +166,7 @@ class HomepageContentController extends AdminBaseController
 
         $this->logUpdate($section ?? null);
 
-        return redirect()->route('admin.content.homepage.edit')->with('success', 'Homepage content updated successfully.');
+        return redirect()->route('admin.homepage.edit')->with('success', 'Homepage content updated successfully.');
     }
 
     private static function defaultContent(string $key): array

@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex space-x-3">
-            <a href="{{ route('admin.content.external-code.edit', $externalCode) }}"
+            <a href="{{ route('admin.external-code.edit', $externalCode) }}"
                class="px-5 py-2 rounded-md bg-primary text-white text-sm">
                 <i class="fa-solid fa-edit mr-2"></i>
                 Edit
             </a>
-            <a href="{{ route('admin.content.external-code.index') }}"
+            <a href="{{ route('admin.external-code.index') }}"
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm">
                 <i class="fa-solid fa-arrow-left mr-2"></i>
                 Back to List
@@ -152,7 +152,7 @@
                     <h3 class="text-base font-semibold text-gray-900">Actions</h3>
                 </div>
                 <div class="p-6 space-y-3">
-                    <a href="{{ route('admin.content.external-code.edit', $externalCode) }}"
+                    <a href="{{ route('admin.external-code.edit', $externalCode) }}"
                        class="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors duration-200 text-center block text-sm">
                         <i class="fa-solid fa-edit mr-2"></i>
                         Edit External Code

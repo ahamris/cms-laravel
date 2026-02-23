@@ -1,5 +1,5 @@
 @if(in_array('edit', $actions))
-    <a href="{{ route('admin.content.course-category.edit', $item) }}">
+    <a href="{{ route('admin.course-category.edit', $item) }}">
         <x-button variant="warning" size="sm" icon="edit" title="Edit"></x-button>
     </a>
 @endif

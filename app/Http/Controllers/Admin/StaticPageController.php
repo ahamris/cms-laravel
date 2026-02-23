@@ -46,7 +46,7 @@ class StaticPageController extends AdminBaseController
         $staticPage = StaticPage::create($validated);
 
         return redirect()
-            ->route('admin.content.static-page.index')
+            ->route('admin.static-page.index')
             ->with('success', 'Static page created successfully.');
     }
 
@@ -97,7 +97,7 @@ class StaticPageController extends AdminBaseController
         $staticPage->update($validated);
 
         return redirect()
-            ->route('admin.content.static-page.index')
+            ->route('admin.static-page.index')
             ->with('success', 'Static page updated successfully.');
     }
 
@@ -114,7 +114,7 @@ class StaticPageController extends AdminBaseController
         $staticPage->delete();
 
         return redirect()
-            ->route('admin.content.static-page.index')
+            ->route('admin.static-page.index')
             ->with('success', 'Static page deleted successfully.');
     }
 

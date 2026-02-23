@@ -5,14 +5,14 @@
                 <h1 class="text-2xl font-bold text-gray-900">Edit Page</h1>
                 <p class="text-gray-600">{{ $page->title }}</p>
             </div>
-            <a href="{{ route('admin.content.page.index') }}"
+            <a href="{{ route('admin.page.index') }}"
                 class="px-4 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2">
                 <i class="fa fa-arrow-left"></i>
                 Back to List
             </a>
         </div>
 
-        <form action="{{ route('admin.content.page.update', $page) }}" method="POST" enctype="multipart/form-data" class="space-y-6"
+        <form action="{{ route('admin.page.update', $page) }}" method="POST" enctype="multipart/form-data" class="space-y-6"
             x-data="{
                 templates: {{ Js::from($templates ?? []) }},
                 currentTemplate: {{ Js::from($currentTemplate ?? 'default') }},
@@ -204,7 +204,7 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-6">
-                <a href="{{ route('admin.content.page.index') }}"
+                <a href="{{ route('admin.page.index') }}"
                     class="px-4 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">Cancel</a>
                 <button type="submit"
                     class="px-4 py-2 text-sm text-white bg-primary rounded-md hover:bg-primary/80 transition-colors flex items-center gap-2">

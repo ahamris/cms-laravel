@@ -7,7 +7,7 @@
                 <p class="text-zinc-600 dark:text-zinc-400">Manage chapters per document category</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.content.course.create') }}">
+                <a href="{{ route('admin.course.create') }}">
                     <x-button variant="primary" icon="plus" icon-position="left">Add Chapter</x-button>
                 </a>
             </div>
@@ -21,7 +21,7 @@
             ['key' => 'description', 'type' => 'text', 'limit' => 60],
             ['key' => 'sort_order', 'type' => 'number'],
             ['key' => 'created_at', 'format' => 'date'],
-        ]" route-prefix="admin.content.course"
+        ]" route-prefix="admin.course"
             search-placeholder="Search chapters..." :paginate="15"
             custom-actions-view="admin.course.partials.table-actions"
             :search-fields="['name', 'description', 'category.name']" />

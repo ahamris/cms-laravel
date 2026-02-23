@@ -48,7 +48,7 @@ class LegalController extends AdminBaseController
 
         $legal = Legal::create($validated);
 
-        return redirect()->route('admin.content.legal.index')
+        return redirect()->route('admin.legal.index')
             ->with('success', 'Legal page created successfully!');
     }
 
@@ -132,7 +132,7 @@ class LegalController extends AdminBaseController
 
         $legal->update($validated);
 
-        return redirect()->route('admin.content.legal.index')
+        return redirect()->route('admin.legal.index')
             ->with('success', 'Legal page updated successfully!');
     }
 
@@ -143,7 +143,7 @@ class LegalController extends AdminBaseController
     {
         $legal->delete();
 
-        return redirect()->route('admin.content.legal.index')
+        return redirect()->route('admin.legal.index')
             ->with('success', 'Legal page deleted successfully!');
     }
 
@@ -154,7 +154,7 @@ class LegalController extends AdminBaseController
     {
         $legal->update(['is_active' => !$legal->is_active]);
 
-        return redirect()->route('admin.content.legal.index')
+        return redirect()->route('admin.legal.index')
             ->with('success', 'Legal page status updated successfully!');
     }
 
@@ -195,18 +195,18 @@ class LegalController extends AdminBaseController
         $version = $legal->getVersion($versionNumber);
 
         if (!$version) {
-            return redirect()->route('admin.content.legal.versions', $legal)
+            return redirect()->route('admin.legal.versions', $legal)
                 ->with('error', 'Version not found');
         }
 
         $restored = $legal->restoreVersion($versionNumber);
 
         if ($restored) {
-            return redirect()->route('admin.content.legal.edit', $legal)
+            return redirect()->route('admin.legal.edit', $legal)
                 ->with('success', "Version {$versionNumber} restored successfully!");
         }
 
-        return redirect()->route('admin.content.legal.versions', $legal)
+        return redirect()->route('admin.legal.versions', $legal)
             ->with('error', 'Failed to restore version');
     }
 
@@ -219,7 +219,7 @@ class LegalController extends AdminBaseController
 
         $legal->createVersion($notes);
 
-        return redirect()->route('admin.content.legal.versions', $legal)
+        return redirect()->route('admin.legal.versions', $legal)
             ->with('success', 'Version created successfully!');
     }
 }

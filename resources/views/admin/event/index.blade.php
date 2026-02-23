@@ -23,7 +23,7 @@
                 ['key' => 'price', 'label' => 'Price', 'type' => 'custom', 'view' => 'admin.event.partials.price-column'],
                 ['key' => 'is_active', 'label' => 'Status', 'type' => 'toggle'],
             ]"
-            route-prefix="admin.content.event"
+            route-prefix="admin.event"
             search-placeholder="Search events..."
             :paginate="15"
             custom-actions-view="admin.event.partials.table-actions"

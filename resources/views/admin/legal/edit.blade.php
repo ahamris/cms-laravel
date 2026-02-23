@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.legal.versions', $legal) }}"
+            <a href="{{ route('admin.legal.versions', $legal) }}"
                class="px-5 py-2 rounded-md bg-purple-600 text-white text-sm hover:bg-purple-700 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 <span>Version History ({{ $legal->getVersionsCount() }})</span>
             </a>
-            <a href="{{ route('admin.content.legal.index') }}"
+            <a href="{{ route('admin.legal.index') }}"
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to Legal Pages</span>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="bg-gray-50/50 rounded-md border border-gray-200">
-        <form action="{{ route('admin.content.legal.update', $legal) }}" method="POST" enctype="multipart/form-data" id="legalForm">
+        <form action="{{ route('admin.legal.update', $legal) }}" method="POST" enctype="multipart/form-data" id="legalForm">
             @csrf
             @method('PUT')
 
@@ -191,7 +191,7 @@
                                         <p class="text-sm text-gray-900">{{ $legal->getVersionsCount() }}</p>
                                     </div>
                                     <x-ui.toggle name="versioning_enabled" label="Enable Versioning" :checked="old('versioning_enabled', $legal->versioning_enabled)" />
-                                    <a href="{{ route('admin.content.legal.versions', $legal) }}"
+                                    <a href="{{ route('admin.legal.versions', $legal) }}"
                                        class="block w-full text-center px-4 py-2 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200">
                                         <i class="fa-solid fa-clock-rotate-left mr-2"></i>
                                         View Version History
@@ -292,7 +292,7 @@
 
             {{-- Form Actions --}}
             <div class="px-6 py-4 bg-gray-50/80 border-t border-gray-200 rounded-b-md flex items-center justify-end space-x-3">
-                <a href="{{ route('admin.content.legal.index') }}"
+                <a href="{{ route('admin.legal.index') }}"
                    class="px-5 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200">
                     Cancel
                 </a>

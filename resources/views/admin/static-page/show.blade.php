@@ -11,12 +11,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.static-page.edit', $staticPage) }}" 
+            <a href="{{ route('admin.static-page.edit', $staticPage) }}" 
                class="px-5 py-2 rounded-md bg-yellow-600 text-white text-sm hover:bg-yellow-700 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa fa-edit"></i>
                 <span>Edit</span>
             </a>
-            <a href="{{ route('admin.content.static-page.index') }}" 
+            <a href="{{ route('admin.static-page.index') }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa fa-arrow-left"></i>
                 <span>Back to List</span>
@@ -141,7 +141,7 @@
                 </h3>
                 
                 <div class="space-y-2">
-                    <form action="{{ route('admin.content.static-page.toggle-active', $staticPage) }}" method="POST" class="w-full">
+                    <form action="{{ route('admin.static-page.toggle-active', $staticPage) }}" method="POST" class="w-full">
                         @csrf
                         <button type="submit" 
                                 class="w-full text-left px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200 focus:outline-none">
@@ -150,13 +150,13 @@
                         </button>
                     </form>
                     
-                    <a href="{{ route('admin.content.static-page.edit', $staticPage) }}" 
+                    <a href="{{ route('admin.static-page.edit', $staticPage) }}" 
                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200">
                         <i class="fa fa-edit mr-2"></i>
                         Edit Page
                     </a>
                     
-                    <form action="{{ route('admin.content.static-page.destroy', $staticPage) }}" 
+                    <form action="{{ route('admin.static-page.destroy', $staticPage) }}" 
                           method="POST" 
                           class="w-full"
                           onsubmit="return confirm('Are you sure you want to delete this static page?')">

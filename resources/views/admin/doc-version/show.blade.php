@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <a href="{{ route('admin.content.doc-versions.edit', $docVersion) }}" 
+            <a href="{{ route('admin.doc-versions.edit', $docVersion) }}" 
                class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
                 <span>Edit</span>
             </a>
-            <a href="{{ route('admin.content.doc-versions.index') }}" 
+            <a href="{{ route('admin.doc-versions.index') }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to List</span>
@@ -48,7 +48,7 @@
                                             </p>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <a href="{{ route('admin.content.doc-sections.edit', $section) }}"
+                                            <a href="{{ route('admin.doc-sections.edit', $section) }}"
                                                class="text-xs text-gray-600 hover:text-blue-600">
                                                 <i class="fa-solid fa-edit"></i>
                                             </a>
@@ -100,7 +100,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('admin.content.doc-sections.create') }}?version={{ $docVersion->id }}"
+            <a href="{{ route('admin.doc-sections.create') }}?version={{ $docVersion->id }}"
                class="block w-full px-4 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 text-center">
                 <i class="fa-solid fa-plus mr-2"></i>
                 Add Section

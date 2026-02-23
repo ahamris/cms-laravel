@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Storage;
             <p class="text-zinc-600 dark:text-zinc-400">View the module information</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-            <a href="{{ route('admin.content.module.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
+            <a href="{{ route('admin.module.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Modules
             </a>
-            <a href="{{ route('admin.content.module.edit', $module) }}" class="inline-flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-500">
+            <a href="{{ route('admin.module.edit', $module) }}" class="inline-flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-500">
                 <i class="fa-solid fa-edit"></i>
                 Edit
             </a>
@@ -201,7 +201,7 @@ use Illuminate\Support\Facades\Storage;
                                             <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($solution->short_body, 60) }}</div>
                                         @endif
                                     </div>
-                                    <a href="{{ route('admin.content.solution.show', $solution) }}" 
+                                    <a href="{{ route('admin.solution.show', $solution) }}" 
                                        class="flex-shrink-0 text-[var(--color-accent)] hover:text-[var(--color-accent)]/80 text-sm">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
@@ -231,7 +231,7 @@ use Illuminate\Support\Facades\Storage;
                                             <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($feature->description, 60) }}</div>
                                         @endif
                                     </div>
-                                    <a href="{{ route('admin.content.feature.show', $feature) }}" 
+                                    <a href="{{ route('admin.feature.show', $feature) }}" 
                                        class="flex-shrink-0 text-[var(--color-accent)] hover:text-[var(--color-accent)]/80 text-sm">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>

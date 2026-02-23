@@ -84,11 +84,11 @@ class BlogController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.blog.edit', $blog)
+            return redirect()->route('admin.blog.edit', $blog)
                 ->with('success', 'Blog created successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.blog.index')
+        return redirect()->route('admin.blog.index')
             ->with('success', 'Blog created successfully!');
     }
 
@@ -186,11 +186,11 @@ class BlogController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.blog.edit', $blog)
+            return redirect()->route('admin.blog.edit', $blog)
                 ->with('success', 'Blog updated successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.blog.index')
+        return redirect()->route('admin.blog.index')
             ->with('success', 'Blog updated successfully!');
     }
 
@@ -225,7 +225,7 @@ class BlogController extends AdminBaseController
 
         $blog->delete();
 
-        return redirect()->route('admin.content.blog.index')
+        return redirect()->route('admin.blog.index')
             ->with('success', 'Blog deleted successfully!');
     }
 

@@ -7,12 +7,12 @@
             <p class="text-gray-600">Update carousel widget configuration</p>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.carousel-widgets.show', $carouselWidget) }}"
+            <a href="{{ route('admin.carousel-widgets.show', $carouselWidget) }}"
                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
                 <i class="fa-solid fa-eye mr-2"></i>
                 View
             </a>
-            <a href="{{ route('admin.content.carousel-widgets.index') }}"
+            <a href="{{ route('admin.carousel-widgets.index') }}"
                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
                 <i class="fa-solid fa-arrow-left mr-2"></i>
                 Back to List
@@ -21,7 +21,7 @@
     </div>
 
     {{-- Form --}}
-    <form action="{{ route('admin.content.carousel-widgets.update', $carouselWidget) }}" method="POST" class="space-y-6">
+    <form action="{{ route('admin.carousel-widgets.update', $carouselWidget) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -311,12 +311,12 @@
                                 <i class="fa-solid fa-save mr-2"></i>
                                 Update Carousel Widget
                             </button>
-                            <a href="{{ route('admin.content.carousel-widgets.show', $carouselWidget) }}"
+                            <a href="{{ route('admin.carousel-widgets.show', $carouselWidget) }}"
                                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center block">
                                 <i class="fa-solid fa-eye mr-2"></i>
                                 View Widget
                             </a>
-                            <a href="{{ route('admin.content.carousel-widgets.index') }}"
+                            <a href="{{ route('admin.carousel-widgets.index') }}"
                                class="w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors duration-200 text-center block">
                                 <i class="fa-solid fa-times mr-2"></i>
                                 Cancel

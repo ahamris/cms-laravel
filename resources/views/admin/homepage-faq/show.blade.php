@@ -7,12 +7,12 @@
             <p class="text-gray-600">FAQ Group Details</p>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.faq-module.edit', ['faq' => $faq]) }}"
+            <a href="{{ route('admin.faq-module.edit', ['faq' => $faq]) }}"
                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
                 <i class="fa-solid fa-edit mr-2"></i>
                 Edit FAQ Group
             </a>
-            <a href="{{ route('admin.content.faq-module.index') }}"
+            <a href="{{ route('admin.faq-module.index') }}"
                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
                 <i class="fa-solid fa-arrow-left mr-2"></i>
                 Back to List
@@ -233,7 +233,7 @@
                 </div>
             </div>
             <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                <form action="{{ route('admin.content.faq-module.destroy', ['faq' => $faq]) }}" method="POST" class="inline">
+                <form action="{{ route('admin.faq-module.destroy', ['faq' => $faq]) }}" method="POST" class="inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">

@@ -23,7 +23,7 @@
                 ['key' => 'status', 'label' => 'Status', 'type' => 'custom', 'view' => 'admin.live-session.partials.status-column'],
                 ['key' => 'is_active', 'label' => 'Active', 'type' => 'toggle'],
             ]"
-            route-prefix="admin.content.live-session"
+            route-prefix="admin.live-session"
             search-placeholder="Search sessions..."
             :paginate="15"
             custom-actions-view="admin.live-session.partials.table-actions"

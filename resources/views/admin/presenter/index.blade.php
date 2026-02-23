@@ -21,7 +21,7 @@
                 ['key' => 'liveSessions.id', 'label' => 'Sessions', 'type' => 'custom', 'view' => 'admin.presenter.partials.sessions-count-column'],
                 ['key' => 'is_active', 'label' => 'Status', 'type' => 'toggle'],
             ]"
-            route-prefix="admin.content.presenter"
+            route-prefix="admin.presenter"
             search-placeholder="Search presenters..."
             :paginate="15"
             custom-actions-view="admin.presenter.partials.table-actions"

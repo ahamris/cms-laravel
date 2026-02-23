@@ -21,12 +21,12 @@
             </p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.course-video.index') }}"
+            <a href="{{ route('admin.course-video.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to list
             </a>
-            <a href="{{ route('admin.content.course-video.edit', $courseVideo) }}">
+            <a href="{{ route('admin.course-video.edit', $courseVideo) }}">
                 <x-button variant="primary" icon="edit">Edit Video</x-button>
             </a>
         </div>
@@ -124,7 +124,7 @@
             <div class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Actions</h2>
                 <div class="space-y-3">
-                    <form action="{{ route('admin.content.course-video.destroy', $courseVideo) }}" method="POST"
+                    <form action="{{ route('admin.course-video.destroy', $courseVideo) }}" method="POST"
                           onsubmit="return confirm('Are you sure you want to delete this video? This action cannot be undone.')">
                         @csrf
                         @method('DELETE')

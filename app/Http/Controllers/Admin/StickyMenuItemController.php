@@ -35,7 +35,7 @@ class StickyMenuItemController extends AdminBaseController
         StickyMenuItem::create($request->validated());
 
         return redirect()
-            ->route('admin.content.sticky-menu-item.index')
+            ->route('admin.sticky-menu-item.index')
             ->with('success', 'Sticky menu item succesvol aangemaakt.');
     }
 
@@ -57,7 +57,7 @@ class StickyMenuItemController extends AdminBaseController
         $stickyMenuItem->update($request->validated());
 
         return redirect()
-            ->route('admin.content.sticky-menu-item.index')
+            ->route('admin.sticky-menu-item.index')
             ->with('success', 'Sticky menu item succesvol bijgewerkt.');
     }
 
@@ -69,7 +69,7 @@ class StickyMenuItemController extends AdminBaseController
         $stickyMenuItem->delete();
 
         return redirect()
-            ->route('admin.content.sticky-menu-item.index')
+            ->route('admin.sticky-menu-item.index')
             ->with('success', 'Sticky menu item succesvol verwijderd.');
     }
 

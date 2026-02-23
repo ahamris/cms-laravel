@@ -22,7 +22,7 @@
                 ['key' => 'image_position', 'label' => 'Image Position', 'type' => 'custom', 'view' => 'admin.solution.partials.image-position-column'],
                 ['key' => 'is_active', 'type' => 'toggle'],
             ]"
-            route-prefix="admin.content.solution"
+            route-prefix="admin.solution"
             search-placeholder="Search solutions..."
             :paginate="15"
             custom-actions-view="admin.solution.partials.table-actions"

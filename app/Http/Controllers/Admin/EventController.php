@@ -51,7 +51,7 @@ class EventController extends AdminBaseController
 
         $event = Event::create($validated);
 
-        return redirect()->route('admin.content.event.index')
+        return redirect()->route('admin.event.index')
             ->with('success', 'Event created successfully!');
     }
 
@@ -116,7 +116,7 @@ class EventController extends AdminBaseController
 
         $event->update($validated);
 
-        return redirect()->route('admin.content.event.index')
+        return redirect()->route('admin.event.index')
             ->with('success', 'Event updated successfully!');
     }
 
@@ -136,7 +136,7 @@ class EventController extends AdminBaseController
 
         $event->delete();
 
-        return redirect()->route('admin.content.event.index')
+        return redirect()->route('admin.event.index')
             ->with('success', 'Event deleted successfully!');
     }
 

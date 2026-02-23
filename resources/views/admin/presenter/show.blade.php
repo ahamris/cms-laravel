@@ -15,12 +15,12 @@
             </p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.presenter.index') }}"
+            <a href="{{ route('admin.presenter.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to List
             </a>
-            <a href="{{ route('admin.content.presenter.edit', $presenter) }}">
+            <a href="{{ route('admin.presenter.edit', $presenter) }}">
                 <x-button variant="primary" icon="edit">Edit Presenter</x-button>
             </a>
         </div>
@@ -99,7 +99,7 @@
                                                 @else bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 @endif">
                                         {{ $session->status_display }}
                                     </span>
-                                    <a href="{{ route('admin.content.live-session.show', $session) }}"
+                                    <a href="{{ route('admin.live-session.show', $session) }}"
                                         class="text-zinc-400 hover:text-primary transition-colors" title="View Session">
                                         <i class="fa-solid fa-arrow-right-long"></i>
                                     </a>
@@ -153,7 +153,7 @@
             <div class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Actions</h2>
                 <div class="space-y-3">
-                    <form action="{{ route('admin.content.presenter.toggle-status', $presenter) }}" method="POST">
+                    <form action="{{ route('admin.presenter.toggle-status', $presenter) }}" method="POST">
                         @csrf
                         <button type="submit"
                             class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-colors text-sm font-medium
@@ -164,7 +164,7 @@
                     </form>
 
                     @if($presenter->avatar)
-                        <form action="{{ route('admin.content.presenter.remove-avatar', $presenter) }}" method="POST"
+                        <form action="{{ route('admin.presenter.remove-avatar', $presenter) }}" method="POST"
                             onsubmit="return confirm('Are you sure you want to remove the avatar?')">
                             @csrf
                             @method('DELETE')
@@ -196,7 +196,7 @@
                             class="text-zinc-900 dark:text-white font-medium">{{ $presenter->updated_at->format('d M Y, H:i') }}</span>
                     </div>
                     <div class="pt-2">
-                        <form action="{{ route('admin.content.presenter.destroy', $presenter) }}" method="POST"
+                        <form action="{{ route('admin.presenter.destroy', $presenter) }}" method="POST"
                             onsubmit="return confirm('Are you sure you want to delete this presenter? This action cannot be undone.')">
                             @csrf
                             @method('DELETE')

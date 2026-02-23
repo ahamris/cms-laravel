@@ -5,13 +5,13 @@
             <h1 class="text-2xl font-bold text-gray-900">Edit Pricing Booster</h1>
             <p class="text-gray-600">Update booster details</p>
         </div>
-        <a href="{{ route('admin.content.pricing-booster.index') }}"
+        <a href="{{ route('admin.pricing-booster.index') }}"
            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
             <i class="fa-solid fa-arrow-left mr-2"></i>Back to List
         </a>
     </div>
 
-    <form action="{{ route('admin.content.pricing-booster.update', $pricingBooster) }}" method="POST" class="space-y-6">
+    <form action="{{ route('admin.pricing-booster.update', $pricingBooster) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

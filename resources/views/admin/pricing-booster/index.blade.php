@@ -6,7 +6,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Pricing Boosters</h1>
             <p class="text-gray-600">Manage add-on boosters for pricing plans</p>
         </div>
-        <a href="{{ route('admin.content.pricing-booster.create') }}"
+        <a href="{{ route('admin.pricing-booster.create') }}"
            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors duration-200">
             <i class="fa-solid fa-plus mr-2"></i>
             Create New Booster
@@ -60,7 +60,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
-                                        <a href="{{ route('admin.content.pricing-booster.edit', $booster) }}"
+                                        <a href="{{ route('admin.pricing-booster.edit', $booster) }}"
                                            class="text-blue-600 hover:text-blue-900"
                                            title="Edit">
                                             <i class="fa-solid fa-edit"></i>

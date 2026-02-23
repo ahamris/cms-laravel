@@ -6,7 +6,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Create FAQ Group</h1>
             <p class="text-gray-600">Create a new FAQ group with multiple questions and answers</p>
         </div>
-        <a href="{{ route('admin.content.faq-module.index') }}"
+        <a href="{{ route('admin.faq-module.index') }}"
            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
             <i class="fa-solid fa-arrow-left mr-2"></i>
             Back to List
@@ -14,7 +14,7 @@
     </div>
 
     {{-- Form --}}
-    <form action="{{ route('admin.content.faq-module.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route('admin.faq-module.store') }}" method="POST" class="space-y-6">
         @csrf
         
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -131,7 +131,7 @@
                                 <i class="fa-solid fa-save mr-2"></i>
                                 Create FAQ Group
                             </button>
-                            <a href="{{ route('admin.content.faq-module.index') }}"
+                            <a href="{{ route('admin.faq-module.index') }}"
                                class="w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors duration-200 text-center block">
                                 <i class="fa-solid fa-times mr-2"></i>
                                 Cancel

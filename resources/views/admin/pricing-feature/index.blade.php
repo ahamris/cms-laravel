@@ -5,7 +5,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Pricing Features</h1>
             <p class="text-gray-600">Manage features for pricing comparison table</p>
         </div>
-        <a href="{{ route('admin.content.pricing-feature.create') }}"
+        <a href="{{ route('admin.pricing-feature.create') }}"
            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors duration-200">
             <i class="fa-solid fa-plus mr-2"></i>Create New Feature
         </a>
@@ -59,7 +59,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
-                                        <a href="{{ route('admin.content.pricing-feature.edit', $feature) }}"
+                                        <a href="{{ route('admin.pricing-feature.edit', $feature) }}"
                                            class="text-blue-600 hover:text-blue-900" title="Edit">
                                             <i class="fa-solid fa-edit"></i>
                                         </a>

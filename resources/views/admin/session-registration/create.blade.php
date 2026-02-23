@@ -6,7 +6,7 @@
             <p class="text-zinc-600 dark:text-zinc-400">Register a participant for a live session</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.session-registration.index') }}"
+            <a href="{{ route('admin.session-registration.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Registrations
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.content.session-registration.store') }}" method="POST">
+    <form action="{{ route('admin.session-registration.store') }}" method="POST">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -85,7 +85,7 @@
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save"
                             icon-position="left">Create Registration</x-button>
-                        <a href="{{ route('admin.content.session-registration.index') }}" class="block">
+                        <a href="{{ route('admin.session-registration.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                     </div>

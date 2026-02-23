@@ -28,7 +28,7 @@
     {{-- Available Pages Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         @foreach($availablePages as $pageKey => $pageData)
-            <a href="{{ route('admin.content.page-builder.manage', ['pageType' => $pageKey]) }}" 
+            <a href="{{ route('admin.page-builder.manage', ['pageType' => $pageKey]) }}" 
                class="group block bg-white rounded-md shadow-md border border-gray-200 hover:shadow-none transition-all duration-200">
                 <div class="p-6">
                     <div class="flex items-center space-x-4 mb-4">

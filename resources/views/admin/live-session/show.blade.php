@@ -7,12 +7,12 @@
                 <p class="text-gray-600">{{ $liveSession->type_display }} • {{ $liveSession->formatted_date }}</p>
             </div>
             <div class="flex space-x-2">
-                <a href="{{ route('admin.content.live-session.edit', $liveSession) }}"
+                <a href="{{ route('admin.live-session.edit', $liveSession) }}"
                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors duration-200">
                     <i class="fa-solid fa-edit mr-2"></i>
                     Edit Session
                 </a>
-                <a href="{{ route('admin.content.live-session.index') }}"
+                <a href="{{ route('admin.live-session.index') }}"
                     class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors duration-200">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     Back to List
@@ -85,7 +85,7 @@
                                                 Primary
                                             </span>
                                         @endif
-                                        <a href="{{ route('admin.content.presenter.show', $presenter) }}"
+                                        <a href="{{ route('admin.presenter.show', $presenter) }}"
                                             class="text-primary hover:text-primary/80" title="View Presenter">
                                             <i class="fa-solid fa-external-link-alt"></i>
                                         </a>
@@ -103,7 +103,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-900">Registrations
                             ({{ $liveSession->registrations->count() }})</h3>
-                        <a href="{{ route('admin.content.session-registration.index', ['session_id' => $liveSession->id]) }}"
+                        <a href="{{ route('admin.session-registration.index', ['session_id' => $liveSession->id]) }}"
                             class="text-primary hover:text-primary/80">
                             <i class="fa-solid fa-external-link-alt mr-1"></i>
                             View All
@@ -255,7 +255,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
                     <div class="space-y-3">
-                        <form action="{{ route('admin.content.live-session.toggle-status', $liveSession) }}"
+                        <form action="{{ route('admin.live-session.toggle-status', $liveSession) }}"
                             method="POST">
                             @csrf
                             <button type="submit"
@@ -265,7 +265,7 @@
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.content.live-session.update-session-status', $liveSession) }}"
+                        <form action="{{ route('admin.live-session.update-session-status', $liveSession) }}"
                             method="POST">
                             @csrf
                             <button type="submit"
@@ -275,7 +275,7 @@
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.content.live-session.destroy', $liveSession) }}" method="POST"
+                        <form action="{{ route('admin.live-session.destroy', $liveSession) }}" method="POST"
                             onsubmit="return confirm('Are you sure you want to delete this session? This action cannot be undone.')">
                             @csrf
                             @method('DELETE')

@@ -7,12 +7,12 @@
                 <p class="text-gray-600 mt-2">Carousel widget details</p>
             </div>
             <div class="flex items-center space-x-3">
-                <a href="{{ route('admin.content.carousel-widgets.edit', $carouselWidget) }}"
+                <a href="{{ route('admin.carousel-widgets.edit', $carouselWidget) }}"
                    class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200">
                     <i class="fa fa-edit mr-2"></i>
                     Edit
                 </a>
-                <a href="{{ route('admin.content.carousel-widgets.index') }}"
+                <a href="{{ route('admin.carousel-widgets.index') }}"
                    class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200">
                     <i class="fa fa-arrow-left mr-2"></i>
                     Back to List

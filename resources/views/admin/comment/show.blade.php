@@ -20,7 +20,7 @@
                 </span>
             @endif
 
-            <form action="{{ route('admin.content.comment.toggle-approve', $comment) }}" method="POST" class="inline">
+            <form action="{{ route('admin.comment.toggle-approve', $comment) }}" method="POST" class="inline">
                 @csrf
                 <button type="submit"
                     class="inline-flex items-center gap-2 rounded-md {{ $comment->is_approved ? 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200' : 'bg-primary text-white hover:bg-primary/90 shadow-sm' }} px-4 py-2 text-sm font-semibold transition-all">
@@ -29,7 +29,7 @@
                 </button>
             </form>
 
-            <a href="{{ route('admin.content.comment.index') }}"
+            <a href="{{ route('admin.comment.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Comments
@@ -108,7 +108,7 @@
                             $routeMap = ['blog' => 'blog'];
                             $baseRoute = $routeMap[$type] ?? $type;
                         @endphp
-                        <a href="{{ route('admin.content.' . $baseRoute . '.show', $comment->entity) }}"
+                        <a href="{{ route('admin.' . $baseRoute . '.show', $comment->entity) }}"
                             class="inline-flex items-center gap-2 text-sm text-[var(--color-accent)] hover:underline">
                             <i class="fa-solid fa-link"></i>
                             {{ $comment->entity->title ?? $comment->entity->name ?? 'View ' . class_basename($comment->entity_type) }}

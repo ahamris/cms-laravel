@@ -45,7 +45,7 @@ class ExternalCodeController extends AdminBaseController
 
             ExternalCode::create($validated);
 
-            return redirect()->route('admin.content.external-code.index')
+            return redirect()->route('admin.external-code.index')
                 ->with('success', 'External code created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -86,7 +86,7 @@ class ExternalCodeController extends AdminBaseController
 
             $externalCode->update($validated);
 
-            return redirect()->route('admin.content.external-code.index')
+            return redirect()->route('admin.external-code.index')
                 ->with('success', 'External code updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -102,7 +102,7 @@ class ExternalCodeController extends AdminBaseController
     {
         $externalCode->delete();
 
-        return redirect()->route('admin.content.external-code.index')
+        return redirect()->route('admin.external-code.index')
             ->with('success', 'External code deleted successfully.');
     }
 

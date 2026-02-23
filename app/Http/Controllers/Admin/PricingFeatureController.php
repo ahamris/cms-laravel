@@ -49,7 +49,7 @@ class PricingFeatureController extends AdminBaseController
 
         PricingFeature::create($validated);
 
-        return redirect()->route('admin.content.pricing-feature.index')
+        return redirect()->route('admin.pricing-feature.index')
             ->with('success', 'Pricing feature created successfully.');
     }
 
@@ -90,7 +90,7 @@ class PricingFeatureController extends AdminBaseController
 
         $pricingFeature->update($validated);
 
-        return redirect()->route('admin.content.pricing-feature.index')
+        return redirect()->route('admin.pricing-feature.index')
             ->with('success', 'Pricing feature updated successfully.');
     }
 
@@ -101,7 +101,7 @@ class PricingFeatureController extends AdminBaseController
     {
         $pricingFeature->delete();
 
-        return redirect()->route('admin.content.pricing-feature.index')
+        return redirect()->route('admin.pricing-feature.index')
             ->with('success', 'Pricing feature deleted successfully.');
     }
 

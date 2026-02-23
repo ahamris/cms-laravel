@@ -73,11 +73,11 @@ class SolutionController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.solution.edit', $solution)
+            return redirect()->route('admin.solution.edit', $solution)
                 ->with('success', 'Solution created successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.solution.index')
+        return redirect()->route('admin.solution.index')
             ->with('success', 'Solution created successfully.');
     }
 
@@ -154,11 +154,11 @@ class SolutionController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.solution.edit', $solution)
+            return redirect()->route('admin.solution.edit', $solution)
                 ->with('success', 'Solution updated successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.solution.index')
+        return redirect()->route('admin.solution.index')
             ->with('success', 'Solution updated successfully.');
     }
 
@@ -180,7 +180,7 @@ class SolutionController extends AdminBaseController
 
         $solution->delete();
 
-        return redirect()->route('admin.content.solution.index')
+        return redirect()->route('admin.solution.index')
             ->with('success', 'Solution deleted successfully.');
     }
 

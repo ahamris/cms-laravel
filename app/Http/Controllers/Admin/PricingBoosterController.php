@@ -50,7 +50,7 @@ class PricingBoosterController extends AdminBaseController
 
         PricingBooster::create($validated);
 
-        return redirect()->route('admin.content.pricing-booster.index')
+        return redirect()->route('admin.pricing-booster.index')
             ->with('success', 'Pricing booster created successfully.');
     }
 
@@ -92,7 +92,7 @@ class PricingBoosterController extends AdminBaseController
 
         $pricingBooster->update($validated);
 
-        return redirect()->route('admin.content.pricing-booster.index')
+        return redirect()->route('admin.pricing-booster.index')
             ->with('success', 'Pricing booster updated successfully.');
     }
 
@@ -103,7 +103,7 @@ class PricingBoosterController extends AdminBaseController
     {
         $pricingBooster->delete();
 
-        return redirect()->route('admin.content.pricing-booster.index')
+        return redirect()->route('admin.pricing-booster.index')
             ->with('success', 'Pricing booster deleted successfully.');
     }
 

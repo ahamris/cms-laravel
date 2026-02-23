@@ -1,16 +1,16 @@
 @if(in_array('view', $actions))
-    <a href="{{ route('admin.content.legal.show', $item) }}" title="View">
+    <a href="{{ route('admin.legal.show', $item) }}" title="View">
         <x-button variant="sky" size="sm" icon="eye" title="View"></x-button>
     </a>
 @endif
 
 @if(in_array('edit', $actions))
-    <a href="{{ route('admin.content.legal.edit', $item) }}" title="Edit">
+    <a href="{{ route('admin.legal.edit', $item) }}" title="Edit">
         <x-button variant="warning" size="sm" icon="edit" title="Edit"></x-button>
     </a>
 @endif
 
-<a href="{{ route('admin.content.legal.versions', $item) }}" title="Version History">
+<a href="{{ route('admin.legal.versions', $item) }}" title="Version History">
     <x-button variant="secondary" size="sm" icon="clock-rotate-left" title="Version History"></x-button>
 </a>
 

@@ -44,7 +44,7 @@ class DocVersionController extends AdminBaseController
             $this->logCreate($version);
 
             return redirect()
-                ->route('admin.content.doc-versions.index')
+                ->route('admin.doc-versions.index')
                 ->with('success', 'Documentation version created successfully.');
         } catch (\Exception $e) {
             return redirect()
@@ -88,7 +88,7 @@ class DocVersionController extends AdminBaseController
             $this->logUpdate($docVersion);
 
             return redirect()
-                ->route('admin.content.doc-versions.index')
+                ->route('admin.doc-versions.index')
                 ->with('success', 'Documentation version updated successfully.');
         } catch (\Exception $e) {
             return redirect()
@@ -108,7 +108,7 @@ class DocVersionController extends AdminBaseController
             $docVersion->delete();
 
             return redirect()
-                ->route('admin.content.doc-versions.index')
+                ->route('admin.doc-versions.index')
                 ->with('success', 'Documentation version deleted successfully.');
         } catch (\Exception $e) {
             return redirect()
@@ -142,7 +142,7 @@ class DocVersionController extends AdminBaseController
             $this->logUpdate($docVersion);
 
             return redirect()
-                ->route('admin.content.doc-versions.index')
+                ->route('admin.doc-versions.index')
                 ->with('success', 'Version set as default successfully.');
         } catch (\Exception $e) {
             return redirect()

@@ -7,10 +7,10 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Course Category Details</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.course-category.edit', $courseCategory) }}">
+            <a href="{{ route('admin.course-category.edit', $courseCategory) }}">
                 <x-button variant="secondary" icon="pencil">Edit Category</x-button>
             </a>
-            <form action="{{ route('admin.content.course-category.destroy', $courseCategory) }}" method="POST"
+            <form action="{{ route('admin.course-category.destroy', $courseCategory) }}" method="POST"
                 onsubmit="return confirm('Are you sure you want to delete this category?');">
                 @csrf
                 @method('DELETE')
@@ -38,7 +38,7 @@
             <div class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white">Videos in this Category</h2>
-                    <a href="{{ route('admin.content.course-video.index') }}?category={{ $courseCategory->id }}">
+                    <a href="{{ route('admin.course-video.index') }}?category={{ $courseCategory->id }}">
                         <x-button variant="secondary" size="sm" icon="external-link">Manage Videos</x-button>
                     </a>
                 </div>
@@ -71,7 +71,7 @@
                                             <x-ui.badge :variant="$video->is_active ? 'success' : 'secondary'">{{ $video->is_active ? 'Active' : 'Draft' }}</x-ui.badge>
                                         </td>
                                         <td class="px-3 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="{{ route('admin.content.course-video.show', $video) }}"
+                                            <a href="{{ route('admin.course-video.show', $video) }}"
                                                 class="text-primary hover:text-primary-dark">View</a>
                                         </td>
                                     </tr>

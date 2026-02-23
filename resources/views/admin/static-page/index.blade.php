@@ -11,7 +11,7 @@
                 <p>Manage your static pages content</p>
             </div>
         </div>
-        <a href="{{ route('admin.content.static-page.create') }}" 
+        <a href="{{ route('admin.static-page.create') }}" 
            class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2">
             <i class="fa fa-plus"></i>
             <span>Add New Static Page</span>
@@ -57,15 +57,15 @@
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <a href="{{ route('admin.content.static-page.show', $staticPage) }}"
+                                    <a href="{{ route('admin.static-page.show', $staticPage) }}"
                                        class="text-xs text-gray-600 hover:text-primary transition-colors duration-200">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.content.static-page.edit', $staticPage) }}"
+                                    <a href="{{ route('admin.static-page.edit', $staticPage) }}"
                                        class="text-xs text-gray-600 hover:text-blue-600 transition-colors duration-200">
                                         <i class="fa-solid fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('admin.content.static-page.toggle-active', $staticPage) }}"
+                                    <form action="{{ route('admin.static-page.toggle-active', $staticPage) }}"
                                           method="POST" class="inline">
                                         @csrf
                                         <button type="submit"
@@ -73,7 +73,7 @@
                                             <i class="fa-solid fa-{{ $staticPage->is_active ? 'pause' : 'play' }}"></i>
                                         </button>
                                     </form>
-                                    <form action="{{ route('admin.content.static-page.destroy', $staticPage) }}"
+                                    <form action="{{ route('admin.static-page.destroy', $staticPage) }}"
                                           method="POST" class="inline"
                                           onsubmit="return confirm('Are you sure you want to delete this static page?')">
                                         @csrf

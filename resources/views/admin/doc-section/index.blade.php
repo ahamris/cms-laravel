@@ -11,7 +11,7 @@
                 <p>Manage documentation sections</p>
             </div>
         </div>
-        <a href="{{ route('admin.content.doc-sections.create') }}"
+        <a href="{{ route('admin.doc-sections.create') }}"
            class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2">
             <i class="fa-solid fa-plus"></i>
             <span>Add New Section</span>
@@ -60,15 +60,15 @@
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
-                                    <a href="{{ route('admin.content.doc-sections.show', $section) }}"
+                                    <a href="{{ route('admin.doc-sections.show', $section) }}"
                                        class="text-xs text-gray-600 hover:text-primary transition-colors duration-200">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.content.doc-sections.edit', $section) }}"
+                                    <a href="{{ route('admin.doc-sections.edit', $section) }}"
                                        class="text-xs text-gray-600 hover:text-blue-600 transition-colors duration-200">
                                         <i class="fa-solid fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('admin.content.doc-sections.destroy', $section) }}"
+                                    <form action="{{ route('admin.doc-sections.destroy', $section) }}"
                                           method="POST" class="inline"
                                           onsubmit="return confirm('Are you sure you want to delete this section? All pages will be deleted.')">
                                         @csrf

@@ -16,7 +16,7 @@
         ['key' => 'is_approved', 'label' => 'Status', 'type' => 'custom', 'view' => 'admin.comment.partials.status-column'],
         ['key' => 'created_at', 'format' => 'date'],
     ]"
-            route-prefix="admin.content.comment" search-placeholder="Search comments..." :paginate="10"
+            route-prefix="admin.comment" search-placeholder="Search comments..." :paginate="10"
             custom-actions-view="admin.comment.partials.table-actions" :search-fields="['body']" />
     </div>
 </x-layouts.admin>

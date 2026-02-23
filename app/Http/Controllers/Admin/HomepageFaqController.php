@@ -38,7 +38,7 @@ class HomepageFaqController extends AdminBaseController
 
         Faq::create($data);
 
-        return redirect()->route('admin.content.faq-module.index')
+        return redirect()->route('admin.faq-module.index')
                         ->with('success', 'FAQ Group created successfully.');
     }
 
@@ -68,7 +68,7 @@ class HomepageFaqController extends AdminBaseController
 
         $faq->update($data);
 
-        return redirect()->route('admin.content.faq-module.index')
+        return redirect()->route('admin.faq-module.index')
                         ->with('success', 'FAQ Group updated successfully.');
     }
 
@@ -79,7 +79,7 @@ class HomepageFaqController extends AdminBaseController
     {
         $faq->delete();
 
-        return redirect()->route('admin.content.faq-module.index')
+        return redirect()->route('admin.faq-module.index')
                         ->with('success', 'FAQ Group deleted successfully.');
     }
 }

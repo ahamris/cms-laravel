@@ -11,7 +11,7 @@
                 <p>Manage external code snippets for header and body injection</p>
             </div>
         </div>
-        <a href="{{ route('admin.content.external-code.create') }}"
+        <a href="{{ route('admin.external-code.create') }}"
            class="px-5 py-2 rounded-md bg-primary text-white text-sm">
             <i class="fa-solid fa-plus mr-2"></i>
             Create New External Code
@@ -76,12 +76,12 @@
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
-                                        <a href="{{ route('admin.content.external-code.show', $externalCode) }}"
+                                        <a href="{{ route('admin.external-code.show', $externalCode) }}"
                                            class="text-primary hover:text-primary/80"
                                            title="View">
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.content.external-code.edit', $externalCode) }}"
+                                        <a href="{{ route('admin.external-code.edit', $externalCode) }}"
                                            class="text-primary hover:text-primary/80"
                                            title="Edit">
                                             <i class="fa-solid fa-edit"></i>

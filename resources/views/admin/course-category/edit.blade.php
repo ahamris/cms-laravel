@@ -1,5 +1,5 @@
 <x-layouts.admin title="Edit Course Category">
-    <form action="{{ route('admin.content.course-category.update', $courseCategory) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.course-category.update', $courseCategory) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -10,7 +10,7 @@
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Course Category</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Update category details</p>
             </div>
-            <a href="{{ route('admin.content.course-category.index') }}">
+            <a href="{{ route('admin.course-category.index') }}">
                 <x-button variant="secondary" icon="arrow-left" class="justify-center">Back to list</x-button>
             </a>
         </div>
@@ -48,7 +48,7 @@
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Actions</h2>
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save">Update Category</x-button>
-                        <a href="{{ route('admin.content.course-category.index') }}" class="block">
+                        <a href="{{ route('admin.course-category.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                     </div>

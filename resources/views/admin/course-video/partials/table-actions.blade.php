@@ -1,11 +1,11 @@
 @if(in_array('view', $actions))
-    <a href="{{ route('admin.content.course-video.show', $item) }}">
+    <a href="{{ route('admin.course-video.show', $item) }}">
         <x-button variant="sky" size="sm" icon="eye" title="View"></x-button>
     </a>
 @endif
 
 @if(in_array('edit', $actions))
-    <a href="{{ route('admin.content.course-video.edit', $item) }}">
+    <a href="{{ route('admin.course-video.edit', $item) }}">
         <x-button variant="warning" size="sm" icon="edit" title="Edit"></x-button>
     </a>
 @endif

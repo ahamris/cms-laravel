@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.event.edit', $event) }}" 
+            <a href="{{ route('admin.event.edit', $event) }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa fa-edit"></i>
                 <span>Edit</span>
             </a>
-            <a href="{{ route('admin.content.event.index') }}" 
+            <a href="{{ route('admin.event.index') }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa fa-arrow-left"></i>
                 <span>Back to Events</span>
@@ -224,11 +224,11 @@
 
         {{-- Actions --}}
         <div class="px-6 py-4 bg-gray-50/80 border-t border-gray-200 rounded-b-md flex items-center justify-end space-x-3">
-            <a href="{{ route('admin.content.event.index') }}" 
+            <a href="{{ route('admin.event.index') }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200">
                 Back to List
             </a>
-            <a href="{{ route('admin.content.event.edit', $event) }}" 
+            <a href="{{ route('admin.event.edit', $event) }}" 
                class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200">
                 Edit Event
             </a>

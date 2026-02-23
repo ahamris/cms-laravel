@@ -4,18 +4,18 @@
             <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Add Course Video</h1>
             <p class="text-zinc-600 dark:text-zinc-400">Upload a video or link to an external video</p>
         </div>
-        <a href="{{ route('admin.content.course-video.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
+        <a href="{{ route('admin.course-video.index') }}" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
             <i class="fa-solid fa-arrow-left"></i> Back to list
         </a>
     </div>
 
-    <form action="{{ route('admin.content.course-video.store') }}" method="POST" enctype="multipart/form-data" id="course-video-form">
+    <form action="{{ route('admin.course-video.store') }}" method="POST" enctype="multipart/form-data" id="course-video-form">
         @csrf
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">
                 <div class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Basic Information</h2>
-                    <div class="space-y-6" x-data="courseChapterForm()" data-chapters-url="{{ route('admin.content.courses.by-category') }}">
+                    <div class="space-y-6" x-data="courseChapterForm()" data-chapters-url="{{ route('admin.courses.by-category') }}">
                         <x-ui.select name="course_category_id" label="Category" :options="['' => 'Select category'] + $categories->mapWithKeys(fn($c) => [$c->id => $c->name])->all()" :value="(string) old('course_category_id')" required :error="$errors->has('course_category_id')" :errorMessage="$errors->first('course_category_id')" />
                         <x-ui.select name="course_id" id="course_id" label="Chapter" :options="$chapterOptions" :value="(string) old('course_id', '')" :error="$errors->has('course_id')" :errorMessage="$errors->first('course_id')" />
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -48,7 +48,7 @@
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Actions</h2>
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save" icon-position="left">Create Video</x-button>
-                        <a href="{{ route('admin.content.course-video.index') }}" class="block"><x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button></a>
+                        <a href="{{ route('admin.course-video.index') }}" class="block"><x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button></a>
                     </div>
                 </div>
                 <div class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">

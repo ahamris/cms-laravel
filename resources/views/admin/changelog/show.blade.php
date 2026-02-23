@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.changelog.edit', $changelog) }}" 
+            <a href="{{ route('admin.changelog.edit', $changelog) }}" 
                class="px-5 py-2 rounded-md bg-yellow-600 text-white text-sm hover:bg-yellow-700 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
                 <span>Edit</span>
             </a>
-            <a href="{{ route('admin.content.changelog.index') }}" 
+            <a href="{{ route('admin.changelog.index') }}" 
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to List</span>
@@ -199,15 +199,15 @@
 
         {{-- Actions --}}
         <div class="px-6 py-4 bg-gray-50/80 border-t border-gray-200 rounded-b-md flex items-center justify-end space-x-3">
-            <a href="{{ route('admin.content.changelog.index') }}" 
+            <a href="{{ route('admin.changelog.index') }}" 
                class="px-5 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200">
                 Back to List
             </a>
-            <a href="{{ route('admin.content.changelog.edit', $changelog) }}" 
+            <a href="{{ route('admin.changelog.edit', $changelog) }}" 
                class="px-5 py-2 text-sm text-white bg-primary rounded-md hover:bg-primary/80 transition-colors duration-200">
                 Edit Entry
             </a>
-            <form action="{{ route('admin.content.changelog.destroy', $changelog) }}" 
+            <form action="{{ route('admin.changelog.destroy', $changelog) }}" 
                   method="POST" 
                   class="inline"
                   onsubmit="return confirm('Are you sure you want to delete this changelog entry?')">

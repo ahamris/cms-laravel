@@ -6,7 +6,7 @@
             <h1 class="text-3xl font-bold text-gray-900">FAQ Groups</h1>
             <p class="text-gray-600 mt-1">Manage FAQ groups for page builder integration</p>
         </div>
-        <a href="{{ route('admin.content.faq-module.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+        <a href="{{ route('admin.faq-module.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
             <i class="fas fa-plus"></i>
             <span>Add New FAQ Group</span>
         </a>
@@ -57,11 +57,11 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('admin.content.faq-module.show', ['faq' => $faq]) }}" 
+                                        <a href="{{ route('admin.faq-module.show', ['faq' => $faq]) }}" 
                                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition-colors" title="View">
                                             <i class="fas fa-eye text-sm"></i>
                                         </a>
-                                        <a href="{{ route('admin.content.faq-module.edit', ['faq' => $faq]) }}" 
+                                        <a href="{{ route('admin.faq-module.edit', ['faq' => $faq]) }}" 
                                            class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 p-2 rounded-lg transition-colors" title="Edit">
                                             <i class="fas fa-edit text-sm"></i>
                                         </a>
@@ -91,7 +91,7 @@
                     <i class="fas fa-question-circle text-6xl text-gray-300 mb-4"></i>
                     <h3 class="text-lg font-semibold text-gray-900 mb-2">No FAQ Groups Found</h3>
                     <p class="text-gray-600 mb-6">Get started by creating your first FAQ group.</p>
-                    <a href="{{ route('admin.content.faq-module.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition-colors">
+                    <a href="{{ route('admin.faq-module.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition-colors">
                         <i class="fas fa-plus"></i>
                         <span>Add First FAQ Group</span>
                     </a>

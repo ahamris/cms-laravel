@@ -1,21 +1,21 @@
 @if(in_array('view', $actions))
-    <a href="{{ route('admin.content.session-registration.show', $item) }}" title="View">
+    <a href="{{ route('admin.session-registration.show', $item) }}" title="View">
         <x-button variant="sky" size="sm" icon="eye" title="View"></x-button>
     </a>
 @endif
 
 @if(in_array('edit', $actions))
-    <a href="{{ route('admin.content.session-registration.edit', $item) }}" title="Edit">
+    <a href="{{ route('admin.session-registration.edit', $item) }}" title="Edit">
         <x-button variant="warning" size="sm" icon="edit" title="Edit"></x-button>
     </a>
 @endif
 
 @if($item->status === 'registered')
-    <form action="{{ route('admin.content.session-registration.mark-attended', $item) }}" method="POST" class="inline">
+    <form action="{{ route('admin.session-registration.mark-attended', $item) }}" method="POST" class="inline">
         @csrf
         <x-button variant="success" size="sm" type="submit" icon="check" title="Mark as Attended"></x-button>
     </form>
-    <form action="{{ route('admin.content.session-registration.mark-no-show', $item) }}" method="POST" class="inline">
+    <form action="{{ route('admin.session-registration.mark-no-show', $item) }}" method="POST" class="inline">
         @csrf
         <x-button variant="warning" size="sm" type="submit" icon="times" title="Mark as No Show"></x-button>
     </form>

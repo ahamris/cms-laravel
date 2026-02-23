@@ -7,7 +7,7 @@
                 <p class="text-zinc-600 dark:text-zinc-400">Manage website pages and content</p>
             </div>
             <div class="flex items-center gap-3">
-                <x-button variant="primary" icon="plus" icon-position="left" href="{{ route('admin.content.page.create') }}">
+                <x-button variant="primary" icon="plus" icon-position="left" href="{{ route('admin.page.create') }}">
                     Add Page
                 </x-button>
             </div>
@@ -23,7 +23,7 @@
                 ['key' => 'created_at', 'label' => 'Created', 'format' => 'date'],
                 ['key' => 'is_active', 'label' => 'Status', 'type' => 'toggle'],
             ]"
-            route-prefix="admin.content.page"
+            route-prefix="admin.page"
             search-placeholder="Search pages..."
             :paginate="15"
             custom-actions-view="admin.page.partials.table-actions"

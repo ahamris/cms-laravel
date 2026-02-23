@@ -12,12 +12,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('admin.content.legal.edit', $legal) }}"
+            <a href="{{ route('admin.legal.edit', $legal) }}"
                class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-edit"></i>
                 <span>Edit Page</span>
             </a>
-            <a href="{{ route('admin.content.legal.index') }}"
+            <a href="{{ route('admin.legal.index') }}"
                class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to Legal Pages</span>
@@ -131,13 +131,13 @@
                 </h3>
 
                 <div class="space-y-2">
-                    <a href="{{ route('admin.content.legal.edit', $legal) }}"
+                    <a href="{{ route('admin.legal.edit', $legal) }}"
                        class="w-full inline-flex items-center justify-center px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/80 transition-colors duration-200">
                         <i class="fa-solid fa-edit mr-2"></i>
                         Edit Page
                     </a>
 
-                    <form action="{{ route('admin.content.legal.toggle-active', $legal) }}" method="POST" class="w-full">
+                    <form action="{{ route('admin.legal.toggle-active', $legal) }}" method="POST" class="w-full">
                         @csrf
                         <button type="submit"
                                 class="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-md focus:outline-none {{ $legal->is_active ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' : 'bg-green-100 text-green-800 hover:bg-green-200' }} transition-colors duration-200">
@@ -146,7 +146,7 @@
                         </button>
                     </form>
 
-                    <form action="{{ route('admin.content.legal.destroy', $legal) }}"
+                    <form action="{{ route('admin.legal.destroy', $legal) }}"
                           method="POST"
                           class="w-full"
                           onsubmit="return confirm('Are you sure you want to delete this legal page? This action cannot be undone.')">

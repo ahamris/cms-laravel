@@ -21,7 +21,7 @@
                 ['key' => 'image_position', 'label' => 'Image Position', 'type' => 'custom', 'view' => 'admin.module.partials.image-position-column'],
                 ['key' => 'is_active', 'type' => 'toggle'],
             ]"
-            route-prefix="admin.content.module"
+            route-prefix="admin.module"
             search-placeholder="Search modules..."
             :paginate="15"
             custom-actions-view="admin.module.partials.table-actions"

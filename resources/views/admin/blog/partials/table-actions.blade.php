@@ -4,7 +4,7 @@
         size="sm" 
         icon="eye" 
         title="View"
-        href="{{ route('admin.content.blog.show', $item->id) }}"
+        href="{{ route('admin.blog.show', $item->id) }}"
     ></x-button>
 @endif
 
@@ -14,7 +14,7 @@
         size="sm" 
         icon="edit" 
         title="Edit"
-        href="{{ route('admin.content.blog.edit', $item->id) }}"
+        href="{{ route('admin.blog.edit', $item->id) }}"
     ></x-button>
 @endif
 

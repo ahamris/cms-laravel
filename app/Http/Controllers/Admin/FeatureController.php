@@ -57,11 +57,11 @@ class FeatureController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.feature.edit', $feature)
+            return redirect()->route('admin.feature.edit', $feature)
                 ->with('success', 'Feature created successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.feature.index')
+        return redirect()->route('admin.feature.index')
             ->with('success', 'Feature created successfully.');
     }
 
@@ -109,11 +109,11 @@ class FeatureController extends AdminBaseController
 
         // Check if user wants to continue editing
         if ($request->input('action') === 'save_and_stay') {
-            return redirect()->route('admin.content.feature.edit', $feature)
+            return redirect()->route('admin.feature.edit', $feature)
                 ->with('success', 'Feature updated successfully! You can continue editing.');
         }
 
-        return redirect()->route('admin.content.feature.index')
+        return redirect()->route('admin.feature.index')
             ->with('success', 'Feature updated successfully.');
     }
 
@@ -144,7 +144,7 @@ class FeatureController extends AdminBaseController
 
         $feature->delete();
 
-        return redirect()->route('admin.content.feature.index')
+        return redirect()->route('admin.feature.index')
             ->with('success', 'Feature deleted successfully.');
     }
 

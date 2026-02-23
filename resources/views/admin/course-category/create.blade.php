@@ -1,5 +1,5 @@
 <x-layouts.admin title="Add Course Category">
-    <form action="{{ route('admin.content.course-category.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.course-category.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         
 
@@ -9,7 +9,7 @@
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add Course Category</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Create a new category for course videos</p>
             </div>
-            <a href="{{ route('admin.content.course-category.index') }}">
+            <a href="{{ route('admin.course-category.index') }}">
                 <x-button variant="secondary" icon="arrow-left" class="justify-center">Back to list</x-button>
             </a>
         </div>
@@ -47,7 +47,7 @@
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Actions</h2>
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save">Create Category</x-button>
-                        <a href="{{ route('admin.content.course-category.index') }}" class="block">
+                        <a href="{{ route('admin.course-category.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                     </div>

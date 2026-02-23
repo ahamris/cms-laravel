@@ -6,16 +6,16 @@
             <p class="text-zinc-600 dark:text-zinc-400">Update presenter information</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.content.presenter.show', $presenter) }}">
+            <a href="{{ route('admin.presenter.show', $presenter) }}">
                 <x-button variant="secondary" icon="eye">View Details</x-button>
             </a>
-            <a href="{{ route('admin.content.presenter.index') }}">
+            <a href="{{ route('admin.presenter.index') }}">
                 <x-button variant="secondary" icon="arrow-left">Back to List</x-button>
             </a>
         </div>
     </div>
 
-    <form action="{{ route('admin.content.presenter.update', $presenter) }}" method="POST"
+    <form action="{{ route('admin.presenter.update', $presenter) }}" method="POST"
         enctype="multipart/form-data">
         @csrf
         @method('PUT')
@@ -84,7 +84,7 @@
                     <div class="space-y-4">
                         <x-button variant="primary" type="submit" class="w-full justify-center" icon="save"
                             icon-position="left">Update Presenter</x-button>
-                        <a href="{{ route('admin.content.presenter.index') }}" class="block">
+                        <a href="{{ route('admin.presenter.index') }}" class="block">
                             <x-button variant="secondary" type="button" class="w-full justify-center">Cancel</x-button>
                         </a>
                     </div>
