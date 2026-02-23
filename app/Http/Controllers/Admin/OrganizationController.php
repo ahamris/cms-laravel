@@ -153,11 +153,10 @@ class OrganizationController extends AdminBaseController
     {
         $request->validate([
             'file' => 'required|file|mimes:json',
-            'overwrite' => 'boolean',
         ]);
 
         $file = $request->file('file');
-        $overwrite = $request->boolean('overwrite');
+        $overwrite = false;
 
         try {
             $content = file_get_contents($file->getPathname());
@@ -169,7 +168,7 @@ class OrganizationController extends AdminBaseController
 
             $items = isset($data['organizations']) && is_array($data['organizations'])
                 ? $data['organizations']
-                : (is_array($data) && isset($data[0]) ? $data : []);
+                : (is_array($data) ? $data : []);
             if (! is_array($items)) {
                 $items = [$data];
             }
@@ -178,7 +177,7 @@ class OrganizationController extends AdminBaseController
             $skipped = 0;
 
             foreach ($items as $row) {
-                $name = $row['name'] ?? $row['title'] ?? null;
+                $name = is_string($row) ? $row : ($row['name'] ?? null);
                 if (empty($name) || ! is_string($name)) {
                     $skipped++;
                     continue;
@@ -203,8 +202,15 @@ class OrganizationController extends AdminBaseController
                 $message .= " {$skipped} skipped.";
             }
 
+            if ($file->getRealPath() && is_file($file->getRealPath())) {
+                @unlink($file->getRealPath());
+            }
+
             return redirect()->route('admin.organization.index')->with('success', $message);
         } catch (\Exception $e) {
+            if ($file->getRealPath() && is_file($file->getRealPath())) {
+                @unlink($file->getRealPath());
+            }
             return redirect()->route('admin.organization.index')
                 ->with('error', 'Import failed: ' . $e->getMessage());
         }
