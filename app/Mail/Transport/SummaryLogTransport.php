@@ -3,12 +3,13 @@
 namespace App\Mail\Transport;
 
 use Psr\Log\LoggerInterface;
+use Stringable;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\RawMessage;
 
-class SummaryLogTransport implements TransportInterface
+class SummaryLogTransport implements TransportInterface, Stringable
 {
     public function __construct(
         protected LoggerInterface $logger
@@ -62,5 +63,13 @@ class SummaryLogTransport implements TransportInterface
         }
 
         return '(no subject)';
+    }
+
+    /**
+     * Get the string representation of the transport.
+     */
+    public function __toString(): string
+    {
+        return 'log';
     }
 }
