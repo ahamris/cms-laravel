@@ -241,31 +241,6 @@
                         </div>
                     </div>
 
-                    <!-- Default Flyout Menu Component Selection -->
-                    <div class="bg-white rounded-lg shadow mb-6">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h2 class="text-lg font-semibold text-gray-900">Default Flyout Menu Component Selection</h2>
-                            <p class="text-sm text-gray-600 mt-1">Select a default flyout menu component to use for menu items that don't have a specific component selected</p>
-                        </div>
-                        <div class="p-6">
-                            <div>
-                                <label for="default_flyout_menu_component_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Select Default Flyout Menu Component
-                                </label>
-                                <select name="default_flyout_menu_component_id" id="default_flyout_menu_component_id"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                    <option value="">-- Use Default Flyout Menu --</option>
-                                    @foreach($flyoutMenuComponents as $component)
-                                        <option value="{{ $component['id'] }}"
-                                                {{ $selectedDefaultFlyoutMenuComponentId == $component['id'] ? 'selected' : '' }}>
-                                            {{ $component['name'] }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Save Button -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <button type="submit"

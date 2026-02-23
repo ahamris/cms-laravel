@@ -34,10 +34,8 @@ class MegaMenuController extends AdminBaseController
         $selectedHeaderLayoutType = Setting::getValue('site_header_layout_type');
         $headerLoginLinkEnabled = Setting::getValue('site_header_login_link_enabled', true);
         $headerLoginLinkUrl = Setting::getValue('site_header_login_link_url', '#');
-        $flyoutMenuComponents = [];
-        $selectedDefaultFlyoutMenuComponentId = Setting::getValue('site_default_flyout_menu_component_id');
 
-        return view('admin.settings.mega-menu.index', compact('menuItems', 'headerComponents', 'selectedHeaderComponentId', 'selectedHeaderSticky', 'selectedHeaderLayoutType', 'headerLoginLinkEnabled', 'headerLoginLinkUrl', 'flyoutMenuComponents', 'selectedDefaultFlyoutMenuComponentId'));
+        return view('admin.settings.mega-menu.index', compact('menuItems', 'headerComponents', 'selectedHeaderComponentId', 'selectedHeaderSticky', 'selectedHeaderLayoutType', 'headerLoginLinkEnabled', 'headerLoginLinkUrl'));
     }
 
     /**
@@ -432,7 +430,7 @@ class MegaMenuController extends AdminBaseController
     }
 
     /**
-     * Update all settings at once (header component, sticky, and default flyout menu).
+     * Update all settings at once (header component, sticky, layout, login link, CTA).
      */
     public function updateAllSettings(Request $request)
     {
@@ -442,7 +440,6 @@ class MegaMenuController extends AdminBaseController
             'header_layout_type' => 'nullable|string|in:,full-width,container,max-w-2xl,max-w-4xl,max-w-6xl,max-w-7xl',
             'header_login_link_enabled' => 'nullable|boolean',
             'header_login_link_url' => 'nullable|string|max:500',
-            'default_flyout_menu_component_id' => 'nullable|integer',
             'header_cta_button_text' => 'nullable|string|max:255',
             'header_cta_button_url' => 'nullable|string|max:500',
         ]);
