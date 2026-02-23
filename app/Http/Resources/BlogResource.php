@@ -26,7 +26,7 @@ class BlogResource extends JsonResource
             'image' => get_image($this->image, asset('front/images/blog.png')),
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
-            'url' => '/artikelen/'.$this->slug,
+            'url' => '/api/blog/'.$this->slug,
             'date' => $this->created_at?->format('M j, Y'),
             'date_attr' => $this->created_at?->format('Y-m-d'),
             'published_at' => $this->published_at?->toIso8601String(),
@@ -40,6 +40,7 @@ class BlogResource extends JsonResource
                 'name' => $author->full_name ?? $author->name ?? 'Author',
                 'avatar' => get_image($author->avatar, 'https://ui-avatars.com/api/?name=' . urlencode($author->name ?? 'Author') . '&size=80'),
             ] : null,
+            'comments' => CommentResource::collection($this->whenLoaded('comments')),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ]);

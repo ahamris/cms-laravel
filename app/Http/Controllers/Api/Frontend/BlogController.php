@@ -13,53 +13,22 @@ use OpenApi\Attributes as OA;
 
 class BlogController extends Controller
 {
-    #[OA\Get(path: '/api/blog-posts', summary: 'List latest blog posts', description: 'Returns the latest 3 active blog posts.', tags: ['Blog'], responses: [
-        new OA\Response(response: 200, description: 'List of blog posts', content: new OA\JsonContent(properties: [
-            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BlogListItem')),
-        ])),
-    ])]
-    public function apiPosts()
-    {
-        $blogs = Blog::with(['blog_category', 'author'])
-            ->where('is_active', true)
-            ->latest()
-            ->take(3)
-            ->get();
-
-        return BlogListResource::collection($blogs);
-    }
-
-    #[OA\Get(path: '/api/blog/{slug}', summary: 'Get a blog post by slug', tags: ['Blog'], parameters: [
-        new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
-    ], responses: [
-        new OA\Response(response: 200, description: 'Blog post', content: new OA\JsonContent(ref: '#/components/schemas/Blog')),
-        new OA\Response(response: 404, description: 'Not found'),
-    ])]
-    public function apiShow(string $slug)
-    {
-        $blog = Blog::with(['blog_category', 'author'])
-            ->where('slug', $slug)
-            ->where('is_active', true)
-            ->first();
-        if (! $blog) {
-            return response()->json(['message' => 'Blog post not found.'], 404);
-        }
-
-        return new BlogResource($blog);
-    }
-
-    #[OA\Get(path: '/api/artikelen/load-more', summary: 'Load more blog posts (JSON)', description: 'Paginated blog list. Query: page, per_page, search, category.', tags: ['Blog'], parameters: [
-        new OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 2)),
+    #[OA\Get(path: '/api/blog', summary: 'List blog posts', description: 'Paginated list of all active blog posts. Query: page, per_page, search, category.', tags: ['Blog'], parameters: [
+        new OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 1)),
         new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 6)),
         new OA\Parameter(name: 'search', in: 'query', schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'category', in: 'query', schema: new OA\Schema(type: 'string')),
     ], responses: [
-        new OA\Response(response: 200, description: 'Blog list with has_more, next_page'),
+        new OA\Response(response: 200, description: 'Blog list with data, has_more, next_page', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BlogListItem')),
+            new OA\Property(property: 'has_more', type: 'boolean'),
+            new OA\Property(property: 'next_page', type: 'integer', nullable: true),
+        ])),
     ])]
-    public function loadMore(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $perPage = max(1, min((int) $request->input('per_page', 6), 24));
-        $page = max(1, (int) $request->input('page', 2));
+        $page = max(1, (int) $request->input('page', 1));
 
         $featuredArticle = Blog::with(['blog_category', 'author'])
             ->where('is_active', true)
@@ -103,4 +72,28 @@ class BlogController extends Controller
             'next_page' => $hasMore ? $page + 1 : null,
         ]);
     }
+
+    #[OA\Get(path: '/api/blog/{slug}', summary: 'Get a blog post by slug', tags: ['Blog'], parameters: [
+        new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Blog post', content: new OA\JsonContent(ref: '#/components/schemas/Blog')),
+        new OA\Response(response: 404, description: 'Not found'),
+    ])]
+    public function apiShow(string $slug)
+    {
+        $blog = Blog::with([
+            'blog_category',
+            'author',
+            'comments' => fn ($q) => $q->approved()->whereNull('parent_id')->with('replies'),
+        ])
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->first();
+        if (! $blog) {
+            return response()->json(['message' => 'Blog post not found.'], 404);
+        }
+
+        return new BlogResource($blog);
+    }
+
 }

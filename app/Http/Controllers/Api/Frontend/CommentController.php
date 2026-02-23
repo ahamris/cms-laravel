@@ -18,7 +18,7 @@ class CommentController extends Controller
         Blog::class,
     ];
 
-    #[OA\Post(path: '/api/artikelen/reactie', summary: 'Store comment', description: 'Create a comment on an entity (blog etc.). Body: body, entity_type, entity_id, parent_id?, guest_name?, guest_email?', tags: ['Comments'], responses: [
+    #[OA\Post(path: '/api/blog/comments', summary: 'Store comment', description: 'Create a comment on a blog post. Body: body, entity_type, entity_id, parent_id?, guest_name?, guest_email?', tags: ['Blog'], responses: [
         new OA\Response(response: 201, description: 'Comment stored'),
         new OA\Response(response: 422, description: 'Validation error'),
     ])]
@@ -59,7 +59,7 @@ class CommentController extends Controller
         ], 201);
     }
 
-    #[OA\Post(path: '/api/artikelen/reactie/{comment}/like', summary: 'Like comment', tags: ['Comments'], responses: [
+    #[OA\Post(path: '/api/blog/comments/{comment}/like', summary: 'Like comment', tags: ['Blog'], responses: [
         new OA\Response(response: 200, description: 'Updated likes/dislikes'),
     ])]
     public function like(Comment $comment, Request $request): JsonResponse
@@ -67,7 +67,7 @@ class CommentController extends Controller
         return $this->handleVote($comment, $request, 'like');
     }
 
-    #[OA\Post(path: '/api/artikelen/reactie/{comment}/dislike', summary: 'Dislike comment', tags: ['Comments'], responses: [
+    #[OA\Post(path: '/api/blog/comments/{comment}/dislike', summary: 'Dislike comment', tags: ['Blog'], responses: [
         new OA\Response(response: 200, description: 'Updated likes/dislikes'),
     ])]
     public function dislike(Comment $comment, Request $request): JsonResponse

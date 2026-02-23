@@ -31,7 +31,7 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/search', [ApiSearchController::class, 'index'])->name('api.search');
     Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
-    Route::get('/blog-posts', [ApiBlogController::class, 'apiPosts'])->name('api.blog-posts');
+    Route::get('/blog', [ApiBlogController::class, 'index'])->name('api.blog.index');
     Route::get('/blog/{slug}', [ApiBlogController::class, 'apiShow'])->name('api.blog.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/legal/{slug}', [ApiLegalController::class, 'show'])->name('api.legal.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('api.static.show')->where('slug', '[a-z0-9\-]+');
@@ -59,11 +59,10 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
     Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->middleware('throttle:forms')->name('api.contact.submit');
 
-    // Blog (artikelen)
-    Route::get('/artikelen/load-more', [ApiBlogController::class, 'loadMore'])->name('api.blog.load-more');
-    Route::post('/artikelen/reactie', [ApiCommentController::class, 'store'])->middleware('throttle:forms')->name('api.comment.store');
-    Route::post('/artikelen/reactie/{comment}/like', [ApiCommentController::class, 'like'])->name('api.comment.like');
-    Route::post('/artikelen/reactie/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.comment.dislike');
+    // Blog (posts + comments)
+    Route::post('/blog/comments', [ApiCommentController::class, 'store'])->middleware('throttle:forms')->name('api.blog.comments.store');
+    Route::post('/blog/comments/{comment}/like', [ApiCommentController::class, 'like'])->name('api.blog.comments.like');
+    Route::post('/blog/comments/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.blog.comments.dislike');
 
     // Pricing (prijzen)
     Route::get('/prijzen', [ApiPricingController::class, 'index'])->name('api.pricing.index');

@@ -67,29 +67,37 @@ if (! function_exists('get_environment_badge')) {
 }
 
 if (! function_exists('get_image')) {
+    /**
+     * Return a full (absolute) URL for an image path. Always returns a full URL, never a relative path.
+     */
     function get_image(?string $url = null, ?string $default = null): string
     {
+        $result = null;
+
         if (empty($url)) {
-            return $default ?? asset('front/images/blog.png');
-        }
-        if (filter_var($url, FILTER_VALIDATE_URL)) {
-            return $url;
-        }
-
-        $cleanPath = ltrim($url, '/');
-        if (str_starts_with($cleanPath, 'storage/')) {
-            $cleanPath = substr($cleanPath, 8);
-        }
-        if (Storage::disk('public')->exists($cleanPath)) {
-            return Storage::disk('public')->url($cleanPath);
-        }
-
-        $publicPath = public_path($url);
-        if (file_exists($publicPath)) {
-            return asset($url);
+            $result = $default ?? asset('front/images/blog.png');
+        } elseif (filter_var($url, FILTER_VALIDATE_URL)) {
+            $result = $url;
+        } else {
+            $cleanPath = ltrim($url, '/');
+            if (str_starts_with($cleanPath, 'storage/')) {
+                $cleanPath = substr($cleanPath, 8);
+            }
+            if (Storage::disk('public')->exists($cleanPath)) {
+                $result = Storage::disk('public')->url($cleanPath);
+            } elseif (file_exists(public_path($url))) {
+                $result = asset($url);
+            } else {
+                $result = $default ?? asset('front/images/blog.png');
+            }
         }
 
-        return $default ?? asset('front/images/blog.png');
+        // Ensure full URL (no relative path)
+        if (is_string($result) && $result !== '' && ! str_starts_with($result, 'http://') && ! str_starts_with($result, 'https://')) {
+            $result = asset(ltrim($result, '/'));
+        }
+
+        return $result;
     }
 }
 
@@ -367,12 +375,12 @@ if (! function_exists('url_to_path')) {
 
 if (! function_exists('resource_urls_to_paths')) {
     /**
-     * Recursively convert all full URLs in a resource response to path-only (no domain).
-     * Use for API responses so the frontend receives domain-agnostic paths.
+     * Recursively convert full URLs in a resource response to path-only (no domain).
+     * Image URLs are left unchanged (full URL) so the frontend can use them directly.
      * Only recurses into arrays; objects (e.g. Resource collections) are left unchanged.
      *
      * @param  mixed  $data  Array, object, or string (e.g. JsonResource::toArray() or response array)
-     * @return mixed Same structure with full URL strings replaced by path-only strings
+     * @return mixed Same structure with non-image URL strings replaced by path-only; image URLs unchanged
      */
     function resource_urls_to_paths(mixed $data): mixed
     {
@@ -385,10 +393,36 @@ if (! function_exists('resource_urls_to_paths')) {
         }
 
         if (is_string($data) && filter_var($data, FILTER_VALIDATE_URL)) {
+            if (resource_url_is_image($data)) {
+                return $data;
+            }
+
             return url_to_path($data);
         }
 
         return $data;
+    }
+}
+
+if (! function_exists('resource_url_is_image')) {
+    /**
+     * Whether the given URL is considered an image URL (should not be stripped to path).
+     */
+    function resource_url_is_image(string $url): bool
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        if ($path === null || $path === '') {
+            return false;
+        }
+        $pathLower = strtolower($path);
+        $imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.ico'];
+        foreach ($imageExtensions as $ext) {
+            if (str_ends_with($pathLower, $ext)) {
+                return true;
+            }
+        }
+
+        return str_contains($pathLower, '/storage/') || str_contains($pathLower, '/images/');
     }
 }
 

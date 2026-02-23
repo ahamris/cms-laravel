@@ -12,21 +12,21 @@ beforeEach(function () {
     );
 });
 
-test('api blog-posts returns 200 and list of up to 3 posts', function () {
-    $response = $this->getJson(route('api.blog-posts'));
+test('api blog index returns 200 and paginated list', function () {
+    $response = $this->getJson(route('api.blog.index'));
 
     $response->assertStatus(200);
-    $response->assertJsonStructure(['data']);
+    $response->assertJsonStructure(['data', 'has_more', 'next_page']);
     $data = $response->json('data');
     expect($data)->toBeArray();
-    expect(count($data))->toBeLessThanOrEqual(3);
+    expect(count($data))->toBeLessThanOrEqual(6);
 });
 
-test('api blog-posts returns active posts only', function () {
+test('api blog index returns active posts only', function () {
     Blog::factory()->count(2)->create(['is_active' => true, 'blog_category_id' => $this->category->id]);
     Blog::factory()->create(['is_active' => false, 'blog_category_id' => $this->category->id, 'slug' => 'inactive-blog-api']);
 
-    $response = $this->getJson(route('api.blog-posts'));
+    $response = $this->getJson(route('api.blog.index'));
 
     $response->assertStatus(200);
     $slugs = collect($response->json('data'))->pluck('slug')->toArray();
@@ -66,23 +66,16 @@ test('api blog show returns 404 for non-existent slug', function () {
     $response->assertStatus(404);
 });
 
-test('api artikelen load-more returns 200 with data and has_more', function () {
-    $response = $this->getJson(route('api.blog.load-more'));
-
-    $response->assertStatus(200);
-    $response->assertJsonStructure(['data', 'has_more', 'next_page']);
-});
-
-test('api artikelen load-more accepts page and per_page', function () {
-    $response = $this->getJson(route('api.blog.load-more', ['page' => 1, 'per_page' => 4]));
+test('api blog index accepts page and per_page', function () {
+    $response = $this->getJson(route('api.blog.index', ['page' => 1, 'per_page' => 4]));
 
     $response->assertStatus(200);
     $data = $response->json('data');
     expect(count($data))->toBeLessThanOrEqual(4);
 });
 
-test('api artikelen load-more accepts search and category', function () {
-    $response = $this->getJson(route('api.blog.load-more', [
+test('api blog index accepts search and category', function () {
+    $response = $this->getJson(route('api.blog.index', [
         'page' => 1,
         'search' => 'test',
         'category' => $this->category->slug,
@@ -92,15 +85,15 @@ test('api artikelen load-more accepts search and category', function () {
     $response->assertJsonStructure(['data', 'has_more', 'next_page']);
 });
 
-// ---- Comments (artikelen/reactie) ----
-test('api comment store succeeds as guest with valid data', function () {
+// ---- Comments ----
+test('api blog comment store succeeds as guest with valid data', function () {
     $blog = Blog::factory()->create([
         'slug' => 'comment-target-api',
         'is_active' => true,
         'blog_category_id' => $this->category->id,
     ]);
 
-    $response = $this->postJson(route('api.comment.store'), [
+    $response = $this->postJson(route('api.blog.comments.store'), [
         'body' => 'A nice comment.',
         'entity_type' => Blog::class,
         'entity_id' => $blog->id,
@@ -114,16 +107,16 @@ test('api comment store succeeds as guest with valid data', function () {
     expect($blog->comments()->count())->toBe(1);
 });
 
-test('api comment store fails when required fields missing', function () {
-    $response = $this->postJson(route('api.comment.store'), [
+test('api blog comment store fails when required fields missing', function () {
+    $response = $this->postJson(route('api.blog.comments.store'), [
         'body' => 'Comment',
     ]);
 
     $response->assertStatus(422);
 });
 
-test('api comment store fails for invalid entity_type', function () {
-    $response = $this->postJson(route('api.comment.store'), [
+test('api blog comment store fails for invalid entity_type', function () {
+    $response = $this->postJson(route('api.blog.comments.store'), [
         'body' => 'Comment',
         'entity_type' => 'InvalidClass',
         'entity_id' => 1,
@@ -147,7 +140,7 @@ test('api comment like returns 200 for existing comment', function () {
         'is_approved' => 0,
     ]);
 
-    $response = $this->postJson(route('api.comment.like', ['comment' => $comment->id]));
+    $response = $this->postJson(route('api.blog.comments.like', ['comment' => $comment->id]));
 
     $response->assertStatus(200);
 });
@@ -165,7 +158,7 @@ test('api comment dislike returns 200 for existing comment', function () {
         'is_approved' => 0,
     ]);
 
-    $response = $this->postJson(route('api.comment.dislike', ['comment' => $comment->id]));
+    $response = $this->postJson(route('api.blog.comments.dislike', ['comment' => $comment->id]));
 
     $response->assertStatus(200);
 });
