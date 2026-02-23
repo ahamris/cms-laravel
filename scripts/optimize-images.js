@@ -4,16 +4,55 @@ import path from 'path';
 import { glob } from 'glob';
 
 // --- Configuration ---
+const MANIFEST_PATH = 'storage/app/optimized-images.json';
+
 // Parse command-line arguments
 const args = process.argv.slice(2);
 const includePublic = args.includes('--include-public');
 const createWebP = !args.includes('--no-webp');
+const forceReoptimize = args.includes('--force');
+
+function loadManifest() {
+    if (!fs.existsSync(MANIFEST_PATH)) {
+        return {};
+    }
+    try {
+        const raw = fs.readFileSync(MANIFEST_PATH, 'utf8');
+        const data = JSON.parse(raw);
+        const entries = data.entries || data;
+        const pruned = {};
+        for (const [file, entry] of Object.entries(entries)) {
+            if (fs.existsSync(file)) {
+                pruned[file] = typeof entry === 'object' && entry !== null ? entry : { mtime: entry };
+            }
+        }
+        return pruned;
+    } catch {
+        return {};
+    }
+}
+
+function saveManifest(manifest) {
+    const dir = path.dirname(MANIFEST_PATH);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(
+        MANIFEST_PATH,
+        JSON.stringify({ version: 1, entries: manifest, updatedAt: new Date().toISOString() }, null, 2),
+        'utf8'
+    );
+}
 
 async function optimizeImages() {
+    const manifest = loadManifest();
+    const skippedOptimization = new Set();
+
     console.log('🖼️  Starting image optimization...');
     console.log(`- Optimizing storage files: YES`);
     console.log(`- Optimizing public files: ${includePublic ? 'YES' : 'NO'}`);
     console.log(`- Creating WebP backups: ${createWebP && includePublic ? 'YES (for public files)' : 'NO'}`);
+    console.log(`- Manifest: ${MANIFEST_PATH} (skip already optimized unless --force)`);
     console.log('⚠️  This will overwrite original files with optimized versions!\n');
 
     // Track sizes before and after
@@ -40,18 +79,27 @@ async function optimizeImages() {
 
     const jpegFiles = [...new Set(jpegGlobs)];
     let jpegCount = 0;
+    let jpegSkipped = 0;
     let jpegErrors = 0;
     let jpegTotalSaved = 0;
-    
+
     for (const file of jpegFiles) {
         try {
+            const stat = fs.statSync(file);
+            const existing = manifest[file];
+            if (!forceReoptimize && existing && existing.mtime === stat.mtimeMs) {
+                skippedOptimization.add(file);
+                jpegSkipped++;
+                continue;
+            }
+
             // Get original size
-            const originalSize = fs.statSync(file).size;
+            const originalSize = stat.size;
             fileSizes.set(file, { original: originalSize, optimized: 0 });
-            
+
             // Create temporary file
             const tempFile = file + '.tmp';
-            
+
             // Optimize to temporary file
             await sharp(file)
                 .jpeg({
@@ -60,14 +108,17 @@ async function optimizeImages() {
                     mozjpeg: true
                 })
                 .toFile(tempFile);
-            
+
             // Get optimized size
             const optimizedSize = fs.statSync(tempFile).size;
             fileSizes.set(file, { original: originalSize, optimized: optimizedSize });
-            
+
             // Replace original with optimized
             fs.renameSync(tempFile, file);
-            
+
+            const newStat = fs.statSync(file);
+            manifest[file] = { mtime: newStat.mtimeMs, webp: manifest[file]?.webp ?? false };
+
             jpegTotalSaved += (originalSize - optimizedSize);
             jpegCount++;
         } catch (error) {
@@ -80,7 +131,7 @@ async function optimizeImages() {
             jpegErrors++;
         }
     }
-    console.log(`✅ Optimized ${jpegCount} JPEG files${jpegErrors > 0 ? ` (${jpegErrors} skipped)` : ''}`);
+    console.log(`✅ Optimized ${jpegCount} JPEG files${jpegSkipped > 0 ? ` (${jpegSkipped} already done)` : ''}${jpegErrors > 0 ? ` (${jpegErrors} errors)` : ''}`);
 
     // Optimize PNGs - overwrite originals
     console.log('🎨 Optimizing PNG images...');
@@ -99,18 +150,27 @@ async function optimizeImages() {
 
     const pngFiles = [...new Set(pngGlobs)];
     let pngCount = 0;
+    let pngSkipped = 0;
     let pngErrors = 0;
     let pngTotalSaved = 0;
-    
+
     for (const file of pngFiles) {
         try {
+            const stat = fs.statSync(file);
+            const existing = manifest[file];
+            if (!forceReoptimize && existing && existing.mtime === stat.mtimeMs) {
+                skippedOptimization.add(file);
+                pngSkipped++;
+                continue;
+            }
+
             // Get original size
-            const originalSize = fs.statSync(file).size;
+            const originalSize = stat.size;
             fileSizes.set(file, { original: originalSize, optimized: 0 });
-            
+
             // Create temporary file
             const tempFile = file + '.tmp';
-            
+
             // Optimize to temporary file
             await sharp(file)
                 .png({
@@ -119,14 +179,17 @@ async function optimizeImages() {
                     palette: true
                 })
                 .toFile(tempFile);
-            
+
             // Get optimized size
             const optimizedSize = fs.statSync(tempFile).size;
             fileSizes.set(file, { original: originalSize, optimized: optimizedSize });
-            
+
             // Replace original with optimized
             fs.renameSync(tempFile, file);
-            
+
+            const newStat = fs.statSync(file);
+            manifest[file] = { mtime: newStat.mtimeMs, webp: manifest[file]?.webp ?? false };
+
             pngTotalSaved += (originalSize - optimizedSize);
             pngCount++;
         } catch (error) {
@@ -139,7 +202,7 @@ async function optimizeImages() {
             pngErrors++;
         }
     }
-    console.log(`✅ Optimized ${pngCount} PNG files${pngErrors > 0 ? ` (${pngErrors} skipped)` : ''}`);
+    console.log(`✅ Optimized ${pngCount} PNG files${pngSkipped > 0 ? ` (${pngSkipped} already done)` : ''}${pngErrors > 0 ? ` (${pngErrors} errors)` : ''}`);
 
     // Create WebP versions for modern browsers (storage + optionally public when includePublic)
     if (createWebP) {
@@ -161,10 +224,19 @@ async function optimizeImages() {
         console.log(`🌐 Creating WebP versions (${uniqueFiles.length} files)...`);
 
         let webpCount = 0;
+        let webpSkipped = 0;
         let webpErrors = 0;
 
         for (const file of uniqueFiles) {
             try {
+                if (skippedOptimization.has(file) && manifest[file]?.webp) {
+                    const webpPath = path.join(path.dirname(file), 'webp', path.basename(file, path.extname(file)) + '.webp');
+                    if (fs.existsSync(webpPath)) {
+                        webpSkipped++;
+                        continue;
+                    }
+                }
+
                 const fileDir = path.dirname(file);
                 const webpDir = path.join(fileDir, 'webp');
 
@@ -182,16 +254,21 @@ async function optimizeImages() {
                     })
                     .toFile(webpPath);
 
+                if (!manifest[file]) manifest[file] = { mtime: fs.statSync(file).mtimeMs };
+                manifest[file].webp = true;
                 webpCount++;
             } catch (error) {
                 console.warn(`⚠️  Skipped WebP for ${file}: ${error.message}`);
                 webpErrors++;
             }
         }
-        console.log(`✅ Created ${webpCount} WebP backup files${webpErrors > 0 ? ` (${webpErrors} skipped)` : ''}`);
+        console.log(`✅ Created ${webpCount} WebP backup files${webpSkipped > 0 ? ` (${webpSkipped} already done)` : ''}${webpErrors > 0 ? ` (${webpErrors} errors)` : ''}`);
     } else {
         console.log('⏭️  Skipping WebP backup creation.');
     }
+
+    saveManifest(manifest);
+    console.log(`📄 Manifest saved to ${MANIFEST_PATH}`);
 
     // Calculate total savings
     let totalOriginalSize = 0;
@@ -227,6 +304,7 @@ async function optimizeImages() {
     }
     console.log('\n🎉 Image optimization complete!');
     console.log('⚠️  Original files have been overwritten with optimized versions.');
+    console.log(`💾 Already-optimized files are tracked in ${MANIFEST_PATH}; use --force to re-optimize everything.`);
     if (createWebP) {
         console.log('💡 WebP versions are in webp/ subdirectories; use <picture> + get_image_webp() in views to serve them.');
     }
