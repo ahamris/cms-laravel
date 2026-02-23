@@ -27,10 +27,8 @@ test('comment store purifies body and does not store script tags', function () {
 
     $xssBody = '<p>Nice post!</p><script>alert("xss")</script><img src=x onerror="alert(1)">';
 
-    $response = $this->postJson(route('api.blog.comments.store'), [
+    $response = $this->postJson(route('api.blog.comments.store', ['slug' => $blog->slug]), [
         'body' => $xssBody,
-        'entity_type' => Blog::class,
-        'entity_id' => $blog->id,
         'guest_name' => 'Test User',
         'guest_email' => 'test@example.com',
     ]);

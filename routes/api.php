@@ -59,10 +59,10 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
     Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->middleware('throttle:forms')->name('api.contact.submit');
 
-    // Blog (posts + comments)
-    Route::post('/blog/comments', [ApiCommentController::class, 'store'])->middleware('throttle:forms')->name('api.blog.comments.store');
-    Route::post('/blog/comments/{comment}/like', [ApiCommentController::class, 'like'])->name('api.blog.comments.like');
-    Route::post('/blog/comments/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.blog.comments.dislike');
+    // Blog (posts + comments — comments scoped to blog by slug)
+    Route::post('/blog/{slug}/comments', [ApiCommentController::class, 'store'])->middleware('throttle:forms')->name('api.blog.comments.store')->where('slug', '[a-z0-9\-]+');
+    Route::post('/blog/{slug}/comments/{comment}/like', [ApiCommentController::class, 'like'])->name('api.blog.comments.like')->where('slug', '[a-z0-9\-]+');
+    Route::post('/blog/{slug}/comments/{comment}/dislike', [ApiCommentController::class, 'dislike'])->name('api.blog.comments.dislike')->where('slug', '[a-z0-9\-]+');
 
     // Pricing (prijzen)
     Route::get('/prijzen', [ApiPricingController::class, 'index'])->name('api.pricing.index');
@@ -77,7 +77,7 @@ Route::middleware('frontend.origins')->group(function () {
     Route::get('/proefversie', [ApiTrialController::class, 'index'])->name('api.trial.index');
     Route::get('/proefversie/success', [ApiTrialController::class, 'success'])->name('api.trial.success');
 
-    // Course (categories, videos, live sessions under single parent)
+    // Course (categories, videos, live sessions)
     Route::prefix('course')->group(function () {
         Route::get('/', [ApiCourseController::class, 'index'])->name('api.course.index');
         Route::get('/categories', [ApiCourseController::class, 'categories'])->name('api.course.categories');

@@ -93,10 +93,8 @@ test('api blog comment store succeeds as guest with valid data', function () {
         'blog_category_id' => $this->category->id,
     ]);
 
-    $response = $this->postJson(route('api.blog.comments.store'), [
+    $response = $this->postJson(route('api.blog.comments.store', ['slug' => $blog->slug]), [
         'body' => 'A nice comment.',
-        'entity_type' => Blog::class,
-        'entity_id' => $blog->id,
         'guest_name' => 'Guest User',
         'guest_email' => 'guest@example.com',
     ]);
@@ -108,23 +106,23 @@ test('api blog comment store succeeds as guest with valid data', function () {
 });
 
 test('api blog comment store fails when required fields missing', function () {
-    $response = $this->postJson(route('api.blog.comments.store'), [
+    $blog = Blog::factory()->create(['slug' => 'missing-fields-api', 'is_active' => true, 'blog_category_id' => $this->category->id]);
+
+    $response = $this->postJson(route('api.blog.comments.store', ['slug' => $blog->slug]), [
         'body' => 'Comment',
     ]);
 
     $response->assertStatus(422);
 });
 
-test('api blog comment store fails for invalid entity_type', function () {
-    $response = $this->postJson(route('api.blog.comments.store'), [
+test('api blog comment store returns 404 for unknown blog slug', function () {
+    $response = $this->postJson(route('api.blog.comments.store', ['slug' => 'non-existent-blog-slug']), [
         'body' => 'Comment',
-        'entity_type' => 'InvalidClass',
-        'entity_id' => 1,
         'guest_name' => 'Guest',
         'guest_email' => 'guest@example.com',
     ]);
 
-    $response->assertStatus(422);
+    $response->assertStatus(404);
 });
 
 test('api comment like returns 200 for existing comment', function () {
@@ -140,7 +138,7 @@ test('api comment like returns 200 for existing comment', function () {
         'is_approved' => 0,
     ]);
 
-    $response = $this->postJson(route('api.blog.comments.like', ['comment' => $comment->id]));
+    $response = $this->postJson(route('api.blog.comments.like', ['slug' => $blog->slug, 'comment' => $comment->id]));
 
     $response->assertStatus(200);
 });
@@ -158,7 +156,7 @@ test('api comment dislike returns 200 for existing comment', function () {
         'is_approved' => 0,
     ]);
 
-    $response = $this->postJson(route('api.blog.comments.dislike', ['comment' => $comment->id]));
+    $response = $this->postJson(route('api.blog.comments.dislike', ['slug' => $blog->slug, 'comment' => $comment->id]));
 
     $response->assertStatus(200);
 });
