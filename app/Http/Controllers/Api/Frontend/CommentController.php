@@ -13,14 +13,15 @@ use OpenApi\Attributes as OA;
 
 class CommentController extends Controller
 {
-    #[OA\Post(path: '/api/blog/{slug}/comments', summary: 'Add comment to blog post', description: 'Create a comment on the blog post identified by {slug}. Request body: body (required), parent_id (optional, for replies), guest_name and guest_email (required when not authenticated). No entity_type or entity_id — the blog is specified in the URL.', tags: ['Blog'], parameters: [
+    #[OA\Post(path: '/api/blog/{slug}/comments', summary: 'Add comment to blog post', description: 'Create a comment on the blog post identified by {slug}. Send as form fields (application/x-www-form-urlencoded or multipart/form-data). Blog is specified in the URL.', tags: ['Blog'], parameters: [
         new OA\Parameter(name: 'slug', in: 'path', required: true, description: 'Blog post slug', schema: new OA\Schema(type: 'string', example: 'my-blog-post')),
-        new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['body'], properties: [
-            new OA\Property(property: 'body', type: 'string', maxLength: 2000, description: 'Comment text'),
-            new OA\Property(property: 'parent_id', type: 'integer', nullable: true, description: 'ID of parent comment for replies'),
-            new OA\Property(property: 'guest_name', type: 'string', maxLength: 255, description: 'Required when not logged in'),
-            new OA\Property(property: 'guest_email', type: 'string', format: 'email', maxLength: 255, description: 'Required when not logged in'),
-        ])),
+        new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'application/x-www-form-urlencoded', schema: new OA\Schema(required: ['body'], type: 'object', properties: [
+            new OA\Property(property: 'body', type: 'string', maxLength: 2000, description: 'Comment text (required)'),
+            new OA\Property(property: 'parent_id', type: 'integer', description: 'ID of parent comment for replies'),
+            new OA\Property(property: 'guest_name', type: 'string', maxLength: 255, description: 'Your name (required when not logged in)'),
+            new OA\Property(property: 'guest_email', type: 'string', format: 'email', maxLength: 255, description: 'Your email (required when not logged in)'),
+            new OA\Property(property: 'hp_phone', type: 'string', description: 'Honeypot — leave empty'),
+        ]))),
     ], responses: [
         new OA\Response(response: 201, description: 'Comment stored'),
         new OA\Response(response: 404, description: 'Blog post not found'),
