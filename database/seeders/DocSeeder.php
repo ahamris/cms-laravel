@@ -16,7 +16,7 @@ class DocSeeder extends Seeder
     public function run(): void
     {
         if (app()->environment('production')) {
-            // return;
+            return;
         }
 
         if (DocVersion::count() > 0) {
