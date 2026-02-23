@@ -201,7 +201,7 @@ class Sidebar extends Component
                         'item_type' => 'link',
                         'label' => 'Media Library',
                         'slug' => 'media-library',
-                        'url' => '#',
+                        'route_name' => 'admin.media-library.index',
                         'icon' => 'folder',
                         'permission' => 'media_access',
                     ],

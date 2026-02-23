@@ -55,6 +55,7 @@ use App\Http\Controllers\Admin\Marketing\MarketingEventController;
 use App\Http\Controllers\Admin\Marketing\MarketingPersonaController;
 use App\Http\Controllers\Admin\Marketing\MarketingTestimonialController;
 use App\Http\Controllers\Admin\Marketing\ProductFeatureController;
+use App\Http\Controllers\Admin\MediaLibraryController;
 use App\Http\Controllers\Admin\MegaMenuController;
 use App\Http\Controllers\Admin\Settings\AISettingsController;
 use App\Http\Controllers\Admin\Settings\ImageOptimizerController;
@@ -509,6 +510,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
                 Route::post('/recovery-codes/show', [AdminTwoFactorController::class, 'showRecoveryCodes'])->name('recovery-codes.show');
                 Route::post('/test', [AdminTwoFactorController::class, 'test'])->name('test');
             });
+        });
+
+        // Media Library (storage file manager)
+        Route::group(['prefix' => 'media-library', 'as' => 'media-library.'], function () {
+            Route::get('/', [MediaLibraryController::class, 'index'])->name('index');
+            Route::get('/download', [MediaLibraryController::class, 'download'])->name('download');
+            Route::get('/preview', [MediaLibraryController::class, 'preview'])->name('preview');
+            Route::delete('/', [MediaLibraryController::class, 'destroy'])->name('destroy');
+            Route::post('/resize', [MediaLibraryController::class, 'resize'])->name('resize');
         });
 
         // Image Optimizer Routes
