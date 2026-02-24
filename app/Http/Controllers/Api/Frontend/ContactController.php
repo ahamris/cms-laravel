@@ -116,7 +116,7 @@ class ContactController extends Controller
             'contact_preference' => $request->input('contact_preference') ?? 'query',
         ]);
 
-        $fileRule = 'file|max:10240|mimes:pdf,jpg,jpeg,png,txt,doc,docx,xls,xlsx,ppt,pptx';
+        $fileRules = ['file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,txt,doc,docx,xls,xlsx,ppt,pptx'];
         $rules = [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -134,9 +134,9 @@ class ContactController extends Controller
             $files = $request->file('bijlage');
             if (is_array($files)) {
                 $rules['bijlage'] = $requireAttachment ? ['required', 'array', 'min:1'] : ['nullable', 'array'];
-                $rules['bijlage.*'] = $fileRule;
+                $rules['bijlage.*'] = $fileRules;
             } else {
-                $rules['bijlage'] = $requireAttachment ? ['required', $fileRule] : ['nullable', $fileRule];
+                $rules['bijlage'] = $requireAttachment ? array_merge(['required'], $fileRules) : array_merge(['nullable'], $fileRules);
             }
         } elseif ($requireAttachment) {
             $rules['bijlage'] = 'required';
