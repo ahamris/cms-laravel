@@ -1,19 +1,7 @@
 @props(['item', 'index', 'triggerClass' => 'text-sm/6 font-semibold text-gray-900 dark:text-white'])
 
 @php
-    // Get header layout type from setting or use default max-w-7xl
-    $headerLayoutType = \App\Models\Setting::getValue('site_header_layout_type');
-
-    // Map layout type to container class
-    $containerClass = match ($headerLayoutType) {
-        'full-width' => 'w-full',
-        'container' => 'max-w-container',
-        'max-w-2xl' => 'max-w-2xl',
-        'max-w-4xl' => 'max-w-4xl',
-        'max-w-6xl' => 'max-w-6xl',
-        'max-w-7xl' => 'max-w-7xl',
-        default => 'max-w-7xl',
-    };
+    $containerClass = 'max-w-7xl';
 @endphp
 
 <div class="relative">

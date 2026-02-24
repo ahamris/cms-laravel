@@ -1,9 +1,6 @@
 @props(['page' => null])
 
 @php
-    $headerSticky = \App\Models\Setting::getValue('site_header_sticky', false);
-    $headerLayoutType = \App\Models\Setting::getValue('site_header_layout_type');
-
     $pageObj = $page;
     if (!$pageObj && request()->route('page')) {
         $pageObj = request()->route('page');
@@ -19,14 +16,13 @@
 @endphp
 
 @if($useCustomHeader && $headerBladeFile)
-    <div class="header-wrapper w-full {{ $headerSticky ? 'sticky top-0 z-50 shadow-xs' : '' }}"
-        data-header-layout-type="{{ $headerLayoutType ?? '' }}">
-        @include($headerBladeFile, ['megaMenuData' => $megaMenuData ?? [], 'isSticky' => $headerSticky])
+    <div class="header-wrapper w-full">
+        @include($headerBladeFile, ['megaMenuData' => $megaMenuData ?? [], 'isSticky' => false])
     </div>
 @else
     <header
-        class="{{ $headerSticky ? 'sticky top-0 z-50' : '' }} transition-all duration-300 bg-white border-b border-white header-wrapper w-full"
-        data-header-layout-type="{{ $headerLayoutType ?? '' }}" x-data="{ mobileMenuOpen: false, loginModalOpen: false, menuOpenLabel: '{{ addslashes(__('frontend.header.menu_open')) }}', menuCloseLabel: '{{ addslashes(__('frontend.header.menu_close')) }}' }"
+        class="transition-all duration-300 bg-white border-b border-white header-wrapper w-full"
+        x-data="{ mobileMenuOpen: false, loginModalOpen: false, menuOpenLabel: '{{ addslashes(__('frontend.header.menu_open')) }}', menuCloseLabel: '{{ addslashes(__('frontend.header.menu_close')) }}' }"
         x-effect="document.body.style.overflow = mobileMenuOpen ? 'hidden' : 'auto'">
         <div class="max-w-container mx-auto px-4 sm:px-0">
             <div class="flex items-center justify-between min-h-14 sm:min-h-16 lg:h-18 gap-4">

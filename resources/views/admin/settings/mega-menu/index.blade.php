@@ -160,105 +160,17 @@
                     <input type="hidden" name="header_cta_button_text" id="header_cta_button_text_hidden" value="{{ get_setting('header_cta_button_text', 'Sign up') }}">
                     <input type="hidden" name="header_cta_button_url" id="header_cta_button_url_hidden" value="{{ get_setting('header_cta_button_url', '#') }}">
 
-                    <!-- Header Component Selection -->
-                    <div class="bg-white rounded-lg shadow mb-6">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h2 class="text-lg font-semibold text-gray-900">Header Component Selection</h2>
-                            <p class="text-sm text-gray-600 mt-1">Select a TailwindPlus component to use as the header</p>
-                        </div>
-                        <div class="p-6">
-                            <div class="space-y-4">
-                                <div>
-                                    <label for="header_component_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Select Header Component
-                                    </label>
-                                    <select name="header_component_id" id="header_component_id"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                                            onchange="updateHeaderSettingsButton()">
-                                        <option value="">-- Use Default Header --</option>
-                                        @foreach($headerComponents as $component)
-                                            <option value="{{ $component['id'] }}"
-                                                    {{ $selectedHeaderComponentId == $component['id'] ? 'selected' : '' }}
-                                                    data-raw-name="{{ $component['raw_name'] ?? '' }}">
-                                                {{ $component['name'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox"
-                                           name="header_sticky"
-                                           id="header_sticky"
-                                           value="1"
-                                           {{ $selectedHeaderSticky ? 'checked' : '' }}
-                                           class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                                    <label for="header_sticky" class="ml-2 block text-sm text-gray-700">
-                                        Sticky Header
-                                    </label>
-                                </div>
-                                <div>
-                                    <label for="header_layout_type" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Header Layout Type
-                                    </label>
-                                    <select name="header_layout_type" id="header_layout_type"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                        <option value="" {{ $selectedHeaderLayoutType === null || $selectedHeaderLayoutType === '' ? 'selected' : '' }}>Use page settings</option>
-                                        <option value="full-width" {{ $selectedHeaderLayoutType === 'full-width' ? 'selected' : '' }}>Full Width</option>
-                                        <option value="container" {{ $selectedHeaderLayoutType === 'container' ? 'selected' : '' }}>Container (mx-auto)</option>
-                                        <option value="max-w-2xl" {{ $selectedHeaderLayoutType === 'max-w-2xl' ? 'selected' : '' }}>Max Width: 2xl</option>
-                                        <option value="max-w-4xl" {{ $selectedHeaderLayoutType === 'max-w-4xl' ? 'selected' : '' }}>Max Width: 4xl</option>
-                                        <option value="max-w-6xl" {{ $selectedHeaderLayoutType === 'max-w-6xl' ? 'selected' : '' }}>Max Width: 6xl</option>
-                                        <option value="max-w-7xl" {{ $selectedHeaderLayoutType === 'max-w-7xl' ? 'selected' : '' }}>Max Width: 7xl</option>
-                                    </select>
-                                    <p class="mt-1 text-xs text-gray-500">If "Use page settings" is selected, the showcase page's layout type will be used</p>
-                                </div>
-                                <div>
-                                    <div class="flex items-center mb-2">
-                                        <input type="checkbox"
-                                               name="header_login_link_enabled"
-                                               id="header_login_link_enabled"
-                                               value="1"
-                                               {{ $headerLoginLinkEnabled ? 'checked' : '' }}
-                                               class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                                        <label for="header_login_link_enabled" class="ml-2 block text-sm font-medium text-gray-700">
-                                            Show Login Link
-                                        </label>
-                                    </div>
-                                    <div>
-                                        <label for="header_login_link_url" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Login Link URL
-                                        </label>
-                                        <input type="text"
-                                               name="header_login_link_url"
-                                               id="header_login_link_url"
-                                               value="{{ $headerLoginLinkUrl }}"
-                                               placeholder="/login or #"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                        <p class="mt-1 text-xs text-gray-500">URL for the login link in header. Use # to disable link functionality.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Save Button -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <button type="submit"
                                 class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
                             <i class="fas fa-save mr-2"></i>Save All Settings
                         </button>
-                        @php
-                            $selectedHeaderComponent = collect($headerComponents)->firstWhere('id', $selectedHeaderComponentId);
-                            $headerComponentRawName = $selectedHeaderComponent && isset($selectedHeaderComponent['raw_name']) ? $selectedHeaderComponent['raw_name'] : '';
-                            $hasHeaderCTA = $selectedHeaderComponent && in_array($headerComponentRawName, ['With call-to-action']);
-                        @endphp
-                        @if($hasHeaderCTA)
-                            <button type="button"
-                                    onclick="openHeaderCtaSettingsModal()"
-                                    class="w-full mt-3 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-                                <i class="fas fa-cog mr-2"></i>Header CTA Settings
-                            </button>
-                        @endif
+                        <button type="button"
+                                onclick="openHeaderCtaSettingsModal()"
+                                class="w-full mt-3 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-cog mr-2"></i>Header CTA Settings
+                        </button>
                     </div>
                 </form>
             </div>
@@ -314,29 +226,6 @@
     </div>
 
     <script>
-        function updateHeaderSettingsButton() {
-            const select = document.getElementById('header_component_id');
-            const selectedOption = select.options[select.selectedIndex];
-            const rawName = selectedOption ? selectedOption.getAttribute('data-raw-name') : null;
-            const settingsButton = document.querySelector('[onclick="openHeaderCtaSettingsModal()"]');
-
-            if (rawName === 'With call-to-action') {
-                if (!settingsButton) {
-                    const saveButton = document.querySelector('#settings-form button[type="submit"]');
-                    const newButton = document.createElement('button');
-                    newButton.type = 'button';
-                    newButton.onclick = function() { openHeaderCtaSettingsModal(); };
-                    newButton.className = 'w-full mt-3 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors';
-                    newButton.innerHTML = '<i class="fas fa-cog mr-2"></i>Header CTA Settings';
-                    saveButton.parentElement.appendChild(newButton);
-                }
-            } else {
-                if (settingsButton) {
-                    settingsButton.remove();
-                }
-            }
-        }
-
         function openHeaderCtaSettingsModal() {
             document.getElementById('header-cta-settings-modal').classList.remove('hidden');
             document.getElementById('header-cta-settings-modal').classList.add('flex');
@@ -386,9 +275,5 @@
             }, 5000);
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateHeaderSettingsButton();
-        });
     </script>
 </x-layouts.admin>

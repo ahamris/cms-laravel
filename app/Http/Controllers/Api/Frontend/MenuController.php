@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\FooterLink;
 use App\Models\MegaMenuItem;
-use App\Models\Setting;
 use App\Models\StickyMenuItem;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -25,11 +24,6 @@ class MenuController extends Controller
 
         $payload = [
             'items' => array_values($tree),
-            'settings' => [
-                'sticky' => (bool) Setting::getValue('site_header_sticky', false),
-                'login_link_enabled' => (bool) Setting::getValue('site_header_login_link_enabled', true),
-                'login_link_url' => Setting::getValue('site_header_login_link_url') ?: '#',
-            ],
         ];
 
         return response()->json($payload);
@@ -72,11 +66,6 @@ class MenuController extends Controller
         $payload = [
             'header' => [
                 'items' => array_values(array_map(fn (array $item) => $this->mapCachedMenuItem($item), $headerCached)),
-                'settings' => [
-                    'sticky' => (bool) Setting::getValue('site_header_sticky', false),
-                    'login_link_enabled' => (bool) Setting::getValue('site_header_login_link_enabled', true),
-                    'login_link_url' => Setting::getValue('site_header_login_link_url') ?: '#',
-                ],
             ],
             'footer' => [
                 'columns' => $footerCached->map(function ($links, $column) {
