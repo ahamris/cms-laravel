@@ -63,19 +63,23 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bullets</label>
                             <div id="hero-bullets-list" class="space-y-2">
+                                <div class="grid grid-cols-[7rem_1fr_2.5rem] gap-2 items-center px-0">
+                                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Icon</span>
+                                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Bullet text</span>
+                                    <span></span>
+                                </div>
                                 @foreach($heroBullets as $i => $b)
                                     @php $heroIcon = normalize_homepage_icon(old('sections.hero.bullets.'.$i.'.icon', $b['icon'] ?? 'check')); @endphp
-                                    <div class="homepage-dynamic-row flex gap-2 items-start">
-                                        <div class="flex-shrink-0">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Icon</label>
-                                            <input type="hidden" name="sections[hero][bullets][{{ $i }}][icon]" id="hero_bullet_icon_{{ $i }}" value="{{ $heroIcon ?: 'fa-solid fa-check' }}" />
-                                            <button type="button" class="homepage-icon-picker-open inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 min-w-[7rem]" data-target-input-id="hero_bullet_icon_{{ $i }}">
-                                                <i class="{{ $heroIcon ?: 'fa-solid fa-check' }} text-sm text-[var(--color-accent)]"></i>
-                                                <span>Change</span>
-                                            </button>
+                                    <div class="homepage-dynamic-row grid grid-cols-[7rem_1fr_2.5rem] gap-2 items-center">
+                                        <input type="hidden" name="sections[hero][bullets][{{ $i }}][icon]" id="hero_bullet_icon_{{ $i }}" value="{{ $heroIcon ?: 'fa-solid fa-check' }}" />
+                                        <button type="button" class="homepage-icon-picker-open inline-flex items-center justify-center gap-2 h-10 w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="hero_bullet_icon_{{ $i }}" title="Icon">
+                                            <i class="{{ $heroIcon ?: 'fa-solid fa-check' }} text-sm text-[var(--color-accent)]"></i>
+                                            <span>Change</span>
+                                        </button>
+                                        <div class="min-w-0">
+                                            <x-ui.input name="sections[hero][bullets][{{ $i }}][text]" :id="'hero_bullet_text_'.$i" :value="old('sections.hero.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Bullet text" class="w-full" />
                                         </div>
-                                        <x-ui.input name="sections[hero][bullets][{{ $i }}][text]" :id="'hero_bullet_text_'.$i" :value="old('sections.hero.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Bullet text" class="flex-1" />
-                                        <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
+                                        <button type="button" class="homepage-remove-row p-2 h-10 w-10 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded inline-flex items-center justify-center" title="Remove"><i class="fa-solid fa-times"></i></button>
                                     </div>
                                 @endforeach
                             </div>
@@ -164,19 +168,23 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bullets</label>
                             <div id="about-bullets-list" class="space-y-2">
+                                <div class="grid grid-cols-[7rem_1fr_2.5rem] gap-2 items-center px-0">
+                                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Icon</span>
+                                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Text</span>
+                                    <span></span>
+                                </div>
                                 @foreach($aboutBullets as $i => $b)
                                     @php $aboutIcon = normalize_homepage_icon(old('sections.about_opms.bullets.'.$i.'.icon', $b['icon'] ?? 'check')); @endphp
-                                    <div class="homepage-dynamic-row flex gap-2 items-start">
-                                        <div class="flex-shrink-0">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Icon</label>
-                                            <input type="hidden" name="sections[about_opms][bullets][{{ $i }}][icon]" id="about_bullet_icon_{{ $i }}" value="{{ $aboutIcon ?: 'fa-solid fa-check' }}" />
-                                            <button type="button" class="homepage-icon-picker-open inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 min-w-[7rem]" data-target-input-id="about_bullet_icon_{{ $i }}">
-                                                <i class="{{ $aboutIcon ?: 'fa-solid fa-check' }} text-sm text-[var(--color-accent)]"></i>
-                                                <span>Change</span>
-                                            </button>
+                                    <div class="homepage-dynamic-row grid grid-cols-[7rem_1fr_2.5rem] gap-2 items-center">
+                                        <input type="hidden" name="sections[about_opms][bullets][{{ $i }}][icon]" id="about_bullet_icon_{{ $i }}" value="{{ $aboutIcon ?: 'fa-solid fa-check' }}" />
+                                        <button type="button" class="homepage-icon-picker-open inline-flex items-center justify-center gap-2 h-10 w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="about_bullet_icon_{{ $i }}" title="Icon">
+                                            <i class="{{ $aboutIcon ?: 'fa-solid fa-check' }} text-sm text-[var(--color-accent)]"></i>
+                                            <span>Change</span>
+                                        </button>
+                                        <div class="min-w-0">
+                                            <x-ui.input name="sections[about_opms][bullets][{{ $i }}][text]" :id="'about_bullet_text_'.$i" :value="old('sections.about_opms.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Text" class="w-full" />
                                         </div>
-                                        <x-ui.input name="sections[about_opms][bullets][{{ $i }}][text]" :id="'about_bullet_text_'.$i" :value="old('sections.about_opms.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Text" class="flex-1" />
-                                        <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
+                                        <button type="button" class="homepage-remove-row p-2 h-10 w-10 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded inline-flex items-center justify-center" title="Remove"><i class="fa-solid fa-times"></i></button>
                                     </div>
                                 @endforeach
                             </div>
@@ -350,29 +358,29 @@
 
     {{-- Templates for dynamic rows (hidden) --}}
     <template id="hero-bullet-tmpl">
-        <div class="homepage-dynamic-row flex gap-2 items-start">
-            <div class="w-40 flex-shrink-0 flex flex-col gap-1">
-                <input type="hidden" id="hero_bullet_icon___INDEX__" name="sections[hero][bullets][__INDEX__][icon]" value="fa-solid fa-check" />
-                <button type="button" class="homepage-icon-picker-open flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="hero_bullet_icon___INDEX__">
-                    <i class="hero_bullet_icon___INDEX___preview fa-solid fa-check text-sm"></i>
-                    <span>Pick icon</span>
-                </button>
+        <div class="homepage-dynamic-row grid grid-cols-[7rem_1fr_2.5rem] gap-2 items-center">
+            <input type="hidden" id="hero_bullet_icon___INDEX__" name="sections[hero][bullets][__INDEX__][icon]" value="fa-solid fa-check" />
+            <button type="button" class="homepage-icon-picker-open inline-flex items-center justify-center gap-2 h-10 w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="hero_bullet_icon___INDEX__" title="Icon">
+                <i class="hero_bullet_icon___INDEX___preview fa-solid fa-check text-sm text-[var(--color-accent)]"></i>
+                <span>Pick icon</span>
+            </button>
+            <div class="min-w-0">
+                <input type="text" name="sections[hero][bullets][__INDEX__][text]" placeholder="Bullet text" class="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm h-10" />
             </div>
-            <input type="text" name="sections[hero][bullets][__INDEX__][text]" placeholder="Bullet text" class="flex-1 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
-            <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times"></i></button>
+            <button type="button" class="homepage-remove-row p-2 h-10 w-10 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded inline-flex items-center justify-center"><i class="fa-solid fa-times"></i></button>
         </div>
     </template>
     <template id="about-bullet-tmpl">
-        <div class="homepage-dynamic-row flex gap-2 items-start">
-            <div class="w-40 flex-shrink-0 flex flex-col gap-1">
-                <input type="hidden" id="about_bullet_icon___INDEX__" name="sections[about_opms][bullets][__INDEX__][icon]" value="fa-solid fa-check" />
-                <button type="button" class="homepage-icon-picker-open flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="about_bullet_icon___INDEX__">
-                    <i class="about_bullet_icon___INDEX___preview fa-solid fa-check text-sm"></i>
-                    <span>Pick icon</span>
-                </button>
+        <div class="homepage-dynamic-row grid grid-cols-[7rem_1fr_2.5rem] gap-2 items-center">
+            <input type="hidden" id="about_bullet_icon___INDEX__" name="sections[about_opms][bullets][__INDEX__][icon]" value="fa-solid fa-check" />
+            <button type="button" class="homepage-icon-picker-open inline-flex items-center justify-center gap-2 h-10 w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="about_bullet_icon___INDEX__" title="Icon">
+                <i class="about_bullet_icon___INDEX___preview fa-solid fa-check text-sm text-[var(--color-accent)]"></i>
+                <span>Pick icon</span>
+            </button>
+            <div class="min-w-0">
+                <input type="text" name="sections[about_opms][bullets][__INDEX__][text]" placeholder="Text" class="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm h-10" />
             </div>
-            <input type="text" name="sections[about_opms][bullets][__INDEX__][text]" placeholder="Text" class="flex-1 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
-            <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times"></i></button>
+            <button type="button" class="homepage-remove-row p-2 h-10 w-10 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded inline-flex items-center justify-center"><i class="fa-solid fa-times"></i></button>
         </div>
     </template>
     <template id="user-features-left-tmpl">

@@ -1,8 +1,6 @@
 @props(['page' => null])
 
 @php
-    $footerLayoutType = \App\Models\Setting::getValue('site_footer_layout_type');
-
     $pageObj = $page;
     if (!$pageObj && request()->route('page')) {
         $pageObj = request()->route('page');
@@ -18,11 +16,11 @@
 @endphp
 
 @if($useCustomFooter && $footerBladeFile)
-    <div class="footer-wrapper w-full" data-footer-layout-type="{{ $footerLayoutType ?? '' }}">
+    <div class="footer-wrapper w-full">
         @include($footerBladeFile, ['footerLinks' => $footerLinks ?? []])
     </div>
 @else
-    <footer class="bg-primary py-10 footer-wrapper w-full" data-footer-layout-type="{{ $footerLayoutType ?? '' }}">
+    <footer class="bg-primary py-10 footer-wrapper w-full">
         <div class="max-w-container mx-auto my-10 px-4 sm:px-6 lg:px-8">
             <!-- Top Section - 4 Columns -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

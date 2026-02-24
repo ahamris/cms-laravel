@@ -128,13 +128,6 @@ class HomepageController extends Controller
                 'cta_button_text' => get_setting('header_cta_button_text'),
                 'cta_button_url' => get_setting('header_cta_button_url'),
             ],
-            'footer' => [
-                'cta_title' => get_setting('footer_cta_title'),
-                'cta_subtitle' => get_setting('footer_cta_subtitle'),
-                'cta_description' => get_setting('footer_cta_description'),
-                'cta_button_text' => get_setting('footer_cta_button_text'),
-                'cta_button_url' => get_setting('footer_cta_button_url'),
-            ],
             'organizations' => Organization::getCached(),
             'external_codes' => ExternalCode::getCached(),
         ];

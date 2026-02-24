@@ -478,7 +478,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // Footer Links
             Route::group(['prefix' => 'footer-links', 'as' => 'footer-links.'], function () {
                 Route::put('order', [FooterLinkController::class, 'updateOrder'])->name('order');
-                Route::post('update-footer-component', [FooterLinkController::class, 'updateFooterComponent'])->name('update-footer-component');
                 Route::post('update-cta-settings', [FooterLinkController::class, 'updateCtaSettings'])->name('update-cta-settings');
                 Route::patch('{footerLink}/toggle', [FooterLinkController::class, 'toggleActive'])->name('toggle');
                 Route::resource('', FooterLinkController::class)->except(['show'])->parameters(['' => 'footer_link']);

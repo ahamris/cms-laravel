@@ -86,13 +86,6 @@ class SettingSeeder extends Seeder
         $this->createSetting('header_cta_button_text', 'Sign up', 'text', 'header', 'Header CTA Button Text', 'Text for the call-to-action button in the header', 1);
         $this->createSetting('header_cta_button_url', '#', 'text', 'header', 'Header CTA Button URL', 'URL for the call-to-action button in the header', 2);
 
-        // Footer CTA
-        $this->createSetting('footer_cta_title', 'Get started', 'text', 'footer', 'Footer CTA Title', 'Title for the footer call-to-action section', 1);
-        $this->createSetting('footer_cta_subtitle', 'Boost your productivity. Start using our app today.', 'text', 'footer', 'Footer CTA Subtitle', 'Subtitle for the footer call-to-action section', 2);
-        $this->createSetting('footer_cta_description', 'Incididunt sint fugiat pariatur cupidatat consectetur sit cillum anim id veniam aliqua proident excepteur commodo do ea.', 'textarea', 'footer', 'Footer CTA Description', 'Description for the footer call-to-action section', 3);
-        $this->createSetting('footer_cta_button_text', 'Get started', 'text', 'footer', 'Footer CTA Button Text', 'Text for the footer call-to-action button', 4);
-        $this->createSetting('footer_cta_button_url', '#', 'text', 'footer', 'Footer CTA Button URL', 'URL for the footer call-to-action button', 5);
-
         // Cookie settings
         $this->createSetting('cookie_banner_enabled', '1', 'boolean', 'cookie', 'Cookie Banner Enabled', 'Show the cookie consent banner to visitors', 1);
         $this->createSetting('cookie_intro_title', 'We use cookies', 'text', 'cookie', 'Cookie Intro Title', 'Title shown in the cookie banner', 2);
