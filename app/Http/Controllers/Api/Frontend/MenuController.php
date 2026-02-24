@@ -43,6 +43,7 @@ class MenuController extends Controller
                     'id' => $link->id,
                     'title' => $link->title,
                     'url' => $link->url,
+                    'template' => resolve_menu_template($link->url ?? ''),
                     'order' => $link->order,
                 ])->values()->toArray(),
             ];
@@ -75,6 +76,7 @@ class MenuController extends Controller
                             'id' => $link->id,
                             'title' => $link->title,
                             'url' => $link->url,
+                            'template' => resolve_menu_template($link->url ?? ''),
                             'order' => $link->order,
                         ])->values()->toArray(),
                     ];
@@ -99,6 +101,7 @@ class MenuController extends Controller
                 'icon' => $item->icon,
                 'link' => $item->link,
                 'link_type' => $item->link_type,
+                'template' => resolve_menu_template($item->link ?? ''),
                 'is_external' => $item->is_external,
                 'sort_order' => $item->sort_order,
             ])->toArray(),
@@ -121,6 +124,7 @@ class MenuController extends Controller
             'url' => $item['url'] ?? null,
             'slug' => $item['page']['slug'] ?? null,
             'page_type' => ! empty($item['page_id']) ? 'page' : 'custom',
+            'template' => resolve_menu_template($item['url'] ?? '', $item['page']['slug'] ?? null),
             'order' => (int) ($item['order'] ?? 0),
             'tags' => $item['tags'] ?? [],
             'align' => (int) ($item['align'] ?? 1),

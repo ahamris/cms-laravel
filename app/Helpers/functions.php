@@ -426,6 +426,69 @@ if (! function_exists('resource_url_should_keep_full')) {
     }
 }
 
+if (! function_exists('resolve_menu_template')) {
+    /**
+     * Resolve frontend template name from a menu link URL and optional page slug.
+     * Used when building menu API responses so the React frontend knows which template to render.
+     *
+     * @param  string  $url  Resolved link URL or path (e.g. /api/contact, /api/blog, /api/blog/my-post)
+     * @param  string|null  $pageSlug  Page slug when link is a page reference (for api/pages/* or page_id)
+     * @return string Template name (e.g. contact, blog-list, blog-detail, page)
+     */
+    function resolve_menu_template(string $url, ?string $pageSlug = null): string
+    {
+        $path = trim($url);
+        if ($path === '') {
+            return config('menu_templates.default', 'page');
+        }
+
+        // Normalize to path only (no scheme, host, query)
+        $parsed = parse_url($path);
+        if ($parsed !== false && (str_contains($path, '://') || isset($parsed['query']))) {
+            $path = $parsed['path'] ?? '/';
+        }
+        $path = trim($path, '/');
+        if ($path === '') {
+            return config('menu_templates.default', 'page');
+        }
+
+        $exact = config('menu_templates.exact', []);
+        if (isset($exact[$path])) {
+            return $exact[$path];
+        }
+
+        $prefixes = config('menu_templates.prefix', []);
+        foreach ($prefixes as $prefix => $template) {
+            if (str_starts_with($path, $prefix)) {
+                if ($template === null) {
+                    // api/pages/ → resolve by page slug (from argument or extracted from path)
+                    $slug = $pageSlug;
+                    if (($slug === null || $slug === '') && strlen($path) > strlen($prefix)) {
+                        $slug = trim(substr($path, strlen($prefix)), '/');
+                        $slug = explode('/', $slug)[0] ?? '';
+                    }
+                    $pageSlugs = config('menu_templates.page_slugs', []);
+                    if ($slug !== null && $slug !== '' && isset($pageSlugs[$slug])) {
+                        return $pageSlugs[$slug];
+                    }
+                    return config('menu_templates.default', 'page');
+                }
+                return $template;
+            }
+        }
+
+        // If we have a page slug but path didn't match (e.g. custom url stored), still try page_slugs
+        if ($pageSlug !== null && $pageSlug !== '') {
+            $pageSlugs = config('menu_templates.page_slugs', []);
+            if (isset($pageSlugs[$pageSlug])) {
+                return $pageSlugs[$pageSlug];
+            }
+        }
+
+        return config('menu_templates.default', 'page');
+    }
+}
+
 if (! function_exists('resource_url_is_image')) {
     /**
      * Whether the given URL is considered an image URL (path has image extension or /storage/ or /images/).

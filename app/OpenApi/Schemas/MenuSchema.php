@@ -7,7 +7,7 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'MenuItem',
     title: 'Menu item',
-    description: 'Header menu tree node (id, title, subtitle, description, url, slug, page_type, order, tags, children)',
+    description: 'Header menu tree node (id, title, subtitle, description, url, slug, page_type, template, order, tags, children)',
     properties: [
         new OA\Property(property: 'id', type: 'integer', nullable: true),
         new OA\Property(property: 'title', type: 'string'),
@@ -16,6 +16,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'url', type: 'string', nullable: true, description: 'Resolved link URL/path'),
         new OA\Property(property: 'slug', type: 'string', nullable: true, description: 'Page slug when page_type is page'),
         new OA\Property(property: 'page_type', type: 'string', enum: ['page', 'custom']),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint for routing: e.g. contact, blog-list, blog-detail, page'),
         new OA\Property(property: 'order', type: 'integer'),
         new OA\Property(property: 'tags', type: 'array', items: new OA\Items(type: 'string'), description: 'Optional tags for styling or grouping (e.g. nav, cta, primary)'),
         new OA\Property(property: 'align', type: 'integer', description: 'Child alignment: 1=left, 2=right (default 1)'),
@@ -41,6 +42,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'id', type: 'integer'),
         new OA\Property(property: 'title', type: 'string'),
         new OA\Property(property: 'url', type: 'string'),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint: e.g. contact, blog-list, blog-detail, page'),
         new OA\Property(property: 'order', type: 'integer'),
     ]
 )]
@@ -68,6 +70,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'icon', type: 'string'),
         new OA\Property(property: 'link', type: 'string'),
         new OA\Property(property: 'link_type', type: 'string'),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint: e.g. contact, blog-list, blog-detail, page'),
         new OA\Property(property: 'is_external', type: 'boolean'),
         new OA\Property(property: 'sort_order', type: 'integer'),
     ]
