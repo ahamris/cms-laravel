@@ -34,6 +34,7 @@ class SolutionResource extends JsonResource
             'testimonial_company' => $this->testimonial_company,
             'image_position' => $this->image_position,
             'url' => route('api.solutions.show', $this->anchor),
+            'template' => resolve_menu_template(api_path('solution', $this->anchor)),
             'features' => FeatureListResource::collection($this->whenLoaded('features')),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

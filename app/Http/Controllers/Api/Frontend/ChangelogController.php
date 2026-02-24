@@ -32,6 +32,7 @@ class ChangelogController extends Controller
         $changelogs = $query->paginate($perPage);
 
         return response()->json([
+            'template' => 'changelog',
             'data' => $changelogs->items(),
             'meta' => [
                 'current_page' => $changelogs->currentPage(),
@@ -55,6 +56,6 @@ class ChangelogController extends Controller
             return response()->json(['message' => 'Changelog entry not found.'], 404);
         }
 
-        return response()->json(['data' => $changelog]);
+        return response()->json(['template' => 'changelog-detail', 'data' => $changelog]);
     }
 }

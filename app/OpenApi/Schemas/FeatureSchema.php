@@ -41,6 +41,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'description', type: 'string', nullable: true),
         new OA\Property(property: 'icon', type: 'string', format: 'uri', nullable: true),
         new OA\Property(property: 'url', type: 'string', format: 'uri'),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (e.g. feature-detail)'),
         new OA\Property(property: 'sort_order', type: 'integer'),
         new OA\Property(property: 'modules', type: 'array', items: new OA\Items(ref: '#/components/schemas/ModuleListItem')),
         new OA\Property(property: 'solution', ref: '#/components/schemas/FeatureSolutionRef', nullable: true),

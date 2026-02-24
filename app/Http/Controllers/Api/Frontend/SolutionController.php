@@ -26,7 +26,7 @@ class SolutionController extends Controller
             }])
             ->get();
 
-        return SolutionListResource::collection($solutions);
+        return SolutionListResource::collection($solutions)->additional(['template' => 'solutions-list']);
     }
 
     #[OA\Get(path: '/api/solutions/{anchor}', summary: 'Solution by anchor', tags: ['Solution'], parameters: [

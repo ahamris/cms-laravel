@@ -24,6 +24,7 @@ class LegalResource extends JsonResource
             'keywords' => $this->keywords,
             'image' => $this->image ? asset($this->image) : null,
             'url' => route('api.legal.show', ['slug' => $this->slug]),
+            'template' => resolve_menu_template('/api/legal/'.$this->slug),
             'current_version' => $this->current_version,
             'versioning_enabled' => $this->versioning_enabled,
             'created_at' => $this->created_at?->toIso8601String(),

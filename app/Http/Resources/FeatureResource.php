@@ -24,6 +24,7 @@ class FeatureResource extends JsonResource
             'description' => $this->description,
             'icon' => get_image($this->icon, asset('images/features-og-image.jpg')),
             'url' => route('features.show', $anchor),
+            'template' => resolve_menu_template(api_path('feature', $anchor)),
             'sort_order' => $this->sort_order,
             'modules' => ModuleListResource::collection($this->whenLoaded('modules')),
             'solution' => $this->when($this->relationLoaded('solution'), fn () => $this->solution ? [

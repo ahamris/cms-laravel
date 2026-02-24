@@ -56,6 +56,7 @@ class ContactController extends Controller
         ])->values()->all();
 
         return response()->json([
+            'template' => 'contact',
             'data' => $data, 
             'faqs' => Faq::getByIdentifier('contact') ?: null,
             'subjects' => ContactSubject::getCached()->map(fn ($s) => [

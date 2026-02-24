@@ -17,6 +17,7 @@ class TrialController extends Controller
         $solutions = Solution::get(['id', 'title', 'subtitle']);
 
         return response()->json([
+            'template' => 'trial',
             'data' => [
                 'solutions' => $solutions,
             ],
@@ -29,6 +30,7 @@ class TrialController extends Controller
     public function success(): JsonResponse
     {
         return response()->json([
+            'template' => 'trial-success',
             'data' => [
                 'message' => 'Aanvraag ontvangen. We nemen zo snel mogelijk contact met je op.',
             ],

@@ -18,6 +18,7 @@ use OpenApi\Attributes as OA;
     schema: 'SearchSuggestionsResponse',
     title: 'Search suggestions response',
     properties: [
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (search-suggestions)'),
         new OA\Property(property: 'suggestions', type: 'array', items: new OA\Items(ref: '#/components/schemas/SearchSuggestionItem')),
         new OA\Property(property: 'mostSearched', type: 'array', items: new OA\Items(
             properties: [
@@ -46,6 +47,7 @@ use OpenApi\Attributes as OA;
     schema: 'SearchResponse',
     title: 'Search response',
     properties: [
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (search-result)'),
         new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/SearchResultItem')),
         new OA\Property(property: 'meta', type: 'object', properties: [
             new OA\Property(property: 'query', type: 'string'),

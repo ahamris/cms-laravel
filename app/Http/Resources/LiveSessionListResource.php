@@ -23,6 +23,7 @@ class LiveSessionListResource extends JsonResource
             'duration_minutes' => $this->duration_minutes,
             'thumbnail' => $this->thumbnail ? \Illuminate\Support\Facades\Storage::url($this->thumbnail) : null,
             'url' => route('academy.live-sessions.show', $this->slug),
+            'template' => resolve_menu_template('/api/course/live-sessions/'.$this->slug),
             'is_upcoming' => $this->session_date && $this->session_date->isFuture(),
             'created_at' => $this->created_at?->toIso8601String(),
         ]);

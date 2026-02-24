@@ -32,6 +32,7 @@ class LiveSessionResource extends JsonResource
             'color' => $this->color,
             'is_featured' => $this->is_featured,
             'url' => route('academy.live-sessions.show', $this->slug),
+            'template' => resolve_menu_template('/api/course/live-sessions/'.$this->slug),
             'presenters' => $this->whenLoaded('presenters', fn () => $this->presenters->map(fn ($p) => [
                 'id' => $p->id,
                 'name' => $p->name ?? $p->title,

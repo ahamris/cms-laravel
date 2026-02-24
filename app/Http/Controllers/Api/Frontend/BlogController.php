@@ -23,6 +23,7 @@ class BlogController extends Controller
     ], responses: [
         new OA\Response(response: 200, description: 'Blog list with data, has_more, next_page', content: new OA\JsonContent(properties: [
             new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BlogListItem')),
+            new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (blog-list)'),
             new OA\Property(property: 'has_more', type: 'boolean'),
             new OA\Property(property: 'next_page', type: 'integer', nullable: true),
         ])),
@@ -70,6 +71,7 @@ class BlogController extends Controller
 
         return response()->json([
             'data' => BlogListResource::collection($items),
+            'template' => 'blog-list',
             'has_more' => $hasMore,
             'next_page' => $hasMore ? $page + 1 : null,
         ]);

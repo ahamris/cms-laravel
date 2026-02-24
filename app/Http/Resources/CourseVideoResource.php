@@ -27,6 +27,7 @@ class CourseVideoResource extends JsonResource
             'duration_formatted' => $this->duration_formatted,
             'sort_order' => $this->sort_order,
             'url' => route('api.course.video.show', $this->slug),
+            'template' => resolve_menu_template('/api/course/video/'.$this->slug),
             'category' => $this->whenLoaded('category', fn () => $this->category ? [
                 'id' => $this->category->id,
                 'name' => $this->category->name,

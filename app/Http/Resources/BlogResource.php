@@ -27,6 +27,7 @@ class BlogResource extends JsonResource
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'url' => '/api/blog/'.$this->slug,
+            'template' => resolve_menu_template(api_path('blog_post', $this->slug)),
             'date' => $this->created_at?->format('M j, Y'),
             'date_attr' => $this->created_at?->format('Y-m-d'),
             'published_at' => $this->published_at?->toIso8601String(),

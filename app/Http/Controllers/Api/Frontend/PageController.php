@@ -30,7 +30,7 @@ class PageController extends Controller
             ->orderBy('title')
             ->paginate($perPage);
 
-        return PageListResource::collection($pages);
+        return PageListResource::collection($pages)->additional(['template' => 'pages-list']);
     }
 
     #[OA\Get(

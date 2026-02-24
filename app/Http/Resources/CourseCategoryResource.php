@@ -22,6 +22,7 @@ class CourseCategoryResource extends JsonResource
             'image_url' => $this->image_url,
             'sort_order' => $this->sort_order,
             'url' => route('api.course.category.show', $this->slug),
+            'template' => resolve_menu_template('/api/course/category/'.$this->slug),
             'chapters' => $this->whenLoaded('courses', function () {
                 $videos = $this->relationLoaded('videos') ? $this->videos : collect();
                 return $this->courses->map(fn ($course) => [

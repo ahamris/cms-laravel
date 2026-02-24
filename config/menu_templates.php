@@ -21,6 +21,13 @@ return [
         'api/vacancies' => 'vacancies-list',
         'api/pages' => 'pages-list',
         'api/proefversie' => 'trial',
+        'api/course' => 'academy',
+        'api/course/live-sessions' => 'live-sessions-list',
+        'api/course/live-sessions/recordings' => 'live-sessions-recordings',
+        'api/course/categories' => 'course-categories-list',
+        'api/docs' => 'docs-list',
+        'api/search' => 'search-result',
+        'api/search/suggestions' => 'search-suggestions',
     ],
 
     /*
@@ -36,6 +43,14 @@ return [
         'api/features/' => 'feature-detail',
         'api/vacancies/' => 'vacancy-detail',
         'api/pages/' => null, // resolved via page_slugs when page slug is known
+        'api/static/' => 'static-page',
+        'api/course/live-sessions/' => 'live-session-detail',
+        'api/course/category/' => 'course-category-detail',
+        'api/course/video/' => 'course-video-detail',
+        'api/docs/' => 'doc-page',
+        'api/legal/' => 'legal-detail',
+        'api/changelog/' => 'changelog-detail',
+        'api/prijzen/' => 'pricing-plan',
     ],
 
     /*

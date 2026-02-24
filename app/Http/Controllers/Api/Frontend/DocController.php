@@ -25,7 +25,7 @@ class DocController extends Controller
             }])
             ->get();
 
-        return DocVersionResource::collection($versions);
+        return DocVersionResource::collection($versions)->additional(['template' => 'docs-list']);
     }
 
     #[OA\Get(path: '/api/docs/{version}', summary: 'Doc version by slug', tags: ['Docs'], parameters: [
@@ -135,6 +135,7 @@ class DocController extends Controller
             ]);
 
         return response()->json([
+            'template' => 'docs-search',
             'results' => $results,
             'query' => $query,
             'count' => $results->count(),

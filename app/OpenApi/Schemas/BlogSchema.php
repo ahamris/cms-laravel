@@ -36,6 +36,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'meta_title', type: 'string', nullable: true),
         new OA\Property(property: 'meta_description', type: 'string', nullable: true),
         new OA\Property(property: 'url', type: 'string', format: 'uri'),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (e.g. blog-detail)'),
         new OA\Property(property: 'date', type: 'string', example: 'Jan 1, 2025'),
         new OA\Property(property: 'date_attr', type: 'string', format: 'date'),
         new OA\Property(property: 'published_at', type: 'string', format: 'date-time', nullable: true),

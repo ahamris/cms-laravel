@@ -24,6 +24,7 @@ class StaticPageResource extends JsonResource
             'keywords' => $this->keywords,
             'image' => $this->image ? asset($this->image) : null,
             'url' => route('api.static.show', ['slug' => $this->slug]),
+            'template' => resolve_menu_template('/api/static/'.$this->slug),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ]);

@@ -19,7 +19,7 @@ class FeatureController extends Controller
     {
         $features = Feature::with(['solution', 'modules'])->active()->ordered()->get();
 
-        return FeatureListResource::collection($features);
+        return FeatureListResource::collection($features)->additional(['template' => 'features-list']);
     }
 
     #[OA\Get(path: '/api/features/{anchor}', summary: 'Feature by anchor', tags: ['Solution'], parameters: [

@@ -22,6 +22,7 @@ class LiveSessionController extends Controller
         $past = LiveSession::completed()->ordered()->paginate(12);
 
         return response()->json([
+            'template' => 'live-sessions-list',
             'upcoming' => LiveSessionListResource::collection($upcoming),
             'past' => LiveSessionListResource::collection($past),
             'past_meta' => [
@@ -44,6 +45,7 @@ class LiveSessionController extends Controller
         $past = LiveSession::completed()->ordered()->paginate($perPage);
 
         return response()->json([
+            'template' => 'live-sessions-recordings',
             'data' => LiveSessionListResource::collection($past->getCollection()),
             'meta' => [
                 'current_page' => $past->currentPage(),

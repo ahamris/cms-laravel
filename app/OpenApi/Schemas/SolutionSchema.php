@@ -46,6 +46,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'testimonial_company', type: 'string', nullable: true),
         new OA\Property(property: 'image_position', type: 'string', nullable: true),
         new OA\Property(property: 'url', type: 'string', format: 'uri'),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (e.g. solution-detail)'),
         new OA\Property(property: 'features', type: 'array', items: new OA\Items(ref: '#/components/schemas/FeatureListItem'), description: 'Features belonging to this solution (each with modules)'),
         new OA\Property(property: 'created_at', type: 'string', format: 'date-time', nullable: true),
         new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', nullable: true),

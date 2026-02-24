@@ -38,6 +38,7 @@ class DocPageResource extends JsonResource
             'url' => $version && $section
                 ? route('docs.page', ['version' => $version->version, 'section' => $section->slug, 'page' => $this->slug])
                 : null,
+            'template' => 'doc-page',
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ]);

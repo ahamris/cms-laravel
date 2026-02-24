@@ -64,6 +64,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'duration_formatted', type: 'string', nullable: true),
         new OA\Property(property: 'sort_order', type: 'integer'),
         new OA\Property(property: 'url', type: 'string', format: 'uri'),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (e.g. course-video-detail)'),
         new OA\Property(property: 'category', type: 'object', nullable: true, properties: [
             new OA\Property(property: 'id', type: 'integer'),
             new OA\Property(property: 'name', type: 'string'),
@@ -119,6 +120,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'image_url', type: 'string', format: 'uri', nullable: true),
         new OA\Property(property: 'sort_order', type: 'integer'),
         new OA\Property(property: 'url', type: 'string', format: 'uri'),
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (e.g. course-category-detail)'),
         new OA\Property(property: 'chapters', type: 'array', items: new OA\Items(ref: '#/components/schemas/CourseChapter')),
         new OA\Property(property: 'videos', type: 'array', items: new OA\Items(ref: '#/components/schemas/CourseVideoListItem')),
         new OA\Property(property: 'videos_count', type: 'integer', nullable: true),
@@ -143,6 +145,7 @@ use OpenApi\Attributes as OA;
     schema: 'CourseIndexResponse',
     title: 'Course index response',
     properties: [
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (e.g. academy)'),
         new OA\Property(property: 'data', ref: '#/components/schemas/CourseIndexData'),
     ]
 )]
@@ -150,6 +153,7 @@ use OpenApi\Attributes as OA;
     schema: 'CourseVideoResponse',
     title: 'Course video response',
     properties: [
+        new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint (e.g. course-video-detail)'),
         new OA\Property(property: 'data', ref: '#/components/schemas/CourseVideo'),
         new OA\Property(property: 'related_videos', type: 'array', items: new OA\Items(ref: '#/components/schemas/CourseVideoListItem')),
     ]

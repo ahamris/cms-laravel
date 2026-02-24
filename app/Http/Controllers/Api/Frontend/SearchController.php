@@ -38,6 +38,7 @@ class SearchController extends Controller
 
         if (strlen($query) < 2) {
             return response()->json([
+                'template' => 'search-result',
                 'data' => [],
                 'meta' => [
                     'query' => $query,
@@ -183,6 +184,7 @@ class SearchController extends Controller
         }
 
         return response()->json([
+            'template' => 'search-result',
             'data' => $results->all(),
             'meta' => [
                 'query' => $query,
@@ -217,6 +219,7 @@ class SearchController extends Controller
 
         if (strlen($query) < 2) {
             return response()->json([
+                'template' => 'search-suggestions',
                 'suggestions' => [],
                 'mostSearched' => $this->getMostSearched(),
             ]);
@@ -247,6 +250,7 @@ class SearchController extends Controller
         $suggestions = $solutions->concat($blogs)->take(6)->values();
 
         return response()->json([
+            'template' => 'search-suggestions',
             'suggestions' => $suggestions,
             'mostSearched' => $this->getMostSearched(),
         ]);

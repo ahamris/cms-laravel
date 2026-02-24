@@ -22,7 +22,7 @@ class ModuleController extends Controller
             ->with(['feature'])
             ->get();
 
-        return ModuleListResource::collection($modules);
+        return ModuleListResource::collection($modules)->additional(['template' => 'modules-list']);
     }
 
     #[OA\Get(path: '/api/modules/{slug}', summary: 'Module by slug', tags: ['Solution'], parameters: [

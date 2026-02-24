@@ -35,6 +35,7 @@ class ModuleResource extends JsonResource
             'testimonial_company' => $this->testimonial_company,
             'image_position' => $this->image_position,
             'url' => route('module.show', $this->slug),
+            'template' => resolve_menu_template(api_path('module', $this->slug)),
             'feature' => $this->when($this->relationLoaded('feature'), fn () => $this->feature ? [
                 'id' => $this->feature->id,
                 'title' => $this->feature->title,

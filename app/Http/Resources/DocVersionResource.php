@@ -20,6 +20,7 @@ class DocVersionResource extends JsonResource
             'name' => $this->name,
             'is_default' => $this->is_default,
             'sort_order' => $this->sort_order,
+            'template' => 'doc-version',
             'sections' => DocSectionResource::collection($this->whenLoaded('activeSections')),
         ]);
     }

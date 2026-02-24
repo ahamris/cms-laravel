@@ -59,6 +59,7 @@ class VacancyController extends Controller
 
         return response()->json([
             'data' => $vacancies->items(),
+            'template' => 'vacancies-list',
             'meta' => [
                 'current_page' => $vacancies->currentPage(),
                 'last_page' => $vacancies->lastPage(),

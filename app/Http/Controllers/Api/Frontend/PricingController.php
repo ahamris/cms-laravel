@@ -21,6 +21,7 @@ class PricingController extends Controller
         $features = PricingFeature::getCachedGrouped();
 
         return response()->json([
+            'template' => 'pricing',
             'data' => [
                 'plans' => $plans,
                 'boosters' => $boosters,
@@ -36,7 +37,7 @@ class PricingController extends Controller
     {
         $boosters = PricingBooster::getCached();
 
-        return response()->json(['data' => ['boosters' => $boosters]]);
+        return response()->json(['template' => 'pricing-configurator', 'data' => ['boosters' => $boosters]]);
     }
 
     #[OA\Get(path: '/api/prijzen/{slug}', summary: 'Pricing plan by slug', tags: ['Pricing'], parameters: [
@@ -61,6 +62,7 @@ class PricingController extends Controller
             ->values();
 
         return response()->json([
+            'template' => 'pricing-plan',
             'data' => [
                 'plan' => $plan,
                 'plans' => $plans,

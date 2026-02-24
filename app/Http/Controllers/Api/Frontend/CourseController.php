@@ -79,6 +79,7 @@ class CourseController extends Controller
         $categoriesArr = CourseCategoryListResource::collection($courseCategories)->toArray($request);
 
         return response()->json([
+            'template' => 'academy',
             'data' => [
                 'featured_session' => $featuredSession ? (new LiveSessionResource($featuredSession))->toArray($request) : null,
                 'upcoming_sessions' => isset($upcomingArr['data']) ? $upcomingArr['data'] : $upcomingArr,
@@ -116,6 +117,7 @@ class CourseController extends Controller
         $categoriesArr = CourseCategoryListResource::collection($categories)->toArray($request);
 
         return response()->json([
+            'template' => 'course-categories-list',
             'data' => isset($categoriesArr['data']) ? $categoriesArr['data'] : $categoriesArr,
         ]);
     }
@@ -138,6 +140,7 @@ class CourseController extends Controller
         }
 
         return response()->json([
+            'template' => 'course-category-detail',
             'data' => (new CourseCategoryResource($category))->toArray($request),
         ]);
     }
@@ -166,6 +169,7 @@ class CourseController extends Controller
         $relatedArr = CourseVideoListResource::collection($relatedVideos)->toArray($request);
 
         return response()->json([
+            'template' => 'course-video-detail',
             'data' => (new CourseVideoResource($video))->toArray($request),
             'related_videos' => isset($relatedArr['data']) ? $relatedArr['data'] : $relatedArr,
         ]);
