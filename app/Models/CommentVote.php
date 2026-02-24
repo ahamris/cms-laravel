@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * @mixin IdeHelperCommentVote
  */
-class CommentVote extends Model
+class CommentVote extends BaseModel
 {
     protected $fillable = [
         'comment_id',

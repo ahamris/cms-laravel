@@ -112,9 +112,10 @@ class Sidebar extends Component
                         'route_name' => 'admin.page.index',
                         'icon' => 'puzzle-piece',
                         'permission' => 'page_access',
-                        'active_pattern' => 'admin.page*,admin.legal*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*',
+                        'active_pattern' => 'admin.page*,admin.legal*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*,admin.faq-module*',
                         'children' => [
                             ['label' => 'Homepage', 'route_name' => 'admin.homepage.edit', 'icon' => 'home', 'permission' => 'page_access'],
+                            ['label' => 'FAQ Modules', 'route_name' => 'admin.faq-module.index', 'icon' => 'question-circle', 'permission' => 'faq_module_access'],
                             ['label' => 'Pages', 'route_name' => 'admin.page.index', 'icon' => 'file-text', 'permission' => 'page_access'],
                             ['label' => 'Legal Pages', 'route_name' => 'admin.legal.index', 'icon' => 'list-alt', 'permission' => 'legal_access'],
                             ['label' => 'Changelog', 'route_name' => 'admin.changelog.index', 'icon' => 'list-alt', 'permission' => 'changelog_access'],

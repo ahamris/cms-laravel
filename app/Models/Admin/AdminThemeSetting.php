@@ -2,14 +2,14 @@
 
 namespace App\Models\Admin;
 
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 /**
  * @mixin IdeHelperAdminThemeSetting
  */
-class AdminThemeSetting extends Model
+class AdminThemeSetting extends BaseModel
 {
     use HasFactory;
 

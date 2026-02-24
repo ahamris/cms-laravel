@@ -9,6 +9,7 @@ use App\Mail\ContactFormSubmittedMail;
 use App\Models\ContactForm;
 use App\Models\ContactSubject;
 use App\Models\Page;
+use App\Models\Faq;
 use App\Services\PerfexCrmService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -54,7 +55,15 @@ class ContactController extends Controller
             'sort_order' => $s->sort_order,
         ])->values()->all();
 
-        return response()->json(['data' => $data]);
+        return response()->json([
+            'data' => $data, 
+            'faqs' => Faq::getByIdentifier('contact') ?: null,
+            'subjects' => ContactSubject::getCached()->map(fn ($s) => [
+                'id' => $s->id,
+                'title' => $s->title,
+                'sort_order' => $s->sort_order,
+            ])->values()->all(),
+        ]);
     }
 
     #[OA\Get(path: '/api/contact/subjects', summary: 'Contact form subjects', description: 'List of active subject options (Onderwerp) for the contact form dropdown. Managed in admin under CRM → Subjects.', tags: ['Contact'], responses: [

@@ -3,19 +3,15 @@
     <!-- Page Header -->
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">FAQ Groups</h1>
-            <p class="text-gray-600 mt-1">Manage FAQ groups for page builder integration</p>
+            <h1 class="text-3xl font-bold text-gray-900">Contact Page FAQ</h1>
+            <p class="text-gray-600 mt-1">Manage the frequently asked questions on the contact page (identifier: contact)</p>
         </div>
-        <a href="{{ route('admin.faq-module.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-            <i class="fas fa-plus"></i>
-            <span>Add New FAQ Group</span>
-        </a>
     </div>
 
     <!-- FAQs Table -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-gray-900">FAQ Groups List</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Contact FAQ</h3>
             <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">{{ $faqs->total() }} Total</span>
         </div>
         <div class="p-6">
@@ -66,7 +62,8 @@
                                             <i class="fas fa-edit text-sm"></i>
                                         </a>
                                         <button type="button" class="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-lg transition-colors" 
-                                                onclick="confirmDelete({{ $faq->id }})" title="Delete">
+                                                data-delete-url="{{ route('admin.faq-module.destroy', ['faq' => $faq]) }}"
+                                                onclick="confirmDelete(this)" title="Delete">
                                             <i class="fas fa-trash text-sm"></i>
                                         </button>
                                     </div>
@@ -89,12 +86,8 @@
             @else
                 <div class="text-center py-12">
                     <i class="fas fa-question-circle text-6xl text-gray-300 mb-4"></i>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">No FAQ Groups Found</h3>
-                    <p class="text-gray-600 mb-6">Get started by creating your first FAQ group.</p>
-                    <a href="{{ route('admin.faq-module.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition-colors">
-                        <i class="fas fa-plus"></i>
-                        <span>Add First FAQ Group</span>
-                    </a>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">No Contact FAQ Found</h3>
+                    <p class="text-gray-600 mb-6">Run the FaqSeeder to create the contact page FAQ: <code class="bg-gray-100 px-2 py-1 rounded">php artisan db:seed --class=FaqSeeder</code></p>
                 </div>
             @endif
         </div>
@@ -132,14 +125,17 @@
     </div>
 </div>
 
-    <script>
-function confirmDelete(faqId) {
+<script>
+function confirmDelete(btn) {
+    const url = btn && btn.dataset && btn.dataset.deleteUrl;
+    if (!url) return;
     const deleteForm = document.getElementById('deleteForm');
-    deleteForm.action = `/admin/content/homepage-faq/${faqId}`;
-    Alpine.store('deleteModal', true);
-    document.getElementById('deleteModal').style.display = 'block';
-    document.getElementById('deleteModal').__x.$data.open = true;
+    deleteForm.action = url;
+    const modal = document.getElementById('deleteModal');
+    if (modal && modal.__x) {
+        modal.__x.$data.open = true;
+    }
+    modal.style.display = 'block';
 }
 </script>
-    </script>
 </x-layouts.admin>

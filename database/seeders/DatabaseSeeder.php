@@ -33,6 +33,8 @@ class DatabaseSeeder extends Seeder
             ChangelogSeeder::class,
             VacancySeeder::class,
             DocSeeder::class,
+            FaqSeeder::class,
+            ContactSubjectSeeder::class,
         ]);
     }
 }

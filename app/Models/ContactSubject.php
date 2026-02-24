@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Helpers\Variable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
-class ContactSubject extends Model
+class ContactSubject extends BaseModel
 {
     protected $fillable = [
         'title',

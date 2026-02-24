@@ -22,10 +22,17 @@ class HomepageFaqController extends AdminBaseController
 
     /**
      * Show the form for creating a new FAQ group.
+     * Adding new FAQ groups is not permitted; only the contact page FAQ (identifier: contact) is managed.
      */
     public function create()
     {
-        return view('admin.homepage-faq.create');
+        $contactFaq = Faq::where('identifier', 'contact')->first();
+        if ($contactFaq) {
+            return redirect()->route('admin.faq-module.edit', $contactFaq)
+                ->with('info', 'Only the contact page FAQ can be edited. Adding new FAQ groups is not permitted.');
+        }
+        return redirect()->route('admin.faq-module.index')
+            ->with('info', 'Adding new FAQ groups is not permitted. Run the seeder to create the contact FAQ.');
     }
 
     /**
@@ -33,8 +40,14 @@ class HomepageFaqController extends AdminBaseController
      */
     public function store(HomepageFaqRequest $request)
     {
+        if (Faq::where('identifier', $request->input('identifier', 'contact'))->exists()) {
+            return redirect()->route('admin.faq-module.index')
+                ->with('error', 'Adding new FAQ groups is not permitted. Edit the existing contact FAQ instead.');
+        }
+
         $data = $request->validated();
         $data = $this->purifyHtmlKeys($data, ['items.*.answer']);
+        $data['items'] = array_values($data['items']);
 
         Faq::create($data);
 
@@ -65,6 +78,7 @@ class HomepageFaqController extends AdminBaseController
     {
         $data = $request->validated();
         $data = $this->purifyHtmlKeys($data, ['items.*.answer']);
+        $data['items'] = array_values($data['items']);
 
         $faq->update($data);
 

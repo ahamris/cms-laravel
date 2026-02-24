@@ -26,24 +26,8 @@
                         <h3 class="text-lg font-semibold text-gray-900">Basic Information</h3>
                     </div>
                     <div class="p-6 space-y-4">
-                        {{-- Identifier --}}
-                        <div>
-                            <label for="identifier" class="block text-sm font-medium text-gray-700 mb-1">
-                                Identifier <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" 
-                                   id="identifier" 
-                                   name="identifier" 
-                                   value="{{ old('identifier', 'homepage_faq') }}" 
-                                   placeholder="e.g., homepage_faq, pricing_faq, solutions_faq"
-                                   maxlength="255"
-                                   required
-                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary @error('identifier') border-red-500 @enderror">
-                            @error('identifier')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                            <p class="text-xs text-gray-500 mt-1">Unique identifier for page builder selection (letters, numbers, dashes, underscores only)</p>
-                        </div>
+                        {{-- Identifier (hidden, default: contact for contact page FAQ) --}}
+                        <input type="hidden" name="identifier" value="{{ old('identifier', 'contact') }}">
 
                         {{-- Title --}}
                         <div>
@@ -185,7 +169,7 @@ function closeDeleteFaqItemModal() {
 function confirmDeleteFaqItem() {
     if (faqItemToDelete) {
         faqItemToDelete.remove();
-        toastr.success('FAQ item deleted successfully');
+        if (window.toastManager) { window.toastManager.show('success', 'FAQ item deleted successfully'); }
         updateItemNumbers();
         closeDeleteFaqItemModal();
     }
@@ -265,8 +249,14 @@ function updateItemNumbers() {
         if (header) {
             header.textContent = `FAQ Item #${index + 1}`;
         }
+        const inputs = item.querySelectorAll('input[name^="items["], textarea[name^="items["]');
+        inputs.forEach(function(inp) {
+            const match = inp.name.match(/^items\[(\d+)\]/);
+            if (match && parseInt(match[1], 10) !== index) {
+                inp.name = inp.name.replace(/^items\[\d+\]/, 'items[' + index + ']');
+            }
+        });
     });
 }
 </script>
-    </script>
 </x-layouts.admin>
