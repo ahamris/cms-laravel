@@ -63,7 +63,7 @@ class HomepageContentController extends AdminBaseController
                     $content['label'] = $data['label'] ?? $content['label'] ?? '';
                     $content['heading'] = $data['heading'] ?? $content['heading'] ?? '';
                     $content['paragraph'] = $data['paragraph'] ?? $content['paragraph'] ?? '';
-                    $content['bullets'] = $data['bullets'] ?? $content['bullets'] ?? [];
+                    $content['bullets'] = array_values($data['bullets'] ?? $content['bullets'] ?? []);
                     $content['cta_primary_text'] = $data['cta_primary_text'] ?? $content['cta_primary_text'] ?? '';
                     $content['cta_primary_url'] = $data['cta_primary_url'] ?? $content['cta_primary_url'] ?? '';
                     $content['cta_secondary_text'] = $data['cta_secondary_text'] ?? $content['cta_secondary_text'] ?? '';
@@ -85,8 +85,8 @@ class HomepageContentController extends AdminBaseController
                     }
                     break;
                 case 'feature_cards':
-                    $content['cards'] = $data['cards'] ?? $content['cards'] ?? array_fill(0, 3, ['icon' => '', 'title' => '', 'description' => '', 'link_text' => '', 'link_url' => '']);
-                    $content['cards'] = array_slice($content['cards'], 0, 3);
+                    $content['title'] = $data['title'] ?? $content['title'] ?? '';
+                    $content['cards'] = array_values($data['cards'] ?? $content['cards'] ?? []);
                     foreach ($content['cards'] as $i => $card) {
                         $content['cards'][$i]['description'] = \Mews\Purifier\Facades\Purifier::clean($content['cards'][$i]['description'] ?? '');
                     }
@@ -95,7 +95,7 @@ class HomepageContentController extends AdminBaseController
                     $content['label'] = $data['label'] ?? $content['label'] ?? '';
                     $content['heading'] = $data['heading'] ?? $content['heading'] ?? '';
                     $content['paragraph'] = $data['paragraph'] ?? $content['paragraph'] ?? '';
-                    $content['bullets'] = $data['bullets'] ?? $content['bullets'] ?? [];
+                    $content['bullets'] = array_values($data['bullets'] ?? $content['bullets'] ?? []);
                     $content['link_text'] = $data['link_text'] ?? $content['link_text'] ?? '';
                     $content['link_url'] = $data['link_url'] ?? $content['link_url'] ?? '';
                     if ($request->filled('remove_about_opms_image') && ! empty($content['image'])) {
@@ -116,8 +116,7 @@ class HomepageContentController extends AdminBaseController
                     break;
                 case 'how_it_works':
                     $content['title'] = $data['title'] ?? $content['title'] ?? '';
-                    $content['steps'] = $data['steps'] ?? $content['steps'] ?? array_fill(0, 3, ['number' => '', 'title' => '', 'description' => '']);
-                    $content['steps'] = array_slice($content['steps'], 0, 3);
+                    $content['steps'] = array_values($data['steps'] ?? $content['steps'] ?? []);
                     foreach ($content['steps'] as $i => $step) {
                         if (isset($step['description']) && is_string($step['description'])) {
                             $content['steps'][$i]['description'] = \Mews\Purifier\Facades\Purifier::clean($step['description']);
@@ -139,8 +138,7 @@ class HomepageContentController extends AdminBaseController
                 case 'competition':
                     $content['heading'] = $data['heading'] ?? $content['heading'] ?? '';
                     $content['paragraph'] = $data['paragraph'] ?? $content['paragraph'] ?? '';
-                    $content['boxes'] = $data['boxes'] ?? $content['boxes'] ?? array_fill(0, 4, ['value' => '', 'label' => '']);
-                    $content['boxes'] = array_slice($content['boxes'], 0, 4);
+                    $content['boxes'] = array_values($data['boxes'] ?? $content['boxes'] ?? []);
                     $content = $this->purifyHtmlKeys($content, ['heading', 'paragraph']);
                     break;
                 case 'latest_updates':
@@ -176,7 +174,7 @@ class HomepageContentController extends AdminBaseController
                 'label' => '',
                 'heading' => '',
                 'paragraph' => '',
-                'bullets' => [['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => '']],
+                'bullets' => [['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => '']],
                 'cta_primary_text' => '',
                 'cta_primary_url' => '',
                 'cta_secondary_text' => '',
@@ -184,8 +182,8 @@ class HomepageContentController extends AdminBaseController
                 'image' => '',
             ],
             'feature_cards' => [
+                'title' => '',
                 'cards' => [
-                    ['icon' => '', 'title' => '', 'description' => '', 'link_text' => 'Read more', 'link_url' => ''],
                     ['icon' => '', 'title' => '', 'description' => '', 'link_text' => 'Read more', 'link_url' => ''],
                     ['icon' => '', 'title' => '', 'description' => '', 'link_text' => 'Read more', 'link_url' => ''],
                 ],
@@ -194,7 +192,7 @@ class HomepageContentController extends AdminBaseController
                 'label' => '',
                 'heading' => '',
                 'paragraph' => '',
-                'bullets' => [['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => '']],
+                'bullets' => [['icon' => 'check', 'text' => ''], ['icon' => 'check', 'text' => '']],
                 'link_text' => '',
                 'link_url' => '',
                 'image' => '',
@@ -204,7 +202,6 @@ class HomepageContentController extends AdminBaseController
                 'steps' => [
                     ['number' => '1', 'title' => '', 'description' => ''],
                     ['number' => '2', 'title' => '', 'description' => ''],
-                    ['number' => '3', 'title' => '', 'description' => ''],
                 ],
             ],
             'user_features' => [
@@ -217,8 +214,6 @@ class HomepageContentController extends AdminBaseController
                 'heading' => '',
                 'paragraph' => '',
                 'boxes' => [
-                    ['value' => '', 'label' => ''],
-                    ['value' => '', 'label' => ''],
                     ['value' => '', 'label' => ''],
                     ['value' => '', 'label' => ''],
                 ],
