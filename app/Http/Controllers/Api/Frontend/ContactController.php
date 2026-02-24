@@ -98,7 +98,7 @@ class ContactController extends Controller
         new OA\Property(property: 'avg-optin', type: 'string', description: 'Privacy: 1 or true when agreed'),
         new OA\Property(property: 'contact_preference', type: 'string', enum: ['call', 'query'], description: 'Preferred contact (default: query)'),
         new OA\Property(property: 'country_code', type: 'string', maxLength: 10, description: 'Optional'),
-        new OA\Property(property: 'bijlage', type: 'string', format: 'binary', description: 'File attachment (required when reden=ondersteuning; use multipart/form-data). Max 10MB; pdf, jpg, png, doc, xls, ppt, etc.'),
+        new OA\Property(property: 'bijlage', type: 'array', items: new OA\Items(type: 'string', format: 'binary'), description: 'One or more file attachments (required when reden=ondersteuning; use multipart/form-data with bijlage[] for multiple). Max 10MB each; pdf, jpg, png, doc, docx, xls, xlsx, ppt, pptx, txt.'),
         new OA\Property(property: 'nieuwsbrief', type: 'string', description: 'Newsletter opt-in (optional, not stored)'),
     ]))), responses: [
         new OA\Response(response: 201, description: 'Contact form submitted'),
@@ -116,6 +116,7 @@ class ContactController extends Controller
             'contact_preference' => $request->input('contact_preference') ?? 'query',
         ]);
 
+        $fileRule = 'file|max:10240|mimes:pdf,jpg,jpeg,png,txt,doc,docx,xls,xlsx,ppt,pptx';
         $rules = [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -128,8 +129,17 @@ class ContactController extends Controller
             'avg-optin' => 'required',
             'contact_preference' => 'required|in:call,query',
         ];
-        if ($request->input('reden') === 'ondersteuning') {
-            $rules['bijlage'] = 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,txt,doc,docx,xls,xlsx,ppt,pptx';
+        $requireAttachment = $request->input('reden') === 'ondersteuning';
+        if ($request->hasFile('bijlage')) {
+            $files = $request->file('bijlage');
+            if (is_array($files)) {
+                $rules['bijlage'] = $requireAttachment ? ['required', 'array', 'min:1'] : ['nullable', 'array'];
+                $rules['bijlage.*'] = $fileRule;
+            } else {
+                $rules['bijlage'] = $requireAttachment ? ['required', $fileRule] : ['nullable', $fileRule];
+            }
+        } elseif ($requireAttachment) {
+            $rules['bijlage'] = 'required';
         }
 
         try {
@@ -143,9 +153,22 @@ class ContactController extends Controller
         }
 
         try {
-            $bijlagePath = null;
-            if ($request->hasFile('bijlage')) {
-                $bijlagePath = $request->file('bijlage')->storeAs('contact-forms', $request->file('bijlage')->getClientOriginalName(), 'public');
+            $files = $request->file('bijlage');
+            if ($files && ! is_array($files)) {
+                $files = [$files];
+            }
+            $files = $files ?: [];
+
+            $bijlage = [];
+            foreach ($files as $file) {
+                if (! $file || ! $file->isValid()) {
+                    continue;
+                }
+                $name = $file->getClientOriginalName();
+                $path = $file->storeAs('contact-forms', $name, 'public');
+                if ($path) {
+                    $bijlage[] = ['path' => $path, 'name' => $name];
+                }
             }
 
             $contactForm = ContactForm::create([
@@ -157,7 +180,7 @@ class ContactController extends Controller
                 'country_code' => $validated['country_code'] ?? null,
                 'reden' => $validated['reden'],
                 'bericht' => $validated['bericht'],
-                'bijlage' => $bijlagePath,
+                'bijlage' => $bijlage ?: null,
                 'contact_preference' => $validated['contact_preference'],
                 'avg_optin' => in_array($validated['avg-optin'], [true, '1', 1, 'true', 'on'], true),
                 'status' => 'new',

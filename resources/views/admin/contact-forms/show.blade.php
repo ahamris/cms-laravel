@@ -191,22 +191,26 @@
                 </div>
 
                 {{-- Extras --}}
-                @if($contactForm->bijlage || $contactForm->avg_optin)
+                @if(count($contactForm->attachment_list) > 0 || $contactForm->avg_optin)
                     <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md p-6">
                         <h3
                             class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-6 border-b border-zinc-100 dark:border-zinc-700 pb-2">
                             Information</h3>
 
                         <div class="space-y-6">
-                            @if($contactForm->bijlage)
+                            @if(count($contactForm->attachment_list) > 0)
                                 <div>
-                                    <label class="block text-sm font-semibold text-zinc-500 mb-2">Attachment</label>
-                                    <a href="{{ asset('storage/' . $contactForm->bijlage) }}" download
-                                        class="flex items-center gap-2 p-3 rounded-md bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-blue-400 transition-all group">
-                                        <i class="fa-solid fa-paperclip text-zinc-400 group-hover:text-blue-500"></i>
-                                        <span
-                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-200 truncate">{{ basename($contactForm->bijlage) }}</span>
-                                    </a>
+                                    <label class="block text-sm font-semibold text-zinc-500 mb-2">Attachments</label>
+                                    <div class="space-y-2">
+                                        @foreach($contactForm->attachment_list as $attachment)
+                                            <a href="{{ asset('storage/' . ($attachment['path'] ?? '')) }}" download
+                                                class="flex items-center gap-2 p-3 rounded-md bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-blue-400 transition-all group">
+                                                <i class="fa-solid fa-paperclip text-zinc-400 group-hover:text-blue-500"></i>
+                                                <span
+                                                    class="text-sm font-medium text-zinc-700 dark:text-zinc-200 truncate">{{ $attachment['name'] ?? basename($attachment['path'] ?? '') }}</span>
+                                            </a>
+                                        @endforeach
+                                    </div>
                                 </div>
                             @endif
 

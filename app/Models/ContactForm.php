@@ -28,7 +28,21 @@ class ContactForm extends BaseModel
 
     protected $casts = [
         'avg_optin' => 'boolean',
+        'bijlage' => 'array',
     ];
+
+    /**
+     * All attachment entries (from bijlage JSON: [{"path": "...", "name": "..."}, ...]).
+     *
+     * @return array<int, array{path: string, name: string}>
+     */
+    public function getAttachmentListAttribute(): array
+    {
+        if (empty($this->bijlage) || ! is_array($this->bijlage)) {
+            return [];
+        }
+        return $this->bijlage;
+    }
 
     protected $dispatchesEvents = [
         'created' => ContactFormSubmitted::class,

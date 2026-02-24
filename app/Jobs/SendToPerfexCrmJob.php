@@ -76,8 +76,9 @@ class SendToPerfexCrmJob implements ShouldQueue
             'Telefoon: '.($this->contactForm->phone ?: '—'),
         ];
 
-        if ($this->contactForm->bijlage) {
-            $lines[] = 'Bijlage: '.$this->contactForm->bijlage;
+        $attachmentList = $this->contactForm->attachment_list;
+        if (! empty($attachmentList)) {
+            $lines[] = 'Bijlagen: '.implode(', ', array_column($attachmentList, 'name'));
         }
 
         $lines[] = 'Ingediend: '.$this->contactForm->created_at?->toIso8601String();

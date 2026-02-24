@@ -6,9 +6,11 @@ use App\Models\ContactForm;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class ContactFormSubmittedMail extends Mailable
 {
@@ -32,8 +34,8 @@ class ContactFormSubmittedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->isAdminEmail 
-                ? 'New Contact Form Submission' 
+            subject: $this->isAdminEmail
+                ? 'New Contact Form Submission'
                 : 'Thank you for your contact request',
         );
     }
@@ -44,8 +46,8 @@ class ContactFormSubmittedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: $this->isAdminEmail 
-                ? 'emails.contact-form-admin' 
+            view: $this->isAdminEmail
+                ? 'emails.contact-form-admin'
                 : 'emails.contact-form-customer',
         );
     }
@@ -57,6 +59,16 @@ class ContactFormSubmittedMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $list = $this->contactForm->attachment_list;
+        $attachments = [];
+        foreach ($list as $item) {
+            $path = $item['path'] ?? null;
+            $name = $item['name'] ?? basename($path);
+            if ($path && Storage::disk('public')->exists($path)) {
+                $attachments[] = Attachment::fromStorageDisk('public', $path)
+                    ->as($name);
+            }
+        }
+        return $attachments;
     }
 }
