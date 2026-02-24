@@ -12,8 +12,8 @@ use OpenApi\Attributes as OA;
 
 class HomepageController extends Controller
 {
-    #[OA\Get(path: '/api/homepage', summary: 'Homepage content sections', description: 'Editable homepage sections (hero, feature cards, about OPMS, how it works, user features, competition, latest updates title, bottom CTA). Header and footer come from GET /api/settings.', tags: ['Homepage'], responses: [
-        new OA\Response(response: 200, description: 'Sections keyed by section_key'),
+    #[OA\Get(path: '/api/homepage', summary: 'Homepage content sections', description: 'Editable homepage sections (hero, feature cards, about OPMS, how it works, user features, competition, latest updates title, bottom CTA). Managed in admin under Edit Homepage. Header and footer come from GET /api/settings. Section content uses variable-length arrays (e.g. hero.bullets, feature_cards.cards, how_it_works.steps, competition.boxes, user_features.left_items/right_items). feature_cards may include an optional section title.', tags: ['Homepage'], responses: [
+        new OA\Response(response: 200, description: 'Object keyed by section_key (hero, feature_cards, about_opms, how_it_works, user_features, competition, latest_updates, bottom_cta). Each value is a section content object; arrays (bullets, cards, steps, boxes, left_items, right_items) are variable length. Image fields are resolved to full URLs.'),
     ])]
     public function homepage(Request $request)
     {
