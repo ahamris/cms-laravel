@@ -31,12 +31,44 @@ return [
         'contact' => 'contact',
         'trial' => 'proefversie',
         'academy' => 'academy',
-        'live_sessions' => 'live-sessions',
-        'live_sessions_recordings' => 'academy/live-sessions/recordings',
+        'course' => 'course',
+        'course_categories' => 'course/categories',
+        'live_sessions' => 'course/live-sessions',
+        'live_sessions_recordings' => 'course/live-sessions/recordings',
         'vacancies' => 'vacancies',
         'vacancy' => 'vacancies/%s',
         'pages' => 'pages',
         'page' => 'pages/%s',
+        'legal' => 'legal/%s',
+        'static_page' => 'static/%s',
+        'docs' => 'docs',
+        'search' => 'search',
         'sitemap' => 'sitemap',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Predefined URLs for menus (mega menu, footer links, login settings)
+    |--------------------------------------------------------------------------
+    | Label => endpoint key. Only list/index endpoints (no %s). Uses api_path().
+    */
+    'predefined' => [
+        'Home' => 'home',
+        'Pages' => 'pages',
+        'Blog' => 'blog',
+        'Solutions' => 'solutions',
+        'Modules' => 'modules',
+        'Features' => 'features',
+        'Pricing' => 'pricing',
+        'Changelog' => 'changelog',
+        'Contact' => 'contact',
+        'Trial' => 'trial',
+        'Academy' => 'course',
+        'Course categories' => 'course_categories',
+        'Live sessions' => 'live_sessions',
+        'Live sessions recordings' => 'live_sessions_recordings',
+        'Vacancies' => 'vacancies',
+        'Docs' => 'docs',
+        'Search' => 'search',
     ],
 ];

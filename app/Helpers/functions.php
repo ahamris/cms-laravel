@@ -426,6 +426,30 @@ if (! function_exists('resource_url_should_keep_full')) {
     }
 }
 
+if (! function_exists('menu_url_for_api')) {
+    /**
+     * Normalize a menu link URL to path-only form for the headless API.
+     * React uses these as request paths (e.g. /api/contact, /api/blog).
+     * Strips scheme/host/query; ensures path starts with / (or returns # for empty).
+     *
+     * @param  string|null  $url  Stored URL (may be full URL or path)
+     * @return string Path like /api/contact or #
+     */
+    function menu_url_for_api(?string $url): string
+    {
+        $raw = trim((string) $url);
+        if ($raw === '' || $raw === '#') {
+            return '#';
+        }
+        $parsed = parse_url($raw);
+        if ($parsed !== false && isset($parsed['path']) && $parsed['path'] !== '') {
+            $path = $parsed['path'];
+            return $path[0] === '/' ? $path : '/'.$path;
+        }
+        return $raw[0] === '/' ? $raw : '/'.$raw;
+    }
+}
+
 if (! function_exists('resolve_menu_template')) {
     /**
      * Resolve frontend template name from a menu link URL and optional page slug.

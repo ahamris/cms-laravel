@@ -279,86 +279,19 @@ class MegaMenuItem extends BaseModel
     }
 
     /**
-     * Get possible menu items from available routes and content types.
-     * This method dynamically discovers available routes and content types.
+     * Get possible menu items (predefined API list endpoints) for mega menu, footer links, login settings.
+     * Built from config('api_paths.predefined'); URLs are API paths e.g. /api/pages, /api/blog.
      */
     public static function possibleMenuItems(): array
     {
+        $predefined = config('api_paths.predefined', []);
         $links = [];
 
-        // Dynamically check for available routes
-        $routeNames = [
-            'home' => 'Home',
-            'contact' => 'Contact',
-            'pricing' => 'Pricing',
-            'blog' => 'Blog',
-            'trial' => 'Trial',
-            'changelog.index' => 'Changelog',
-            'academy.index' => 'Academy',
-            'module.index' => 'Modules',
-        ];
-
-        foreach ($routeNames as $routeName => $label) {
-            try {
-                if (\Route::has($routeName)) {
-                    $links[$label] = route($routeName);
-                }
-            } catch (\Exception $e) {
-                // Route doesn't exist or is not accessible, skip it
-                continue;
+        foreach ($predefined as $label => $endpointKey) {
+            $path = api_path($endpointKey);
+            if ($path !== '') {
+                $links[$label] = $path;
             }
-        }
-
-        // Add solutions if the model and table exist
-        try {
-            if (class_exists(Solution::class) && Solution::exists()) {
-                $solutionRoute = '/solutions';
-                // Try to use route if available, otherwise use path
-                try {
-                    if (\Route::has('solution.index')) {
-                        $solutionRoute = route('solution.index');
-                    }
-                } catch (\Exception $e) {
-                    // Use default path
-                }
-                $links['Solutions'] = $solutionRoute;
-            }
-        } catch (\Exception $e) {
-            // Solutions table might not exist yet
-        }
-
-        // Add Legal Pages if they exist
-        try {
-            if (class_exists(Legal::class) && Legal::exists()) {
-                $legalRoute = '/legal';
-                try {
-                    if (\Route::has('legal.index')) {
-                        $legalRoute = route('legal.index');
-                    }
-                } catch (\Exception $e) {
-                    // Use default path
-                }
-                $links['Legal Pages'] = $legalRoute;
-            }
-        } catch (\Exception $e) {
-            // Legal table might not exist yet
-        }
-
-        // Add Static Pages if they exist
-        try {
-            if (class_exists(StaticPage::class) && StaticPage::exists()) {
-                $staticRoute = '/static';
-                try {
-                    if (\Route::has('static.index')) {
-                        $staticRoute = route('static.index');
-                    }
-                } catch (\Exception $e) {
-                    // Use default path
-                }
-                $links['Static Pages'] = $staticRoute;
-            }
-        } catch (\Exception $e) {
-            // StaticPage table might not exist yet
         }
 
         return $links;
@@ -466,7 +399,7 @@ class MegaMenuItem extends BaseModel
                     $content['Legal Pages'][] = [
                         'id' => $legal->id,
                         'title' => $legal->title,
-                        'url' => route('legal.show', $legal->slug),
+                        'url' => api_path('legal', $legal->slug),
                         'type' => 'legal',
                     ];
                 }
@@ -487,7 +420,7 @@ class MegaMenuItem extends BaseModel
                     $content['Static Pages'][] = [
                         'id' => $staticPage->id,
                         'title' => $staticPage->title,
-                        'url' => route('static.show', $staticPage->slug),
+                        'url' => api_path('static_page', $staticPage->slug),
                         'type' => 'static_page',
                     ];
                 }
