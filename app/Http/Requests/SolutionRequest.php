@@ -48,6 +48,9 @@ class SolutionRequest extends FormRequest
             'long_body' => 'nullable|string',
             'list_items' => 'nullable|array',
             'list_items.*' => 'nullable|string',
+            'faq' => 'nullable|array',
+            'faq.*.question' => 'nullable|string|max:500|required_with:faq.*.answer',
+            'faq.*.answer' => 'nullable|string|required_with:faq.*.question',
             'link_text' => 'nullable|string|max:255',
 
             // Testimonial
@@ -89,6 +92,9 @@ class SolutionRequest extends FormRequest
             'long_body' => 'long body',
             'list_items' => 'key features',
             'list_items.*' => 'key feature',
+            'faq' => 'FAQ',
+            'faq.*.question' => 'FAQ question',
+            'faq.*.answer' => 'FAQ answer',
             'link_text' => 'link text',
             'testimonial_quote' => 'testimonial quote',
             'testimonial_author' => 'testimonial author',

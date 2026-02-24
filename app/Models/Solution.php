@@ -24,6 +24,7 @@ class Solution extends BaseModel
         'subtitle',
         'short_body',
         'long_body',
+        'faq',
         'list_items',
         'link_text',
         'link_url',
@@ -44,6 +45,7 @@ class Solution extends BaseModel
     {
         return [
             'list_items' => 'array',
+            'faq' => 'array',
             'is_active' => 'boolean',
             'sort_order' => 'integer',
             'created_at' => 'datetime',

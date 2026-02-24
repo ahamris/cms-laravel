@@ -27,6 +27,7 @@ class SolutionResource extends JsonResource
             'meta_keywords' => $this->meta_keywords,
             'image' => get_image($this->image, asset('images/solutions-og-image.jpg')),
             'list_items' => $this->list_items,
+            'faq' => $this->faq ?? [],
             'link_text' => $this->link_text,
             'link_url' => $this->link_url,
             'testimonial_quote' => $this->testimonial_quote,

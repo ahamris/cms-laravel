@@ -169,6 +169,33 @@
                                 Add Key Feature
                             </button>
                         </div>
+
+                        {{-- FAQ --}}
+                        <div>
+                            <label class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">FAQ</label>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Optional questions and answers for this solution.</p>
+                            <div id="faq-container" class="space-y-4">
+                                <div class="faq-row rounded-lg border border-gray-200 dark:border-white/10 p-4 bg-gray-50/50 dark:bg-white/5 space-y-3">
+                                    <div>
+                                        <input type="text" name="faq[0][question]" placeholder="Question"
+                                               class="block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500">
+                                        @error('faq.0.question')<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+                                    </div>
+                                    <div>
+                                        <textarea name="faq[0][answer]" rows="2" placeholder="Answer"
+                                                  class="block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500"></textarea>
+                                        @error('faq.0.answer')<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+                                    </div>
+                                    <button type="button" onclick="removeFaqRow(this)" class="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                        <i class="fa-solid fa-trash mr-1"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" onclick="addFaqRow()" class="mt-3 inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90">
+                                <i class="fa-solid fa-plus"></i>
+                                Add FAQ
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -441,5 +468,29 @@
         button.parentElement.remove();
     }
 
+    let faqIndex = 1;
+    function addFaqRow() {
+        const container = document.getElementById('faq-container');
+        const row = document.createElement('div');
+        row.className = 'faq-row rounded-lg border border-gray-200 dark:border-white/10 p-4 bg-gray-50/50 dark:bg-white/5 space-y-3';
+        row.innerHTML = `
+            <div>
+                <input type="text" name="faq[${faqIndex}][question]" placeholder="Question"
+                       class="block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500">
+            </div>
+            <div>
+                <textarea name="faq[${faqIndex}][answer]" rows="2" placeholder="Answer"
+                          class="block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500"></textarea>
+            </div>
+            <button type="button" onclick="removeFaqRow(this)" class="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                <i class="fa-solid fa-trash mr-1"></i> Remove
+            </button>
+        `;
+        container.appendChild(row);
+        faqIndex++;
+    }
+    function removeFaqRow(button) {
+        button.closest('.faq-row').remove();
+    }
     </script>
 </x-layouts.admin>

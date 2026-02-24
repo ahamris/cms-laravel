@@ -39,6 +39,10 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'meta_keywords', type: 'string', nullable: true),
         new OA\Property(property: 'image', type: 'string', format: 'uri', nullable: true),
         new OA\Property(property: 'list_items', type: 'array', items: new OA\Items(type: 'string'), nullable: true),
+        new OA\Property(property: 'faq', type: 'array', items: new OA\Items(properties: [
+            new OA\Property(property: 'question', type: 'string', description: 'FAQ question'),
+            new OA\Property(property: 'answer', type: 'string', description: 'FAQ answer (may contain HTML)'),
+        ], type: 'object'), description: 'Optional FAQ items for this solution', nullable: true),
         new OA\Property(property: 'link_text', type: 'string', nullable: true),
         new OA\Property(property: 'link_url', type: 'string', nullable: true),
         new OA\Property(property: 'testimonial_quote', type: 'string', nullable: true),

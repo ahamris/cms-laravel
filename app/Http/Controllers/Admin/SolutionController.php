@@ -39,7 +39,7 @@ class SolutionController extends AdminBaseController
     public function store(SolutionRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body']);
+        $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body', 'faq.*.answer']);
 
         // Always set list_items from request (empty array when all key features removed)
         $raw = $request->input('list_items', []);
@@ -48,6 +48,23 @@ class SolutionController extends AdminBaseController
             return is_string($item) ? trim($item) : '';
         }, $listItems), fn ($v) => $v !== ''));
         $validated['list_items'] = $listItems;
+
+        // Normalize FAQ: keep only items with both question and answer
+        $faqRaw = $request->input('faq', []);
+        $faq = is_array($faqRaw) ? $faqRaw : [];
+        $faq = array_values(array_filter($faq, function ($item) {
+            $q = trim((string) ($item['question'] ?? ''));
+            $a = trim((string) ($item['answer'] ?? ''));
+
+            return $q !== '' && $a !== '';
+        }));
+        $faq = array_map(function ($item) {
+            return [
+                'question' => trim((string) ($item['question'] ?? '')),
+                'answer' => trim((string) ($item['answer'] ?? '')),
+            ];
+        }, $faq);
+        $validated['faq'] = $faq;
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -98,7 +115,7 @@ class SolutionController extends AdminBaseController
     public function update(SolutionRequest $request, Solution $solution): RedirectResponse
     {
         $validated = $request->validated();
-        $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body']);
+        $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body', 'faq.*.answer']);
 
         // Always set list_items from request (empty array when all key features removed)
         $raw = $request->input('list_items', []);
@@ -107,6 +124,23 @@ class SolutionController extends AdminBaseController
             return is_string($item) ? trim($item) : '';
         }, $listItems), fn ($v) => $v !== ''));
         $validated['list_items'] = $listItems;
+
+        // Normalize FAQ: keep only items with both question and answer
+        $faqRaw = $request->input('faq', []);
+        $faq = is_array($faqRaw) ? $faqRaw : [];
+        $faq = array_values(array_filter($faq, function ($item) {
+            $q = trim((string) ($item['question'] ?? ''));
+            $a = trim((string) ($item['answer'] ?? ''));
+
+            return $q !== '' && $a !== '';
+        }));
+        $faq = array_map(function ($item) {
+            return [
+                'question' => trim((string) ($item['question'] ?? '')),
+                'answer' => trim((string) ($item['answer'] ?? '')),
+            ];
+        }, $faq);
+        $validated['faq'] = $faq;
 
         // Handle image deletion
         if ($request->has('remove_image') && $request->input('remove_image') == '1') {

@@ -149,6 +149,23 @@
                     </div>
                     @endif
 
+                    {{-- FAQ --}}
+                    @if($solution->faq && count($solution->faq) > 0)
+                    <div>
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">FAQ</label>
+                        <div class="mt-2 rounded-lg bg-gray-50 dark:bg-white/5 p-4 border border-gray-200 dark:border-white/10 space-y-4">
+                            @foreach($solution->faq as $faqItem)
+                                @if(!empty($faqItem['question']) || !empty($faqItem['answer']))
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $faqItem['question'] ?? '' }}</p>
+                                    <div class="mt-1 text-sm text-gray-700 dark:text-gray-300 prose prose-sm max-w-none dark:prose-invert">{!! $faqItem['answer'] ?? '' !!}</div>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Link Text --}}
                     @if($solution->link_text)
                     <div>
