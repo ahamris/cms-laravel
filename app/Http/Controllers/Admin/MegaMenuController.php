@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\MegaMenuItem;
+use App\Models\MegaMenuSidebar;
 use App\Models\Setting;
 use App\View\Composers\MegaMenuComposer;
 use Illuminate\Http\Request;
@@ -28,14 +29,7 @@ class MegaMenuController extends AdminBaseController
             ->ordered()
             ->get();
 
-        $headerComponents = [];
-        $selectedHeaderComponentId = Setting::getValue('site_header_component_id');
-        $selectedHeaderSticky = Setting::getValue('site_header_sticky', false);
-        $selectedHeaderLayoutType = Setting::getValue('site_header_layout_type');
-        $headerLoginLinkEnabled = Setting::getValue('site_header_login_link_enabled', true);
-        $headerLoginLinkUrl = Setting::getValue('site_header_login_link_url', '#');
-
-        return view('admin.settings.mega-menu.index', compact('menuItems', 'headerComponents', 'selectedHeaderComponentId', 'selectedHeaderSticky', 'selectedHeaderLayoutType', 'headerLoginLinkEnabled', 'headerLoginLinkUrl'));
+        return view('admin.settings.mega-menu.index', compact('menuItems'));
     }
 
     /**
@@ -86,6 +80,10 @@ class MegaMenuController extends AdminBaseController
         $validated['tags'] = self::normalizeTags($request->input('tags'));
         $validated['align'] = (int) ($validated['align'] ?? MegaMenuItem::ALIGN_LEFT);
 
+        $sidebarTitle = $request->input('sidebar_title');
+        $sidebarDescription = $request->input('sidebar_description');
+        $sidebarTags = self::normalizeTags($request->input('sidebar_tags'));
+
         // Validate max depth for new items
         if (! empty($validated['parent_id'])) {
             $parent = MegaMenuItem::find($validated['parent_id']);
@@ -107,6 +105,15 @@ class MegaMenuController extends AdminBaseController
 
         $menuItem = MegaMenuItem::create($validated);
 
+        if (empty($validated['parent_id']) && ($sidebarTitle !== null && $sidebarTitle !== '')) {
+            MegaMenuSidebar::create([
+                'mega_menu_item_id' => $menuItem->id,
+                'title' => $sidebarTitle,
+                'description' => $sidebarDescription,
+                'tags' => $sidebarTags,
+            ]);
+        }
+
         // Clear mega menu cache
         MegaMenuComposer::clearCache();
 
@@ -119,8 +126,9 @@ class MegaMenuController extends AdminBaseController
      */
     public function edit(MegaMenuItem $megaMenu): View
     {
-        // Load children for sub-item management
+        // Load children and sidebar (1-to-1 for root items) for sub-item management
         $megaMenu->load([
+            'sidebar',
             'children' => function ($query) {
                 $query->ordered();
             },
@@ -169,6 +177,10 @@ class MegaMenuController extends AdminBaseController
             $validated['align'] = (int) ($validated['align'] ?? MegaMenuItem::ALIGN_LEFT);
         }
 
+        $sidebarTitle = $request->input('sidebar_title');
+        $sidebarDescription = $request->input('sidebar_description');
+        $sidebarTags = self::normalizeTags($request->input('sidebar_tags'));
+
         // Cycle Detection
         if (! empty($validated['parent_id'])) {
             if ($validated['parent_id'] == $megaMenu->id) {
@@ -200,6 +212,21 @@ class MegaMenuController extends AdminBaseController
         unset($validated['link_type']);
 
         $megaMenu->update($validated);
+
+        if ($megaMenu->parent_id === null) {
+            if ($sidebarTitle !== null && $sidebarTitle !== '') {
+                MegaMenuSidebar::updateOrCreate(
+                    ['mega_menu_item_id' => $megaMenu->id],
+                    [
+                        'title' => $sidebarTitle,
+                        'description' => $sidebarDescription,
+                        'tags' => $sidebarTags,
+                    ]
+                );
+            } else {
+                $megaMenu->sidebar?->delete();
+            }
+        }
 
         // Clear mega menu cache
         MegaMenuComposer::clearCache();
@@ -407,68 +434,22 @@ class MegaMenuController extends AdminBaseController
     }
 
     /**
-     * Update the selected header component.
-     */
-    public function updateHeaderComponent(Request $request)
-    {
-        $validated = $request->validate([
-            'header_component_id' => 'nullable|integer',
-            'header_sticky' => 'nullable|boolean',
-        ]);
-
-        $componentId = $validated['header_component_id'] ?? null;
-        $headerSticky = $request->has('header_sticky') ? true : false;
-
-        Setting::setValue('site_header_component_id', $componentId);
-        Setting::setValue('site_header_sticky', $headerSticky);
-
-        // Clear cache
-        Cache::forget('settings.site_header_component_id');
-        Cache::forget('settings.site_header_sticky');
-        MegaMenuComposer::clearCache();
-
-        return redirect()->route('admin.settings.mega-menu.index')
-            ->with('success', 'Header component updated successfully.');
-    }
-
-    /**
-     * Update all settings at once (header component, sticky, layout, login link, CTA).
+     * Update all settings at once (CTA only).
      */
     public function updateAllSettings(Request $request)
     {
         $validated = $request->validate([
-            'header_component_id' => 'nullable|integer',
-            'header_sticky' => 'nullable|boolean',
-            'header_layout_type' => 'nullable|string|in:,full-width,container,max-w-2xl,max-w-4xl,max-w-6xl,max-w-7xl',
-            'header_login_link_enabled' => 'nullable|boolean',
-            'header_login_link_url' => 'nullable|string|max:500',
             'header_cta_button_text' => 'nullable|string|max:255',
             'header_cta_button_url' => 'nullable|string|max:500',
         ]);
 
-        $componentId = $validated['header_component_id'] ?? null;
-        $headerSticky = $request->has('header_sticky') ? true : false;
-        $headerLayoutType = $validated['header_layout_type'] ?? null;
-        $headerLoginLinkEnabled = $request->has('header_login_link_enabled') ? true : false;
-        $headerLoginLinkUrl = $validated['header_login_link_url'] ?? '#';
         $headerCtaButtonText = $validated['header_cta_button_text'] ?? 'Sign up';
         $headerCtaButtonUrl = $validated['header_cta_button_url'] ?? '#';
 
-        Setting::setValue('site_header_component_id', $componentId);
-        Setting::setValue('site_header_sticky', $headerSticky);
-        Setting::setValue('site_header_layout_type', $headerLayoutType);
-        Setting::setValue('site_header_login_link_enabled', $headerLoginLinkEnabled);
-        Setting::setValue('site_header_login_link_url', $headerLoginLinkUrl);
         Setting::setValue('header_cta_button_text', $headerCtaButtonText);
         Setting::setValue('header_cta_button_url', $headerCtaButtonUrl);
 
-        // Clear cache
-        Cache::forget('settings'); // Clear the main settings cache used by get_setting() helper
-        Cache::forget('settings.site_header_component_id');
-        Cache::forget('settings.site_header_sticky');
-        Cache::forget('settings.site_header_layout_type');
-        Cache::forget('settings.site_header_login_link_enabled');
-        Cache::forget('settings.site_header_login_link_url');
+        Cache::forget('settings');
         Cache::forget('settings.header_cta_button_text');
         Cache::forget('settings.header_cta_button_url');
         MegaMenuComposer::clearCache();

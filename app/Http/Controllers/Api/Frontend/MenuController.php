@@ -140,6 +140,16 @@ class MenuController extends Controller
         $children = $item['children'] ?? [];
         $node['children'] = array_values(array_map(fn (array $child) => $this->mapCachedMenuItem($child), $children));
 
+        if (! empty($item['sidebar'])) {
+            $node['sidebar'] = [
+                'title' => $item['sidebar']['title'] ?? '',
+                'description' => $item['sidebar']['description'] ?? null,
+                'tags' => $item['sidebar']['tags'] ?? [],
+            ];
+        } else {
+            $node['sidebar'] = null;
+        }
+
         return $node;
     }
 }

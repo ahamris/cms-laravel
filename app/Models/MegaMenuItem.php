@@ -78,6 +78,14 @@ class MegaMenuItem extends BaseModel
         return $this->belongsTo(Page::class);
     }
 
+    /**
+     * Get the right sidebar for this parent megamenu item (1-to-1).
+     */
+    public function sidebar()
+    {
+        return $this->hasOne(MegaMenuSidebar::class, 'mega_menu_item_id');
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -99,6 +107,7 @@ class MegaMenuItem extends BaseModel
                     ->ordered()
                     ->with([
                         'page',
+                        'sidebar',
                         'children' => fn ($query) => $query->active()->ordered()->with([
                             'page',
                             'children' => fn ($subQuery) => $subQuery->active()->ordered()->with('page'),
@@ -130,6 +139,15 @@ class MegaMenuItem extends BaseModel
         $arr['url'] = $item->full_url;
         if (! empty($arr['children']) && $item->relationLoaded('children')) {
             $arr['children'] = $item->children->map(fn ($child) => self::itemToCachedArray($child))->toArray();
+        }
+        if ($item->relationLoaded('sidebar') && $item->sidebar) {
+            $arr['sidebar'] = [
+                'title' => $item->sidebar->title,
+                'description' => $item->sidebar->description,
+                'tags' => $item->sidebar->tags ?? [],
+            ];
+        } else {
+            $arr['sidebar'] = null;
         }
 
         return $arr;

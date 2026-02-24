@@ -484,7 +484,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::group(['prefix' => 'mega-menu', 'as' => 'mega-menu.'], function () {
                 Route::get('get-module-items', [MegaMenuController::class, 'getModuleItems'])->name('get-module-items');
                 Route::post('update-order', [MegaMenuController::class, 'updateOrder'])->name('update-order');
-                Route::post('update-header-component', [MegaMenuController::class, 'updateHeaderComponent'])->name('update-header-component');
                 Route::post('update-all-settings', [MegaMenuController::class, 'updateAllSettings'])->name('update-all-settings');
                 Route::post('update-header-cta-settings', [MegaMenuController::class, 'updateHeaderCtaSettings'])->name('update-header-cta-settings');
                 Route::post('{megaMenu}/add-sub-item', [MegaMenuController::class, 'addSubItem'])->name('add-sub-item');

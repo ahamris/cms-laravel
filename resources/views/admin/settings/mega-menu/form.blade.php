@@ -276,6 +276,41 @@
             @enderror
         </div>
 
+        @if((!isset($parent) || !$parent) && !optional($megaMenu)->parent_id)
+        <!-- Right sidebar (1-to-1 for parent megamenu item) -->
+        <div class="border-t border-gray-200 pt-4 mt-4 space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900">Right sidebar</h3>
+            <p class="text-sm text-gray-600">Optional single block shown in the right column of the mega menu dropdown for this parent item.</p>
+            <div>
+                <label for="sidebar_title" class="block text-sm font-medium text-gray-700 mb-2">Sidebar title</label>
+                <input type="text" name="sidebar_title" id="sidebar_title"
+                       value="{{ old('sidebar_title', optional(optional($megaMenu)->sidebar)->title ?? '') }}"
+                       placeholder="e.g. Informatieobjectcatalogus & data-regie"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                @error('sidebar_title')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="sidebar_description" class="block text-sm font-medium text-gray-700 mb-2">Sidebar description</label>
+                <textarea name="sidebar_description" id="sidebar_description" rows="3"
+                          placeholder="Short description for the right column block."
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">{{ old('sidebar_description', optional(optional($megaMenu)->sidebar)->description ?? '') }}</textarea>
+                @error('sidebar_description')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="sidebar_tags" class="block text-sm font-medium text-gray-700 mb-2">Sidebar tags</label>
+                <input type="text" name="sidebar_tags" id="sidebar_tags"
+                       value="{{ old('sidebar_tags', implode(', ', optional(optional($megaMenu)->sidebar)->tags ?? [])) }}"
+                       placeholder="e.g. MDTO, API, Bulk aanleveren (comma-separated)"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                <p class="text-xs text-gray-500 mt-1">Tags shown as buttons/chips in the sidebar block.</p>
+            </div>
+        </div>
+        @endif
+
         @if((isset($parent) && $parent) || optional($megaMenu)->parent_id)
         <!-- Align (child items only: left / right) -->
         <div>
