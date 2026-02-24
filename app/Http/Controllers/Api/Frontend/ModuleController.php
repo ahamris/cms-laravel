@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
 
 class ModuleController extends Controller
 {
-    #[OA\Get(path: '/api/modules', summary: 'List modules', description: 'Active modules with features.', tags: ['Modules'], responses: [
+    #[OA\Get(path: '/api/modules', summary: 'List modules', description: 'Active modules with features.', tags: ['Solution'], responses: [
         new OA\Response(response: 200, description: 'Modules collection'),
     ])]
     public function index()
@@ -23,7 +23,7 @@ class ModuleController extends Controller
         return ModuleListResource::collection($modules);
     }
 
-    #[OA\Get(path: '/api/modules/{slug}', summary: 'Module by slug', tags: ['Modules'], parameters: [
+    #[OA\Get(path: '/api/modules/{slug}', summary: 'Module by slug', tags: ['Solution'], parameters: [
         new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
         new OA\Response(response: 200, description: 'Module'),

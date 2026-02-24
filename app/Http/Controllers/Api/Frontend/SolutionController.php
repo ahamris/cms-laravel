@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
 
 class SolutionController extends Controller
 {
-    #[OA\Get(path: '/api/solutions', summary: 'List solutions', description: 'Active solutions with modules and features.', tags: ['Solutions'], responses: [
+    #[OA\Get(path: '/api/solutions', summary: 'List solutions', description: 'Active solutions with modules and features.', tags: ['Solution'], responses: [
         new OA\Response(response: 200, description: 'Solutions collection'),
     ])]
     public function index()
@@ -27,7 +27,7 @@ class SolutionController extends Controller
         return SolutionListResource::collection($solutions);
     }
 
-    #[OA\Get(path: '/api/solutions/{anchor}', summary: 'Solution by anchor', tags: ['Solutions'], parameters: [
+    #[OA\Get(path: '/api/solutions/{anchor}', summary: 'Solution by anchor', tags: ['Solution'], parameters: [
         new OA\Parameter(name: 'anchor', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
         new OA\Response(response: 200, description: 'Solution'),
