@@ -64,9 +64,15 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bullets</label>
                             <div id="hero-bullets-list" class="space-y-2">
                                 @foreach($heroBullets as $i => $b)
+                                    @php $heroIcon = normalize_homepage_icon(old('sections.hero.bullets.'.$i.'.icon', $b['icon'] ?? 'check')); @endphp
                                     <div class="homepage-dynamic-row flex gap-2 items-start">
-                                        <div class="w-44 flex-shrink-0">
-                                            <x-ui.icon-picker name="sections[hero][bullets][{{ $i }}][icon]" :id="'hero_bullet_icon_'.$i" label="Icon" :value="normalize_homepage_icon(old('sections.hero.bullets.'.$i.'.icon', $b['icon'] ?? 'check'))" help-text="" />
+                                        <div class="flex-shrink-0">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Icon</label>
+                                            <input type="hidden" name="sections[hero][bullets][{{ $i }}][icon]" id="hero_bullet_icon_{{ $i }}" value="{{ $heroIcon ?: 'fa-solid fa-check' }}" />
+                                            <button type="button" class="homepage-icon-picker-open inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 min-w-[7rem]" data-target-input-id="hero_bullet_icon_{{ $i }}">
+                                                <i class="{{ $heroIcon ?: 'fa-solid fa-check' }} text-sm text-[var(--color-accent)]"></i>
+                                                <span>Change</span>
+                                            </button>
                                         </div>
                                         <x-ui.input name="sections[hero][bullets][{{ $i }}][text]" :id="'hero_bullet_text_'.$i" :value="old('sections.hero.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Bullet text" class="flex-1" />
                                         <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
@@ -116,10 +122,18 @@
                 <x-ui.input name="sections[feature_cards][title]" id="feature_cards_title" label="Section title" :value="old('sections.feature_cards.title', $fcContent['title'] ?? '')" placeholder="e.g. Wat we bieden" class="mb-4" />
                 <div id="feature-cards-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($cards as $i => $c)
+                        @php $cardIcon = normalize_homepage_icon(old('sections.feature_cards.cards.'.$i.'.icon', $c['icon'] ?? '')); @endphp
                         <div class="homepage-dynamic-row bg-white dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10 p-4 space-y-3 relative">
                             <button type="button" class="homepage-remove-row absolute top-2 right-2 p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove card"><i class="fa-solid fa-times text-sm"></i></button>
                             <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 pr-8">Card {{ $i + 1 }}</h4>
-                            <x-ui.icon-picker name="sections[feature_cards][cards][{{ $i }}][icon]" :id="'card_'.$i.'_icon'" label="Icon" :value="normalize_homepage_icon(old('sections.feature_cards.cards.'.$i.'.icon', $c['icon'] ?? ''))" help-text="FontAwesome icon" />
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Icon</label>
+                                <input type="hidden" name="sections[feature_cards][cards][{{ $i }}][icon]" id="card_{{ $i }}_icon" value="{{ $cardIcon }}" />
+                                <button type="button" class="homepage-icon-picker-open inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 w-full justify-start" data-target-input-id="card_{{ $i }}_icon">
+                                    <i class="{{ $cardIcon ?: 'fa-solid fa-icons' }} text-sm {{ $cardIcon ? 'text-[var(--color-accent)]' : 'text-gray-500' }}"></i>
+                                    <span>{{ $cardIcon ? 'Change' : 'Pick icon' }}</span>
+                                </button>
+                            </div>
                             <x-ui.input name="sections[feature_cards][cards][{{ $i }}][title]" :id="'card_'.$i.'_title'" label="Title" :value="old('sections.feature_cards.cards.'.$i.'.title', $c['title'] ?? '')" />
                             <x-ui.textarea name="sections[feature_cards][cards][{{ $i }}][description]" :id="'card_'.$i.'_description'" label="Description" :value="old('sections.feature_cards.cards.'.$i.'.description', $c['description'] ?? '')" :rows="2" />
                             <x-ui.input name="sections[feature_cards][cards][{{ $i }}][link_text]" :id="'card_'.$i.'_link_text'" label="Link text" :value="old('sections.feature_cards.cards.'.$i.'.link_text', $c['link_text'] ?? 'Read more')" />
@@ -151,9 +165,15 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bullets</label>
                             <div id="about-bullets-list" class="space-y-2">
                                 @foreach($aboutBullets as $i => $b)
+                                    @php $aboutIcon = normalize_homepage_icon(old('sections.about_opms.bullets.'.$i.'.icon', $b['icon'] ?? 'check')); @endphp
                                     <div class="homepage-dynamic-row flex gap-2 items-start">
-                                        <div class="w-44 flex-shrink-0">
-                                            <x-ui.icon-picker name="sections[about_opms][bullets][{{ $i }}][icon]" :id="'about_bullet_icon_'.$i" label="Icon" :value="normalize_homepage_icon(old('sections.about_opms.bullets.'.$i.'.icon', $b['icon'] ?? 'check'))" help-text="" />
+                                        <div class="flex-shrink-0">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Icon</label>
+                                            <input type="hidden" name="sections[about_opms][bullets][{{ $i }}][icon]" id="about_bullet_icon_{{ $i }}" value="{{ $aboutIcon ?: 'fa-solid fa-check' }}" />
+                                            <button type="button" class="homepage-icon-picker-open inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 min-w-[7rem]" data-target-input-id="about_bullet_icon_{{ $i }}">
+                                                <i class="{{ $aboutIcon ?: 'fa-solid fa-check' }} text-sm text-[var(--color-accent)]"></i>
+                                                <span>Change</span>
+                                            </button>
                                         </div>
                                         <x-ui.input name="sections[about_opms][bullets][{{ $i }}][text]" :id="'about_bullet_text_'.$i" :value="old('sections.about_opms.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Text" class="flex-1" />
                                         <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
@@ -485,7 +505,9 @@
                         var trigger = document.querySelector('[data-target-input-id="' + iconPickerTargetId + '"]');
                         if (trigger) {
                             var i = trigger.querySelector('i');
-                            if (i) i.className = iconClass + ' text-sm';
+                            if (i) i.className = iconClass + ' text-sm text-[var(--color-accent)]';
+                            var span = trigger.querySelector('span');
+                            if (span) span.textContent = 'Change';
                         }
                     }
                     window.homepageIconPickerClose();
