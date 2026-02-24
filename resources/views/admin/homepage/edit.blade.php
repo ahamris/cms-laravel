@@ -1,37 +1,53 @@
 <x-layouts.admin title="Edit Homepage">
     @if (session('success'))
-        <div class="mb-4 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
+        <div class="mb-6 rounded-lg bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 p-4">
             <p class="text-sm font-medium text-green-800 dark:text-green-300">{{ session('success') }}</p>
         </div>
     @endif
-    <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-primary rounded-md flex items-center justify-center">
-                <i class="fa-solid fa-home text-white text-base"></i>
+
+    <div class="flex flex-col lg:flex-row lg:items-start gap-8">
+        {{-- Sticky section nav (sidebar on large screens) --}}
+        <nav class="lg:w-56 flex-shrink-0 lg:sticky lg:top-6 order-2 lg:order-1">
+            <div class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-4 shadow-sm">
+                <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Jump to section</p>
+                <ul class="space-y-1 text-sm">
+                    <li><a href="#section-hero" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">Hero</a></li>
+                    <li><a href="#section-feature-cards" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">Feature cards</a></li>
+                    <li><a href="#section-about-opms" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">About OPMS</a></li>
+                    <li><a href="#section-how-it-works" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">How it works</a></li>
+                    <li><a href="#section-user-features" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">User features</a></li>
+                    <li><a href="#section-competition" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">Competition / stats</a></li>
+                    <li><a href="#section-latest-updates" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">Latest updates</a></li>
+                    <li><a href="#section-bottom-cta" class="block rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">Bottom CTA</a></li>
+                </ul>
             </div>
-            <div class="flex flex-col gap-1">
-                <h2>Edit Homepage</h2>
-                <p>All page content: hero, feature cards, about, how it works, user features, competition, latest updates title, bottom CTA (header/footer use General Settings)</p>
+        </nav>
+
+        <div class="flex-1 min-w-0 order-1 lg:order-2">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Edit Homepage</h1>
+                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Content for hero, feature cards, about, how it works, and more. Header and footer are in General Settings.</p>
             </div>
-        </div>
-    </div>
 
-    <div class="bg-gray-50/50 dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10">
-        <form action="{{ route('admin.homepage.update') }}" method="POST" enctype="multipart/form-data" class="space-y-0" id="homepage-form">
-            @csrf
-            @method('PUT')
+            <form action="{{ route('admin.homepage.update') }}" method="POST" enctype="multipart/form-data" id="homepage-form">
+                @csrf
+                @method('PUT')
 
-            @php
-                $hero = $sections['hero']->content ?? [];
-                $heroBullets = $hero['bullets'] ?? [['icon' => 'check', 'text' => '']];
-            @endphp
+                @php
+                    $hero = $sections['hero']->content ?? [];
+                    $heroBullets = $hero['bullets'] ?? [['icon' => 'check', 'text' => '']];
+                @endphp
 
-            {{-- Hero --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-image text-primary text-sm"></i></span>
-                    Hero
-                </h3>
+                {{-- Hero --}}
+                <section id="section-hero" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                    <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                            <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-image text-sm"></i></span>
+                            Hero
+                        </h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Main banner: label, heading, bullets and CTAs.</p>
+                    </div>
+                    <div class="p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <x-ui.input name="sections[hero][label]" id="hero_label" label="Label (uppercase)" :value="old('sections.hero.label', $hero['label'] ?? '')" placeholder="e.g. OPMS OPEN PUBLICATION PLATFORM" />
@@ -48,7 +64,7 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <button type="button" id="hero-add-bullet" class="mt-2 text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add bullet</button>
+                            <button type="button" id="hero-add-bullet" class="mt-2 inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10"><i class="fa-solid fa-plus text-xs"></i> Add bullet</button>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <x-ui.input name="sections[hero][cta_primary_text]" id="hero_cta_primary_text" label="Primary CTA text" :value="old('sections.hero.cta_primary_text', $hero['cta_primary_text'] ?? '')" />
@@ -70,7 +86,8 @@
                         />
                     </div>
                 </div>
-            </div>
+                    </div>
+                </section>
 
             @php
                 $fcContent = $sections['feature_cards']->content ?? [];
@@ -78,11 +95,15 @@
                 if (empty($cards)) { $cards = [['icon' => '', 'title' => '', 'description' => '', 'link_text' => 'Read more', 'link_url' => '']]; }
             @endphp
             {{-- Feature cards --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-th-large text-primary text-sm"></i></span>
-                    Feature cards
-                </h3>
+            <section id="section-feature-cards" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-th-large text-sm"></i></span>
+                        Feature cards
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Cards with icon, title, description and link.</p>
+                </div>
+                <div class="p-6">
                 <x-ui.input name="sections[feature_cards][title]" id="feature_cards_title" label="Section title" :value="old('sections.feature_cards.title', $fcContent['title'] ?? '')" placeholder="e.g. Wat we bieden" class="mb-4" />
                 <div id="feature-cards-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($cards as $i => $c)
@@ -97,16 +118,21 @@
                         </div>
                     @endforeach
                 </div>
-                <button type="button" id="feature-cards-add" class="mt-4 text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add card</button>
-            </div>
+                <button type="button" id="feature-cards-add" class="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10"><i class="fa-solid fa-plus text-xs"></i> Add card</button>
+                </div>
+            </section>
 
             @php $about = $sections['about_opms']->content ?? []; $aboutBullets = $about['bullets'] ?? [['icon' => 'check', 'text' => '']]; if (empty($aboutBullets)) { $aboutBullets = [['icon' => 'check', 'text' => '']]; } @endphp
             {{-- About OPMS --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-info-circle text-primary text-sm"></i></span>
-                    About OPMS
-                </h3>
+            <section id="section-about-opms" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-info-circle text-sm"></i></span>
+                        About OPMS
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Label, heading, paragraph, bullets and image.</p>
+                </div>
+                <div class="p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <x-ui.input name="sections[about_opms][label]" id="about_label" label="Label" :value="old('sections.about_opms.label', $about['label'] ?? '')" />
@@ -123,7 +149,7 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <button type="button" id="about-add-bullet" class="mt-2 text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add bullet</button>
+                            <button type="button" id="about-add-bullet" class="mt-2 inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10"><i class="fa-solid fa-plus text-xs"></i> Add bullet</button>
                         </div>
                         <x-ui.input name="sections[about_opms][link_text]" id="about_link_text" label="Link text" :value="old('sections.about_opms.link_text', $about['link_text'] ?? '')" />
                         <x-ui.url-selector name="sections[about_opms][link_url]" id="about_link_url" label="Link URL" :value="old('sections.about_opms.link_url', $about['link_url'] ?? '')" />
@@ -141,15 +167,20 @@
                         />
                     </div>
                 </div>
-            </div>
+                </div>
+            </section>
 
             @php $steps = $sections['how_it_works']->content['steps'] ?? [['number' => '1', 'title' => '', 'description' => '']]; if (empty($steps)) { $steps = [['number' => '1', 'title' => '', 'description' => '']]; } @endphp
             {{-- How it works --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-list-ol text-primary text-sm"></i></span>
-                    How it works
-                </h3>
+            <section id="section-how-it-works" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-list-ol text-sm"></i></span>
+                        How it works
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Section title and numbered steps.</p>
+                </div>
+                <div class="p-6">
                 <x-ui.input name="sections[how_it_works][title]" id="how_title" label="Section title" :value="old('sections.how_it_works.title', $sections['how_it_works']->content['title'] ?? '')" placeholder="Hoe het werkt" class="mb-4" />
                 <div id="how-steps-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($steps as $i => $s)
@@ -162,16 +193,21 @@
                         </div>
                     @endforeach
                 </div>
-                <button type="button" id="how-add-step" class="mt-4 text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add step</button>
-            </div>
+                <button type="button" id="how-add-step" class="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10"><i class="fa-solid fa-plus text-xs"></i> Add step</button>
+                </div>
+            </section>
 
             @php $uf = $sections['user_features']->content ?? []; $leftItems = $uf['left_items'] ?? []; $rightItems = $uf['right_items'] ?? []; if (empty($leftItems)) { $leftItems = ['']; } if (empty($rightItems)) { $rightItems = ['']; } @endphp
-            {{-- User features (two columns with add/remove list items) --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-users text-primary text-sm"></i></span>
-                    User features
-                </h3>
+            {{-- User features --}}
+            <section id="section-user-features" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-users text-sm"></i></span>
+                        User features
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Two columns with titles and bullet lists (e.g. developer / user).</p>
+                </div>
+                <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-3">
                         <x-ui.input name="sections[user_features][left_title]" id="uf_left_title" label="Left column title" :value="old('sections.user_features.left_title', $uf['left_title'] ?? '')" placeholder="e.g. API-first & Headless architectuur" />
@@ -184,7 +220,7 @@
                                 </div>
                             @endforeach
                         </div>
-                        <button type="button" id="user-features-add-left" class="text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add item</button>
+                        <button type="button" id="user-features-add-left" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10"><i class="fa-solid fa-plus text-xs"></i> Add item</button>
                     </div>
                     <div class="space-y-3">
                         <x-ui.input name="sections[user_features][right_title]" id="uf_right_title" label="Right column title" :value="old('sections.user_features.right_title', $uf['right_title'] ?? '')" placeholder="e.g. Voor de gebruiker" />
@@ -197,18 +233,23 @@
                                 </div>
                             @endforeach
                         </div>
-                        <button type="button" id="user-features-add-right" class="text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add item</button>
+                        <button type="button" id="user-features-add-right" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10"><i class="fa-solid fa-plus text-xs"></i> Add item</button>
                     </div>
                 </div>
-            </div>
+                </div>
+            </section>
 
             @php $comp = $sections['competition']->content ?? []; $boxes = $comp['boxes'] ?? [['value' => '', 'label' => '']]; if (empty($boxes)) { $boxes = [['value' => '', 'label' => '']]; } @endphp
             {{-- Competition --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-trophy text-primary text-sm"></i></span>
-                    Competition / stats
-                </h3>
+            <section id="section-competition" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-trophy text-sm"></i></span>
+                        Competition / stats
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Heading, paragraph and metric boxes (value + label).</p>
+                </div>
+                <div class="p-6">
                 <div class="space-y-4">
                     <x-ui.input name="sections[competition][heading]" id="comp_heading" label="Section heading" :value="old('sections.competition.heading', $comp['heading'] ?? '')" placeholder="e.g. Waarom OPMS de concurrentie uitschakelt" />
                     <x-ui.textarea name="sections[competition][paragraph]" id="comp_paragraph" label="Paragraph" :value="old('sections.competition.paragraph', $comp['paragraph'] ?? '')" :rows="3" />
@@ -225,28 +266,37 @@
                                 </div>
                             @endforeach
                         </div>
-                        <button type="button" id="competition-add-box" class="mt-2 text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add box</button>
+                        <button type="button" id="competition-add-box" class="mt-2 inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10"><i class="fa-solid fa-plus text-xs"></i> Add box</button>
                     </div>
                 </div>
-            </div>
+                </div>
+            </section>
 
             {{-- Latest updates --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-newspaper text-primary text-sm"></i></span>
-                    Latest updates
-                </h3>
+            <section id="section-latest-updates" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-newspaper text-sm"></i></span>
+                        Latest updates
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Section title above the blog list (articles come from the blog API).</p>
+                </div>
+                <div class="p-6">
                 <x-ui.input name="sections[latest_updates][title]" id="latest_title" label="Section title" :value="old('sections.latest_updates.title', $sections['latest_updates']->content['title'] ?? '')" placeholder="Laatste updates" />
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Articles are loaded from the blog API; only the section title is stored here.</p>
-            </div>
+                </div>
+            </section>
 
             @php $cta = $sections['bottom_cta']->content ?? []; @endphp
             {{-- Bottom CTA --}}
-            <div class="p-6 border-b border-gray-200 dark:border-white/10">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-hand-pointer text-primary text-sm"></i></span>
-                    Bottom CTA
-                </h3>
+            <section id="section-bottom-cta" class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden mb-8 scroll-mt-6">
+                <div class="border-b border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]"><i class="fa-solid fa-hand-pointer text-sm"></i></span>
+                        Bottom CTA
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Call-to-action block: heading, subtext and buttons.</p>
+                </div>
+                <div class="p-6">
                 <div class="space-y-4">
                     <x-ui.input name="sections[bottom_cta][heading]" id="cta_heading" label="Heading" :value="old('sections.bottom_cta.heading', $cta['heading'] ?? '')" placeholder="Slimmer werken begint met een demo." />
                     <x-ui.textarea name="sections[bottom_cta][subtext]" id="cta_subtext" label="Subtext" :value="old('sections.bottom_cta.subtext', $cta['subtext'] ?? '')" :rows="2" />
@@ -257,12 +307,14 @@
                         <x-ui.url-selector name="sections[bottom_cta][cta_secondary_url]" id="cta_secondary_url" label="Secondary CTA URL" :value="old('sections.bottom_cta.cta_secondary_url', $cta['cta_secondary_url'] ?? '')" />
                     </div>
                 </div>
-            </div>
+                </div>
+            </section>
 
-            <div class="p-6 flex justify-end">
-                <x-ui.button type="submit" variant="primary">Save homepage</x-ui.button>
-            </div>
-        </form>
+                <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4 pb-2">
+                    <x-ui.button type="submit" variant="primary">Save homepage</x-ui.button>
+                </div>
+            </form>
+        </div>
     </div>
 
     {{-- Templates for dynamic rows (hidden) --}}
