@@ -165,8 +165,8 @@
                 <button type="button" id="how-add-step" class="mt-4 text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add step</button>
             </div>
 
-            @php $uf = $sections['user_features']->content ?? []; $leftItems = $uf['left_items'] ?? []; $rightItems = $uf['right_items'] ?? []; @endphp
-            {{-- User features --}}
+            @php $uf = $sections['user_features']->content ?? []; $leftItems = $uf['left_items'] ?? []; $rightItems = $uf['right_items'] ?? []; if (empty($leftItems)) { $leftItems = ['']; } if (empty($rightItems)) { $rightItems = ['']; } @endphp
+            {{-- User features (two columns with add/remove list items) --}}
             <div class="p-6 border-b border-gray-200 dark:border-white/10">
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <span class="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 mr-2"><i class="fa-solid fa-users text-primary text-sm"></i></span>
@@ -174,13 +174,30 @@
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-3">
-                        <x-ui.input name="sections[user_features][left_title]" id="uf_left_title" label="Left column title" :value="old('sections.user_features.left_title', $uf['left_title'] ?? '')" placeholder="e.g. Voor de ontwikkelaar" />
-                        <x-ui.textarea name="sections[user_features][left_items_text]" id="uf_left_items" label="Left items (one per line)" :value="old('sections.user_features.left_items_text', implode("\n", $leftItems))" :rows="6" placeholder="API&#10;SDK&#10;Webhook" />
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Enter one feature per line; saved as list.</p>
+                        <x-ui.input name="sections[user_features][left_title]" id="uf_left_title" label="Left column title" :value="old('sections.user_features.left_title', $uf['left_title'] ?? '')" placeholder="e.g. API-first & Headless architectuur" />
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Left items</label>
+                        <div id="user-features-left-list" class="space-y-2">
+                            @foreach($leftItems as $i => $item)
+                                <div class="homepage-dynamic-row flex gap-2 items-center">
+                                    <x-ui.input name="sections[user_features][left_items][{{ $i }}]" :id="'uf_left_'.$i" :value="old('sections.user_features.left_items.'.$i, is_string($item) ? $item : '')" placeholder="e.g. API, SDK" class="flex-1" />
+                                    <button type="button" class="homepage-remove-row flex-shrink-0 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
+                                </div>
+                            @endforeach
+                        </div>
+                        <button type="button" id="user-features-add-left" class="text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add item</button>
                     </div>
                     <div class="space-y-3">
                         <x-ui.input name="sections[user_features][right_title]" id="uf_right_title" label="Right column title" :value="old('sections.user_features.right_title', $uf['right_title'] ?? '')" placeholder="e.g. Voor de gebruiker" />
-                        <x-ui.textarea name="sections[user_features][right_items_text]" id="uf_right_items" label="Right items (one per line)" :value="old('sections.user_features.right_items_text', implode("\n", $rightItems))" :rows="6" />
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Right items</label>
+                        <div id="user-features-right-list" class="space-y-2">
+                            @foreach($rightItems as $i => $item)
+                                <div class="homepage-dynamic-row flex gap-2 items-center">
+                                    <x-ui.input name="sections[user_features][right_items][{{ $i }}]" :id="'uf_right_'.$i" :value="old('sections.user_features.right_items.'.$i, is_string($item) ? $item : '')" placeholder="e.g. Makkelijk te gebruiken" class="flex-1" />
+                                    <button type="button" class="homepage-remove-row flex-shrink-0 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
+                                </div>
+                            @endforeach
+                        </div>
+                        <button type="button" id="user-features-add-right" class="text-sm text-[var(--color-accent)] hover:underline"><i class="fa-solid fa-plus mr-1"></i>Add item</button>
                     </div>
                 </div>
             </div>
@@ -263,6 +280,18 @@
             <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times"></i></button>
         </div>
     </template>
+    <template id="user-features-left-tmpl">
+        <div class="homepage-dynamic-row flex gap-2 items-center">
+            <input type="text" name="sections[user_features][left_items][__INDEX__]" placeholder="e.g. API, SDK" class="flex-1 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
+            <button type="button" class="homepage-remove-row flex-shrink-0 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times"></i></button>
+        </div>
+    </template>
+    <template id="user-features-right-tmpl">
+        <div class="homepage-dynamic-row flex gap-2 items-center">
+            <input type="text" name="sections[user_features][right_items][__INDEX__]" placeholder="e.g. Makkelijk te gebruiken" class="flex-1 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
+            <button type="button" class="homepage-remove-row flex-shrink-0 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times"></i></button>
+        </div>
+    </template>
     <template id="feature-card-tmpl">
         <div class="homepage-dynamic-row bg-white dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10 p-4 space-y-3 relative">
             <button type="button" class="homepage-remove-row absolute top-2 right-2 p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times text-sm"></i></button>
@@ -328,6 +357,8 @@
         document.getElementById('feature-cards-add') && document.getElementById('feature-cards-add').addEventListener('click', function() { addFromTemplate('feature-card-tmpl', 'feature-cards-list'); });
         document.getElementById('how-add-step') && document.getElementById('how-add-step').addEventListener('click', function() { addFromTemplate('how-step-tmpl', 'how-steps-list'); });
         document.getElementById('competition-add-box') && document.getElementById('competition-add-box').addEventListener('click', function() { addFromTemplate('competition-box-tmpl', 'competition-boxes-list'); });
+        document.getElementById('user-features-add-left') && document.getElementById('user-features-add-left').addEventListener('click', function() { addFromTemplate('user-features-left-tmpl', 'user-features-left-list'); });
+        document.getElementById('user-features-add-right') && document.getElementById('user-features-add-right').addEventListener('click', function() { addFromTemplate('user-features-right-tmpl', 'user-features-right-list'); });
     })();
     </script>
 </x-layouts.admin>
