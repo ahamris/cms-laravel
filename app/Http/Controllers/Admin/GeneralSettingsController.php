@@ -29,9 +29,10 @@ class GeneralSettingsController extends AdminBaseController
             'site_email' => 'required|email|max:255',
             'site_phone' => 'nullable|string|max:50',
             'site_address' => 'nullable|string|max:500',
-            'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'site_favicon' => 'nullable|image|mimes:ico,png,gif,jpg,jpeg|max:1024',
-            'admin_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'site_favicon' => 'nullable|image|mimes:ico,png,gif,jpg,jpeg,webp|max:1024',
+            'admin_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'footer_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'meta_title' => 'required|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:500',
@@ -83,6 +84,16 @@ class GeneralSettingsController extends AdminBaseController
             // Handle admin logo removal
             if ($request->has('remove_admin_logo')) {
                 $this->deleteFileSetting('admin_logo');
+            }
+
+            // Handle footer logo upload
+            if ($request->hasFile('footer_logo')) {
+                $this->handleFileUpload($request, 'footer_logo');
+            }
+
+            // Handle footer logo removal
+            if ($request->has('remove_footer_logo')) {
+                $this->deleteFileSetting('footer_logo');
             }
 
             // Update SEO settings
@@ -138,6 +149,7 @@ class GeneralSettingsController extends AdminBaseController
         $directory = match($fieldName) {
             'site_logo' => 'logos',
             'admin_logo' => 'logos',
+            'footer_logo' => 'logos',
             'site_favicon' => 'favicons',
             default => 'uploads',
         };
@@ -268,6 +280,7 @@ class GeneralSettingsController extends AdminBaseController
             'site_logo' => 'file',
             'site_favicon' => 'file',
             'admin_logo' => 'file',
+            'footer_logo' => 'file',
             'meta_title' => 'text',
             'meta_description' => 'textarea',
             'meta_keywords' => 'textarea',
@@ -328,6 +341,7 @@ class GeneralSettingsController extends AdminBaseController
             'site_logo' => 'Site Logo',
             'site_favicon' => 'Site Favicon',
             'admin_logo' => 'Admin Logo',
+            'footer_logo' => 'Footer Logo',
             'meta_title' => 'Meta Title',
             'meta_description' => 'Meta Description',
             'meta_keywords' => 'Meta Keywords',
@@ -357,9 +371,10 @@ class GeneralSettingsController extends AdminBaseController
             'site_email' => 'The primary email address for your website',
             'site_phone' => 'The primary phone number for your website',
             'site_address' => 'The physical address of your organization',
-            'site_logo' => 'Upload your website logo (JPEG, PNG, JPG, GIF, SVG - Max: 2MB)',
-            'site_favicon' => 'Upload your website favicon (ICO, PNG, GIF, JPG, JPEG - Max: 1MB)',
-            'admin_logo' => 'Upload admin panel logo (JPEG, PNG, JPG, GIF, SVG - Max: 2MB)',
+            'site_logo' => 'Upload your website logo (JPEG, PNG, JPG, GIF, SVG, WebP - Max: 2MB)',
+            'site_favicon' => 'Upload your website favicon (ICO, PNG, GIF, JPG, JPEG, WebP - Max: 1MB)',
+            'admin_logo' => 'Upload admin panel logo (JPEG, PNG, JPG, GIF, SVG, WebP - Max: 2MB)',
+            'footer_logo' => 'Upload logo for the site footer (JPEG, PNG, JPG, GIF, SVG, WebP - Max: 2MB)',
             'meta_title' => 'The default meta title for your website',
             'meta_description' => 'The default meta description for your website',
             'meta_keywords' => 'The default meta keywords for your website',
@@ -392,6 +407,7 @@ class GeneralSettingsController extends AdminBaseController
             'site_logo' => 6,
             'site_favicon' => 7,
             'admin_logo' => 8,
+            'footer_logo' => 9,
             'meta_title' => 1,
             'meta_description' => 2,
             'meta_keywords' => 3,
@@ -420,7 +436,7 @@ class GeneralSettingsController extends AdminBaseController
         // Clear individual setting caches that might be affected
         $settingKeys = [
             'site_name','copyright_footer', 'site_description', 'site_email', 'site_phone', 'site_address',
-            'site_logo', 'site_favicon', 'admin_logo', 'meta_title', 'meta_description', 'meta_keywords',
+            'site_logo', 'site_favicon', 'admin_logo', 'footer_logo', 'meta_title', 'meta_description', 'meta_keywords',
             'google_analytics', 'posts_per_page', 'default_category', 'enable_comments',
             'moderate_comments', 'doculoket_sandbox', 'map_latitude', 'map_longitude', 'map_zoom',
         ];

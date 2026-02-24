@@ -66,6 +66,7 @@ class HomepageController extends Controller
                 'description' => get_setting('site_description'),
                 'logo' => get_image(get_setting('site_logo')),
                 'favicon' => get_image(get_setting('site_favicon')),
+                'footer_logo' => get_image(get_setting('footer_logo')),
                 'email' => get_setting('site_email'),
                 'phone' => get_setting('site_phone'),
                 'address' => get_setting('site_address'),
