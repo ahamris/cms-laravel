@@ -38,16 +38,6 @@ class Solution extends BaseModel
         'meta_title',
         'meta_description',
         'meta_keywords',
-        // Header configuration
-        'button1_text',
-        'button1_url',
-        'button2_text',
-        'button2_url',
-        'show_buttons',
-        // Module activation
-        'show_cta',
-        'show_news_articles',
-        'show_modules_header',
     ];
 
     protected function casts(): array
@@ -58,12 +48,6 @@ class Solution extends BaseModel
             'sort_order' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
-            // Header configuration
-            'show_buttons' => 'boolean',
-            // Module activation
-            'show_news_articles' => 'boolean',
-            'show_cta' => 'boolean',
-            'show_modules_header' => 'boolean',
         ];
     }
 
@@ -97,11 +81,11 @@ class Solution extends BaseModel
     }
 
     /**
-     * Many-to-many relationship with modules
+     * Features belonging to this solution.
      */
-    public function modules()
+    public function features()
     {
-        return $this->belongsToMany(Module::class, 'module_solution');
+        return $this->hasMany(Feature::class);
     }
 
     /**
@@ -163,7 +147,7 @@ class Solution extends BaseModel
         if (! Cache::has(self::CACHE_KEY)) {
             return Cache::remember(self::CACHE_KEY, 60 * 60,
                 fn () => self::query()
-                    ->with('modules')
+                    ->with('features')
                     ->where('is_active', true)
                     ->ordered()
                     ->get()

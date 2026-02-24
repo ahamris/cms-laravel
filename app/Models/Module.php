@@ -18,6 +18,7 @@ class Module extends BaseModel
     const CACHE_KEY = 'modules';
 
     protected $fillable = [
+        'feature_id',
         'title',
         'short_body',
         'long_body',
@@ -89,11 +90,11 @@ class Module extends BaseModel
     }
 
     /**
-     * Many-to-many relationship with features
+     * Feature this module belongs to.
      */
-    public function features()
+    public function feature()
     {
-        return $this->belongsToMany(Feature::class, 'module_feature');
+        return $this->belongsTo(Feature::class);
     }
 
     /**
@@ -104,14 +105,6 @@ class Module extends BaseModel
         $slug = $this->slug ?? $this->anchor ?? '';
 
         return $slug !== '' ? api_path('module', $slug) : api_path('modules');
-    }
-
-    /**
-     * Many-to-many relationship with solutions
-     */
-    public function solutions()
-    {
-        return $this->belongsToMany(Solution::class, 'module_solution');
     }
 
     protected static function boot()

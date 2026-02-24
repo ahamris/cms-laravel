@@ -22,6 +22,7 @@ class ModuleListResource extends JsonResource
             'image' => get_image($this->image, asset('images/modules-og-image.jpg')),
             'url' => route('module.show', $this->slug),
             'sort_order' => $this->sort_order,
+            'feature' => $this->when($this->relationLoaded('feature'), fn () => $this->feature ? ['id' => $this->feature->id, 'title' => $this->feature->title, 'anchor' => $this->feature->anchor] : null),
             'created_at' => $this->created_at?->toIso8601String(),
         ]);
     }

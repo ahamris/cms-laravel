@@ -25,6 +25,7 @@ class FeatureListResource extends JsonResource
             'icon' => get_image($this->icon, asset('images/features-og-image.jpg')),
             'url' => route('features.show', $anchor),
             'sort_order' => $this->sort_order,
+            'modules' => ModuleListResource::collection($this->whenLoaded('modules')),
         ]);
     }
 }

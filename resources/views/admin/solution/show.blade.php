@@ -182,23 +182,23 @@
                     </div>
                     @endif
 
-                    {{-- Associated Modules --}}
-                    @if($solution->modules->count() > 0)
+                    {{-- Associated Features --}}
+                    @if($solution->features->count() > 0)
                     <div>
-                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Associated Modules</label>
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Associated Features</label>
                         <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                            @foreach($solution->modules as $module)
+                            @foreach($solution->features as $feature)
                                 <div class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
                                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center">
-                                        <i class="fas fa-cube text-[var(--color-accent)] text-sm"></i>
+                                        <i class="fas fa-puzzle-piece text-[var(--color-accent)] text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $module->nav_title }}</div>
-                                        @if($module->short_body)
-                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($module->short_body, 60) }}</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $feature->title }}</div>
+                                        @if($feature->description)
+                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($feature->description, 60) }}</div>
                                         @endif
                                     </div>
-                                    <a href="{{ route('admin.module.show', $module) }}" 
+                                    <a href="{{ route('admin.feature.show', $feature) }}" 
                                        class="flex-shrink-0 text-[var(--color-accent)] hover:text-[var(--color-accent)]/80 text-sm">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
@@ -258,69 +258,6 @@
                         </div>
                     </div>
 
-                    {{-- Header Configuration --}}
-                    <div>
-                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Header Configuration</label>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Show CTA Buttons</span>
-                                @if($solution->show_buttons)
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">Yes</span>
-                                @else
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">No</span>
-                                @endif
-                            </div>
-                            @if($solution->button1_text)
-                            <div class="text-sm">
-                                <span class="text-gray-500 dark:text-gray-400 font-medium">Button 1:</span>
-                                <span class="text-gray-700 dark:text-gray-300 ml-1">{{ $solution->button1_text }}</span>
-                                @if($solution->button1_url)
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $solution->button1_url }}</div>
-                                @endif
-                            </div>
-                            @endif
-                            @if($solution->button2_text)
-                            <div class="text-sm">
-                                <span class="text-gray-500 dark:text-gray-400 font-medium">Button 2:</span>
-                                <span class="text-gray-700 dark:text-gray-300 ml-1">{{ $solution->button2_text }}</span>
-                                @if($solution->button2_url)
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $solution->button2_url }}</div>
-                                @endif
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Module Activation --}}
-                    <div>
-                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Module Activation</label>
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Show CTA Section</span>
-                                @if($solution->show_cta)
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">Yes</span>
-                                @else
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">No</span>
-                                @endif
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Show Modules Header</span>
-                                @if($solution->show_modules_header)
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">Yes</span>
-                                @else
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">No</span>
-                                @endif
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Show News Articles</span>
-                                @if($solution->show_news_articles)
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">Yes</span>
-                                @else
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">No</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 

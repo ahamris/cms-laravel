@@ -234,91 +234,21 @@
                     </div>
                 </div>
 
-                {{-- Associated Solutions Section --}}
+                {{-- Feature (module belongs to one feature) --}}
                 <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
                     <div class="mb-6">
-                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Associated Solutions</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Select solutions that belong to this module</p>
+                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Feature</h2>
+                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Select the feature this module belongs to</p>
                     </div>
-
                     <div>
-                        @if($solutions->count() > 0)
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                @foreach($solutions as $solution)
-                                <div class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                                    <div class="mt-1">
-                                        <x-ui.checkbox
-                                            name="solutions[]"
-                                            value="{{ $solution->id }}"
-                                            id="solution_{{ $solution->id }}"
-                                            :checked="in_array($solution->id, old('solutions', $module->solutions->pluck('id')->toArray()))"
-                                            label=""
-                                            color="primary"
-                                        />
-                                    </div>
-                                    <div class="flex-1">
-                                        <label for="solution_{{ $solution->id }}" class="block cursor-pointer">
-                                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $solution->title }}</span>
-                                            @if($solution->short_body)
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($solution->short_body, 80) }}</p>
-                                            @endif
-                                        </label>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-8">
-                                <div class="text-gray-400 dark:text-gray-500 mb-2">
-                                    <i class="fas fa-puzzle-piece text-3xl"></i>
-                                </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">No solutions available</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Create solutions first to associate them with modules</p>
-                            </div>
-                        @endif
-                        @error('solutions')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
-                    </div>
-                </div>
-
-                {{-- Associated Features Section --}}
-                <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
-                    <div class="mb-6">
-                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Associated Features</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Select features that belong to this module</p>
-                    </div>
-
-                    <div>
-                        @if($features->count() > 0)
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                @foreach($features as $feature)
-                                <div class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                                    <x-ui.checkbox
-                                        name="features[]"
-                                        value="{{ $feature->id }}"
-                                        id="feature_{{ $feature->id }}"
-                                        :checked="in_array($feature->id, old('features', $module->features->pluck('id')->toArray()))"
-                                        label=""
-                                        color="primary"
-                                    />
-                                    <label for="feature_{{ $feature->id }}" class="block text-sm text-gray-900 dark:text-white cursor-pointer flex items-center gap-2">
-                                        @if($feature->icon)
-                                            <i class="{{ $feature->icon }} text-[var(--color-accent)]"></i>
-                                        @endif
-                                        {{ $feature->title }}
-                                    </label>
-                                </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-8">
-                                <div class="text-gray-400 dark:text-gray-500 mb-2">
-                                    <i class="fas fa-star text-3xl"></i>
-                                </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">No features available</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Create features first to associate them with modules</p>
-                            </div>
-                        @endif
-                        @error('features')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+                        <label for="feature_id" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Feature</label>
+                        <select id="feature_id" name="feature_id" class="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-accent)]">
+                            <option value="">— None —</option>
+                            @foreach($features as $feat)
+                                <option value="{{ $feat->id }}" {{ old('feature_id', $module->feature_id) == $feat->id ? 'selected' : '' }}>{{ $feat->title }}</option>
+                            @endforeach
+                        </select>
+                        @error('feature_id')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
                     </div>
                 </div>
 

@@ -17,7 +17,7 @@ class ModuleController extends Controller
     {
         $modules = Module::active()
             ->ordered()
-            ->with(['features' => fn ($q) => $q->where('is_active', true)->ordered()])
+            ->with(['feature'])
             ->get();
 
         return ModuleListResource::collection($modules);
@@ -33,10 +33,7 @@ class ModuleController extends Controller
     {
         $module = Module::where('slug', $slug)
             ->where('is_active', true)
-            ->with([
-                'features' => fn ($q) => $q->where('is_active', true)->ordered(),
-                'solutions' => fn ($q) => $q->where('is_active', true)->ordered(),
-            ])
+            ->with(['feature.solution'])
             ->first();
         if (! $module) {
             return response()->json(['message' => 'Module not found.'], 404);

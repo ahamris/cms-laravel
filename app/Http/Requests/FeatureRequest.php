@@ -32,8 +32,9 @@ class FeatureRequest extends FormRequest
             'icon' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
+            'solution_id' => 'nullable|integer|exists:solutions,id',
 
-            // Relationships
+            // Modules belonging to this feature
             'modules' => 'nullable|array',
             'modules.*' => 'exists:modules,id',
         ];

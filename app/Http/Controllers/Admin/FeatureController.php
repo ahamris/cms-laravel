@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\FeatureRequest;
 use App\Models\Feature;
 use App\Models\Module;
+use App\Models\Solution;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -28,8 +29,10 @@ class FeatureController extends AdminBaseController
      */
     public function create(): View
     {
+        $solutions = Solution::active()->ordered()->get();
         $modules = Module::active()->ordered()->get();
-        return view('admin.feature.create', compact('modules'));
+
+        return view('admin.feature.create', compact('solutions', 'modules'));
     }
 
     /**
@@ -44,13 +47,11 @@ class FeatureController extends AdminBaseController
 
         // Ensure anchor is set (for API URL); must be unique
         $validated['anchor'] = $this->ensureUniqueAnchor($validated['anchor'] ?? Str::slug($validated['title']), null);
+        $validated['solution_id'] = $request->input('solution_id') ?: null;
 
         $feature = Feature::create($validated);
 
-        // Sync modules
-        if ($request->has('modules')) {
-            $feature->modules()->sync($request->input('modules', []));
-        }
+        $this->syncFeatureModules($feature, $request->input('modules', []));
 
         // Log activity
         $this->logCreate($feature);
@@ -78,8 +79,10 @@ class FeatureController extends AdminBaseController
      */
     public function edit(Feature $feature): View
     {
+        $solutions = Solution::active()->ordered()->get();
         $modules = Module::active()->ordered()->get();
-        return view('admin.feature.edit', compact('feature', 'modules'));
+
+        return view('admin.feature.edit', compact('feature', 'solutions', 'modules'));
     }
 
     /**
@@ -95,14 +98,11 @@ class FeatureController extends AdminBaseController
         // Ensure anchor is set and unique (exclude current feature)
         $validated['anchor'] = $this->ensureUniqueAnchor($validated['anchor'] ?? Str::slug($validated['title']), $feature->id);
 
-        $feature->update($validated);
+        $feature->update(array_merge($validated, [
+            'solution_id' => $request->input('solution_id') ?: null,
+        ]));
 
-        // Sync modules
-        if ($request->has('modules')) {
-            $feature->modules()->sync($request->input('modules', []));
-        } else {
-            $feature->modules()->sync([]);
-        }
+        $this->syncFeatureModules($feature, $request->input('modules', []));
 
         // Log activity
         $this->logUpdate($feature);
@@ -163,5 +163,13 @@ class FeatureController extends AdminBaseController
         $this->logOrderUpdate('Feature', count($order));
 
         return response()->json(['success' => true]);
+    }
+
+    private function syncFeatureModules(Feature $feature, array $moduleIds): void
+    {
+        $feature->modules()->update(['feature_id' => null]);
+        if (! empty($moduleIds)) {
+            Module::whereIn('id', $moduleIds)->update(['feature_id' => $feature->id]);
+        }
     }
 }

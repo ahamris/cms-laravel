@@ -24,6 +24,7 @@ class SolutionListResource extends JsonResource
             'image' => get_image($this->image, asset('images/solutions-og-image.jpg')),
             'url' => route('api.solutions.show', $this->anchor),
             'sort_order' => $this->sort_order,
+            'features' => FeatureListResource::collection($this->whenLoaded('features')),
             'created_at' => $this->created_at?->toIso8601String(),
         ]);
     }

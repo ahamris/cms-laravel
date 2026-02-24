@@ -17,9 +17,9 @@ class SolutionController extends Controller
     {
         $solutions = Solution::active()
             ->ordered()
-            ->with(['modules' => function ($q) {
+            ->with(['features' => function ($q) {
                 $q->where('is_active', true)->ordered()->with([
-                    'features' => fn ($q) => $q->where('is_active', true)->ordered(),
+                    'modules' => fn ($q) => $q->where('is_active', true)->ordered(),
                 ]);
             }])
             ->get();
@@ -41,9 +41,9 @@ class SolutionController extends Controller
         }
 
         $solution->load([
-            'modules' => function ($q) {
+            'features' => function ($q) {
                 $q->where('is_active', true)->ordered()->with([
-                    'features' => fn ($q) => $q->where('is_active', true)->ordered(),
+                    'modules' => fn ($q) => $q->where('is_active', true)->ordered(),
                 ]);
             },
         ]);

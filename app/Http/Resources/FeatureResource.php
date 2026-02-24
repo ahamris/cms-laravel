@@ -26,6 +26,11 @@ class FeatureResource extends JsonResource
             'url' => route('features.show', $anchor),
             'sort_order' => $this->sort_order,
             'modules' => ModuleListResource::collection($this->whenLoaded('modules')),
+            'solution' => $this->when($this->relationLoaded('solution'), fn () => $this->solution ? [
+                'id' => $this->solution->id,
+                'title' => $this->solution->title,
+                'anchor' => $this->solution->anchor,
+            ] : null),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ]);

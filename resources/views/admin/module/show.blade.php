@@ -185,58 +185,30 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                     @endif
 
-                    {{-- Associated Solutions --}}
-                    @if($module->solutions->count() > 0)
+                    {{-- Feature --}}
+                    @if($module->feature)
                     <div>
-                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Associated Solutions</label>
-                        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                            @foreach($module->solutions as $solution)
-                                <div class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center">
-                                        <i class="fas fa-puzzle-piece text-[var(--color-accent)] text-sm"></i>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $solution->nav_title }}</div>
-                                        @if($solution->short_body)
-                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($solution->short_body, 60) }}</div>
-                                        @endif
-                                    </div>
-                                    <a href="{{ route('admin.solution.show', $solution) }}" 
-                                       class="flex-shrink-0 text-[var(--color-accent)] hover:text-[var(--color-accent)]/80 text-sm">
-                                        <i class="fas fa-external-link-alt"></i>
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
-
-                    {{-- Associated Features --}}
-                    @if($module->features->count() > 0)
-                    <div>
-                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Associated Features</label>
-                        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                            @foreach($module->features as $feature)
-                                <div class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center">
-                                        @if($feature->icon)
-                                            <i class="{{ $feature->icon }} text-[var(--color-accent)] text-sm"></i>
-                                        @else
-                                            <i class="fas fa-star text-[var(--color-accent)] text-sm"></i>
-                                        @endif
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $feature->title }}</div>
-                                        @if($feature->description)
-                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($feature->description, 60) }}</div>
-                                        @endif
-                                    </div>
-                                    <a href="{{ route('admin.feature.show', $feature) }}" 
-                                       class="flex-shrink-0 text-[var(--color-accent)] hover:text-[var(--color-accent)]/80 text-sm">
-                                        <i class="fas fa-external-link-alt"></i>
-                                    </a>
-                                </div>
-                            @endforeach
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Feature</label>
+                        <div class="mt-2 flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center">
+                                @if($module->feature->icon)
+                                    <i class="{{ $module->feature->icon }} text-[var(--color-accent)] text-sm"></i>
+                                @else
+                                    <i class="fas fa-puzzle-piece text-[var(--color-accent)] text-sm"></i>
+                                @endif
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $module->feature->title }}</div>
+                                @if($module->feature->description)
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($module->feature->description, 60) }}</div>
+                                @endif
+                                @if($module->feature->solution)
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Solution: <a href="{{ route('admin.solution.show', $module->feature->solution) }}" class="text-[var(--color-accent)] hover:underline">{{ $module->feature->solution->title }}</a></div>
+                                @endif
+                            </div>
+                            <a href="{{ route('admin.feature.show', $module->feature) }}" class="flex-shrink-0 text-[var(--color-accent)] hover:text-[var(--color-accent)]/80 text-sm">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
                         </div>
                     </div>
                     @endif

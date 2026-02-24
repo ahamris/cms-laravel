@@ -141,8 +141,9 @@ class Sidebar extends Component
                         'active_pattern' => 'admin.solution*,admin.feature*,admin.module*',
                         'children' => [
                             ['label' => 'Solution', 'route_name' => 'admin.solution.index', 'icon' => 'lightbulb', 'permission' => 'solution_access'],
-                            ['label' => 'Modules', 'route_name' => 'admin.module.index', 'icon' => 'cubes', 'permission' => 'module_access'],
                             ['label' => 'Features', 'route_name' => 'admin.feature.index', 'icon' => 'puzzle-piece', 'permission' => 'feature_access'],
+                            ['label' => 'Modules', 'route_name' => 'admin.module.index', 'icon' => 'cubes', 'permission' => 'module_access'],
+                            
                         ],
                     ],
                     [

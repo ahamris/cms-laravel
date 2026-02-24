@@ -35,7 +35,11 @@ class ModuleResource extends JsonResource
             'testimonial_company' => $this->testimonial_company,
             'image_position' => $this->image_position,
             'url' => route('module.show', $this->slug),
-            'features' => FeatureListResource::collection($this->whenLoaded('features')),
+            'feature' => $this->when($this->relationLoaded('feature'), fn () => $this->feature ? [
+                'id' => $this->feature->id,
+                'title' => $this->feature->title,
+                'anchor' => $this->feature->anchor,
+            ] : null),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ]);

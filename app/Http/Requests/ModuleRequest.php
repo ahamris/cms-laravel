@@ -78,11 +78,7 @@ class ModuleRequest extends FormRequest
             'meta_description' => 'nullable|string|max:160',
             'meta_keywords' => 'nullable|string',
 
-            // Relationships
-            'features' => 'nullable|array',
-            'features.*' => 'exists:features,id',
-            'solutions' => 'nullable|array',
-            'solutions.*' => 'exists:solutions,id',
+            'feature_id' => 'nullable|integer|exists:features,id',
         ];
     }
 

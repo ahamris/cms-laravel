@@ -79,6 +79,18 @@
                                 :errorMessage="$errors->first('description')"
                             />
                         </div>
+
+                        {{-- Solution --}}
+                        <div>
+                            <label for="solution_id" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Solution</label>
+                            <select id="solution_id" name="solution_id" class="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-accent)]">
+                                <option value="">— None —</option>
+                                @foreach($solutions as $sol)
+                                    <option value="{{ $sol->id }}" {{ old('solution_id') == $sol->id ? 'selected' : '' }}>{{ $sol->title }}</option>
+                                @endforeach
+                            </select>
+                            @error('solution_id')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+                        </div>
                     </div>
                 </div>
 
@@ -86,7 +98,7 @@
                 <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
                     <div class="mb-6">
                         <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Associated Modules</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Select modules that this feature belongs to</p>
+                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Select modules that belong to this feature</p>
                     </div>
 
                     <div>

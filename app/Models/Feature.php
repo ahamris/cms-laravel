@@ -15,6 +15,7 @@ class Feature extends BaseModel
     const CACHE_KEY = 'features';
 
     protected $fillable = [
+        'solution_id',
         'title',
         'anchor',
         'description',
@@ -58,11 +59,19 @@ class Feature extends BaseModel
     }
 
     /**
-     * Many-to-many relationship with modules
+     * Solution this feature belongs to.
+     */
+    public function solution()
+    {
+        return $this->belongsTo(Solution::class);
+    }
+
+    /**
+     * Modules belonging to this feature.
      */
     public function modules()
     {
-        return $this->belongsToMany(Module::class, 'module_feature');
+        return $this->hasMany(Module::class);
     }
 
     /**
@@ -91,7 +100,7 @@ class Feature extends BaseModel
             return Cache::remember(self::CACHE_KEY, 60 * 60,
                 fn () => self::query()
                     ->where('is_active', true)
-                    ->with('modules')
+                    ->with('solution', 'modules')
                     ->ordered()
                     ->get()
             );

@@ -234,33 +234,33 @@
                     </div>
                 </div>
 
-                {{-- Associated Modules Section --}}
+                {{-- Associated Features Section --}}
                 <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
                     <div class="mb-6">
-                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Associated Modules</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Select modules that belong to this solution</p>
+                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Associated Features</h2>
+                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Select features that belong to this solution</p>
                     </div>
 
                     <div>
-                        @if($modules->count() > 0)
+                        @if($features->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                @foreach($modules as $module)
+                                @foreach($features as $feature)
                                 <div class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
                                     <div class="mt-1">
                                         <x-ui.checkbox
-                                            name="modules[]"
-                                            value="{{ $module->id }}"
-                                            id="module_{{ $module->id }}"
-                                            :checked="in_array($module->id, old('modules', $solution->modules->pluck('id')->toArray()))"
+                                            name="features[]"
+                                            value="{{ $feature->id }}"
+                                            id="feature_{{ $feature->id }}"
+                                            :checked="in_array($feature->id, old('features', $solution->features->pluck('id')->toArray()))"
                                             label=""
                                             color="primary"
                                         />
                                     </div>
                                     <div class="flex-1">
-                                        <label for="module_{{ $module->id }}" class="block cursor-pointer">
-                                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $module->title }}</span>
-                                            @if($module->short_body)
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($module->short_body, 80) }}</p>
+                                        <label for="feature_{{ $feature->id }}" class="block cursor-pointer">
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $feature->title }}</span>
+                                            @if($feature->description)
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($feature->description, 80) }}</p>
                                             @endif
                                         </label>
                                     </div>
@@ -270,13 +270,13 @@
                         @else
                             <div class="text-center py-8">
                                 <div class="text-gray-400 dark:text-gray-500 mb-2">
-                                    <i class="fas fa-cube text-3xl"></i>
+                                    <i class="fas fa-puzzle-piece text-3xl"></i>
                                 </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">No modules available</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Create modules first to associate them with solutions</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">No features available</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Create features first to associate them with solutions</p>
                             </div>
                         @endif
-                        @error('modules')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+                        @error('features')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
                     </div>
                 </div>
 
@@ -421,130 +421,6 @@
                     </div>
                 </div>
 
-                {{-- Header Configuration Section --}}
-                <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
-                    <div class="mb-6">
-                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Header Configuration</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Configure the header section that appears on the solution page</p>
-                    </div>
-
-                    <div class="space-y-6">
-                        {{-- Show Buttons Toggle --}}
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Show CTA Buttons</label>
-                                <p class="text-sm/6 text-gray-600 dark:text-gray-400">Display call-to-action buttons</p>
-                            </div>
-                            <div>
-                                <input type="hidden" name="show_buttons" value="0">
-                                <x-ui.toggle 
-                                    name="show_buttons"
-                                    :checked="old('show_buttons', $solution->show_buttons)"
-                                />
-                            </div>
-                        </div>
-
-                        {{-- Button 1 --}}
-                        <div class="grid grid-cols-1 gap-6">
-                            <div>
-                                <x-ui.input
-                                    id="button1_text"
-                                    name="button1_text"
-                                    :value="old('button1_text', $solution->button1_text)"
-                                    label="Button 1 Text"
-                                    placeholder="e.g., Start Gratis Proefperiode"
-                                />
-                                @error('button1_text')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
-                            </div>
-                            <div>
-                                <x-ui.input
-                                    id="button1_url"
-                                    name="button1_url"
-                                    :value="old('button1_url', $solution->button1_url)"
-                                    label="Button 1 URL"
-                                    placeholder="e.g., /demo or https://example.com"
-                                />
-                                @error('button1_url')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
-                            </div>
-                        </div>
-
-                        {{-- Button 2 --}}
-                        <div class="grid grid-cols-1 gap-6">
-                            <div>
-                                <x-ui.input
-                                    id="button2_text"
-                                    name="button2_text"
-                                    :value="old('button2_text', $solution->button2_text)"
-                                    label="Button 2 Text"
-                                    placeholder="e.g., Neem Contact Op"
-                                />
-                                @error('button2_text')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
-                            </div>
-                            <div>
-                                <x-ui.input
-                                    id="button2_url"
-                                    name="button2_url"
-                                    :value="old('button2_url', $solution->button2_url)"
-                                    label="Button 2 URL"
-                                    placeholder="e.g., /contact or https://example.com"
-                                />
-                                @error('button2_url')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Module Activation Section --}}
-                <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
-                    <div class="mb-6">
-                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Module Activation</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Choose which modules to display on the solution page</p>
-                    </div>
-
-                    <div class="space-y-6">
-                        {{-- Show CTA Toggle --}}
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Show CTA Section</label>
-                            </div>
-                            <div>
-                                <input type="hidden" name="show_cta" value="0">
-                                <x-ui.toggle 
-                                    name="show_cta"
-                                    :checked="old('show_cta', $solution->show_cta)"
-                                />
-                            </div>
-                        </div>
-
-                        {{-- Modules Header --}}
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Show Modules Header</label>
-                            </div>
-                            <div>
-                                <input type="hidden" name="show_modules_header" value="0">
-                                <x-ui.toggle 
-                                    name="show_modules_header"
-                                    :checked="old('show_modules_header', $solution->show_modules_header)"
-                                />
-                            </div>
-                        </div>
-
-                        {{-- News Articles --}}
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Show News Articles</label>
-                            </div>
-                            <div>
-                                <input type="hidden" name="show_news_articles" value="0">
-                                <x-ui.toggle 
-                                    name="show_news_articles"
-                                    :checked="old('show_news_articles', $solution->show_news_articles)"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 

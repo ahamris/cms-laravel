@@ -15,7 +15,7 @@ class FeatureController extends Controller
     ])]
     public function index()
     {
-        $features = Feature::with('modules')->active()->ordered()->get();
+        $features = Feature::with(['solution', 'modules'])->active()->ordered()->get();
 
         return FeatureListResource::collection($features);
     }
@@ -28,7 +28,7 @@ class FeatureController extends Controller
     ])]
     public function show(string $anchor)
     {
-        $feature = Feature::with('modules')
+        $feature = Feature::with(['solution', 'modules'])
             ->active()
             ->where('anchor', $anchor)
             ->first();

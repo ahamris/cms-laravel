@@ -68,20 +68,9 @@ class SolutionRequest extends FormRequest
             'meta_description' => 'nullable|string|max:160',
             'meta_keywords' => 'nullable|string',
 
-            // Header configuration
-            'button1_text' => 'nullable|string|max:255',
-            'button1_url' => 'nullable|string|max:255',
-            'button2_text' => 'nullable|string|max:255',
-            'button2_url' => 'nullable|string|max:255',
-            'show_buttons' => 'nullable|boolean',
-
-            // Module activation
-            'show_cta' => 'nullable|boolean',
-            'show_news_articles' => 'nullable|boolean',
-
-            // Modules relationship
-            'modules' => 'nullable|array',
-            'modules.*' => 'integer|exists:modules,id',
+            // Features relationship
+            'features' => 'nullable|array',
+            'features.*' => 'integer|exists:features,id',
         ];
     }
 
@@ -111,15 +100,8 @@ class SolutionRequest extends FormRequest
             'meta_title' => 'meta title',
             'meta_description' => 'meta description',
             'meta_keywords' => 'meta keywords',
-            'button1_text' => 'button 1 text',
-            'button1_url' => 'button 1 URL',
-            'button2_text' => 'button 2 text',
-            'button2_url' => 'button 2 URL',
-            'show_buttons' => 'show buttons',
-            'show_cta' => 'show CTA',
-            'show_news_articles' => 'show news articles',
-            'modules' => 'modules',
-            'modules.*' => 'module',
+            'features' => 'features',
+            'features.*' => 'feature',
         ];
     }
 }

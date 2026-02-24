@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\ModuleRequest;
 use App\Models\Feature;
 use App\Models\Module;
-use App\Models\Solution;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,9 +28,8 @@ class ModuleController extends AdminBaseController
     public function create(): View
     {
         $features = Feature::active()->ordered()->get();
-        $solutions = Solution::active()->ordered()->get();
 
-        return view('admin.module.create', compact('features', 'solutions'));
+        return view('admin.module.create', compact('features'));
     }
 
     /**
@@ -58,18 +56,9 @@ class ModuleController extends AdminBaseController
 
             // Set is_active (toggle sends '1' when checked, '0' when unchecked)
             $validated['is_active'] = $request->input('is_active', '0') === '1';
+            $validated['feature_id'] = $request->input('feature_id') ?: null;
 
             $module = Module::create($validated);
-
-            // Sync features
-            if ($request->has('features')) {
-                $module->features()->sync($request->input('features', []));
-            }
-
-            // Sync solutions
-            if ($request->has('solutions')) {
-                $module->solutions()->sync($request->input('solutions', []));
-            }
 
         // Log activity
         $this->logCreate($module);
@@ -94,6 +83,8 @@ class ModuleController extends AdminBaseController
      */
     public function show(Module $module): View
     {
+        $module->load(['feature.solution']);
+
         return view('admin.module.show', compact('module'));
     }
 
@@ -103,9 +94,8 @@ class ModuleController extends AdminBaseController
     public function edit(Module $module): View
     {
         $features = Feature::active()->ordered()->get();
-        $solutions = Solution::active()->ordered()->get();
 
-        return view('admin.module.edit', compact('module', 'features', 'solutions'));
+        return view('admin.module.edit', compact('module', 'features'));
     }
 
     /**
@@ -145,22 +135,9 @@ class ModuleController extends AdminBaseController
 
             // Set is_active (toggle sends '1' when checked, '0' when unchecked)
             $validated['is_active'] = $request->input('is_active', '0') === '1';
+            $validated['feature_id'] = $request->input('feature_id') ?: null;
 
             $module->update($validated);
-
-            // Sync features
-            if ($request->has('features')) {
-                $module->features()->sync($request->input('features', []));
-            } else {
-                $module->features()->sync([]);
-            }
-
-            // Sync solutions
-            if ($request->has('solutions')) {
-                $module->solutions()->sync($request->input('solutions', []));
-            } else {
-                $module->solutions()->sync([]);
-            }
 
         // Log activity
         $this->logUpdate($module);

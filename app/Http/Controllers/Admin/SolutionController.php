@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\SolutionRequest;
-use App\Models\Module;
+use App\Models\Feature;
 use App\Models\Solution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -28,9 +28,9 @@ class SolutionController extends AdminBaseController
      */
     public function create(): View
     {
-        $modules = Module::active()->ordered()->get();
+        $features = Feature::active()->ordered()->get();
 
-        return view('admin.solution.create', compact('modules'));
+        return view('admin.solution.create', compact('features'));
     }
 
     /**
@@ -54,19 +54,12 @@ class SolutionController extends AdminBaseController
             $validated['image'] = $request->file('image')->store('solutions', 'public');
         }
 
-        // Set boolean fields (toggle sends '1' when checked, '0' when unchecked)
         $validated['is_active'] = $request->input('is_active', '0') === '1';
-        $validated['show_buttons'] = $request->input('show_buttons', '0') === '1';
-        $validated['show_cta'] = $request->input('show_cta', '0') === '1';
-        $validated['show_news_articles'] = $request->input('show_news_articles', '0') === '1';
-        $validated['show_modules_header'] = $request->input('show_modules_header', '0') === '1';
 
         $solution = Solution::create($validated);
 
-        // Sync modules
-        if ($request->has('modules')) {
-            $solution->modules()->sync($request->input('modules', []));
-        }
+        // Assign features to this solution
+        $this->syncSolutionFeatures($solution, $request->input('features', []));
 
         // Log activity
         $this->logCreate($solution);
@@ -94,9 +87,9 @@ class SolutionController extends AdminBaseController
      */
     public function edit(Solution $solution): View
     {
-        $modules = Module::active()->ordered()->get();
+        $features = Feature::active()->ordered()->get();
 
-        return view('admin.solution.edit', compact('solution', 'modules'));
+        return view('admin.solution.edit', compact('solution', 'features'));
     }
 
     /**
@@ -133,21 +126,12 @@ class SolutionController extends AdminBaseController
             $validated['image'] = $request->file('image')->store('solutions', 'public');
         }
 
-        // Set boolean fields (toggle sends '1' when checked, '0' when unchecked)
         $validated['is_active'] = $request->input('is_active', '0') === '1';
-        $validated['show_buttons'] = $request->input('show_buttons', '0') === '1';
-        $validated['show_cta'] = $request->input('show_cta', '0') === '1';
-        $validated['show_news_articles'] = $request->input('show_news_articles', '0') === '1';
-        $validated['show_modules_header'] = $request->input('show_modules_header', '0') === '1';
 
         $solution->update($validated);
 
-        // Sync modules
-        if ($request->has('modules')) {
-            $solution->modules()->sync($request->input('modules', []));
-        } else {
-            $solution->modules()->sync([]);
-        }
+        // Assign features to this solution
+        $this->syncSolutionFeatures($solution, $request->input('features', []));
 
         // Log activity
         $this->logUpdate($solution);
@@ -175,8 +159,8 @@ class SolutionController extends AdminBaseController
             \Storage::disk('public')->delete($solution->image);
         }
 
-        // Delete associated modules
-        $solution->modules()->detach();
+        // Unassign features from this solution
+        $solution->features()->update(['solution_id' => null]);
 
         $solution->delete();
 
@@ -210,5 +194,13 @@ class SolutionController extends AdminBaseController
         }
 
         return response()->json(['success' => true]);
+    }
+
+    private function syncSolutionFeatures(Solution $solution, array $featureIds): void
+    {
+        $solution->features()->update(['solution_id' => null]);
+        if (! empty($featureIds)) {
+            Feature::whereIn('id', $featureIds)->update(['solution_id' => $solution->id]);
+        }
     }
 }
