@@ -35,15 +35,17 @@ class ExternalCodeController extends AdminBaseController
     public function store(ExternalCodeRequest $request): RedirectResponse
     {
         try {
-            $validated = $request->validated();
-            $validated = $this->purifyHtmlKeys($validated, ['content']);
+            $location = $request->input('injection_location', 'body');
+            $data = [
+                'name' => $request->input('name'),
+                'content' => $request->input('content'),
+                'before_header' => $location === 'header',
+                'before_body' => $location === 'body',
+                'is_active' => $request->boolean('is_active'),
+                'sort_order' => (int) $request->input('sort_order', 0),
+            ];
 
-            // Set boolean fields from radio selection
-            $validated['before_header'] = $request->input('injection_location') === 'header';
-            $validated['before_body'] = $request->input('injection_location') === 'body';
-            $validated['is_active'] = $request->boolean('is_active');
-
-            ExternalCode::create($validated);
+            ExternalCode::create($data);
 
             return redirect()->route('admin.external-code.index')
                 ->with('success', 'External code created successfully.');
@@ -76,15 +78,17 @@ class ExternalCodeController extends AdminBaseController
     public function update(ExternalCodeRequest $request, ExternalCode $externalCode): RedirectResponse
     {
         try {
-            $validated = $request->validated();
-            $validated = $this->purifyHtmlKeys($validated, ['content']);
+            $location = $request->input('injection_location', 'body');
+            $data = [
+                'name' => $request->input('name'),
+                'content' => $request->input('content'),
+                'before_header' => $location === 'header',
+                'before_body' => $location === 'body',
+                'is_active' => $request->boolean('is_active'),
+                'sort_order' => (int) $request->input('sort_order', 0),
+            ];
 
-            // Set boolean fields from radio selection
-            $validated['before_header'] = $request->input('injection_location') === 'header';
-            $validated['before_body'] = $request->input('injection_location') === 'body';
-            $validated['is_active'] = $request->boolean('is_active');
-
-            $externalCode->update($validated);
+            $externalCode->update($data);
 
             return redirect()->route('admin.external-code.index')
                 ->with('success', 'External code updated successfully.');
