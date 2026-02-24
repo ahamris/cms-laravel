@@ -49,7 +49,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('solution', 'woo-verzoeken'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -62,7 +61,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('solution', 'actieve-openbaarmaking'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -75,7 +73,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('solution', 'publicatieplatform'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -88,7 +85,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('solution', 'informatieobjectcatalogus'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 2,
         ]);
 
         // 3. Leren & Doen (Academy) – mega menu
@@ -117,7 +113,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('live_sessions'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -130,7 +125,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('live_sessions_recordings'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -143,7 +137,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('academy'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         // 4. Op de hoogte – mega menu
@@ -172,7 +165,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('page', 'zo-doen-zij-het'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -185,7 +177,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('changelog'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -198,7 +189,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('blog'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -211,7 +201,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('blog'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 2,
         ]);
 
         // 5. Achter OpenPublication – mega menu
@@ -240,7 +229,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('page', 'ons-verhaal'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -253,7 +241,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('page', 'partners'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -266,7 +253,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('vacancies'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         // 6. In gesprek – mega menu
@@ -295,7 +281,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('page', 'ondersteuning'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         MegaMenuItem::create([
@@ -308,7 +293,6 @@ class MegaMenuSeeder extends Seeder
             'url' => api_path('contact'),
             'is_active' => true,
             'tags' => ['dropdown-item'],
-            'align' => 1,
         ]);
 
         // 7. Demo aanvragen (CTA – primair)

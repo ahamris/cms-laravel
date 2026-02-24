@@ -74,11 +74,9 @@ class MegaMenuController extends AdminBaseController
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
             'tags' => 'nullable|string|max:500',
-            'align' => 'nullable|integer|in:1,2',
         ]);
 
         $validated['tags'] = self::normalizeTags($request->input('tags'));
-        $validated['align'] = (int) ($validated['align'] ?? MegaMenuItem::ALIGN_LEFT);
 
         $sidebarTitle = $request->input('sidebar_title');
         $sidebarDescription = $request->input('sidebar_description');
@@ -169,13 +167,9 @@ class MegaMenuController extends AdminBaseController
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
             'tags' => 'nullable|string|max:500',
-            'align' => 'nullable|integer|in:1,2',
         ]);
 
         $validated['tags'] = self::normalizeTags($request->input('tags'));
-        if (array_key_exists('align', $validated)) {
-            $validated['align'] = (int) ($validated['align'] ?? MegaMenuItem::ALIGN_LEFT);
-        }
 
         $sidebarTitle = $request->input('sidebar_title');
         $sidebarDescription = $request->input('sidebar_description');
@@ -270,13 +264,11 @@ class MegaMenuController extends AdminBaseController
             'is_active' => 'boolean',
             'link_type' => 'nullable|string|in:predefined,custom,system,page',
             'tags' => 'nullable|string|max:500',
-            'align' => 'nullable|integer|in:1,2',
         ]);
 
         $validated = $this->processUrlByLinkType($request, $validated);
         unset($validated['link_type']);
         $validated['tags'] = self::normalizeTags($request->input('tags'));
-        $validated['align'] = (int) ($validated['align'] ?? MegaMenuItem::ALIGN_LEFT);
 
         // Get the next order number for this parent
         $nextOrder = $megaMenu->children()->max('order') + 1;
@@ -294,7 +286,6 @@ class MegaMenuController extends AdminBaseController
             'is_active' => $validated['is_active'] ?? true,
             'open_in_new_tab' => false,
             'tags' => $validated['tags'],
-            'align' => $validated['align'],
         ]);
 
         // Clear mega menu cache
@@ -349,7 +340,6 @@ class MegaMenuController extends AdminBaseController
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
             'tags' => 'nullable|string|max:500',
-            'align' => 'nullable|integer|in:1,2',
         ]);
 
         // Process URL based on link type
@@ -362,9 +352,6 @@ class MegaMenuController extends AdminBaseController
         // Remove link_type from validated data as it's not a database field
         unset($validated['link_type']);
         $validated['tags'] = self::normalizeTags($request->input('tags'));
-        if (array_key_exists('align', $validated)) {
-            $validated['align'] = (int) ($validated['align'] ?? MegaMenuItem::ALIGN_LEFT);
-        }
 
         $subItem->update($validated);
 

@@ -127,7 +127,6 @@ class MenuController extends Controller
             'template' => resolve_menu_template($item['url'] ?? '', $item['page']['slug'] ?? null),
             'order' => (int) ($item['order'] ?? 0),
             'tags' => $item['tags'] ?? [],
-            'align' => (int) ($item['align'] ?? 1),
         ];
 
         $children = $item['children'] ?? [];

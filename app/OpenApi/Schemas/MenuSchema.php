@@ -19,7 +19,6 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'template', type: 'string', description: 'Frontend template hint for routing: e.g. contact, blog-list, blog-detail, page'),
         new OA\Property(property: 'order', type: 'integer'),
         new OA\Property(property: 'tags', type: 'array', items: new OA\Items(type: 'string'), description: 'Optional tags for styling or grouping (e.g. nav, cta, primary)'),
-        new OA\Property(property: 'align', type: 'integer', description: 'Child alignment: 1=left, 2=right (default 1)'),
         new OA\Property(property: 'children', type: 'array', items: new OA\Items(ref: '#/components/schemas/MenuItem')),
     ]
 )]
