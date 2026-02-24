@@ -1,3 +1,10 @@
+@php
+    function normalize_homepage_icon($v) {
+        if ($v === null || $v === '') return '';
+        if (str_contains((string) $v, 'fa-')) return $v;
+        return 'fa-solid fa-' . strtolower(preg_replace('/\s+/', '-', trim((string) $v)));
+    }
+@endphp
 <x-layouts.admin title="Edit Homepage">
     @if (session('success'))
         <div class="mb-6 rounded-lg bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 p-4">
@@ -58,7 +65,9 @@
                             <div id="hero-bullets-list" class="space-y-2">
                                 @foreach($heroBullets as $i => $b)
                                     <div class="homepage-dynamic-row flex gap-2 items-start">
-                                        <x-ui.input name="sections[hero][bullets][{{ $i }}][icon]" :id="'hero_bullet_icon_'.$i" :value="old('sections.hero.bullets.'.$i.'.icon', $b['icon'] ?? 'check')" placeholder="Icon" class="w-24" />
+                                        <div class="w-44 flex-shrink-0">
+                                            <x-ui.icon-picker name="sections[hero][bullets][{{ $i }}][icon]" :id="'hero_bullet_icon_'.$i" label="Icon" :value="normalize_homepage_icon(old('sections.hero.bullets.'.$i.'.icon', $b['icon'] ?? 'check'))" help-text="" />
+                                        </div>
                                         <x-ui.input name="sections[hero][bullets][{{ $i }}][text]" :id="'hero_bullet_text_'.$i" :value="old('sections.hero.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Bullet text" class="flex-1" />
                                         <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
                                     </div>
@@ -110,7 +119,7 @@
                         <div class="homepage-dynamic-row bg-white dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10 p-4 space-y-3 relative">
                             <button type="button" class="homepage-remove-row absolute top-2 right-2 p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove card"><i class="fa-solid fa-times text-sm"></i></button>
                             <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 pr-8">Card {{ $i + 1 }}</h4>
-                            <x-ui.input name="sections[feature_cards][cards][{{ $i }}][icon]" :id="'card_'.$i.'_icon'" label="Icon" :value="old('sections.feature_cards.cards.'.$i.'.icon', $c['icon'] ?? '')" placeholder="e.g. cog" />
+                            <x-ui.icon-picker name="sections[feature_cards][cards][{{ $i }}][icon]" :id="'card_'.$i.'_icon'" label="Icon" :value="normalize_homepage_icon(old('sections.feature_cards.cards.'.$i.'.icon', $c['icon'] ?? ''))" help-text="FontAwesome icon" />
                             <x-ui.input name="sections[feature_cards][cards][{{ $i }}][title]" :id="'card_'.$i.'_title'" label="Title" :value="old('sections.feature_cards.cards.'.$i.'.title', $c['title'] ?? '')" />
                             <x-ui.textarea name="sections[feature_cards][cards][{{ $i }}][description]" :id="'card_'.$i.'_description'" label="Description" :value="old('sections.feature_cards.cards.'.$i.'.description', $c['description'] ?? '')" :rows="2" />
                             <x-ui.input name="sections[feature_cards][cards][{{ $i }}][link_text]" :id="'card_'.$i.'_link_text'" label="Link text" :value="old('sections.feature_cards.cards.'.$i.'.link_text', $c['link_text'] ?? 'Read more')" />
@@ -143,7 +152,9 @@
                             <div id="about-bullets-list" class="space-y-2">
                                 @foreach($aboutBullets as $i => $b)
                                     <div class="homepage-dynamic-row flex gap-2 items-start">
-                                        <x-ui.input name="sections[about_opms][bullets][{{ $i }}][icon]" :id="'about_bullet_icon_'.$i" :value="old('sections.about_opms.bullets.'.$i.'.icon', $b['icon'] ?? 'check')" placeholder="Icon" class="w-24" />
+                                        <div class="w-44 flex-shrink-0">
+                                            <x-ui.icon-picker name="sections[about_opms][bullets][{{ $i }}][icon]" :id="'about_bullet_icon_'.$i" label="Icon" :value="normalize_homepage_icon(old('sections.about_opms.bullets.'.$i.'.icon', $b['icon'] ?? 'check'))" help-text="" />
+                                        </div>
                                         <x-ui.input name="sections[about_opms][bullets][{{ $i }}][text]" :id="'about_bullet_text_'.$i" :value="old('sections.about_opms.bullets.'.$i.'.text', $b['text'] ?? '')" placeholder="Text" class="flex-1" />
                                         <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Remove"><i class="fa-solid fa-times"></i></button>
                                     </div>
@@ -320,14 +331,26 @@
     {{-- Templates for dynamic rows (hidden) --}}
     <template id="hero-bullet-tmpl">
         <div class="homepage-dynamic-row flex gap-2 items-start">
-            <input type="text" name="sections[hero][bullets][__INDEX__][icon]" placeholder="Icon" value="check" class="w-24 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
+            <div class="w-40 flex-shrink-0 flex flex-col gap-1">
+                <input type="hidden" id="hero_bullet_icon___INDEX__" name="sections[hero][bullets][__INDEX__][icon]" value="fa-solid fa-check" />
+                <button type="button" class="homepage-icon-picker-open flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="hero_bullet_icon___INDEX__">
+                    <i class="hero_bullet_icon___INDEX___preview fa-solid fa-check text-sm"></i>
+                    <span>Pick icon</span>
+                </button>
+            </div>
             <input type="text" name="sections[hero][bullets][__INDEX__][text]" placeholder="Bullet text" class="flex-1 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
             <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times"></i></button>
         </div>
     </template>
     <template id="about-bullet-tmpl">
         <div class="homepage-dynamic-row flex gap-2 items-start">
-            <input type="text" name="sections[about_opms][bullets][__INDEX__][icon]" placeholder="Icon" value="check" class="w-24 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
+            <div class="w-40 flex-shrink-0 flex flex-col gap-1">
+                <input type="hidden" id="about_bullet_icon___INDEX__" name="sections[about_opms][bullets][__INDEX__][icon]" value="fa-solid fa-check" />
+                <button type="button" class="homepage-icon-picker-open flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10" data-target-input-id="about_bullet_icon___INDEX__">
+                    <i class="about_bullet_icon___INDEX___preview fa-solid fa-check text-sm"></i>
+                    <span>Pick icon</span>
+                </button>
+            </div>
             <input type="text" name="sections[about_opms][bullets][__INDEX__][text]" placeholder="Text" class="flex-1 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm" />
             <button type="button" class="homepage-remove-row mt-2 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times"></i></button>
         </div>
@@ -348,7 +371,14 @@
         <div class="homepage-dynamic-row bg-white dark:bg-white/5 rounded-md border border-gray-200 dark:border-white/10 p-4 space-y-3 relative">
             <button type="button" class="homepage-remove-row absolute top-2 right-2 p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"><i class="fa-solid fa-times text-sm"></i></button>
             <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 pr-8">Card</h4>
-            <input type="text" name="sections[feature_cards][cards][__INDEX__][icon]" placeholder="Icon" class="block w-full rounded-lg border border-gray-300 dark:border-white/10 px-3 py-2 text-sm mb-2" />
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Icon</label>
+                <input type="hidden" id="card___INDEX___icon" name="sections[feature_cards][cards][__INDEX__][icon]" value="" />
+                <button type="button" class="homepage-icon-picker-open inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 w-full justify-start" data-target-input-id="card___INDEX___icon" data-preview-class="card___INDEX___icon_preview">
+                    <i class="card___INDEX___icon_preview fa-solid fa-icons text-sm text-gray-500"></i>
+                    <span>Pick icon</span>
+                </button>
+            </div>
             <input type="text" name="sections[feature_cards][cards][__INDEX__][title]" placeholder="Title" class="block w-full rounded-lg border border-gray-300 dark:border-white/10 px-3 py-2 text-sm mb-2" />
             <textarea name="sections[feature_cards][cards][__INDEX__][description]" rows="2" placeholder="Description" class="block w-full rounded-lg border border-gray-300 dark:border-white/10 px-3 py-2 text-sm mb-2"></textarea>
             <input type="text" name="sections[feature_cards][cards][__INDEX__][link_text]" placeholder="Link text" value="Read more" class="block w-full rounded-lg border border-gray-300 dark:border-white/10 px-3 py-2 text-sm mb-2" />
@@ -374,9 +404,31 @@
         </div>
     </template>
 
+    {{-- Shared icon picker modal for dynamic rows --}}
+    <div id="homepage-icon-picker-modal" class="hidden fixed inset-0 z-[100] overflow-y-auto" aria-modal="true">
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="fixed inset-0 bg-black/50 dark:bg-black/70" onclick="window.homepageIconPickerClose()"></div>
+            <div class="relative bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-xl w-full max-w-md p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Choose icon</h3>
+                    <button type="button" onclick="window.homepageIconPickerClose()" class="p-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <div class="relative mb-3">
+                    <i class="fa-solid fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+                    <input type="text" id="homepage-icon-picker-search" placeholder="Search icons..." class="w-full pl-8 pr-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]" />
+                </div>
+                <div id="homepage-icon-picker-grid" class="grid grid-cols-6 gap-1 max-h-64 overflow-y-auto mb-3"></div>
+                <div class="flex justify-end pt-2 border-t border-zinc-100 dark:border-zinc-700">
+                    <button type="button" onclick="window.homepageIconPickerClose()" class="px-3 py-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
     (function() {
         var nextIndex = 10000;
+        var HOMEPAGE_ICONS = ['fa-solid fa-clock','fa-solid fa-shield','fa-solid fa-link','fa-solid fa-check','fa-solid fa-star','fa-solid fa-gear','fa-solid fa-cog','fa-solid fa-gears','fa-solid fa-user','fa-solid fa-users','fa-solid fa-home','fa-solid fa-building','fa-solid fa-briefcase','fa-solid fa-chart-line','fa-solid fa-file','fa-solid fa-folder','fa-solid fa-envelope','fa-solid fa-phone','fa-solid fa-globe','fa-solid fa-lock','fa-solid fa-key','fa-solid fa-wrench','fa-solid fa-lightbulb','fa-solid fa-rocket','fa-solid fa-bolt','fa-solid fa-cloud','fa-solid fa-database','fa-solid fa-code','fa-solid fa-mobile-screen-button','fa-solid fa-desktop','fa-solid fa-server','fa-solid fa-shield-halved','fa-solid fa-handshake','fa-solid fa-trophy','fa-solid fa-award','fa-solid fa-medal','fa-solid fa-magnifying-glass','fa-solid fa-image','fa-solid fa-video','fa-solid fa-music','fa-solid fa-heart','fa-solid fa-thumbs-up','fa-solid fa-bookmark','fa-solid fa-share-nodes','fa-solid fa-download','fa-solid fa-upload','fa-solid fa-arrow-right','fa-solid fa-arrow-left','fa-solid fa-plus','fa-solid fa-minus','fa-solid fa-circle-check','fa-solid fa-xmark','fa-solid fa-pen','fa-solid fa-trash','fa-solid fa-copy','fa-solid fa-link','fa-solid fa-list','fa-solid fa-bars','fa-solid fa-grip','fa-solid fa-table-cells','fa-solid fa-calendar','fa-solid fa-calendar-days','fa-solid fa-comment','fa-solid fa-comments','fa-solid fa-bell','fa-solid fa-inbox','fa-solid fa-paper-plane','fa-solid fa-truck','fa-solid fa-box','fa-solid fa-cart-shopping','fa-solid fa-credit-card','fa-solid fa-wallet','fa-solid fa-graduation-cap','fa-solid fa-book','fa-solid fa-newspaper','fa-solid fa-puzzle-piece','fa-solid fa-wand-magic-sparkles','fa-solid fa-infinity','fa-solid fa-circle','fa-solid fa-square','fa-solid fa-star-half','fa-solid fa-hand-pointer','fa-solid fa-arrow-pointer','fa-brands fa-github','fa-brands fa-linkedin','fa-brands fa-twitter','fa-brands fa-facebook','fa-brands fa-instagram','fa-brands fa-youtube','fa-brands fa-google','fa-brands fa-microsoft','fa-brands fa-apple','fa-brands fa-android'];
 
         function nextId() { return nextIndex++; }
 
@@ -411,6 +463,75 @@
         document.getElementById('competition-add-box') && document.getElementById('competition-add-box').addEventListener('click', function() { addFromTemplate('competition-box-tmpl', 'competition-boxes-list'); });
         document.getElementById('user-features-add-left') && document.getElementById('user-features-add-left').addEventListener('click', function() { addFromTemplate('user-features-left-tmpl', 'user-features-left-list'); });
         document.getElementById('user-features-add-right') && document.getElementById('user-features-add-right').addEventListener('click', function() { addFromTemplate('user-features-right-tmpl', 'user-features-right-list'); });
+
+        var iconPickerTargetId = null;
+        var filteredIcons = HOMEPAGE_ICONS.slice();
+
+        function renderHomepageIconGrid() {
+            var grid = document.getElementById('homepage-icon-picker-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            filteredIcons.forEach(function(iconClass) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'flex items-center justify-center w-10 h-10 rounded text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700';
+                btn.setAttribute('title', iconClass.replace(/^fa-(solid|regular|brands)\s+fa-/, ''));
+                btn.innerHTML = '<i class="' + iconClass + ' text-base"></i>';
+                btn.addEventListener('click', function() {
+                    var input = iconPickerTargetId ? document.getElementById(iconPickerTargetId) : null;
+                    if (input) {
+                        input.value = iconClass;
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                        var trigger = document.querySelector('[data-target-input-id="' + iconPickerTargetId + '"]');
+                        if (trigger) {
+                            var i = trigger.querySelector('i');
+                            if (i) i.className = iconClass + ' text-sm';
+                        }
+                    }
+                    window.homepageIconPickerClose();
+                });
+                grid.appendChild(btn);
+            });
+        }
+
+        function filterHomepageIcons() {
+            var q = (document.getElementById('homepage-icon-picker-search') && document.getElementById('homepage-icon-picker-search').value || '').toLowerCase();
+            if (!q) {
+                filteredIcons = HOMEPAGE_ICONS.slice();
+            } else {
+                filteredIcons = HOMEPAGE_ICONS.filter(function(icon) {
+                    var name = icon.replace(/^fa-(solid|regular|brands)\s+fa-/, '').toLowerCase();
+                    return name.indexOf(q) !== -1 || icon.toLowerCase().indexOf(q) !== -1;
+                });
+            }
+            renderHomepageIconGrid();
+        }
+
+        window.homepageIconPickerOpen = function(targetInputId) {
+            iconPickerTargetId = targetInputId;
+            filteredIcons = HOMEPAGE_ICONS.slice();
+            var searchEl = document.getElementById('homepage-icon-picker-search');
+            if (searchEl) searchEl.value = '';
+            renderHomepageIconGrid();
+            var modal = document.getElementById('homepage-icon-picker-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.homepageIconPickerClose = function() {
+            iconPickerTargetId = null;
+            var modal = document.getElementById('homepage-icon-picker-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        document.getElementById('homepage-icon-picker-search') && document.getElementById('homepage-icon-picker-search').addEventListener('input', filterHomepageIcons);
+
+        document.addEventListener('click', function(e) {
+            var openBtn = e.target && e.target.closest && e.target.closest('.homepage-icon-picker-open');
+            if (openBtn) {
+                var targetId = openBtn.getAttribute('data-target-input-id');
+                if (targetId) window.homepageIconPickerOpen(targetId);
+            }
+        });
     })();
     </script>
 </x-layouts.admin>
