@@ -10,8 +10,10 @@ use OpenApi\Attributes as OA;
 
 class FeatureController extends Controller
 {
-    #[OA\Get(path: '/api/features', summary: 'List features', description: 'Active features with anchor for URL.', tags: ['Solution'], responses: [
-        new OA\Response(response: 200, description: 'Features collection'),
+    #[OA\Get(path: '/api/features', summary: 'List features', description: 'Active features with solution and modules. Hierarchy: solution → feature → module.', tags: ['Solution'], responses: [
+        new OA\Response(response: 200, description: 'Features collection', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/FeatureListItem')),
+        ])),
     ])]
     public function index()
     {
@@ -23,7 +25,7 @@ class FeatureController extends Controller
     #[OA\Get(path: '/api/features/{anchor}', summary: 'Feature by anchor', tags: ['Solution'], parameters: [
         new OA\Parameter(name: 'anchor', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
-        new OA\Response(response: 200, description: 'Feature'),
+        new OA\Response(response: 200, description: 'Single feature with solution and modules', content: new OA\JsonContent(ref: '#/components/schemas/Feature')),
         new OA\Response(response: 404, description: 'Not found'),
     ])]
     public function show(string $anchor)

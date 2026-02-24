@@ -10,8 +10,10 @@ use OpenApi\Attributes as OA;
 
 class SolutionController extends Controller
 {
-    #[OA\Get(path: '/api/solutions', summary: 'List solutions', description: 'Active solutions with modules and features.', tags: ['Solution'], responses: [
-        new OA\Response(response: 200, description: 'Solutions collection'),
+    #[OA\Get(path: '/api/solutions', summary: 'List solutions', description: 'Active solutions with nested features (each feature includes modules). Hierarchy: solution → feature → module.', tags: ['Solution'], responses: [
+        new OA\Response(response: 200, description: 'Solutions collection', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/SolutionListItem')),
+        ])),
     ])]
     public function index()
     {
@@ -30,7 +32,7 @@ class SolutionController extends Controller
     #[OA\Get(path: '/api/solutions/{anchor}', summary: 'Solution by anchor', tags: ['Solution'], parameters: [
         new OA\Parameter(name: 'anchor', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
     ], responses: [
-        new OA\Response(response: 200, description: 'Solution'),
+        new OA\Response(response: 200, description: 'Single solution with features and modules', content: new OA\JsonContent(ref: '#/components/schemas/Solution')),
         new OA\Response(response: 404, description: 'Not found'),
     ])]
     public function show(string $anchor)
