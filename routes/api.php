@@ -63,6 +63,7 @@ Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])-
 
 // Contact
 Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
+Route::get('/contact/subjects', [ApiContactController::class, 'subjects'])->name('api.contact.subjects');
 Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->middleware('throttle:forms')->name('api.contact.submit');
 
 // Pricing (prijzen)

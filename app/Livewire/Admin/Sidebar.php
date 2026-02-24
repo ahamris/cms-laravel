@@ -84,6 +84,7 @@ class Sidebar extends Component
                 'icon' => 'graduation-cap',
                 'children' => [
                     ['label' => 'Entries', 'route_name' => 'admin.administrator.contact-forms.index', 'icon' => 'envelope', 'permission' => 'contact_form_access'],
+                    ['label' => 'Subjects', 'route_name' => 'admin.administrator.contact-subjects.index', 'icon' => 'list', 'permission' => 'contact_subject_access'],
                     ['label' => 'Contacts', 'route_name' => 'admin.administrator.contacts.index', 'icon' => 'users', 'permission' => 'contact_access'],
                     ['label' => 'Organizations', 'route_name' => 'admin.organization.index', 'icon' => 'building', 'permission' => 'organization_access'],
                 ],

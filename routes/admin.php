@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Administrator\UserCrudController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ContactFormController;
 use App\Http\Controllers\Admin\ContactPageSettingsController;
+use App\Http\Controllers\Admin\ContactSubjectController;
 use App\Http\Controllers\Admin\ApiChangelogController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
@@ -384,6 +385,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // Contact Forms
             Route::resource('contact-forms', ContactFormController::class)->only(['index', 'show', 'update', 'destroy']);
             Route::post('contact-forms/{contactForm}/reply', [ContactFormController::class, 'reply'])->name('contact-forms.reply');
+
+            // Contact Subjects (Onderwerp – dropdown options for contact form)
+            Route::resource('contact-subjects', ContactSubjectController::class)->parameters(['contact-subjects' => 'contactSubject']);
 
             // Email Logs
             Route::resource('email-logs', EmailLogController::class)->only(['index', 'show', 'destroy']);

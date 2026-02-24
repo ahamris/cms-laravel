@@ -7,6 +7,7 @@ use App\Http\Controllers\Traits\SeoSetTrait;
 use App\Jobs\SendToPerfexCrmJob;
 use App\Mail\ContactFormSubmittedMail;
 use App\Models\ContactForm;
+use App\Models\ContactSubject;
 use App\Models\Page;
 use App\Services\PerfexCrmService;
 use Exception;
@@ -19,8 +20,8 @@ class ContactController extends Controller
 {
     use SeoSetTrait;
 
-    #[OA\Get(path: '/api/contact', summary: 'Contact page data', description: 'Contact page content for headless frontend.', tags: ['Contact'], responses: [
-        new OA\Response(response: 200, description: 'Contact page data', content: new OA\JsonContent(properties: [new OA\Property(property: 'data', ref: '#/components/schemas/ContactPageData')])),
+    #[OA\Get(path: '/api/contact', summary: 'Contact page data', description: 'Contact page content and subject options (Onderwerp dropdown) for headless frontend.', tags: ['Contact'], responses: [
+        new OA\Response(response: 200, description: 'Contact page data with optional subjects', content: new OA\JsonContent(properties: [new OA\Property(property: 'data', ref: '#/components/schemas/ContactPageData')])),
     ])]
     public function index(): JsonResponse
     {
@@ -46,7 +47,30 @@ class ContactController extends Controller
             ];
         }
 
-        return response()->json(['data' => $page]);
+        $data = is_array($page) ? $page : (array) $page;
+        $data['subjects'] = ContactSubject::getCached()->map(fn ($s) => [
+            'id' => $s->id,
+            'title' => $s->title,
+            'sort_order' => $s->sort_order,
+        ])->values()->all();
+
+        return response()->json(['data' => $data]);
+    }
+
+    #[OA\Get(path: '/api/contact/subjects', summary: 'Contact form subjects', description: 'List of active subject options (Onderwerp) for the contact form dropdown. Managed in admin under CRM → Subjects.', tags: ['Contact'], responses: [
+        new OA\Response(response: 200, description: 'Subject options for dropdown', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/ContactSubjectListItem')),
+        ])),
+    ])]
+    public function subjects(): JsonResponse
+    {
+        $subjects = ContactSubject::getCached()->map(fn ($s) => [
+            'id' => $s->id,
+            'title' => $s->title,
+            'sort_order' => $s->sort_order,
+        ])->values()->all();
+
+        return response()->json(['data' => $subjects]);
     }
 
     #[OA\Post(path: '/api/contact/verstuur', summary: 'Submit contact form', description: 'Submit as form fields (application/x-www-form-urlencoded or multipart/form-data for file attachment). Accepts Dutch names: voornaam/achternaam, onderwerp, organisatie.', tags: ['Contact'], requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'application/x-www-form-urlencoded', schema: new OA\Schema(required: ['first_name', 'last_name', 'email', 'reden', 'bericht', 'avg-optin'], type: 'object', properties: [
