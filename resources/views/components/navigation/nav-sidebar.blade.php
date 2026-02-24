@@ -1,6 +1,6 @@
 @props([
     'title' => 'Admin Panel',
-    'logo' => 'cube',
+    'logo' => 'cogs',
     'logoUrl' => null,
     'id' => null,
     'navClass' => null,
