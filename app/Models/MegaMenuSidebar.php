@@ -4,6 +4,9 @@ namespace App\Models;
 
 use App\Models\MegaMenuItem;
 
+/**
+ * @mixin IdeHelperMegaMenuSidebar
+ */
 class MegaMenuSidebar extends BaseModel
 {
     protected $table = 'mega_menu_sidebars';

@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\Route;
 
+/**
+ * @mixin IdeHelperPartnerTechItem
+ */
 class PartnerTechItem extends BaseModel
 {
 

@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 
 // Frontend content API (public, no auth; CORS via config/cors.php)
 Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
+Route::get('/pages/search', [ApiPageController::class, 'search'])->middleware('throttle:search')->name('api.pages.search');
 Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
 Route::get('/search', [ApiSearchController::class, 'index'])->name('api.search');
 Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
@@ -35,6 +36,7 @@ Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->
 // Blog (posts + comments)
 Route::prefix('blog')->name('api.blog.')->group(function () {
     Route::get('/', [ApiBlogController::class, 'index'])->name('index');
+    Route::get('/search', [ApiBlogController::class, 'search'])->middleware('throttle:search')->name('search');
     Route::get('/{slug}', [ApiBlogController::class, 'apiShow'])->name('show')->where('slug', '[a-zA-Z0-9\-_]+');
     Route::post('/{slug}/comments', [ApiBlogController::class, 'storeComment'])->middleware('throttle:forms')->name('comments.store')->where('slug', '[a-zA-Z0-9\-_]+');
     Route::post('/{slug}/comments/{comment}/like', [ApiBlogController::class, 'likeComment'])->name('comments.like')->where(['slug' => '[a-zA-Z0-9\-_]+', 'comment' => '[0-9]+']);
@@ -46,13 +48,15 @@ Route::get('/static/{slug}', [ApiStaticPageController::class, 'show'])->name('ap
 Route::get('/settings', [HomepageController::class, 'settings'])->name('api.settings');
 Route::get('/homepage', [HomepageController::class, 'homepage'])->name('api.homepage');
 Route::get('/docs', [ApiDocController::class, 'index'])->name('api.docs.index');
-Route::get('/docs/search', [ApiDocController::class, 'search'])->name('api.docs.search');
+Route::get('/docs/search', [ApiDocController::class, 'search'])->middleware('throttle:search')->name('api.docs.search');
 Route::get('/docs/{section}/{page}', [ApiDocController::class, 'showPage'])->name('api.docs.page')->where(['section' => '[a-z0-9\-]+', 'page' => '[a-z0-9\-]+']);
 Route::get('/modules', [ApiModuleController::class, 'index'])->name('api.modules.index');
 Route::get('/modules/{slug}', [ApiModuleController::class, 'show'])->name('api.modules.show')->where('slug', '[a-z0-9\-]+');
 Route::get('/features', [ApiFeatureController::class, 'index'])->name('api.features.index');
+Route::get('/features/search', [ApiFeatureController::class, 'search'])->middleware('throttle:search')->name('api.features.search');
 Route::get('/features/{anchor}', [ApiFeatureController::class, 'show'])->name('api.features.show')->where('anchor', '[a-z0-9\-]+');
 Route::get('/solutions', [ApiSolutionController::class, 'index'])->name('api.solutions.index');
+Route::get('/solutions/search', [ApiSolutionController::class, 'search'])->middleware('throttle:search')->name('api.solutions.search');
 Route::get('/solutions/{anchor}', [ApiSolutionController::class, 'show'])->name('api.solutions.show')->where('anchor', '[a-z0-9\-]+');
 Route::get('/partners', [ApiPartnersController::class, 'index'])->name('api.partners.index');
 Route::get('/tech-stack', [ApiTechStackController::class, 'index'])->name('api.tech-stack.index');
@@ -60,6 +64,7 @@ Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitema
 Route::get('/robots-txt', [ApiRobotsTxtController::class, 'index'])->name('api.robots-txt');
 Route::get('/media', [ApiMediaController::class, 'index'])->name('api.media.index');
 Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
+Route::get('/vacancies/search', [ApiVacancyController::class, 'search'])->middleware('throttle:search')->name('api.vacancies.search');
 Route::get('/vacancies/{slug}', [ApiVacancyController::class, 'show'])->name('api.vacancies.show')->where('slug', '[a-z0-9\-]+');
 Route::get('/vacancies/{slug}/apply', [ApiVacancyController::class, 'apply'])->name('api.vacancies.apply')->where('slug', '[a-z0-9\-]+');
 Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])->middleware('throttle:forms')->name('api.vacancies.submit')->where('slug', '[a-z0-9\-]+');
@@ -76,6 +81,7 @@ Route::get('/prijzen/{slug}', [ApiPricingController::class, 'show'])->name('api.
 
 // Changelog
 Route::get('/changelog', [ApiChangelogController::class, 'index'])->name('api.changelog.index');
+Route::get('/changelog/search', [ApiChangelogController::class, 'search'])->middleware('throttle:search')->name('api.changelog.search');
 Route::get('/changelog/{slug}', [ApiChangelogController::class, 'show'])->name('api.changelog.show')->where('slug', '[a-z0-9\-]+');
 
 // Trial (proefversie)
@@ -85,10 +91,12 @@ Route::get('/proefversie/success', [ApiTrialController::class, 'success'])->name
 // Course (categories, videos, live sessions)
 Route::prefix('course')->group(function () {
     Route::get('/', [ApiCourseController::class, 'index'])->name('api.course.index');
+    Route::get('/search', [ApiCourseController::class, 'search'])->middleware('throttle:search')->name('api.course.search');
     Route::get('/categories', [ApiCourseController::class, 'categories'])->name('api.course.categories');
     Route::get('/category/{slug}', [ApiCourseController::class, 'showCategory'])->name('api.course.category.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/video/{slug}', [ApiCourseController::class, 'showVideo'])->name('api.course.video.show')->where('slug', '[a-z0-9\-]+');
     Route::get('/live-sessions', [ApiLiveSessionController::class, 'index'])->name('api.course.live-sessions.index');
+    Route::get('/live-sessions/search', [ApiLiveSessionController::class, 'search'])->middleware('throttle:search')->name('api.course.live-sessions.search');
     Route::get('/live-sessions/recordings', [ApiLiveSessionController::class, 'recordings'])->name('api.course.live-sessions.recordings');
     Route::get('/live-sessions/{slug}', [ApiLiveSessionController::class, 'show'])->name('api.course.live-sessions.show')->where('slug', '[a-z0-9\-]+');
     Route::post('/live-sessions/{slug}/register', [ApiLiveSessionController::class, 'register'])->middleware('throttle:forms')->name('api.course.live-sessions.register')->where('slug', '[a-z0-9\-]+');

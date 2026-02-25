@@ -58,18 +58,12 @@ class SearchController extends Controller
 
         if (in_array('pages', $types)) {
             $items = Page::where('is_active', true)
-                ->where(function ($q) use ($like) {
-                    $q->where('title', 'like', $like)
-                        ->orWhere('short_body', 'like', $like)
-                        ->orWhere('long_body', 'like', $like);
-                })
+                ->whereAny(['title', 'short_body', 'long_body'], 'like', $like)
                 ->orderBy('title')
                 ->when($type === 'all', fn ($q) => $q->limit(10))
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
                 ->get();
-            $totals['pages'] = Page::where('is_active', true)->where(function ($q) use ($like) {
-                $q->where('title', 'like', $like)->orWhere('short_body', 'like', $like)->orWhere('long_body', 'like', $like);
-            })->count();
+            $totals['pages'] = Page::where('is_active', true)->whereAny(['title', 'short_body', 'long_body'], 'like', $like)->count();
             foreach ($items as $item) {
                 $results->push($this->formatResult('page', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->short_body ?? $item->long_body ?? ''), 160), route('api.pages.show', $item->slug), ['slug' => $item->slug]));
             }
@@ -77,18 +71,12 @@ class SearchController extends Controller
 
         if (in_array('blog', $types)) {
             $items = Blog::where('is_active', true)
-                ->where(function ($q) use ($like) {
-                    $q->where('title', 'like', $like)
-                        ->orWhere('short_body', 'like', $like)
-                        ->orWhere('long_body', 'like', $like);
-                })
+                ->whereAny(['title', 'short_body', 'long_body'], 'like', $like)
                 ->orderBy('title')
                 ->when($type === 'all', fn ($q) => $q->limit(10))
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
                 ->get();
-            $totals['blog'] = Blog::where('is_active', true)->where(function ($q) use ($like) {
-                $q->where('title', 'like', $like)->orWhere('short_body', 'like', $like)->orWhere('long_body', 'like', $like);
-            })->count();
+            $totals['blog'] = Blog::where('is_active', true)->whereAny(['title', 'short_body', 'long_body'], 'like', $like)->count();
             foreach ($items as $item) {
                 $results->push($this->formatResult('blog', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->short_body ?? $item->long_body ?? ''), 160), route('api.blog.show', $item->slug), ['slug' => $item->slug]));
             }
@@ -96,18 +84,12 @@ class SearchController extends Controller
 
         if (in_array('solutions', $types)) {
             $items = Solution::where('is_active', true)
-                ->where(function ($q) use ($like) {
-                    $q->where('title', 'like', $like)
-                        ->orWhere('short_body', 'like', $like)
-                        ->orWhere('long_body', 'like', $like);
-                })
+                ->whereAny(['title', 'short_body', 'long_body'], 'like', $like)
                 ->orderBy('title')
                 ->when($type === 'all', fn ($q) => $q->limit(10))
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
                 ->get();
-            $totals['solutions'] = Solution::where('is_active', true)->where(function ($q) use ($like) {
-                $q->where('title', 'like', $like)->orWhere('short_body', 'like', $like)->orWhere('long_body', 'like', $like);
-            })->count();
+            $totals['solutions'] = Solution::where('is_active', true)->whereAny(['title', 'short_body', 'long_body'], 'like', $like)->count();
             foreach ($items as $item) {
                 $results->push($this->formatResult('solution', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->short_body ?? $item->long_body ?? ''), 160), route('api.solutions.show', $item->anchor), ['anchor' => $item->anchor]));
             }
@@ -115,18 +97,14 @@ class SearchController extends Controller
 
         if (in_array('docs', $types)) {
             $items = DocPage::where('is_active', true)
-                ->where(function ($q) use ($like) {
-                    $q->where('title', 'like', $like)->orWhere('content', 'like', $like);
-                })
+                ->whereAny(['title', 'content'], 'like', $like)
                 ->whereHas('section', fn ($q) => $q->where('is_active', true))
                 ->with(['section'])
                 ->orderBy('title')
                 ->when($type === 'all', fn ($q) => $q->limit(10))
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
                 ->get();
-            $totals['docs'] = DocPage::where('is_active', true)->where(function ($q) use ($like) {
-                $q->where('title', 'like', $like)->orWhere('content', 'like', $like);
-            })->whereHas('section', fn ($q) => $q->where('is_active', true))->count();
+            $totals['docs'] = DocPage::where('is_active', true)->whereAny(['title', 'content'], 'like', $like)->whereHas('section', fn ($q) => $q->where('is_active', true))->count();
             foreach ($items as $item) {
                 $section = $item->section->slug ?? '';
                 $url = Route::has('api.docs.page') ? route('api.docs.page', ['section' => $item->section->slug, 'page' => $item->slug]) : url("/api/docs/{$section}/{$item->slug}");
@@ -135,12 +113,8 @@ class SearchController extends Controller
         }
 
         if (in_array('course', $types)) {
-            $videoQuery = CourseVideo::where('is_active', true)->where(function ($q) use ($like) {
-                $q->where('title', 'like', $like)->orWhere('description', 'like', $like);
-            });
-            $categoryQuery = CourseCategory::where('is_active', true)->where(function ($q) use ($like) {
-                $q->where('name', 'like', $like)->orWhere('description', 'like', $like);
-            });
+            $videoQuery = CourseVideo::where('is_active', true)->whereAny(['title', 'description'], 'like', $like);
+            $categoryQuery = CourseCategory::where('is_active', true)->whereAny(['name', 'description'], 'like', $like);
             $totals['course'] = $videoQuery->count() + $categoryQuery->count();
             $videos = $videoQuery->orderBy('title')
                 ->when($type === 'all', fn ($q) => $q->limit(5))
@@ -160,16 +134,12 @@ class SearchController extends Controller
 
         if (in_array('changelog', $types)) {
             $items = Changelog::where('is_active', true)
-                ->where(function ($q) use ($like) {
-                    $q->where('title', 'like', $like)->orWhere('description', 'like', $like)->orWhere('content', 'like', $like);
-                })
+                ->whereAny(['title', 'description', 'content'], 'like', $like)
                 ->orderBy('date', 'desc')
                 ->when($type === 'all', fn ($q) => $q->limit(10))
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
                 ->get();
-            $totals['changelog'] = Changelog::where('is_active', true)->where(function ($q) use ($like) {
-                $q->where('title', 'like', $like)->orWhere('description', 'like', $like)->orWhere('content', 'like', $like);
-            })->count();
+            $totals['changelog'] = Changelog::where('is_active', true)->whereAny(['title', 'description', 'content'], 'like', $like)->count();
             foreach ($items as $item) {
                 $results->push($this->formatResult('changelog', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->description ?? $item->content ?? ''), 160), url('/api/changelog/'.$item->slug), ['slug' => $item->slug]));
             }

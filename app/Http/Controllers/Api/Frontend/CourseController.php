@@ -34,21 +34,15 @@ class CourseController extends Controller
         $upcomingSessions = LiveSession::active()
             ->upcoming()
             ->with(['presenters'])
-            ->when($searchActive, fn ($q) => $q->where(function ($q) use ($likeTerm) {
-                $q->where('title', 'like', $likeTerm)
-                    ->orWhere('description', 'like', $likeTerm)
-                    ->orWhere('content', 'like', $likeTerm)
-                    ->orWhereHas('presenters', fn ($pq) => $pq->where('name', 'like', $likeTerm));
-            }))
+            ->when($searchActive, fn ($q) => $q->where(fn ($q) => $q->whereAny(['title', 'description', 'content'], 'like', $likeTerm)
+                ->orWhereHas('presenters', fn ($pq) => $pq->where('name', 'like', $likeTerm))))
             ->ordered()
             ->get();
 
         $recentVideos = CourseVideo::active()
             ->with(['category'])
             ->latest()
-            ->when($searchActive, fn ($q) => $q->where(function ($q) use ($likeTerm) {
-                $q->where('title', 'like', $likeTerm)->orWhere('description', 'like', $likeTerm);
-            }))
+            ->when($searchActive, fn ($q) => $q->whereAny(['title', 'description'], 'like', $likeTerm))
             ->limit(6)
             ->get();
 
@@ -100,6 +94,63 @@ class CourseController extends Controller
                     'total_duration_seconds' => $totalSeconds,
                     'hero_duration' => $heroDuration,
                 ],
+            ],
+        ]);
+    }
+
+    #[OA\Get(path: '/api/course/search', summary: 'Search course content', description: 'Search videos and live sessions. Throttled. Query: q, per_page.', tags: ['Academy'], parameters: [
+        new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2)),
+        new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Search results (videos + live sessions)'),
+        new OA\Response(response: 429, description: 'Too many requests'),
+    ])]
+    public function search(Request $request): JsonResponse
+    {
+        $query = trim((string) $request->input('q', ''));
+        $perPage = max(1, min((int) $request->input('per_page', 20), 50));
+
+        if (strlen($query) < 2) {
+            return response()->json([
+                'data' => [],
+                'template' => 'course-search',
+                'query' => $query,
+                'count' => 0,
+                'meta' => ['current_page' => 1, 'last_page' => 1, 'per_page' => $perPage, 'total' => 0],
+            ]);
+        }
+
+        $like = '%'.$query.'%';
+        $videos = CourseVideo::active()->with('category')
+            ->whereAny(['title', 'description'], 'like', $like)
+            ->orderBy('title')
+            ->limit((int) ceil($perPage / 2))
+            ->get();
+        $sessions = LiveSession::active()->with('presenters')
+            ->where(fn ($q) => $q->whereAny(['title', 'description', 'content'], 'like', $like)
+                ->orWhereHas('presenters', fn ($pq) => $pq->where('name', 'like', $like)))
+            ->ordered()
+            ->limit((int) ceil($perPage / 2))
+            ->get();
+
+        $videoArr = CourseVideoListResource::collection($videos)->toArray($request);
+        $sessionArr = LiveSessionListResource::collection($sessions)->toArray($request);
+        $data = array_merge(
+            array_map(fn ($v) => array_merge($v, ['type' => 'video']), isset($videoArr['data']) ? $videoArr['data'] : $videoArr),
+            array_map(fn ($s) => array_merge($s, ['type' => 'live_session']), isset($sessionArr['data']) ? $sessionArr['data'] : $sessionArr)
+        );
+        $total = count($data);
+
+        return response()->json([
+            'data' => $data,
+            'template' => 'course-search',
+            'query' => $query,
+            'count' => $total,
+            'meta' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => $perPage,
+                'total' => $total,
             ],
         ]);
     }

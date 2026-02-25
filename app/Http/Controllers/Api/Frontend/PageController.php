@@ -34,6 +34,56 @@ class PageController extends Controller
     }
 
     #[OA\Get(
+        path: '/api/pages/search',
+        summary: 'Search pages',
+        description: 'Search in title, short_body, long_body. Throttled. Query: q, per_page.',
+        tags: ['Pages'],
+        parameters: [
+            new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2)),
+            new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Search results'),
+            new OA\Response(response: 429, description: 'Too many requests'),
+        ]
+    )]
+    public function search(Request $request)
+    {
+        $query = trim((string) $request->input('q', ''));
+        $perPage = max(1, min((int) $request->input('per_page', 20), 50));
+
+        if (strlen($query) < 2) {
+            return response()->json([
+                'data' => [],
+                'template' => 'pages-search',
+                'query' => $query,
+                'count' => 0,
+                'meta' => ['current_page' => 1, 'last_page' => 1, 'per_page' => $perPage, 'total' => 0],
+            ]);
+        }
+
+        $like = '%'.$query.'%';
+        $pages = Page::where('is_active', true)
+            ->whereAny(['title', 'short_body', 'long_body'], 'like', $like)
+            ->orderBy('title')
+            ->paginate($perPage);
+
+        $resolved = PageListResource::collection($pages->items())->resolve();
+        return response()->json([
+            'data' => $resolved['data'] ?? $resolved,
+            'template' => 'pages-search',
+            'query' => $query,
+            'count' => $pages->total(),
+            'meta' => [
+                'current_page' => $pages->currentPage(),
+                'last_page' => $pages->lastPage(),
+                'per_page' => $pages->perPage(),
+                'total' => $pages->total(),
+            ],
+        ]);
+    }
+
+    #[OA\Get(
         path: '/api/pages/{slug}',
         summary: 'Get a page by slug',
         description: 'Returns a single active page by slug.',

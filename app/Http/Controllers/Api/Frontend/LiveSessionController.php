@@ -34,6 +34,51 @@ class LiveSessionController extends Controller
         ]);
     }
 
+    #[OA\Get(path: '/api/course/live-sessions/search', summary: 'Search live sessions', description: 'Search in title, description, content. Throttled. Query: q, per_page.', tags: ['Academy'], parameters: [
+        new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2)),
+        new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Search results'),
+        new OA\Response(response: 429, description: 'Too many requests'),
+    ])]
+    public function search(Request $request): JsonResponse
+    {
+        $query = trim((string) $request->input('q', ''));
+        $perPage = max(1, min((int) $request->input('per_page', 20), 50));
+
+        if (strlen($query) < 2) {
+            return response()->json([
+                'data' => [],
+                'template' => 'live-sessions-search',
+                'query' => $query,
+                'count' => 0,
+                'meta' => ['current_page' => 1, 'last_page' => 1, 'per_page' => $perPage, 'total' => 0],
+            ]);
+        }
+
+        $like = '%'.$query.'%';
+        $items = LiveSession::active()
+            ->with(['presenters'])
+            ->where(fn ($q) => $q->whereAny(['title', 'description', 'content'], 'like', $like)
+                ->orWhereHas('presenters', fn ($pq) => $pq->where('name', 'like', $like)))
+            ->ordered()
+            ->paginate($perPage);
+
+        $resolved = LiveSessionListResource::collection($items->items())->resolve();
+        return response()->json([
+            'data' => $resolved['data'] ?? $resolved,
+            'template' => 'live-sessions-search',
+            'query' => $query,
+            'count' => $items->total(),
+            'meta' => [
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+                'per_page' => $items->perPage(),
+                'total' => $items->total(),
+            ],
+        ]);
+    }
+
     #[OA\Get(path: '/api/course/live-sessions/recordings', summary: 'Live session recordings', description: 'Paginated past sessions.', tags: ['Academy'], parameters: [
         new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 12)),
     ], responses: [

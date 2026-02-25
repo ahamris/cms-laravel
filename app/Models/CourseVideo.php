@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @mixin IdeHelperCourseVideo
+ */
 class CourseVideo extends BaseModel
 {
     use HasFactory, Sluggable;

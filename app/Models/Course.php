@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * @mixin IdeHelperCourse
+ */
 class Course extends BaseModel
 {
     use HasFactory;

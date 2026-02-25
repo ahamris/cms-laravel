@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\Page;
 use App\Models\Solution;
+use App\Models\StaticPage;
 use App\Models\VacancyModule\Vacancy;
 use OpenApi\Attributes as OA;
 
@@ -36,6 +37,13 @@ class SitemapController extends Controller
 
         foreach (Page::where('is_active', true)->get(['slug']) as $page) {
             $urls[] = $entry(api_path('page', $page->slug), '0.6');
+        }
+
+        $urls[] = $entry(api_path('partners'), '0.8');
+        $urls[] = $entry(api_path('tech_stack'), '0.8');
+
+        foreach (StaticPage::where('is_active', true)->get(['slug']) as $static) {
+            $urls[] = $entry(api_path('static_page', $static->slug), '0.6');
         }
 
         $urls[] = $entry(api_path('vacancies'), '0.8');

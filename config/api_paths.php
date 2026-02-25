@@ -72,5 +72,7 @@ return [
         'Vacancies' => 'vacancies',
         'Docs' => 'docs',
         'Search' => 'search',
+        'Partners' => 'partners',
+        'Tech Stack' => 'tech_stack',
     ],
 ];

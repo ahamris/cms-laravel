@@ -6,6 +6,9 @@ use App\Helpers\Variable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * @mixin IdeHelperContactSubject
+ */
 class ContactSubject extends BaseModel
 {
     protected $fillable = [

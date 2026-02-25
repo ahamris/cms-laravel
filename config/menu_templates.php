@@ -28,6 +28,8 @@ return [
         'api/docs' => 'docs-list',
         'api/search' => 'search-result',
         'api/search/suggestions' => 'search-suggestions',
+        'api/partners' => 'partners-list',
+        'api/tech-stack' => 'tech-stack-list',
     ],
 
     /*

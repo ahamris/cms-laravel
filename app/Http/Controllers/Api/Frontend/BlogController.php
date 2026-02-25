@@ -48,12 +48,7 @@ class BlogController extends Controller
         $articlesQuery = Blog::with(['blog_category', 'blog_type', 'author'])->where('is_active', true);
         if ($request->filled('search')) {
             $searchTerm = $request->search;
-            $articlesQuery->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'like', "%{$searchTerm}%")
-                    ->orWhere('meta_keywords', 'like', "%{$searchTerm}%")
-                    ->orWhere('short_body', 'like', "%{$searchTerm}%")
-                    ->orWhere('long_body', 'like', "%{$searchTerm}%");
-            });
+            $articlesQuery->whereAny(['title', 'meta_keywords', 'short_body', 'long_body'], 'like', "%{$searchTerm}%");
         }
         if ($request->filled('category')) {
             $articlesQuery->whereHas('blog_category', fn ($q) => $q->where('slug', $request->category));
@@ -76,6 +71,55 @@ class BlogController extends Controller
             'banner' => $banner,
             'has_more' => $hasMore,
             'next_page' => $hasMore ? $page + 1 : null,
+        ]);
+    }
+
+    #[OA\Get(path: '/api/blog/search', summary: 'Search blog posts', description: 'Search in title, meta_keywords, short_body, long_body. Throttled. Query: q, per_page.', tags: ['Blog'], parameters: [
+        new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2)),
+        new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Search results', content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BlogListItem')),
+            new OA\Property(property: 'template', type: 'string', example: 'blog-search'),
+            new OA\Property(property: 'query', type: 'string'),
+            new OA\Property(property: 'count', type: 'integer'),
+            new OA\Property(property: 'meta', type: 'object', nullable: true),
+        ])),
+        new OA\Response(response: 429, description: 'Too many requests'),
+    ])]
+    public function search(Request $request): JsonResponse
+    {
+        $query = trim((string) $request->input('q', ''));
+        $perPage = max(1, min((int) $request->input('per_page', 20), 50));
+
+        if (strlen($query) < 2) {
+            return response()->json([
+                'data' => [],
+                'template' => 'blog-search',
+                'query' => $query,
+                'count' => 0,
+                'meta' => ['current_page' => 1, 'last_page' => 1, 'per_page' => $perPage, 'total' => 0],
+            ]);
+        }
+
+        $items = Blog::with(['blog_category', 'blog_type', 'author'])
+            ->where('is_active', true)
+            ->whereAny(['title', 'meta_keywords', 'short_body', 'long_body'], 'like', "%{$query}%")
+            ->latest()
+            ->paginate($perPage);
+
+        $resolved = BlogListResource::collection($items->items())->resolve();
+        return response()->json([
+            'data' => $resolved['data'] ?? $resolved,
+            'template' => 'blog-search',
+            'query' => $query,
+            'count' => $items->total(),
+            'meta' => [
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+                'per_page' => $items->perPage(),
+                'total' => $items->total(),
+            ],
         ]);
     }
 

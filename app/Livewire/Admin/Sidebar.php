@@ -113,7 +113,7 @@ class Sidebar extends Component
                         'route_name' => 'admin.page.index',
                         'icon' => 'puzzle-piece',
                         'permission' => 'page_access',
-                        'active_pattern' => 'admin.page*,admin.legal*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*,admin.faq-module*',
+                        'active_pattern' => 'admin.page*,admin.legal*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*,admin.faq-module*,admin.partner-tech-item*,admin.static-page*',
                         'children' => [
                             ['label' => 'Homepage', 'route_name' => 'admin.homepage.edit', 'icon' => 'home', 'permission' => 'page_access'],
                             ['label' => 'FAQ Modules', 'route_name' => 'admin.faq-module.index', 'icon' => 'question-circle', 'permission' => 'faq_module_access'],
@@ -122,6 +122,8 @@ class Sidebar extends Component
                             ['label' => 'Changelog', 'route_name' => 'admin.changelog.index', 'icon' => 'list-alt', 'permission' => 'changelog_access'],
                             ['label' => 'Event', 'route_name' => 'admin.event.index', 'icon' => 'calendar-alt', 'permission' => 'event_access'],
                             ['label' => 'Header Settings', 'route_name' => 'admin.settings.hero-backgrounds.index', 'icon' => 'heading', 'permission' => 'hero_background_access'],
+                            ['label' => 'Partners & Tech', 'route_name' => 'admin.partner-tech-item.index', 'icon' => 'handshake', 'permission' => 'partner_tech_item_access'],
+                            ['label' => 'Static Pages', 'route_name' => 'admin.static-page.index', 'icon' => 'file-alt', 'permission' => 'static_page_access'],
                         ],
                     ],
                     [
@@ -134,13 +136,6 @@ class Sidebar extends Component
                             ['label' => 'Sections', 'route_name' => 'admin.doc-sections.index', 'icon' => 'folder', 'permission' => 'page_access'],
                             ['label' => 'Pages', 'route_name' => 'admin.doc-pages.index', 'icon' => 'file-alt', 'permission' => 'page_access'],
                         ],
-                    ],
-                    [
-                        'label' => 'Partners & Tech',
-                        'route_name' => 'admin.partner-tech-item.index',
-                        'icon' => 'handshake',
-                        'permission' => 'partner_tech_item_access',
-                        'active_pattern' => 'admin.partner-tech-item*',
                     ],
                     [
                         'label' => 'Solution & Modules',

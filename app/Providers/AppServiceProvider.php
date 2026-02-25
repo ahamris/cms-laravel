@@ -48,6 +48,11 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by(client_ip() ?? $request->ip() ?? 'unknown');
         });
 
+        // Limit search endpoints to reduce brute-force / abuse (per IP)
+        RateLimiter::for('search', function (Request $request) {
+            return Limit::perMinute(30)->by(client_ip() ?? $request->ip() ?? 'unknown');
+        });
+
         // Register Translation Service
         $this->app->singleton(TranslationService::class);
 

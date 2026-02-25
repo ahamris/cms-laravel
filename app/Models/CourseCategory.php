@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
 
+/**
+ * @mixin IdeHelperCourseCategory
+ */
 class CourseCategory extends BaseModel
 {
     use HasFactory, Sluggable;

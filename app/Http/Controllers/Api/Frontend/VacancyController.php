@@ -32,11 +32,7 @@ class VacancyController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%')
-                    ->orWhere('department', 'like', '%'.$search.'%');
-            });
+            $query->whereAny(['title', 'description', 'department'], 'like', '%'.$search.'%');
         }
         if ($request->filled('type')) {
             $query->where('type', $request->input('type'));
@@ -72,6 +68,50 @@ class VacancyController extends Controller
                 'departments' => Vacancy::active()->whereNotNull('department')->distinct()->pluck('department'),
                 'locations' => Vacancy::active()->whereNotNull('location')->distinct()->pluck('location'),
                 'categories' => Vacancy::active()->whereNotNull('category')->distinct()->pluck('category'),
+            ],
+        ]);
+    }
+
+    #[OA\Get(path: '/api/vacancies/search', summary: 'Search vacancies', description: 'Search in title, description, department. Throttled. Query: q, per_page.', tags: ['Vacancies'], parameters: [
+        new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2)),
+        new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+    ], responses: [
+        new OA\Response(response: 200, description: 'Search results'),
+        new OA\Response(response: 429, description: 'Too many requests'),
+    ])]
+    public function search(Request $request): JsonResponse
+    {
+        $query = trim((string) $request->input('q', ''));
+        $perPage = max(1, min((int) $request->input('per_page', 20), 50));
+
+        if (strlen($query) < 2) {
+            return response()->json([
+                'data' => [],
+                'template' => 'vacancies-search',
+                'query' => $query,
+                'count' => 0,
+                'meta' => ['current_page' => 1, 'last_page' => 1, 'per_page' => $perPage, 'total' => 0],
+            ]);
+        }
+
+        $search = $query;
+        $vacancies = Vacancy::active()
+            ->whereAny(['title', 'description', 'department'], 'like', '%'.$search.'%')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+
+        $resolved = VacancyListResource::collection($vacancies->getCollection())->resolve();
+
+        return response()->json([
+            'data' => $resolved['data'] ?? $resolved,
+            'template' => 'vacancies-search',
+            'query' => $query,
+            'count' => $vacancies->total(),
+            'meta' => [
+                'current_page' => $vacancies->currentPage(),
+                'last_page' => $vacancies->lastPage(),
+                'per_page' => $vacancies->perPage(),
+                'total' => $vacancies->total(),
             ],
         ]);
     }
