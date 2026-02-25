@@ -16,9 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Global middleware for web routes
+        // Web: guest activity on GET page loads (and non-AJAX)
         $middleware->web(append: [
             SetLocaleMiddleware::class,
+            \App\Http\Middleware\UpdateGuestActivity::class,
+        ]);
+
+        // API: guest activity on every endpoint so frontend calls record without extra ping
+        $middleware->api(append: [
+            \App\Http\Middleware\UpdateGuestActivity::class,
         ]);
 
         $middleware->alias([

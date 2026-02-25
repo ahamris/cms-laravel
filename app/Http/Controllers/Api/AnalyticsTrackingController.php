@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
  * Analytics tracking endpoints. track, batchTrack, guestActivity, and performance
  * are best-effort: on failure they log and return 200 with status 'error' so
  * client-side code does not break. stats() returns 500 on failure.
+ * OpenAPI doc for guest-activity: App\OpenApi\AnalyticsPath (to avoid duplicate scan with Api\Frontend).
  */
 class AnalyticsTrackingController extends Controller
 {
@@ -104,6 +105,7 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Track guest activity via AJAX (primary method). Best-effort; returns 200 with status 'error' on failure.
+     * Call from SPAs (e.g. React) on load or periodically to keep web stats. Server filters bots and admin referrers.
      */
     public function guestActivity(Request $request)
     {
