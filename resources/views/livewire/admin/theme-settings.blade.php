@@ -101,6 +101,96 @@
                         </div>
                     </div>
 
+                    {{-- Header & Footer Colors --}}
+                    <div>
+                        <h4 class="mb-4 flex items-center">
+                            <i class="fa-solid fa-layer-group text-primary mr-3"></i>
+                            Header & Footer Colors
+                        </h4>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {{-- Header Background --}}
+                            <div>
+                                <label for="headerBg" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Header Background
+                                </label>
+                                <div class="flex flex-col space-y-2">
+                                    <input type="color" id="headerBg" wire:model.live="headerBg"
+                                        class="w-full h-12 border border-gray-300 rounded-md cursor-pointer">
+                                    <input type="text" id="headerBgText"
+                                        wire:model.live.debounce.500ms="headerBg"
+                                        class="block bg-white w-full px-3 py-2 border border-gray-200 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none font-mono text-sm"
+                                        placeholder="#ffffff">
+                                </div>
+                                @error('headerBg')
+                                    <p class="mt-1 text-xs text-red-600 flex items-center">
+                                        <i class="fa-solid fa-exclamation-circle mr-1"></i>{{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            {{-- Header Text --}}
+                            <div>
+                                <label for="headerText" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Header Text
+                                </label>
+                                <div class="flex flex-col space-y-2">
+                                    <input type="color" id="headerText" wire:model.live="headerText"
+                                        class="w-full h-12 border border-gray-300 rounded-md cursor-pointer">
+                                    <input type="text" id="headerTextText"
+                                        wire:model.live.debounce.500ms="headerText"
+                                        class="block bg-white w-full px-3 py-2 border border-gray-200 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none font-mono text-sm"
+                                        placeholder="#1a1a2e">
+                                </div>
+                                @error('headerText')
+                                    <p class="mt-1 text-xs text-red-600 flex items-center">
+                                        <i class="fa-solid fa-exclamation-circle mr-1"></i>{{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            {{-- Footer Background --}}
+                            <div>
+                                <label for="footerBg" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Footer Background
+                                </label>
+                                <div class="flex flex-col space-y-2">
+                                    <input type="color" id="footerBg" wire:model.live="footerBg"
+                                        class="w-full h-12 border border-gray-300 rounded-md cursor-pointer">
+                                    <input type="text" id="footerBgText"
+                                        wire:model.live.debounce.500ms="footerBg"
+                                        class="block bg-white w-full px-3 py-2 border border-gray-200 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none font-mono text-sm"
+                                        placeholder="#1a1a2e">
+                                </div>
+                                @error('footerBg')
+                                    <p class="mt-1 text-xs text-red-600 flex items-center">
+                                        <i class="fa-solid fa-exclamation-circle mr-1"></i>{{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            {{-- Footer Text --}}
+                            <div>
+                                <label for="footerText" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Footer Text
+                                </label>
+                                <div class="flex flex-col space-y-2">
+                                    <input type="color" id="footerText" wire:model.live="footerText"
+                                        class="w-full h-12 border border-gray-300 rounded-md cursor-pointer">
+                                    <input type="text" id="footerTextText"
+                                        wire:model.live.debounce.500ms="footerText"
+                                        class="block bg-white w-full px-3 py-2 border border-gray-200 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none font-mono text-sm"
+                                        placeholder="#ffffff">
+                                </div>
+                                @error('footerText')
+                                    <p class="mt-1 text-xs text-red-600 flex items-center">
+                                        <i class="fa-solid fa-exclamation-circle mr-1"></i>{{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Typography Section --}}
                     <div class="pt-6">
                         <h4 class="mb-4 flex items-center">
@@ -444,6 +534,17 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Header & Footer Preview --}}
+                    <div class="p-4 bg-gray-50 rounded-md space-y-3">
+                        <h4 class="text-xs font-semibold text-gray-700 mb-2">Header & Footer</h4>
+                        <div class="p-3 rounded-md border border-gray-200" style="background-color: {{ $headerBg }};">
+                            <p class="text-sm font-medium" style="color: {{ $headerText }};">Header preview</p>
+                        </div>
+                        <div class="p-3 rounded-md border border-gray-200" style="background-color: {{ $footerBg }};">
+                            <p class="text-sm font-medium" style="color: {{ $footerText }};">Footer preview</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -557,6 +658,23 @@
                         if (/^#[0-9A-Fa-f]{6}$/i.test(e.target.value)) {
                             colorPicker.value = e.target.value;
                         }
+                    });
+                }
+            });
+
+            // Sync header & footer color pickers
+            [
+                { picker: 'headerBg', text: 'headerBgText' },
+                { picker: 'headerText', text: 'headerTextText' },
+                { picker: 'footerBg', text: 'footerBgText' },
+                { picker: 'footerText', text: 'footerTextText' }
+            ].forEach(({ picker, text }) => {
+                const colorPicker = document.getElementById(picker);
+                const colorText = document.getElementById(text);
+                if (colorPicker && colorText) {
+                    colorPicker.addEventListener('input', (e) => { colorText.value = e.target.value; });
+                    colorText.addEventListener('input', (e) => {
+                        if (/^#[0-9A-Fa-f]{6}$/i.test(e.target.value)) colorPicker.value = e.target.value;
                     });
                 }
             });

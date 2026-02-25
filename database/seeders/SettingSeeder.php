@@ -53,15 +53,19 @@ class SettingSeeder extends Seeder
         $this->createSetting('theme_color_primary', '#081245', 'color', 'theme', 'Primary Color', 'The primary brand color used throughout the site', 1);
         $this->createSetting('theme_color_secondary', '#0073e6', 'color', 'theme', 'Secondary Color', 'The secondary accent color', 2);
         $this->createSetting('theme_color_natural', '#dfd4d4', 'color', 'theme', 'Natural Color', 'The neutral/natural color for backgrounds and borders', 3);
-        $this->createSetting('theme_font_sans', '"Inter", sans-serif', 'text', 'theme', 'Sans-serif Font', 'The primary sans-serif font family (e.g., "Inter", sans-serif)', 4);
-        $this->createSetting('theme_font_outfit', '"Outfit", sans-serif', 'text', 'theme', 'Outfit Font', 'The secondary font family for headings (e.g., "Outfit", sans-serif)', 5);
-        $this->createSetting('theme_font_size_h1', '2.25rem', 'text', 'theme', 'H1 Font Size', 'Font size for H1 headings', 6);
-        $this->createSetting('theme_font_size_h2', '1.875rem', 'text', 'theme', 'H2 Font Size', 'Font size for H2 headings', 7);
-        $this->createSetting('theme_font_size_h3', '1.5rem', 'text', 'theme', 'H3 Font Size', 'Font size for H3 headings', 8);
-        $this->createSetting('theme_font_size_h4', '1.25rem', 'text', 'theme', 'H4 Font Size', 'Font size for H4 headings', 9);
-        $this->createSetting('theme_font_size_h5', '1.125rem', 'text', 'theme', 'H5 Font Size', 'Font size for H5 headings', 10);
-        $this->createSetting('theme_font_size_h6', '1rem', 'text', 'theme', 'H6 Font Size', 'Font size for H6 headings', 11);
-        $this->createSetting('theme_font_size_p', '1rem', 'text', 'theme', 'Paragraph Font Size', 'Font size for paragraphs', 12);
+        $this->createSetting('theme_footer_bg', '#1a1a2e', 'color', 'theme', 'Footer Background', 'Background color for the footer area', 4);
+        $this->createSetting('theme_footer_text', '#ffffff', 'color', 'theme', 'Footer Text', 'Text color for the footer', 5);
+        $this->createSetting('theme_header_bg', '#ffffff', 'color', 'theme', 'Header Background', 'Background color for the header area', 6);
+        $this->createSetting('theme_header_text', '#1a1a2e', 'color', 'theme', 'Header Text', 'Text color for the header', 7);
+        $this->createSetting('theme_font_sans', '"Inter", sans-serif', 'text', 'theme', 'Sans-serif Font', 'The primary sans-serif font family (e.g., "Inter", sans-serif)', 8);
+        $this->createSetting('theme_font_outfit', '"Outfit", sans-serif', 'text', 'theme', 'Outfit Font', 'The secondary font family for headings (e.g., "Outfit", sans-serif)', 9);
+        $this->createSetting('theme_font_size_h1', '2.25rem', 'text', 'theme', 'H1 Font Size', 'Font size for H1 headings', 10);
+        $this->createSetting('theme_font_size_h2', '1.875rem', 'text', 'theme', 'H2 Font Size', 'Font size for H2 headings', 11);
+        $this->createSetting('theme_font_size_h3', '1.5rem', 'text', 'theme', 'H3 Font Size', 'Font size for H3 headings', 12);
+        $this->createSetting('theme_font_size_h4', '1.25rem', 'text', 'theme', 'H4 Font Size', 'Font size for H4 headings', 13);
+        $this->createSetting('theme_font_size_h5', '1.125rem', 'text', 'theme', 'H5 Font Size', 'Font size for H5 headings', 14);
+        $this->createSetting('theme_font_size_h6', '1rem', 'text', 'theme', 'H6 Font Size', 'Font size for H6 headings', 15);
+        $this->createSetting('theme_font_size_p', '1rem', 'text', 'theme', 'Paragraph Font Size', 'Font size for paragraphs', 16);
 
         // Login page settings
         $this->createSetting('theme_login_form_mode', 'white', 'select', 'login', 'Login Form Mode', 'Choose between white form style or glass form style (white/glass)', 1);

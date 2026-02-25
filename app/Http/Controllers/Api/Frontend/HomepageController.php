@@ -53,7 +53,7 @@ class HomepageController extends Controller
         return $sections;
     }
     #[OA\Get(path: '/api/settings', summary: 'Site settings', description: 'Grouped site, theme, SEO, contact/map, cookie, hero, header and footer settings for frontend.', tags: ['Settings'], responses: [
-        new OA\Response(response: 200, description: 'Grouped settings'),
+        new OA\Response(response: 200, description: 'Grouped settings', content: new OA\JsonContent(ref: '#/components/schemas/SettingsResponse')),
     ])]
     public function settings(Request $request)
     {
@@ -78,6 +78,10 @@ class HomepageController extends Controller
                 'primary_color' => get_setting('theme_color_primary'),
                 'secondary_color' => get_setting('theme_color_secondary'),
                 'natural_color' => get_setting('theme_color_natural'),
+                'footer_bg' => get_setting('theme_footer_bg', '#1a1a2e'),
+                'footer_text' => get_setting('theme_footer_text', '#ffffff'),
+                'header_bg' => get_setting('theme_header_bg', '#ffffff'),
+                'header_text' => get_setting('theme_header_text', '#1a1a2e'),
                 'font_sans' => get_setting('theme_font_sans'),
                 'font_outfit' => get_setting('theme_font_outfit'),
                 'font_size_h1' => get_setting('theme_font_size_h1'),

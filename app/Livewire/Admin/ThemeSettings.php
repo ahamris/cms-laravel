@@ -13,6 +13,12 @@ class ThemeSettings extends Component
     public string $colorSecondary = '#0073e6';
     public string $colorNatural = '#dfd4d4';
 
+    // Header & Footer Colors
+    public string $footerBg = '#1a1a2e';
+    public string $footerText = '#ffffff';
+    public string $headerBg = '#ffffff';
+    public string $headerText = '#1a1a2e';
+
     // Font Family Properties
     public string $fontSans = 'Inter';
     public string $fontOutfit = 'Outfit';
@@ -39,6 +45,11 @@ class ThemeSettings extends Component
         $this->colorPrimary = $this->getColorSetting('theme_color_primary', '#081245');
         $this->colorSecondary = $this->getColorSetting('theme_color_secondary', '#0073e6');
         $this->colorNatural = $this->getColorSetting('theme_color_natural', '#dfd4d4');
+
+        $this->footerBg = $this->getColorSetting('theme_footer_bg', '#1a1a2e');
+        $this->footerText = $this->getColorSetting('theme_footer_text', '#ffffff');
+        $this->headerBg = $this->getColorSetting('theme_header_bg', '#ffffff');
+        $this->headerText = $this->getColorSetting('theme_header_text', '#1a1a2e');
 
         // Load current font settings
         $this->fontSans = $this->getFontSetting('theme_font_sans', 'Inter');
@@ -75,6 +86,11 @@ class ThemeSettings extends Component
         $this->colorSecondary = '#0073e6';
         $this->colorNatural = '#dfd4d4';
 
+        $this->footerBg = '#1a1a2e';
+        $this->footerText = '#ffffff';
+        $this->headerBg = '#ffffff';
+        $this->headerText = '#1a1a2e';
+
         // Reset font settings to defaults
         $this->fontSans = 'Inter';
         $this->fontOutfit = 'Outfit';
@@ -96,6 +112,10 @@ class ThemeSettings extends Component
             'colorPrimary' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'colorSecondary' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'colorNatural' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'footerBg' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'footerText' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'headerBg' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'headerText' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'fontSans' => 'required|string|max:255',
             'fontOutfit' => 'required|string|max:255',
             'fontSizeH1Px' => 'required|integer|min:1|max:3200',
@@ -109,6 +129,10 @@ class ThemeSettings extends Component
             'colorPrimary.regex' => 'Primary color must be a valid hex color code (e.g., #081245)',
             'colorSecondary.regex' => 'Secondary color must be a valid hex color code (e.g., #0073e6)',
             'colorNatural.regex' => 'Natural color must be a valid hex color code (e.g., #dfd4d4)',
+            'footerBg.regex' => 'Footer background must be a valid hex color (e.g., #1a1a2e)',
+            'footerText.regex' => 'Footer text must be a valid hex color (e.g., #ffffff)',
+            'headerBg.regex' => 'Header background must be a valid hex color (e.g., #ffffff)',
+            'headerText.regex' => 'Header text must be a valid hex color (e.g., #1a1a2e)',
         ]);
 
         // Ensure all font size values are valid
@@ -118,6 +142,11 @@ class ThemeSettings extends Component
         $this->updateSetting('theme_color_primary', $this->colorPrimary);
         $this->updateSetting('theme_color_secondary', $this->colorSecondary);
         $this->updateSetting('theme_color_natural', $this->colorNatural);
+
+        $this->updateSetting('theme_footer_bg', $this->footerBg);
+        $this->updateSetting('theme_footer_text', $this->footerText);
+        $this->updateSetting('theme_header_bg', $this->headerBg);
+        $this->updateSetting('theme_header_text', $this->headerText);
 
         // Save font families
         $this->updateSetting('theme_font_sans', $this->fontSans);
@@ -247,7 +276,7 @@ class ThemeSettings extends Component
      */
     private function getSettingType(string $key): string
     {
-        if (str_starts_with($key, 'theme_color_')) {
+        if (str_starts_with($key, 'theme_color_') || in_array($key, ['theme_footer_bg', 'theme_footer_text', 'theme_header_bg', 'theme_header_text'], true)) {
             return 'color';
         } elseif ($key === 'theme_font_sans' || $key === 'theme_font_outfit') {
             return 'text';
@@ -266,6 +295,10 @@ class ThemeSettings extends Component
             'theme_color_primary' => 'Primary Color',
             'theme_color_secondary' => 'Secondary Color',
             'theme_color_natural' => 'Natural Color',
+            'theme_footer_bg' => 'Footer Background',
+            'theme_footer_text' => 'Footer Text',
+            'theme_header_bg' => 'Header Background',
+            'theme_header_text' => 'Header Text',
             'theme_font_sans' => 'Sans-serif Font',
             'theme_font_outfit' => 'Outfit Font',
             'theme_font_size_h1' => 'H1 Font Size',
@@ -289,6 +322,10 @@ class ThemeSettings extends Component
             'theme_color_primary' => 'The primary brand color used throughout the site',
             'theme_color_secondary' => 'The secondary accent color',
             'theme_color_natural' => 'The neutral/natural color for backgrounds and borders',
+            'theme_footer_bg' => 'Background color for the footer area',
+            'theme_footer_text' => 'Text color for the footer',
+            'theme_header_bg' => 'Background color for the header area',
+            'theme_header_text' => 'Text color for the header',
             'theme_font_sans' => 'The primary sans-serif font family',
             'theme_font_outfit' => 'The secondary font family for headings',
             'theme_font_size_h1' => 'Font size for H1 headings',
@@ -312,15 +349,19 @@ class ThemeSettings extends Component
             'theme_color_primary' => 1,
             'theme_color_secondary' => 2,
             'theme_color_natural' => 3,
-            'theme_font_sans' => 4,
-            'theme_font_outfit' => 5,
-            'theme_font_size_h1' => 6,
-            'theme_font_size_h2' => 7,
-            'theme_font_size_h3' => 8,
-            'theme_font_size_h4' => 9,
-            'theme_font_size_h5' => 10,
-            'theme_font_size_h6' => 11,
-            'theme_font_size_p' => 12,
+            'theme_footer_bg' => 4,
+            'theme_footer_text' => 5,
+            'theme_header_bg' => 6,
+            'theme_header_text' => 7,
+            'theme_font_sans' => 8,
+            'theme_font_outfit' => 9,
+            'theme_font_size_h1' => 10,
+            'theme_font_size_h2' => 11,
+            'theme_font_size_h3' => 12,
+            'theme_font_size_h4' => 13,
+            'theme_font_size_h5' => 14,
+            'theme_font_size_h6' => 15,
+            'theme_font_size_p' => 16,
         ];
 
         return $orders[$key] ?? 0;
@@ -336,6 +377,10 @@ class ThemeSettings extends Component
             'theme_color_primary',
             'theme_color_secondary',
             'theme_color_natural',
+            'theme_footer_bg',
+            'theme_footer_text',
+            'theme_header_bg',
+            'theme_header_text',
             'theme_font_sans',
             'theme_font_outfit',
             'theme_font_size_h1',
