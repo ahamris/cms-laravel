@@ -308,6 +308,17 @@
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
                 <p class="text-xs text-gray-500 mt-1">Tags shown as buttons/chips in the sidebar block.</p>
             </div>
+            <div>
+                <x-ui.image-upload
+                    id="sidebar_bg_image"
+                    name="sidebar_bg_image"
+                    label="Sidebar background image"
+                    help-text="Optional. Shown behind the right column block (max 8MB)."
+                    :required="false"
+                    :current-image="optional(optional($megaMenu)->sidebar)->bg_image ? asset('storage/' . optional($megaMenu)->sidebar->bg_image) : null"
+                    current-image-alt="Sidebar background"
+                />
+            </div>
         </div>
         @endif
 

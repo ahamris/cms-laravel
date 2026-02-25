@@ -137,6 +137,9 @@ class MenuController extends Controller
                 'title' => $item['sidebar']['title'] ?? '',
                 'description' => $item['sidebar']['description'] ?? null,
                 'tags' => $item['sidebar']['tags'] ?? [],
+                'bg_image' => ! empty($item['sidebar']['bg_image'])
+                    ? url('storage/'.$item['sidebar']['bg_image'])
+                    : null,
             ];
         } else {
             $node['sidebar'] = null;

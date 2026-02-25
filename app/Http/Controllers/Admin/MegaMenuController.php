@@ -74,6 +74,7 @@ class MegaMenuController extends AdminBaseController
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
             'tags' => 'nullable|string|max:500',
+            'sidebar_bg_image' => 'nullable|file|image|max:8192',
         ]);
 
         $validated['tags'] = self::normalizeTags($request->input('tags'));
@@ -103,13 +104,18 @@ class MegaMenuController extends AdminBaseController
 
         $menuItem = MegaMenuItem::create($validated);
 
-        if (empty($validated['parent_id']) && ($sidebarTitle !== null && $sidebarTitle !== '')) {
-            MegaMenuSidebar::create([
+        $hasSidebarData = ($sidebarTitle !== null && $sidebarTitle !== '') || $request->hasFile('sidebar_bg_image');
+        if (empty($validated['parent_id']) && $hasSidebarData) {
+            $sidebarData = [
                 'mega_menu_item_id' => $menuItem->id,
-                'title' => $sidebarTitle,
+                'title' => $sidebarTitle ?? '',
                 'description' => $sidebarDescription,
                 'tags' => $sidebarTags,
-            ]);
+            ];
+            if ($request->hasFile('sidebar_bg_image')) {
+                $sidebarData['bg_image'] = $request->file('sidebar_bg_image')->store('mega-menu-sidebar', 'public');
+            }
+            MegaMenuSidebar::create($sidebarData);
         }
 
         // Clear mega menu cache
@@ -167,6 +173,7 @@ class MegaMenuController extends AdminBaseController
             'is_active' => 'boolean',
             'open_in_new_tab' => 'boolean',
             'tags' => 'nullable|string|max:500',
+            'sidebar_bg_image' => 'nullable|file|image|max:8192',
         ]);
 
         $validated['tags'] = self::normalizeTags($request->input('tags'));
@@ -208,14 +215,25 @@ class MegaMenuController extends AdminBaseController
         $megaMenu->update($validated);
 
         if ($megaMenu->parent_id === null) {
-            if ($sidebarTitle !== null && $sidebarTitle !== '') {
+            $existingSidebar = $megaMenu->sidebar;
+            $hasSidebarData = ($sidebarTitle !== null && $sidebarTitle !== '') || $request->hasFile('sidebar_bg_image') || $existingSidebar;
+
+            if ($hasSidebarData) {
+                $sidebarPayload = [
+                    'title' => ($sidebarTitle !== null && $sidebarTitle !== '') ? $sidebarTitle : ($existingSidebar?->title ?? ''),
+                    'description' => $sidebarDescription ?? $existingSidebar?->description,
+                    'tags' => $sidebarTags ?? $existingSidebar?->tags ?? [],
+                ];
+                if ($request->hasFile('sidebar_bg_image')) {
+                    $sidebarPayload['bg_image'] = $request->file('sidebar_bg_image')->store('mega-menu-sidebar', 'public');
+                } elseif ($request->boolean('remove_sidebar_bg_image')) {
+                    $sidebarPayload['bg_image'] = null;
+                } elseif ($existingSidebar && $existingSidebar->getAttribute('bg_image') !== null) {
+                    $sidebarPayload['bg_image'] = $existingSidebar->bg_image;
+                }
                 MegaMenuSidebar::updateOrCreate(
                     ['mega_menu_item_id' => $megaMenu->id],
-                    [
-                        'title' => $sidebarTitle,
-                        'description' => $sidebarDescription,
-                        'tags' => $sidebarTags,
-                    ]
+                    $sidebarPayload
                 );
             } else {
                 $megaMenu->sidebar?->delete();

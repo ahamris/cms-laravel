@@ -23,7 +23,7 @@
                 </h2>
             </div>
             
-            <form action="{{ route('admin.settings.mega-menu.update', $megaMenu) }}" method="POST">
+            <form action="{{ route('admin.settings.mega-menu.update', $megaMenu) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="p-6">

@@ -138,6 +138,7 @@ class MegaMenuItem extends BaseModel
                 'title' => $item->sidebar->title,
                 'description' => $item->sidebar->description,
                 'tags' => $item->sidebar->tags ?? [],
+                'bg_image' => $item->sidebar->bg_image,
             ];
         } else {
             $arr['sidebar'] = null;

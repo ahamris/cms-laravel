@@ -33,7 +33,7 @@
                 </h2>
             </div>
             
-            <form action="{{ route('admin.settings.mega-menu.store') }}" method="POST">
+            <form action="{{ route('admin.settings.mega-menu.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="p-6">
                     @include('admin.settings.mega-menu.form')

@@ -16,6 +16,7 @@ class MegaMenuSidebar extends BaseModel
         'title',
         'description',
         'tags',
+        'bg_image',
     ];
 
     protected function casts(): array
