@@ -44,6 +44,8 @@ return [
         'docs' => 'docs',
         'search' => 'search',
         'sitemap' => 'sitemap',
+        'partners' => 'partners',
+        'tech_stack' => 'tech-stack',
     ],
 
     /*

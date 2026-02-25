@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\Frontend\MediaController as ApiMediaController;
 use App\Http\Controllers\Api\Frontend\MenuController as ApiMenuController;
 use App\Http\Controllers\Api\Frontend\ModuleController as ApiModuleController;
 use App\Http\Controllers\Api\Frontend\PageController as ApiPageController;
+use App\Http\Controllers\Api\Frontend\PartnersController as ApiPartnersController;
+use App\Http\Controllers\Api\Frontend\TechStackController as ApiTechStackController;
 use App\Http\Controllers\Api\Frontend\PricingController as ApiPricingController;
 use App\Http\Controllers\Api\Frontend\RobotsTxtController as ApiRobotsTxtController;
 use App\Http\Controllers\Api\Frontend\SitemapController as ApiSitemapController;
@@ -52,6 +54,8 @@ Route::get('/features', [ApiFeatureController::class, 'index'])->name('api.featu
 Route::get('/features/{anchor}', [ApiFeatureController::class, 'show'])->name('api.features.show')->where('anchor', '[a-z0-9\-]+');
 Route::get('/solutions', [ApiSolutionController::class, 'index'])->name('api.solutions.index');
 Route::get('/solutions/{anchor}', [ApiSolutionController::class, 'show'])->name('api.solutions.show')->where('anchor', '[a-z0-9\-]+');
+Route::get('/partners', [ApiPartnersController::class, 'index'])->name('api.partners.index');
+Route::get('/tech-stack', [ApiTechStackController::class, 'index'])->name('api.tech-stack.index');
 Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitemap');
 Route::get('/robots-txt', [ApiRobotsTxtController::class, 'index'])->name('api.robots-txt');
 Route::get('/media', [ApiMediaController::class, 'index'])->name('api.media.index');

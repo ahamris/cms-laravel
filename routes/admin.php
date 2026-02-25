@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\LiveSessionController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\PartnerTechItemController;
 use App\Http\Controllers\Admin\PresenterController;
 use App\Http\Controllers\Admin\PricingBoosterController;
 use App\Http\Controllers\Admin\PricingFeatureController;
@@ -217,6 +218,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::post('doc-sections/{docSection}/toggle-active', [DocSectionController::class, 'toggleActive'])->name('doc-sections.toggle-active');
         Route::resource('doc-pages', DocPageController::class)->parameters(['doc-pages' => 'docPage']);
         Route::post('doc-pages/{docPage}/toggle-active', [DocPageController::class, 'toggleActive'])->name('doc-pages.toggle-active');
+
+        // Partners & Tech Stack
+        Route::resource('partner-tech-item', PartnerTechItemController::class)->parameters(['partner-tech-item' => 'partnerTechItem']);
+        Route::post('partner-tech-item/{partnerTechItem}/toggle-active', [PartnerTechItemController::class, 'toggleActive'])->name('partner-tech-item.toggle-active');
 
         // API Changelog
         Route::get('api-changelog', [ApiChangelogController::class, 'index'])->name('api-changelog.index');

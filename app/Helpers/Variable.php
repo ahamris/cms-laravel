@@ -152,6 +152,12 @@ class Variable
         'doc_page_edit' => [self::ROLE_ADMIN],
         'doc_page_delete' => [self::ROLE_ADMIN],
 
+        'partner_tech_item_access' => [self::ROLE_ADMIN],
+        'partner_tech_item_show' => [self::ROLE_ADMIN],
+        'partner_tech_item_create' => [self::ROLE_ADMIN],
+        'partner_tech_item_edit' => [self::ROLE_ADMIN],
+        'partner_tech_item_delete' => [self::ROLE_ADMIN],
+
         'faq_module_access' => [self::ROLE_ADMIN],
         'faq_module_show' => [self::ROLE_ADMIN],
         'faq_module_create' => [self::ROLE_ADMIN],

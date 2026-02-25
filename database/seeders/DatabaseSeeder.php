@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             DocSeeder::class,
             FaqSeeder::class,
             ContactSubjectSeeder::class,
+            PartnerTechStackSeeder::class,
         ]);
     }
 }

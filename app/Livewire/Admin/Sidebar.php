@@ -136,6 +136,13 @@ class Sidebar extends Component
                         ],
                     ],
                     [
+                        'label' => 'Partners & Tech',
+                        'route_name' => 'admin.partner-tech-item.index',
+                        'icon' => 'handshake',
+                        'permission' => 'partner_tech_item_access',
+                        'active_pattern' => 'admin.partner-tech-item*',
+                    ],
+                    [
                         'label' => 'Solution & Modules',
                         'route_name' => 'admin.solution.index',
                         'icon' => 'puzzle-piece',
