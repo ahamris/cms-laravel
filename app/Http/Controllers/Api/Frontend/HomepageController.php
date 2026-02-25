@@ -123,10 +123,10 @@ class HomepageController extends Controller
                 'contact' => get_setting('hero_background_contact') ? get_image(get_setting('hero_background_contact')) : null,
                 'blog' => get_setting('hero_background_blog') ? get_image(get_setting('hero_background_blog')) : null,
                 'solutions_index' => get_setting('hero_background_solutions_index') ? get_image(get_setting('hero_background_solutions_index')) : null,
-                'solutions_show' => get_setting('hero_background_solutions_show') ? get_image(get_setting('hero_background_solutions_show')) : null,
                 'modules_index' => get_setting('hero_background_modules_index') ? get_image(get_setting('hero_background_modules_index')) : null,
-                'modules_show' => get_setting('hero_background_modules_show') ? get_image(get_setting('hero_background_modules_show')) : null,
+                'docs' => get_setting('hero_background_docs') ? get_image(get_setting('hero_background_docs')) : null,
                 'academy' => get_setting('hero_background_academy') ? get_image(get_setting('hero_background_academy')) : null,
+                'trial' => get_setting('hero_background_trial') ? get_image(get_setting('hero_background_trial')) : null,
             ],
             'header' => [
                 'cta_button_text' => get_setting('header_cta_button_text'),

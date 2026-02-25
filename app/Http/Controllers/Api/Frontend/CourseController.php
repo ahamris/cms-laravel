@@ -78,8 +78,11 @@ class CourseController extends Controller
         $recentVideosArr = CourseVideoListResource::collection($recentVideos)->toArray($request);
         $categoriesArr = CourseCategoryListResource::collection($courseCategories)->toArray($request);
 
+        $banner = get_setting('hero_background_academy') ? get_image(get_setting('hero_background_academy')) : null;
+
         return response()->json([
             'template' => 'academy',
+            'banner' => $banner,
             'data' => [
                 'featured_session' => $featuredSession ? (new LiveSessionResource($featuredSession))->toArray($request) : null,
                 'upcoming_sessions' => isset($upcomingArr['data']) ? $upcomingArr['data'] : $upcomingArr,

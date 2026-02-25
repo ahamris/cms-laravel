@@ -171,7 +171,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::post('static-page/{staticPage}/faq/{faqId}/toggle-active', [StaticPageController::class, 'toggleFaqActive'])->name('static-page.toggle-faq-active');
 
         // Blog Categories
-        Route::get('blog-category/{blogCategory}/json', [BlogCategoryController::class, 'getJson'])->name('blog-category.json');
         Route::resource('blog-category', BlogCategoryController::class);
         Route::post('blog-category/{blogCategory}/toggle-active', [BlogCategoryController::class, 'toggleActive'])->name('blog-category.toggle-active');
 

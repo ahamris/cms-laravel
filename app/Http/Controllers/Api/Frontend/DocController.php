@@ -25,7 +25,12 @@ class DocController extends Controller
             }])
             ->get();
 
-        return DocVersionResource::collection($versions)->additional(['template' => 'docs-list']);
+        $banner = get_setting('hero_background_docs') ? get_image(get_setting('hero_background_docs')) : null;
+
+        return DocVersionResource::collection($versions)->additional([
+            'template' => 'docs-list',
+            'banner' => $banner,
+        ]);
     }
 
     #[OA\Get(path: '/api/docs/{version}', summary: 'Doc version by slug', tags: ['Docs'], parameters: [

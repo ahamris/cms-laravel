@@ -2,7 +2,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
             <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Hero section backgrounds</h1>
-            <p class="text-zinc-600 dark:text-zinc-400">Set background images for the hero/header section on contact, blog, solutions, modules and academy pages. Leave empty to keep the current default (colour or gradient).</p>
+            <p class="text-zinc-600 dark:text-zinc-400">Set background images for the hero/header section on contact, blog, solutions, modules, docs, academy and demo request (list/static pages only). Leave empty to keep the current default (colour or gradient).</p>
         </div>
     </div>
 
@@ -26,13 +26,13 @@
         <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach([
-                    'hero_background_contact' => ['Contact', '/contact'],
-                    'hero_background_blog' => ['Artikelen (blog)', '/artikelen'],
-                    'hero_background_solutions_index' => ['Oplossingen', '/oplossing'],
-                    'hero_background_solutions_show' => ['Oplossing detail', '/oplossing/…'],
-                    'hero_background_modules_index' => ['Modules', '/modules'],
-                    'hero_background_modules_show' => ['Module detail', '/modules/…'],
-                    'hero_background_academy' => ['Academy', '/academy'],
+                    'hero_background_contact' => ['Contact', '/api/contact'],
+                    'hero_background_blog' => ['Blog', '/api/blog'],
+                    'hero_background_solutions_index' => ['Solutions', '/api/solutions'],
+                    'hero_background_modules_index' => ['Modules', '/api/modules'],
+                    'hero_background_docs' => ['Docs', '/api/docs'],
+                    'hero_background_academy' => ['Academy', '/api/course'],
+                    'hero_background_trial' => ['Demo request', '/api/proefversie'],
                 ] as $key => $label)
                     <div>
                         <x-image-upload

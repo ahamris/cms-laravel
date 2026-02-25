@@ -9,14 +9,15 @@ use Illuminate\Support\Facades\Storage;
 
 class HeroBackgroundSettingsController extends AdminBaseController
 {
+    /** Hero backgrounds for list/static pages only (no detail pages). Aligned with API endpoints. */
     private const HERO_KEYS = [
         'hero_background_contact',
         'hero_background_blog',
         'hero_background_solutions_index',
-        'hero_background_solutions_show',
         'hero_background_modules_index',
-        'hero_background_modules_show',
+        'hero_background_docs',
         'hero_background_academy',
+        'hero_background_trial',
     ];
 
     /**

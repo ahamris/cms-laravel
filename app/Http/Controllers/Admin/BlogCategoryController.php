@@ -35,35 +35,10 @@ class BlogCategoryController extends AdminBaseController
         // Set is_active (toggle sends '1' when checked, '0' when unchecked)
         $validated['is_active'] = $request->input('is_active', '0') === '1';
 
-        $blogCategory = BlogCategory::create($validated);
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Blog category created successfully!',
-                'data' => $blogCategory,
-            ]);
-        }
+        BlogCategory::create($validated);
 
         return redirect()->route('admin.blog-category.index')
             ->with('success', 'Blog category created successfully!');
-    }
-
-    /**
-     * Get blog category data as JSON.
-     */
-    public function getJson(BlogCategory $blogCategory)
-    {
-        return response()->json([
-            'id' => $blogCategory->id,
-            'name' => $blogCategory->name,
-            'slug' => $blogCategory->slug,
-            'description' => $blogCategory->description,
-            'color' => $blogCategory->color,
-            'is_active' => $blogCategory->is_active,
-            'created_at' => $blogCategory->created_at?->toIso8601String(),
-            'updated_at' => $blogCategory->updated_at?->toIso8601String(),
-        ]);
     }
 
     /**
@@ -93,14 +68,6 @@ class BlogCategoryController extends AdminBaseController
         $validated['is_active'] = $request->input('is_active', '0') === '1';
 
         $blogCategory->update($validated);
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Blog category updated successfully!',
-                'data' => $blogCategory,
-            ]);
-        }
 
         return redirect()->route('admin.blog-category.index')
             ->with('success', 'Blog category updated successfully!');

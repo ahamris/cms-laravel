@@ -4,7 +4,7 @@
         size="sm" 
         icon="eye" 
         title="View"
-        x-on:click="$dispatch('open-view-drawer', { id: {{ $item->id }} })"
+        href="{{ route('admin.blog-category.show', $item) }}"
     ></x-button>
 @endif
 
@@ -14,7 +14,7 @@
         size="sm" 
         icon="edit" 
         title="Edit"
-        x-on:click="$dispatch('open-edit-drawer', { id: {{ $item->id }} })"
+        href="{{ route('admin.blog-category.edit', $item) }}"
     ></x-button>
 @endif
 

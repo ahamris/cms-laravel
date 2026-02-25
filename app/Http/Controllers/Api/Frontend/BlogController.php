@@ -68,10 +68,12 @@ class BlogController extends Controller
         $total = (clone $articlesQuery)->count();
         $items = $articlesQuery->latest()->skip($offset)->take($perPage)->get();
         $hasMore = $total > $offset + $items->count();
+        $banner = get_setting('hero_background_blog') ? get_image(get_setting('hero_background_blog')) : null;
 
         return response()->json([
             'data' => BlogListResource::collection($items),
             'template' => 'blog-list',
+            'banner' => $banner,
             'has_more' => $hasMore,
             'next_page' => $hasMore ? $page + 1 : null,
         ]);

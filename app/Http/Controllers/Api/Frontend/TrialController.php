@@ -15,9 +15,11 @@ class TrialController extends Controller
     public function index(): JsonResponse
     {
         $solutions = Solution::get(['id', 'title', 'subtitle']);
+        $banner = get_setting('hero_background_trial') ? get_image(get_setting('hero_background_trial')) : null;
 
         return response()->json([
             'template' => 'trial',
+            'banner' => $banner,
             'data' => [
                 'solutions' => $solutions,
             ],

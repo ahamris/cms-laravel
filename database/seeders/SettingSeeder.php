@@ -115,14 +115,14 @@ class SettingSeeder extends Seeder
         $this->createSetting('map_longitude', '4.9041', 'text', 'contact', 'Map Longitude', 'Longitude coordinate for map center', 2);
         $this->createSetting('map_zoom', '13', 'number', 'contact', 'Map Zoom Level', 'Map zoom level (1-19)', 3);
 
-        // Hero / Header section background images (frontend pages)
-        $this->createSetting('hero_background_contact', null, 'image', 'hero', 'Contact page hero', 'Background image for the contact page hero section', 1);
-        $this->createSetting('hero_background_blog', null, 'image', 'hero', 'Artikelen (blog) hero', 'Background image for the blog index page hero section', 2);
-        $this->createSetting('hero_background_solutions_index', null, 'image', 'hero', 'Oplossingen (solutions) hero', 'Background image for the solutions index page hero section', 3);
-        $this->createSetting('hero_background_solutions_show', null, 'image', 'hero', 'Oplossing detail hero', 'Background image for individual solution (oplossing) pages', 4);
-        $this->createSetting('hero_background_modules_index', null, 'image', 'hero', 'Modules hero', 'Background image for the modules index page hero section', 5);
-        $this->createSetting('hero_background_modules_show', null, 'image', 'hero', 'Module detail hero', 'Background image for individual module pages', 6);
-        $this->createSetting('hero_background_academy', null, 'image', 'hero', 'Academy hero', 'Background image for the academy page hero section', 7);
+        // Hero / Header section background images (list/static pages only; aligned with API endpoints)
+        $this->createSetting('hero_background_contact', null, 'image', 'hero', 'Contact hero', 'Background image for the contact page hero section', 1);
+        $this->createSetting('hero_background_blog', null, 'image', 'hero', 'Blog hero', 'Background image for the blog index page hero section', 2);
+        $this->createSetting('hero_background_solutions_index', null, 'image', 'hero', 'Solutions hero', 'Background image for the solutions index page hero section', 3);
+        $this->createSetting('hero_background_modules_index', null, 'image', 'hero', 'Modules hero', 'Background image for the modules index page hero section', 4);
+        $this->createSetting('hero_background_docs', null, 'image', 'hero', 'Docs hero', 'Background image for the docs page hero section', 5);
+        $this->createSetting('hero_background_academy', null, 'image', 'hero', 'Academy hero', 'Background image for the academy (course) page hero section', 6);
+        $this->createSetting('hero_background_trial', null, 'image', 'hero', 'Demo request hero', 'Background image for the demo request (proefversie) page hero section', 7);
     }
 
     private function createSetting($key, $value, $type, $group, $displayName, $description = null, $order = 0): void

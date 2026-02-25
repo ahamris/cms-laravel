@@ -26,7 +26,12 @@ class SolutionController extends Controller
             }])
             ->get();
 
-        return SolutionListResource::collection($solutions)->additional(['template' => 'solutions-list']);
+        $banner = get_setting('hero_background_solutions_index') ? get_image(get_setting('hero_background_solutions_index')) : null;
+
+        return SolutionListResource::collection($solutions)->additional([
+            'template' => 'solutions-list',
+            'banner' => $banner,
+        ]);
     }
 
     #[OA\Get(path: '/api/solutions/{anchor}', summary: 'Solution by anchor', tags: ['Solution'], parameters: [

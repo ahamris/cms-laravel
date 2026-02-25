@@ -22,7 +22,12 @@ class ModuleController extends Controller
             ->with(['feature'])
             ->get();
 
-        return ModuleListResource::collection($modules)->additional(['template' => 'modules-list']);
+        $banner = get_setting('hero_background_modules_index') ? get_image(get_setting('hero_background_modules_index')) : null;
+
+        return ModuleListResource::collection($modules)->additional([
+            'template' => 'modules-list',
+            'banner' => $banner,
+        ]);
     }
 
     #[OA\Get(path: '/api/modules/{slug}', summary: 'Module by slug', tags: ['Solution'], parameters: [

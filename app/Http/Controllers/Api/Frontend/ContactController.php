@@ -53,9 +53,12 @@ class ContactController extends Controller
             'sort_order' => $s->sort_order,
         ])->values()->all();
 
+        $banner = get_setting('hero_background_contact') ? get_image(get_setting('hero_background_contact')) : null;
+
         return response()->json([
             'template' => 'contact',
-            'data' => $data, 
+            'banner' => $banner,
+            'data' => $data,
             'faqs' => Faq::getByIdentifier('contact') ?: null,
             'subjects' => ContactSubject::getCached()->map(fn ($s) => [
                 'id' => $s->id,
