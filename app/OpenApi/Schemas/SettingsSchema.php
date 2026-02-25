@@ -41,8 +41,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'cookie', type: 'object', description: 'Cookie banner and preference labels/URLs'),
         new OA\Property(property: 'hero', type: 'object', description: 'Hero background image URLs by section'),
         new OA\Property(property: 'header', type: 'object', description: 'Header CTA button text and URL'),
-        new OA\Property(property: 'organizations', type: 'array', description: 'Cached organizations'),
-        new OA\Property(property: 'external_codes', type: 'array', description: 'Cached external code snippets'),
+        new OA\Property(property: 'organizations', type: 'array', items: new OA\Items(type: 'object'), description: 'Cached organizations'),
+        new OA\Property(property: 'external_codes', type: 'array', items: new OA\Items(type: 'object'), description: 'Cached external code snippets'),
     ]
 )]
 class SettingsSchema
