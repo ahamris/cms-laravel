@@ -22,8 +22,8 @@
                     <div class="w-8 h-8 bg-[var(--color-accent)] dark:bg-[var(--color-accent)] rounded-md flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-{{ $logo }} text-white text-sm"></i>
                     </div>
+                    <span class="ml-3 text-lg font-semibold text-zinc-900 dark:text-white truncate">{{ $title }}</span>
                 @endif
-                <span class="ml-3 text-lg font-semibold text-zinc-900 dark:text-white truncate">{{ $title }}</span>
             </div>
             <button 
                 @click="$store.sidebar.toggle()" 
