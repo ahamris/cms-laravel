@@ -13,9 +13,15 @@
 
     <form action="{{ route('admin.blog-type.store') }}" method="POST" class="max-w-xl">
         @csrf
-        <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
+        <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 space-y-6">
             <x-ui.input id="name" name="name" label="Name" :value="old('name')" placeholder="e.g. Article, News" required />
             @error('name')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                <textarea id="description" name="description" rows="3" placeholder="Optional description for this blog type"
+                    class="block w-full rounded-md border-gray-300 dark:border-white/20 dark:bg-white/5 dark:text-white shadow-sm focus:border-[var(--color-accent)] focus:ring-[var(--color-accent)] sm:text-sm">{{ old('description') }}</textarea>
+                @error('description')<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
+            </div>
         </div>
         <div class="mt-6 flex gap-3">
             <a href="{{ route('admin.blog-type.index') }}" class="inline-flex items-center rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-gray-300 dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">Cancel</a>

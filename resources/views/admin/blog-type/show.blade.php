@@ -26,6 +26,12 @@
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Name</dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $blogType->name }}</dd>
             </div>
+            @if($blogType->description)
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Description</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{{ $blogType->description }}</dd>
+            </div>
+            @endif
             <div>
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Blogs using this type</dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $blogType->blogs()->count() }}</dd>

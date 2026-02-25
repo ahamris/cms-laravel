@@ -20,6 +20,7 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(property: 'id', type: 'integer'),
         new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'description', type: 'string', nullable: true, description: 'Optional description of the blog type'),
     ]
 )]
 #[OA\Schema(

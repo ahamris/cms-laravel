@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class BlogType extends BaseModel
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'description'];
 
     /**
      * Blogs that use this type.

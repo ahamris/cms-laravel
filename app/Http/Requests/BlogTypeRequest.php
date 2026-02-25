@@ -15,6 +15,7 @@ class BlogTypeRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:65535',
         ];
     }
 
@@ -22,6 +23,7 @@ class BlogTypeRequest extends FormRequest
     {
         return [
             'name' => 'name',
+            'description' => 'description',
         ];
     }
 }

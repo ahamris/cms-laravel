@@ -40,6 +40,7 @@ class BlogResource extends JsonResource
             'blog_type' => $blogType ? [
                 'id' => $blogType->id,
                 'name' => $blogType->name,
+                'description' => $blogType->description,
             ] : null,
             'author' => $author ? [
                 'id' => $author->id,
