@@ -51,14 +51,6 @@ class DocPage extends BaseModel
     }
 
     /**
-     * Get the version through the section.
-     */
-    public function version()
-    {
-        return $this->section->version();
-    }
-
-    /**
      * Scope for active pages.
      */
     public function scopeActive($query)

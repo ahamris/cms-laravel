@@ -15,7 +15,6 @@ class DocPageResource extends JsonResource
     public function toArray(Request $request): array
     {
         $section = $this->section;
-        $version = $section?->version;
 
         return resource_urls_to_paths([
             'id' => $this->id,
@@ -30,13 +29,8 @@ class DocPageResource extends JsonResource
                 'title' => $section->title,
                 'slug' => $section->slug,
             ] : null,
-            'version' => $version ? [
-                'id' => $version->id,
-                'version' => $version->version,
-                'name' => $version->name,
-            ] : null,
-            'url' => $version && $section
-                ? route('docs.page', ['version' => $version->version, 'section' => $section->slug, 'page' => $this->slug])
+            'url' => $section
+                ? route('api.docs.page', ['section' => $section->slug, 'page' => $this->slug])
                 : null,
             'template' => 'doc-page',
             'created_at' => $this->created_at?->toIso8601String(),

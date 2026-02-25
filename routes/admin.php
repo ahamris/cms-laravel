@@ -23,7 +23,6 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseVideoController;
 use App\Http\Controllers\Admin\DocPageController;
 use App\Http\Controllers\Admin\DocSectionController;
-use App\Http\Controllers\Admin\DocVersionController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ExternalCodeController;
 use App\Http\Controllers\Admin\FeatureController;
@@ -214,9 +213,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::post('changelogs/update-order', [ChangelogController::class, 'updateOrder'])->name('changelogs.update-order');
 
         // Documentation
-        Route::resource('doc-versions', DocVersionController::class)->parameters(['doc-versions' => 'docVersion']);
-        Route::post('doc-versions/{docVersion}/set-default', [DocVersionController::class, 'setDefault'])->name('doc-versions.set-default');
-        Route::post('doc-versions/{docVersion}/toggle-active', [DocVersionController::class, 'toggleActive'])->name('doc-versions.toggle-active');
         Route::resource('doc-sections', DocSectionController::class)->parameters(['doc-sections' => 'docSection']);
         Route::post('doc-sections/{docSection}/toggle-active', [DocSectionController::class, 'toggleActive'])->name('doc-sections.toggle-active');
         Route::resource('doc-pages', DocPageController::class)->parameters(['doc-pages' => 'docPage']);

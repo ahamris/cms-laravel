@@ -24,18 +24,14 @@
                         <h3 class="text-base font-semibold text-gray-900 mb-4">Basic Information</h3>
                         <div class="space-y-4">
                             @if($sections->isEmpty())
-                                <div class="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-md text-sm">No active sections. Create a <a href="{{ route('admin.doc-versions.index') }}" class="underline">documentation version</a> and a section first.</div>
+                                <div class="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-md text-sm">No active sections. <a href="{{ route('admin.doc-sections.create') }}" class="underline">Create a section</a> first.</div>
                             @endif
                             <div>
                                 <label for="doc_section_id" class="block text-xs font-medium text-gray-700 mb-1">Section <span class="text-red-500">*</span></label>
                                 <select id="doc_section_id" name="doc_section_id" required class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none @error('doc_section_id') border-red-500 @enderror">
                                     <option value="">Select section</option>
-                                    @foreach($sections as $versionName => $versionSections)
-                                        <optgroup label="{{ $versionName }}">
-                                            @foreach($versionSections as $sec)
-                                                <option value="{{ $sec->id }}" {{ old('doc_section_id', request('doc_section_id')) == $sec->id ? 'selected' : '' }}>{{ $sec->title }}</option>
-                                            @endforeach
-                                        </optgroup>
+                                    @foreach($sections as $sec)
+                                        <option value="{{ $sec->id }}" {{ old('doc_section_id', request('doc_section_id')) == $sec->id ? 'selected' : '' }}>{{ $sec->title }}</option>
                                     @endforeach
                                 </select>
                                 @error('doc_section_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror

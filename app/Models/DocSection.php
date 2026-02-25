@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\Traits\ClearsSitemapCache;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -15,7 +14,6 @@ class DocSection extends BaseModel
     use Sluggable, ClearsSitemapCache;
 
     protected $fillable = [
-        'doc_version_id',
         'title',
         'slug',
         'description',
@@ -39,14 +37,6 @@ class DocSection extends BaseModel
                 'onUpdate' => true,
             ],
         ];
-    }
-
-    /**
-     * Get the version that owns this section.
-     */
-    public function version(): BelongsTo
-    {
-        return $this->belongsTo(DocVersion::class, 'doc_version_id');
     }
 
     /**

@@ -45,8 +45,7 @@ Route::get('/settings', [HomepageController::class, 'settings'])->name('api.sett
 Route::get('/homepage', [HomepageController::class, 'homepage'])->name('api.homepage');
 Route::get('/docs', [ApiDocController::class, 'index'])->name('api.docs.index');
 Route::get('/docs/search', [ApiDocController::class, 'search'])->name('api.docs.search');
-Route::get('/docs/{version}', [ApiDocController::class, 'showVersion'])->name('api.docs.version')->where('version', '[a-z0-9\.\-]+');
-Route::get('/docs/{version}/{section}/{page}', [ApiDocController::class, 'showPage'])->name('api.docs.page')->where(['version' => '[a-z0-9\.\-]+', 'section' => '[a-z0-9\-]+', 'page' => '[a-z0-9\-]+']);
+Route::get('/docs/{section}/{page}', [ApiDocController::class, 'showPage'])->name('api.docs.page')->where(['section' => '[a-z0-9\-]+', 'page' => '[a-z0-9\-]+']);
 Route::get('/modules', [ApiModuleController::class, 'index'])->name('api.modules.index');
 Route::get('/modules/{slug}', [ApiModuleController::class, 'show'])->name('api.modules.show')->where('slug', '[a-z0-9\-]+');
 Route::get('/features', [ApiFeatureController::class, 'index'])->name('api.features.index');

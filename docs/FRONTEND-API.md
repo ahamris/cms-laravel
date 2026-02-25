@@ -849,16 +849,16 @@ Returns sticky menu items (e.g. for mobile or secondary nav).
 
 ## Documentation
 
-Documentation versions, sections, and pages.
+Documentation sections and pages (no versioning).
 
-### List doc versions
+### List doc sections
 
 **GET** `/api/docs`  
 **Auth:** None (public). Restricted by allowed origins.
 
-Returns active doc versions with their sections and pages tree.
+Returns active doc sections with their pages tree.
 
-**Example response:** `200 OK` — Collection of doc version resources (structure depends on `DocVersionResource`).
+**Example response:** `200 OK` — Collection of doc section resources (id, title, slug, description, sort_order, pages).
 
 ---
 
@@ -872,7 +872,6 @@ Returns active doc versions with their sections and pages tree.
 | Parameter  | Type   | Required | Description                |
 |-----------|--------|----------|----------------------------|
 | `q`       | string | yes      | Search query (min. 2 chars). |
-| `version` | string | no       | Limit to doc version slug.  |
 
 **Example response:** `200 OK`
 
@@ -884,7 +883,6 @@ Returns active doc versions with their sections and pages tree.
       "title": "Getting started",
       "url": "https://...",
       "section": "Introduction",
-      "version": "1.0",
       "excerpt": "..."
     }
   ],
@@ -895,27 +893,16 @@ Returns active doc versions with their sections and pages tree.
 
 ---
 
-### Get doc version by slug
-
-**GET** `/api/docs/{version}`  
-**Auth:** None (public). Restricted by allowed origins.
-
-Returns a single active doc version with its sections and pages.
-
-**Error:** `404 Not Found` if version not found or inactive.
-
----
-
 ### Get doc page
 
-**GET** `/api/docs/{version}/{section}/{page}`  
+**GET** `/api/docs/{section}/{page}`  
 **Auth:** None (public). Restricted by allowed origins.
 
-Returns a single doc page by version slug, section slug, and page slug.
+Returns a single doc page by section slug and page slug.
 
-**Example:** `GET /api/docs/1.0/intro/getting-started`
+**Example:** `GET /api/docs/getting-started/introduction`
 
-**Error:** `404 Not Found` if any part of the path is missing or inactive.
+**Error:** `404 Not Found` if section or page is missing or inactive.
 
 ---
 
@@ -1447,10 +1434,9 @@ Returns aggregated stats (if implemented). Response shape depends on the applica
 | GET | `/api/menus/header` | — | Header (mega) menu |
 | GET | `/api/menus/footer` | — | Footer menu |
 | GET | `/api/menus/sticky` | — | Sticky menu items |
-| GET | `/api/docs` | — | Doc versions with sections/pages tree |
+| GET | `/api/docs` | — | Doc sections with pages tree |
 | GET | `/api/docs/search?q=` | — | Search documentation |
-| GET | `/api/docs/{version}` | — | Single doc version |
-| GET | `/api/docs/{version}/{section}/{page}` | — | Single doc page |
+| GET | `/api/docs/{section}/{page}` | — | Single doc page |
 | GET | `/api/course` | — | Course index (sessions, videos, categories) |
 | GET | `/api/course/categories` | — | Course categories |
 | GET | `/api/course/category/{slug}` | — | Single category |

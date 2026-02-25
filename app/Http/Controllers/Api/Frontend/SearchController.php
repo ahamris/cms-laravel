@@ -118,20 +118,19 @@ class SearchController extends Controller
                 ->where(function ($q) use ($like) {
                     $q->where('title', 'like', $like)->orWhere('content', 'like', $like);
                 })
-                ->whereHas('section.version', fn ($q) => $q->where('is_active', true))
-                ->with(['section.version'])
+                ->whereHas('section', fn ($q) => $q->where('is_active', true))
+                ->with(['section'])
                 ->orderBy('title')
                 ->when($type === 'all', fn ($q) => $q->limit(10))
                 ->when($type !== 'all', fn ($q) => $q->offset(($page - 1) * $perPage)->limit($perPage))
                 ->get();
             $totals['docs'] = DocPage::where('is_active', true)->where(function ($q) use ($like) {
                 $q->where('title', 'like', $like)->orWhere('content', 'like', $like);
-            })->whereHas('section.version', fn ($q) => $q->where('is_active', true))->count();
+            })->whereHas('section', fn ($q) => $q->where('is_active', true))->count();
             foreach ($items as $item) {
-                $version = $item->section->version->version ?? '';
                 $section = $item->section->slug ?? '';
-                $url = Route::has('api.docs.page') ? route('api.docs.page', ['version' => $version, 'section' => $item->section->slug, 'page' => $item->slug]) : url("/api/docs/{$version}/{$section}/{$item->slug}");
-                $results->push($this->formatResult('doc', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->content ?? ''), 160), $url, ['version' => $version, 'section' => $section, 'slug' => $item->slug]));
+                $url = Route::has('api.docs.page') ? route('api.docs.page', ['section' => $item->section->slug, 'page' => $item->slug]) : url("/api/docs/{$section}/{$item->slug}");
+                $results->push($this->formatResult('doc', $item->title, \Illuminate\Support\Str::limit(strip_tags($item->content ?? ''), 160), $url, ['section' => $section, 'slug' => $item->slug]));
             }
         }
 

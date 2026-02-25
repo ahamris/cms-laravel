@@ -4,14 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\DocPage;
 use App\Models\DocSection;
-use App\Models\DocVersion;
 use Illuminate\Database\Seeder;
 
 class DocSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * Creates 2 doc versions with sections and 5–6 documentation pages in total.
+     * Creates doc sections and documentation pages (no versioning).
      */
     public function run(): void
     {
@@ -19,83 +18,52 @@ class DocSeeder extends Seeder
             return;
         }
 
-        if (DocVersion::count() > 0) {
+        if (DocSection::count() > 0) {
             return;
         }
 
-        $versions = [
+        $sections = [
             [
-                'version' => '1.0',
-                'name' => 'Documentation v1.0',
-                'is_active' => true,
-                'is_default' => true,
+                'title' => 'Getting started',
+                'slug' => 'getting-started',
+                'description' => 'Introduction and setup guide.',
                 'sort_order' => 0,
+                'pages' => [
+                    ['title' => 'Introduction', 'content' => $this->introContent(), 'sort_order' => 0],
+                    ['title' => 'Installation', 'content' => $this->installationContent(), 'sort_order' => 1],
+                ],
             ],
             [
-                'version' => '2.0',
-                'name' => 'Documentation v2.0',
-                'is_active' => true,
-                'is_default' => false,
+                'title' => 'API Reference',
+                'slug' => 'api-reference',
+                'description' => 'API endpoints and usage.',
                 'sort_order' => 1,
+                'pages' => [
+                    ['title' => 'Authentication', 'content' => $this->authContent(), 'sort_order' => 0],
+                    ['title' => 'Pagination', 'content' => $this->paginationContent(), 'sort_order' => 1],
+                ],
             ],
         ];
 
-        foreach ($versions as $versionData) {
-            $version = DocVersion::create($versionData);
+        foreach ($sections as $sectionData) {
+            $pages = $sectionData['pages'];
+            unset($sectionData['pages']);
 
-            // Version 1.0: 3 pages (Intro, Installation, Authentication). Version 2.0: 3 pages (Intro, Authentication, Pagination). Total 6.
-            $sections = [
-                [
-                    'title' => 'Getting started',
-                    'slug' => 'getting-started',
-                    'description' => 'Introduction and setup guide.',
-                    'sort_order' => 0,
-                    'pages' => $version->version === '1.0'
-                        ? [
-                            ['title' => 'Introduction', 'content' => $this->introContent(), 'sort_order' => 0],
-                            ['title' => 'Installation', 'content' => $this->installationContent(), 'sort_order' => 1],
-                        ]
-                        : [
-                            ['title' => 'Introduction', 'content' => $this->introContent(), 'sort_order' => 0],
-                        ],
-                ],
-                [
-                    'title' => 'API Reference',
-                    'slug' => 'api-reference',
-                    'description' => 'API endpoints and usage.',
-                    'sort_order' => 1,
-                    'pages' => $version->version === '1.0'
-                        ? [
-                            ['title' => 'Authentication', 'content' => $this->authContent(), 'sort_order' => 0],
-                        ]
-                        : [
-                            ['title' => 'Authentication', 'content' => $this->authContent(), 'sort_order' => 0],
-                            ['title' => 'Pagination', 'content' => $this->paginationContent(), 'sort_order' => 1],
-                        ],
-                ],
-            ];
+            $section = DocSection::create(array_merge($sectionData, [
+                'is_active' => true,
+            ]));
 
-            foreach ($sections as $sectionData) {
-                $pages = $sectionData['pages'];
-                unset($sectionData['pages']);
-
-                $section = DocSection::create(array_merge($sectionData, [
-                    'doc_version_id' => $version->id,
+            foreach ($pages as $pageData) {
+                DocPage::create([
+                    'doc_section_id' => $section->id,
+                    'title' => $pageData['title'],
+                    'slug' => \Illuminate\Support\Str::slug($pageData['title']),
+                    'content' => $pageData['content'],
+                    'meta_title' => $pageData['title'] . ' | Documentation',
+                    'meta_description' => strip_tags(\Illuminate\Support\Str::limit($pageData['content'], 160)),
+                    'sort_order' => $pageData['sort_order'],
                     'is_active' => true,
-                ]));
-
-                foreach ($pages as $pageData) {
-                    DocPage::create([
-                        'doc_section_id' => $section->id,
-                        'title' => $pageData['title'],
-                        'slug' => \Illuminate\Support\Str::slug($pageData['title']),
-                        'content' => $pageData['content'],
-                        'meta_title' => $pageData['title'] . ' | ' . $version->name,
-                        'meta_description' => strip_tags(\Illuminate\Support\Str::limit($pageData['content'], 160)),
-                        'sort_order' => $pageData['sort_order'],
-                        'is_active' => true,
-                    ]);
-                }
+                ]);
             }
         }
     }

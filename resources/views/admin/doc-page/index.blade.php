@@ -32,7 +32,7 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Version / Section</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
@@ -43,9 +43,7 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($pages as $page)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">
-                                {{ $page->section->version->name ?? '-' }} / {{ $page->section->title ?? '-' }}
-                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">{{ $page->section->title ?? '-' }}</td>
                             <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ $page->title }}</td>
                             <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ $page->slug }}</td>
                             <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ $page->sort_order }}</td>

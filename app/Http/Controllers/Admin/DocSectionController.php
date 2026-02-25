@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\DocSectionRequest;
 use App\Models\DocSection;
-use App\Models\DocVersion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -16,9 +15,7 @@ class DocSectionController extends AdminBaseController
      */
     public function index(): View
     {
-        $sections = DocSection::with('version')
-            ->withCount('pages')
-            ->orderBy('doc_version_id')
+        $sections = DocSection::withCount('pages')
             ->orderBy('sort_order')
             ->get();
 
@@ -30,9 +27,7 @@ class DocSectionController extends AdminBaseController
      */
     public function create(): View
     {
-        $versions = DocVersion::active()->ordered()->get();
-
-        return view('admin.doc-section.create', compact('versions'));
+        return view('admin.doc-section.create');
     }
 
     /**
@@ -69,7 +64,7 @@ class DocSectionController extends AdminBaseController
      */
     public function show(DocSection $docSection): View
     {
-        $docSection->load(['version', 'pages']);
+        $docSection->load(['pages']);
 
         return view('admin.doc-section.show', compact('docSection'));
     }
@@ -79,9 +74,7 @@ class DocSectionController extends AdminBaseController
      */
     public function edit(DocSection $docSection): View
     {
-        $versions = DocVersion::active()->ordered()->get();
-
-        return view('admin.doc-section.edit', compact('docSection', 'versions'));
+        return view('admin.doc-section.edit', compact('docSection'));
     }
 
     /**

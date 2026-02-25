@@ -15,7 +15,6 @@ class DocPageListResource extends JsonResource
     public function toArray(Request $request): array
     {
         $section = $this->whenLoaded('section') ? $this->section : null;
-        $versionSlug = $section && $section->relationLoaded('version') ? $section->version->version : '';
         $sectionSlug = $section?->slug ?? '';
 
         return resource_urls_to_paths([
@@ -23,8 +22,7 @@ class DocPageListResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'sort_order' => $this->sort_order,
-            'url' => $versionSlug && $sectionSlug ? route('docs.page', [
-                'version' => $versionSlug,
+            'url' => $sectionSlug ? route('api.docs.page', [
                 'section' => $sectionSlug,
                 'page' => $this->slug,
             ]) : null,

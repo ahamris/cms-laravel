@@ -6,7 +6,7 @@
             </div>
             <div class="flex flex-col gap-1">
                 <h2>{{ $docPage->title }}</h2>
-                <p>{{ $docPage->section->version->name ?? 'N/A' }} / {{ $docPage->section->title ?? 'N/A' }} — {{ $docPage->slug }}</p>
+                <p>{{ $docPage->section->title ?? 'N/A' }} — {{ $docPage->slug }}</p>
             </div>
         </div>
         <div class="flex items-center gap-2">

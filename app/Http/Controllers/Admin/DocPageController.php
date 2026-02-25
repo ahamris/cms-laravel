@@ -16,7 +16,7 @@ class DocPageController extends AdminBaseController
      */
     public function index(): View
     {
-        $pages = DocPage::with(['section.version'])
+        $pages = DocPage::with(['section'])
             ->orderBy('doc_section_id')
             ->orderBy('sort_order')
             ->get();
@@ -29,16 +29,7 @@ class DocPageController extends AdminBaseController
      */
     public function create(): View
     {
-        $sections = DocSection::with('version')
-            ->whereHas('version', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->active()
-            ->ordered()
-            ->get()
-            ->groupBy(function ($section) {
-                return $section->version->name;
-            });
+        $sections = DocSection::active()->ordered()->get();
 
         return view('admin.doc-page.create', compact('sections'));
     }
@@ -78,7 +69,7 @@ class DocPageController extends AdminBaseController
      */
     public function show(DocPage $docPage): View
     {
-        $docPage->load(['section.version']);
+        $docPage->load(['section']);
 
         return view('admin.doc-page.show', compact('docPage'));
     }
@@ -88,16 +79,7 @@ class DocPageController extends AdminBaseController
      */
     public function edit(DocPage $docPage): View
     {
-        $sections = DocSection::with('version')
-            ->whereHas('version', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->active()
-            ->ordered()
-            ->get()
-            ->groupBy(function ($section) {
-                return $section->version->name;
-            });
+        $sections = DocSection::active()->ordered()->get();
 
         return view('admin.doc-page.edit', compact('docPage', 'sections'));
     }

@@ -27,12 +27,8 @@
                             <div>
                                 <label for="doc_section_id" class="block text-xs font-medium text-gray-700 mb-1">Section <span class="text-red-500">*</span></label>
                                 <select id="doc_section_id" name="doc_section_id" required class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none @error('doc_section_id') border-red-500 @enderror">
-                                    @foreach($sections as $versionName => $versionSections)
-                                        <optgroup label="{{ $versionName }}">
-                                            @foreach($versionSections as $sec)
-                                                <option value="{{ $sec->id }}" {{ old('doc_section_id', $docPage->doc_section_id) == $sec->id ? 'selected' : '' }}>{{ $sec->title }}</option>
-                                            @endforeach
-                                        </optgroup>
+                                    @foreach($sections as $sec)
+                                        <option value="{{ $sec->id }}" {{ old('doc_section_id', $docPage->doc_section_id) == $sec->id ? 'selected' : '' }}>{{ $sec->title }}</option>
                                     @endforeach
                                 </select>
                                 @error('doc_section_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror

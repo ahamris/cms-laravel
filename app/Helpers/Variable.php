@@ -140,12 +140,6 @@ class Variable
         'feature_edit' => [self::ROLE_ADMIN],
         'feature_delete' => [self::ROLE_ADMIN],
 
-        'doc_version_access' => [self::ROLE_ADMIN],
-        'doc_version_show' => [self::ROLE_ADMIN],
-        'doc_version_create' => [self::ROLE_ADMIN],
-        'doc_version_edit' => [self::ROLE_ADMIN],
-        'doc_version_delete' => [self::ROLE_ADMIN],
-
         'doc_section_access' => [self::ROLE_ADMIN],
         'doc_section_show' => [self::ROLE_ADMIN],
         'doc_section_create' => [self::ROLE_ADMIN],

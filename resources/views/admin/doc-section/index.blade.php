@@ -7,13 +7,9 @@
             </div>
             <div class="flex flex-col gap-1">
                 <h2>Documentation Sections</h2>
-                <p>Sections belong to a version; each section contains pages.</p>
+                <p>Each section contains pages.</p>
             </div>
         </div>
-        <a href="{{ route('admin.doc-versions.index') }}" class="px-5 py-2 rounded-md bg-white border border-gray-200 text-gray-700 text-sm hover:bg-gray-50 flex items-center space-x-2">
-            <i class="fa fa-book"></i>
-            <span>Versions</span>
-        </a>
         <a href="{{ route('admin.doc-sections.create') }}" class="px-5 py-2 rounded-md bg-primary text-white text-sm hover:bg-primary/80 flex items-center space-x-2">
             <i class="fa fa-plus"></i>
             <span>Add Section</span>
@@ -32,7 +28,6 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Version</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
@@ -44,7 +39,6 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($sections as $section)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">{{ $section->version->name ?? '-' }}</td>
                             <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ $section->title }}</td>
                             <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ $section->slug }}</td>
                             <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ $section->sort_order }}</td>
@@ -64,7 +58,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">No sections yet. Create one from a version.</td></tr>
+                        <tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No sections yet. Create one to get started.</td></tr>
                     @endforelse
                 </tbody>
             </table>

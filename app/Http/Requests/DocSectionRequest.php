@@ -27,7 +27,6 @@ class DocSectionRequest extends FormRequest
         }
 
         return [
-            'doc_version_id' => 'required|exists:doc_versions,id',
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
@@ -42,8 +41,6 @@ class DocSectionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'doc_version_id.required' => 'The version field is required.',
-            'doc_version_id.exists' => 'The selected version does not exist.',
             'title.required' => 'The title field is required.',
             'sort_order.integer' => 'The sort order must be an integer.',
             'sort_order.min' => 'The sort order must be at least 0.',
