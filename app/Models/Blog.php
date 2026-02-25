@@ -24,6 +24,7 @@ class Blog extends BaseModel
 
     protected $fillable = [
         'blog_category_id',
+        'blog_type_id',
         'author_id',
         'title',
         'slug',
@@ -89,6 +90,11 @@ class Blog extends BaseModel
     public function blog_category(): BelongsTo
     {
         return $this->belongsTo(BlogCategory::class, 'blog_category_id');
+    }
+
+    public function blog_type(): BelongsTo
+    {
+        return $this->belongsTo(BlogType::class, 'blog_type_id');
     }
 
     public function author(): BelongsTo

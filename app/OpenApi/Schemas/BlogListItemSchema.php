@@ -18,6 +18,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'date_attr', type: 'string', format: 'date', example: '2025-01-01'),
         new OA\Property(property: 'category', type: 'string'),
         new OA\Property(property: 'category_slug', type: 'string', nullable: true),
+        new OA\Property(property: 'blog_type', ref: '#/components/schemas/BlogType', nullable: true),
         new OA\Property(property: 'author_name', type: 'string'),
         new OA\Property(property: 'author_avatar', type: 'string', format: 'uri'),
     ]

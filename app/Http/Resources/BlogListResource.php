@@ -26,6 +26,7 @@ class BlogListResource extends JsonResource
             'date_attr' => $this->created_at?->format('Y-m-d'),
             'category' => $this->blog_category?->name ?? 'Blog',
             'category_slug' => $this->blog_category?->slug ?? null,
+            'blog_type' => $this->blog_type ? ['id' => $this->blog_type->id, 'name' => $this->blog_type->name] : null,
             'author_name' => $author ? ($author->full_name ?? $author->name ?? 'Author') : 'Author',
             'author_avatar' => $author ? get_image($author->avatar, 'https://ui-avatars.com/api/?name=' . urlencode($author->name ?? 'Author') . '&size=80') : 'https://ui-avatars.com/api/?name=Author&size=80',
         ]);

@@ -14,6 +14,15 @@ use OpenApi\Attributes as OA;
     ]
 )]
 #[OA\Schema(
+    schema: 'BlogType',
+    title: 'Blog type',
+    description: 'Optional type for the post (e.g. Article, News)',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer'),
+        new OA\Property(property: 'name', type: 'string'),
+    ]
+)]
+#[OA\Schema(
     schema: 'BlogAuthor',
     title: 'Blog author',
     properties: [
@@ -41,6 +50,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'date_attr', type: 'string', format: 'date'),
         new OA\Property(property: 'published_at', type: 'string', format: 'date-time', nullable: true),
         new OA\Property(property: 'category', ref: '#/components/schemas/BlogCategory', nullable: true),
+        new OA\Property(property: 'blog_type', ref: '#/components/schemas/BlogType', nullable: true),
         new OA\Property(property: 'author', ref: '#/components/schemas/BlogAuthor', nullable: true),
         new OA\Property(property: 'created_at', type: 'string', format: 'date-time', nullable: true),
         new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', nullable: true),

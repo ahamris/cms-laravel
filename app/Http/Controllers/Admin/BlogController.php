@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\BlogRequest;
 use App\Models\Blog;
 use App\Models\BlogCategory;
+use App\Models\BlogType;
 use App\Models\User;
 use App\Models\MarketingPersona;
 use App\Models\ContentType;
@@ -41,6 +42,8 @@ class BlogController extends AdminBaseController
             ->orderBy('name')
             ->get();
 
+        $blogTypes = BlogType::orderBy('name')->get();
+
         $authors = User::query()->select('id', 'name', 'email')
             ->orderBy('name')
             ->get();
@@ -56,9 +59,10 @@ class BlogController extends AdminBaseController
             ->get();
 
         return view('admin.blog.create', compact(
-            'blogCategories', 
-            'authors', 
-            'marketingPersonas', 
+            'blogCategories',
+            'blogTypes',
+            'authors',
+            'marketingPersonas',
             'contentTypes'
         ));
     }
@@ -97,7 +101,7 @@ class BlogController extends AdminBaseController
      */
     public function show(Blog $blog): View
     {
-        $blog->load(['blog_category', 'author']);
+        $blog->load(['blog_category', 'blog_type', 'author']);
 
         return view('admin.blog.show', compact('blog'));
     }
@@ -120,6 +124,8 @@ class BlogController extends AdminBaseController
             ->orderBy('name')
             ->get();
 
+        $blogTypes = BlogType::orderBy('name')->get();
+
         $authors = User::select('id', 'name', 'email')
             ->orderBy('name')
             ->get();
@@ -139,9 +145,10 @@ class BlogController extends AdminBaseController
         $internalLinkSuggestions = $intelligence->getInternalLinkSuggestions($blog);
 
         return view('admin.blog.edit', compact(
-            'blog', 
-            'blogCategories', 
-            'authors', 
+            'blog',
+            'blogCategories',
+            'blogTypes',
+            'authors',
             'marketingPersonas', 
             'contentTypes',
             'seoRecommendations',

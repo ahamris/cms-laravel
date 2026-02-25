@@ -16,6 +16,7 @@ class BlogResource extends JsonResource
     {
         $author = $this->author;
         $category = $this->blog_category;
+        $blogType = $this->blog_type;
 
         return resource_urls_to_paths([
             'id' => $this->id,
@@ -35,6 +36,10 @@ class BlogResource extends JsonResource
                 'id' => $category->id,
                 'name' => $category->name,
                 'slug' => $category->slug,
+            ] : null,
+            'blog_type' => $blogType ? [
+                'id' => $blogType->id,
+                'name' => $blogType->name,
             ] : null,
             'author' => $author ? [
                 'id' => $author->id,

@@ -100,9 +100,10 @@ class Sidebar extends Component
                         'route_name' => 'admin.blog.index',
                         'icon' => 'newspaper',
                         'permission' => 'blog_access',
-                        'active_pattern' => 'admin.blog*,admin.blog-category*,admin.comment*',
+                        'active_pattern' => 'admin.blog*,admin.blog-category*,admin.blog-type*,admin.comment*',
                         'children' => [
                             ['label' => 'Categories', 'route_name' => 'admin.blog-category.index', 'icon' => 'folder', 'permission' => 'blog_category_access'],
+                            ['label' => 'Blog Types', 'route_name' => 'admin.blog-type.index', 'icon' => 'tag', 'permission' => 'blog_access'],
                             ['label' => 'Article', 'route_name' => 'admin.blog.index', 'icon' => 'newspaper', 'permission' => 'blog_access'],
                             ['label' => 'Comments', 'route_name' => 'admin.comment.index', 'icon' => 'comments', 'permission' => 'comment_access'],
                         ],

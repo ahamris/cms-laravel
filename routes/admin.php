@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ContactSubjectController;
 use App\Http\Controllers\Admin\ApiChangelogController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\BlogTypeController;
 use App\Http\Controllers\Admin\CarouselWidgetController;
 use App\Http\Controllers\Admin\ChangelogController;
 use App\Http\Controllers\Admin\CommentController;
@@ -173,6 +174,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('blog-category/{blogCategory}/json', [BlogCategoryController::class, 'getJson'])->name('blog-category.json');
         Route::resource('blog-category', BlogCategoryController::class);
         Route::post('blog-category/{blogCategory}/toggle-active', [BlogCategoryController::class, 'toggleActive'])->name('blog-category.toggle-active');
+
+        // Blog Types
+        Route::resource('blog-type', BlogTypeController::class);
 
         // Organizations
         Route::get('organization/import-sample', [OrganizationController::class, 'importSample'])->name('organization.import-sample');

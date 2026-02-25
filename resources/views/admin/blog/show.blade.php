@@ -133,6 +133,16 @@
                         </div>
                     </div>
 
+                    {{-- Blog Type --}}
+                    @if($blog->blog_type)
+                    <div>
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Blog Type</label>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center rounded-md bg-gray-100 dark:bg-white/10 px-3 py-1 text-sm font-medium text-gray-800 dark:text-gray-200">{{ $blog->blog_type->name }}</span>
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Author --}}
                     <div>
                         <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Author</label>

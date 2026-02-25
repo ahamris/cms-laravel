@@ -21,6 +21,7 @@ class BlogRequest extends FormRequest
     {
         $rules = [
             'blog_category_id' => 'required|exists:blog_categories,id',
+            'blog_type_id' => 'nullable|exists:blog_types,id',
             'author_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:blogs,slug,' . $this->route('blog')?->id,

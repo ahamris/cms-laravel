@@ -179,6 +179,15 @@
                             @endforeach
                         </x-ui.select>
 
+                        {{-- Blog Type --}}
+                        <x-ui.select id="blog_type_id" name="blog_type_id" label="Blog Type"
+                            placeholder="Select a type (optional)" :value="old('blog_type_id')">
+                            <option value="">— None —</option>
+                            @foreach ($blogTypes as $type)
+                                <option value="{{ $type->id }}" {{ old('blog_type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                            @endforeach
+                        </x-ui.select>
+
                         {{-- Author --}}
                         <x-ui.select id="author_id" name="author_id" label="Author" required
                             placeholder="Select an author" :value="old('author_id', auth()->id())">

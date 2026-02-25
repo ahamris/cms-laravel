@@ -33,19 +33,19 @@ class BlogController extends Controller
         $perPage = max(1, min((int) $request->input('per_page', 6), 24));
         $page = max(1, (int) $request->input('page', 1));
 
-        $featuredArticle = Blog::with(['blog_category', 'author'])
+        $featuredArticle = Blog::with(['blog_category', 'blog_type', 'author'])
             ->where('is_active', true)
             ->where('is_featured', true)
             ->latest()
             ->first();
         if (! $featuredArticle) {
-            $featuredArticle = Blog::with(['blog_category', 'author'])
+            $featuredArticle = Blog::with(['blog_category', 'blog_type', 'author'])
                 ->where('is_active', true)
                 ->latest()
                 ->first();
         }
 
-        $articlesQuery = Blog::with(['blog_category', 'author'])->where('is_active', true);
+        $articlesQuery = Blog::with(['blog_category', 'blog_type', 'author'])->where('is_active', true);
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $articlesQuery->where(function ($q) use ($searchTerm) {
@@ -87,6 +87,7 @@ class BlogController extends Controller
     {
         $blog = Blog::with([
             'blog_category',
+            'blog_type',
             'author',
             'comments' => fn ($q) => $q->approved()->whereNull('parent_id')->with('replies'),
         ])
