@@ -48,7 +48,7 @@ class ChangelogController extends Controller
         new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
     ], responses: [
         new OA\Response(response: 200, description: 'Search results', content: new OA\JsonContent(properties: [
-            new OA\Property(property: 'data', type: 'array'),
+            new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
             new OA\Property(property: 'template', type: 'string', example: 'changelog-search'),
             new OA\Property(property: 'query', type: 'string'),
             new OA\Property(property: 'count', type: 'integer'),
