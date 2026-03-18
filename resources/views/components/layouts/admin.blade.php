@@ -11,9 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     
-    {{-- FontAwesome Pro Links --}}
-    <link href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css" rel="stylesheet"/>
-    <link href="https://site-assets.fontawesome.com/releases/v6.7.2/css/brands.css" rel="stylesheet"/>
+    {{-- FontAwesome (local assets) --}}
+    <link href="{{ asset('assets/fontawesome/css/all.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/fontawesome/css/brands.min.css') }}" rel="stylesheet" />
     
     {{-- Dynamic Theme Variables - Must be before @vite to override default values --}}
     @php
