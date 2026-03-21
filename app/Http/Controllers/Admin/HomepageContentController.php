@@ -37,6 +37,14 @@ class HomepageContentController extends AdminBaseController
      */
     public function update(Request $request): RedirectResponse
     {
+        $request->validate([
+            'sections.hero.image' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg|max:20480',
+            'sections.about_opms.image' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg|max:20480',
+        ], [
+            'sections.hero.image.max' => 'Hero image may not be greater than 20 MB.',
+            'sections.about_opms.image.max' => 'About image may not be greater than 20 MB.',
+        ]);
+
         $sections = $request->input('sections', []);
         $keys = HomepageSection::SECTION_KEYS;
 

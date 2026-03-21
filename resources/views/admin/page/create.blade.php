@@ -167,7 +167,8 @@
                             id="image"
                             name="image"
                             label="Page Image"
-                            help-text="Optional featured image."
+                            help-text="Optional featured image (max 20MB)."
+                            :max-size="20480"
                             :required="false"
                         />
                     </div>

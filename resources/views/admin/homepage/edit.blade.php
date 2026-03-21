@@ -99,8 +99,8 @@
                             label="Hero image"
                             :current-image="!empty($hero['image']) ? get_image($hero['image']) : null"
                             current-image-alt="Hero"
-                            help-text="JPEG, PNG, WebP up to 2MB"
-                            :max-size="2048"
+                            help-text="JPEG, PNG, WebP, SVG up to 20MB"
+                            :max-size="20480"
                             :required="false"
                         />
                     </div>
@@ -200,8 +200,8 @@
                             label="Image"
                             :current-image="!empty($about['image']) ? get_image($about['image']) : null"
                             current-image-alt="About OPMS"
-                            help-text="JPEG, PNG, WebP up to 2MB"
-                            :max-size="2048"
+                            help-text="JPEG, PNG, WebP, SVG up to 20MB"
+                            :max-size="20480"
                             :required="false"
                         />
                     </div>
