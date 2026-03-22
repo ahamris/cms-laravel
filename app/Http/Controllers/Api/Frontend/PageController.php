@@ -139,6 +139,6 @@ class PageController extends Controller
 
     private function resolvePageBySlug(string $slug): ?Page
     {
-        return Page::where('slug', $slug)->where('is_active', true)->first();
+        return Page::where('slug', $slug)->first();
     }
 }
