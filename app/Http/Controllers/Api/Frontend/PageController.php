@@ -89,7 +89,7 @@ class PageController extends Controller
         description: 'Returns a single active page by slug.',
         tags: ['Pages'],
         parameters: [
-            new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'), description: 'Page slug (e.g. about-us)'),
+            new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'), description: 'Page slug or nested path (e.g. about-us or services/web-development)'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Single page', content: new OA\JsonContent(ref: '#/components/schemas/Page')),
@@ -98,7 +98,7 @@ class PageController extends Controller
     )]
     public function show(string $slug)
     {
-        $page = Page::where('slug', $slug)->where('is_active', true)->first();
+        $page = $this->resolvePageBySlug($slug);
         if (! $page) {
             return response()->json(['message' => 'Page not found.'], 404);
         }
@@ -110,7 +110,7 @@ class PageController extends Controller
 
     public function blocks(string $slug)
     {
-        $page = Page::where('slug', $slug)->where('is_active', true)->first();
+        $page = $this->resolvePageBySlug($slug);
         if (! $page) {
             return response()->json(['message' => 'Page not found.'], 404);
         }
@@ -135,5 +135,21 @@ class PageController extends Controller
             ->get(['id', 'title', 'slug', 'parent_id', 'sort_order', 'template']);
 
         return response()->json(['data' => $pages]);
+    }
+
+    /**
+     * Resolve a page by slug, supporting nested paths (e.g. "services/web-development").
+     * Tries exact match first, then falls back to the last path segment.
+     */
+    private function resolvePageBySlug(string $slug): ?Page
+    {
+        $page = Page::where('slug', $slug)->where('is_active', true)->first();
+
+        if (! $page && str_contains($slug, '/')) {
+            $lastSegment = basename($slug);
+            $page = Page::where('slug', $lastSegment)->where('is_active', true)->first();
+        }
+
+        return $page;
     }
 }
