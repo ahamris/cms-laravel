@@ -23,7 +23,7 @@ class PageResource extends JsonResource
             'meta_title' => $this->meta_title,
             'meta_body' => $this->meta_body,
             'meta_keywords' => $this->meta_keywords,
-            'image' => $this->image ? asset($this->image) : null,
+            'image' => get_image($this->image, asset('front/images/blog.png')),
             'icon' => $this->icon,
             'layout' => $this->template ?? config('page_templates.default', 'default'),
             'template' => resolve_menu_template(api_path('page', $this->slug), $this->slug),
