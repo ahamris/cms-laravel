@@ -157,6 +157,24 @@
         }
     });
 
+    function assignFileToInput(file) {
+        try {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function clearRemoveImageFlags() {
+        const form = fileInput.closest('form');
+        if (!form) return;
+        form.querySelectorAll('input[type="hidden"][name="remove_' + inputId + '"]').forEach(function (el) {
+            el.remove();
+        });
+    }
+
     function handleFileSelect(file) {
         if (!file) return;
 
@@ -173,6 +191,9 @@
             fileInput.value = '';
             return;
         }
+
+        assignFileToInput(file);
+        clearRemoveImageFlags();
 
         // Show preview
         const reader = new FileReader();

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\PageRequest;
 use App\Models\ContentType;
 use App\Models\MarketingPersona;
@@ -120,24 +119,18 @@ class PageController extends AdminBaseController
         $validated = $request->validated();
         $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body']);
 
-        // Handle image deletion
-        if ($request->has('remove_image') && $request->input('remove_image') == '1') {
-            // Delete old image from storage if exists
-            if ($page->image) {
-                \Storage::disk('public')->delete($page->image);
-            }
-            // Set image to null in database
-            $validated['image'] = null;
-        }
-        // Handle image upload
-        elseif ($request->hasFile('image')) {
-            // Delete old image
+        // New upload wins over "remove" so replacing an image in one submit works
+        if ($request->hasFile('image')) {
             if ($page->image) {
                 \Storage::disk('public')->delete($page->image);
             }
 
-            $imagePath = $request->file('image')->store('pages', 'public');
-            $validated['image'] = $imagePath;
+            $validated['image'] = $request->file('image')->store('pages', 'public');
+        } elseif ($request->has('remove_image') && $request->input('remove_image') == '1') {
+            if ($page->image) {
+                \Storage::disk('public')->delete($page->image);
+            }
+            $validated['image'] = null;
         }
 
         // Handle secondary keywords array
