@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\Frontend\BlogController as ApiBlogController;
+use App\Http\Controllers\Api\V1\CategoryController as ApiV1CategoryController;
+use App\Http\Controllers\Api\V1\FormController as ApiV1FormController;
+use App\Http\Controllers\Api\V1\MediaController as ApiV1MediaController;
+use App\Http\Controllers\Api\V1\TagController as ApiV1TagController;
 use App\Http\Controllers\Api\Frontend\CourseController as ApiCourseController;
 use App\Http\Controllers\Api\Frontend\ChangelogController as ApiChangelogController;
 use App\Http\Controllers\Api\Frontend\ContactController as ApiContactController;
@@ -29,7 +33,9 @@ use Illuminate\Support\Facades\Route;
 // Frontend content API (public, no auth; CORS via config/cors.php)
 Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
 Route::get('/pages/search', [ApiPageController::class, 'search'])->middleware('throttle:search')->name('api.pages.search');
+Route::get('/pages/tree', [ApiPageController::class, 'tree'])->name('api.pages.tree');
 Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-]+');
+Route::get('/pages/{slug}/blocks', [ApiPageController::class, 'blocks'])->name('api.pages.blocks')->where('slug', '[a-z0-9\-]+');
 Route::get('/search', [ApiSearchController::class, 'index'])->name('api.search');
 Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
 
@@ -61,6 +67,7 @@ Route::get('/solutions/{anchor}', [ApiSolutionController::class, 'show'])->name(
 Route::get('/partners', [ApiPartnersController::class, 'index'])->name('api.partners.index');
 Route::get('/tech-stack', [ApiTechStackController::class, 'index'])->name('api.tech-stack.index');
 Route::get('/sitemap', [ApiSitemapController::class, 'index'])->name('api.sitemap');
+Route::get('/sitemap.xml', [ApiSitemapController::class, 'xml'])->name('api.sitemap.xml');
 Route::get('/robots-txt', [ApiRobotsTxtController::class, 'index'])->name('api.robots-txt');
 Route::get('/media', [ApiMediaController::class, 'index'])->name('api.media.index');
 Route::get('/vacancies', [ApiVacancyController::class, 'index'])->name('api.vacancies.index');
@@ -107,6 +114,18 @@ Route::get('/menus', [ApiMenuController::class, 'index'])->name('api.menus.index
 Route::get('/menus/header', [ApiMenuController::class, 'header'])->name('api.menus.header');
 Route::get('/menus/footer', [ApiMenuController::class, 'footer'])->name('api.menus.footer');
 Route::get('/menus/sticky', [ApiMenuController::class, 'sticky'])->name('api.menus.sticky');
+
+// v1 API: Media, Categories, Tags, Forms
+Route::prefix('v1')->group(function () {
+    Route::get('/media', [ApiV1MediaController::class, 'index'])->name('api.v1.media.index');
+    Route::get('/media/{id}', [ApiV1MediaController::class, 'show'])->name('api.v1.media.show');
+    Route::get('/categories', [ApiV1CategoryController::class, 'index'])->name('api.v1.categories.index');
+    Route::get('/categories/{slug}', [ApiV1CategoryController::class, 'show'])->name('api.v1.categories.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/tags', [ApiV1TagController::class, 'index'])->name('api.v1.tags.index');
+    Route::get('/tags/{slug}', [ApiV1TagController::class, 'show'])->name('api.v1.tags.show')->where('slug', '[a-z0-9\-]+');
+    Route::get('/forms/{slug}', [ApiV1FormController::class, 'show'])->name('api.v1.forms.show')->where('slug', '[a-z0-9\-]+');
+    Route::post('/forms/{slug}/submit', [ApiV1FormController::class, 'submit'])->middleware('throttle:forms')->name('api.v1.forms.submit')->where('slug', '[a-z0-9\-]+');
+});
 
 // Analytics tracking routes (public, rate limited)
 Route::prefix('analytics')->middleware('throttle:api')->group(function () {

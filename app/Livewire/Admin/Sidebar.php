@@ -77,53 +77,56 @@ class Sidebar extends Component
                 'route_name' => 'admin.index',
                 'icon' => 'home',
             ],
+
+            // ── CONTENT ──────────────────────────────────────
             [
                 'item_type' => 'section',
-                'label' => 'CRM',
-                'slug' => 'crm',
-                'icon' => 'graduation-cap',
+                'label' => 'Content',
+                'slug' => 'content',
+                'icon' => 'layer-group',
                 'children' => [
-                    ['label' => 'Entries', 'route_name' => 'admin.administrator.contact-forms.index', 'icon' => 'envelope', 'permission' => 'contact_form_access'],
-                    ['label' => 'Subjects', 'route_name' => 'admin.administrator.contact-subjects.index', 'icon' => 'list', 'permission' => 'contact_subject_access'],
-                    ['label' => 'Contacts', 'route_name' => 'admin.administrator.contacts.index', 'icon' => 'users', 'permission' => 'contact_access'],
-                    ['label' => 'Organizations', 'route_name' => 'admin.organization.index', 'icon' => 'building', 'permission' => 'organization_access'],
-                ],
-            ],
-            [
-                'item_type' => 'section',
-                'label' => 'CMS',
-                'slug' => 'cms',
-                'icon' => 'graduation-cap',
-                'children' => [
+                    [
+                        'label' => 'Pages',
+                        'route_name' => 'admin.page.index',
+                        'icon' => 'file-text',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.page*,admin.legal*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*,admin.faq-module*,admin.partner-tech-item*,admin.static-page*',
+                        'children' => [
+                            ['label' => 'Homepage', 'route_name' => 'admin.homepage.edit', 'icon' => 'home', 'permission' => 'page_access'],
+                            ['label' => 'Pages', 'route_name' => 'admin.page.index', 'icon' => 'file-text', 'permission' => 'page_access'],
+                            ['label' => 'Legal Pages', 'route_name' => 'admin.legal.index', 'icon' => 'list-alt', 'permission' => 'legal_access'],
+                            ['label' => 'Static Pages', 'route_name' => 'admin.static-page.index', 'icon' => 'file-alt', 'permission' => 'static_page_access'],
+                            ['label' => 'FAQ Modules', 'route_name' => 'admin.faq-module.index', 'icon' => 'question-circle', 'permission' => 'faq_module_access'],
+                        ],
+                    ],
                     [
                         'label' => 'Articles',
                         'route_name' => 'admin.blog.index',
                         'icon' => 'newspaper',
                         'permission' => 'blog_access',
-                        'active_pattern' => 'admin.blog*,admin.blog-category*,admin.blog-type*,admin.comment*',
+                        'active_pattern' => 'admin.blog*,admin.blog-category*,admin.blog-type*,admin.article-category*,admin.tag*,admin.comment*',
                         'children' => [
-                            ['label' => 'Article', 'route_name' => 'admin.blog.index', 'icon' => 'newspaper', 'permission' => 'blog_access'],
-                            ['label' => 'Types', 'route_name' => 'admin.blog-type.index', 'icon' => 'tag', 'permission' => 'blog_access'],
-                            ['label' => 'Categories', 'route_name' => 'admin.blog-category.index', 'icon' => 'folder', 'permission' => 'blog_category_access'],
+                            ['label' => 'All Articles', 'route_name' => 'admin.blog.index', 'icon' => 'newspaper', 'permission' => 'blog_access'],
+                            ['label' => 'Categories', 'route_name' => 'admin.article-category.index', 'icon' => 'folder', 'permission' => 'blog_access'],
+                            ['label' => 'Tags', 'route_name' => 'admin.tag.index', 'icon' => 'tags', 'permission' => 'blog_access'],
                             ['label' => 'Comments', 'route_name' => 'admin.comment.index', 'icon' => 'comments', 'permission' => 'comment_access'],
                         ],
                     ],
                     [
-                        'label' => 'Pages',
-                        'route_name' => 'admin.page.index',
-                        'icon' => 'puzzle-piece',
-                        'permission' => 'page_access',
-                        'active_pattern' => 'admin.page*,admin.legal*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*,admin.faq-module*,admin.partner-tech-item*,admin.static-page*',
+                        'item_type' => 'link',
+                        'label' => 'Media Library',
+                        'slug' => 'media-library',
+                        'route_name' => 'admin.media-library.index',
+                        'icon' => 'images',
+                        'permission' => 'media_access',
+                    ],
+                    [
+                        'label' => 'Forms',
+                        'route_name' => 'admin.form.index',
+                        'icon' => 'clipboard-list',
+                        'active_pattern' => 'admin.form*',
                         'children' => [
-                            ['label' => 'Homepage', 'route_name' => 'admin.homepage.edit', 'icon' => 'home', 'permission' => 'page_access'],
-                            ['label' => 'FAQ Modules', 'route_name' => 'admin.faq-module.index', 'icon' => 'question-circle', 'permission' => 'faq_module_access'],
-                            ['label' => 'Pages', 'route_name' => 'admin.page.index', 'icon' => 'file-text', 'permission' => 'page_access'],
-                            ['label' => 'Legal Pages', 'route_name' => 'admin.legal.index', 'icon' => 'list-alt', 'permission' => 'legal_access'],
-                            ['label' => 'Changelog', 'route_name' => 'admin.changelog.index', 'icon' => 'list-alt', 'permission' => 'changelog_access'],
-                            ['label' => 'Event', 'route_name' => 'admin.event.index', 'icon' => 'calendar-alt', 'permission' => 'event_access'],
-                            ['label' => 'Header Settings', 'route_name' => 'admin.settings.hero-backgrounds.index', 'icon' => 'heading', 'permission' => 'hero_background_access'],
-                            ['label' => 'Partners & Tech', 'route_name' => 'admin.partner-tech-item.index', 'icon' => 'handshake', 'permission' => 'partner_tech_item_access'],
-                            ['label' => 'Static Pages', 'route_name' => 'admin.static-page.index', 'icon' => 'file-alt', 'permission' => 'static_page_access'],
+                            ['label' => 'All Forms', 'route_name' => 'admin.form.index', 'icon' => 'clipboard-list'],
                         ],
                     ],
                     [
@@ -137,23 +140,40 @@ class Sidebar extends Component
                             ['label' => 'Pages', 'route_name' => 'admin.doc-pages.index', 'icon' => 'file-alt', 'permission' => 'page_access'],
                         ],
                     ],
+                ],
+            ],
+
+            // ── CRM ──────────────────────────────────────────
+            [
+                'item_type' => 'section',
+                'label' => 'CRM',
+                'slug' => 'crm',
+                'icon' => 'address-book',
+                'children' => [
+                    ['label' => 'Dashboard', 'route_name' => 'admin.crm.dashboard', 'icon' => 'chart-pie', 'active_pattern' => 'admin.crm.dashboard'],
+                    ['label' => 'Contacts', 'route_name' => 'admin.crm.contacts.index', 'icon' => 'users', 'active_pattern' => 'admin.crm.contacts*'],
+                    ['label' => 'Deals', 'route_name' => 'admin.crm.deals.index', 'icon' => 'handshake', 'active_pattern' => 'admin.crm.deals*'],
+                    ['label' => 'Messages', 'route_name' => 'admin.crm.messages.index', 'icon' => 'envelope', 'active_pattern' => 'admin.crm.messages*'],
+                    ['label' => 'Tickets', 'route_name' => 'admin.crm.tickets.index', 'icon' => 'ticket', 'active_pattern' => 'admin.crm.tickets*'],
+                    ['label' => 'Appointments', 'route_name' => 'admin.crm.appointments.index', 'icon' => 'calendar-check', 'active_pattern' => 'admin.crm.appointments*'],
+                    ['label' => 'Notes', 'route_name' => 'admin.crm.notes.index', 'icon' => 'sticky-note', 'active_pattern' => 'admin.crm.notes*'],
+                ],
+            ],
+
+            // ── MARKETING ────────────────────────────────────
+            [
+                'item_type' => 'section',
+                'label' => 'Marketing',
+                'slug' => 'marketing',
+                'icon' => 'bullhorn',
+                'children' => [
+                    ['label' => 'Marketing Dashboard', 'route_name' => 'admin.marketing.dashboard', 'icon' => 'chart-line', 'permission' => 'blog_access'],
+                    ['label' => 'Content Plans', 'route_name' => 'admin.marketing.content-plans.index', 'icon' => 'calendar-alt', 'permission' => 'blog_access'],
+                    ['label' => 'Intent Briefs', 'route_name' => 'admin.marketing.intent-briefs.index', 'icon' => 'lightbulb', 'permission' => 'blog_access'],
                     [
-                        'label' => 'Solution & Modules',
-                        'route_name' => 'admin.solution.index',
-                        'icon' => 'puzzle-piece',
-                        'permission' => 'solution_access',
-                        'active_pattern' => 'admin.solution*,admin.feature*,admin.module*',
-                        'children' => [
-                            ['label' => 'Solution', 'route_name' => 'admin.solution.index', 'icon' => 'lightbulb', 'permission' => 'solution_access'],
-                            ['label' => 'Features', 'route_name' => 'admin.feature.index', 'icon' => 'puzzle-piece', 'permission' => 'feature_access'],
-                            ['label' => 'Modules', 'route_name' => 'admin.module.index', 'icon' => 'cubes', 'permission' => 'module_access'],
-                            
-                        ],
-                    ],
-                    [
-                        'label' => 'SMM',
+                        'label' => 'Social Media',
                         'route_name' => 'admin.social-settings.index',
-                        'icon' => 'list-alt',
+                        'icon' => 'share-alt',
                         'permission' => 'social_setting_access',
                         'active_pattern' => 'admin.social-settings*,admin.settings.social-media-platforms*',
                         'children' => [
@@ -161,72 +181,45 @@ class Sidebar extends Component
                             ['label' => 'Auto Post', 'route_name' => 'admin.settings.social-media-platforms.index', 'icon' => 'share-nodes', 'permission' => 'social_media_platform_access'],
                         ],
                     ],
-                    // [
-                    //     'label' => 'Plan Management',
-                    //     'route_name' => 'admin.pricing-plan.index',
-                    //     'icon' => 'tags',
-                    //     'permission' => 'pricing_plan_access',
-                    //     'active_pattern' => 'admin.pricing-plan*,admin.pricing-booster*,admin.pricing-feature*',
-                    //     'children' => [
-                    //         ['label' => 'Pricing Plans', 'route_name' => 'admin.pricing-plan.index', 'icon' => 'dollar-sign', 'permission' => 'pricing_plan_access'],
-                    //         ['label' => 'Addons', 'route_name' => 'admin.pricing-booster.index', 'icon' => 'rocket', 'permission' => 'pricing_booster_access'],
-                    //         ['label' => 'Features', 'route_name' => 'admin.pricing-feature.index', 'icon' => 'list-check', 'permission' => 'pricing_feature_access'],
-                    //     ],
-                    // ],
-                    [
-                        'label' => 'Academy & Live',
-                        'route_name' => 'admin.live-session.index',
-                        'icon' => 'video',
-                        'permission' => 'live_session_access',
-                        'active_pattern' => 'admin.live-session*,admin.presenter*,admin.session-registration*,admin.course-category*,admin.course*,admin.course-video*',
-                        'children' => [
-                            ['label' => 'Document Categories', 'route_name' => 'admin.course-category.index', 'icon' => 'folder', 'permission' => 'course_category_access'],
-                            ['label' => 'Chapters', 'route_name' => 'admin.course.index', 'icon' => 'book', 'permission' => 'course_access'],
-                            ['label' => 'Document Videos', 'route_name' => 'admin.course-video.index', 'icon' => 'video', 'permission' => 'course_video_access'],
-                            ['label' => 'Live Sessions', 'route_name' => 'admin.live-session.index', 'icon' => 'play-circle', 'permission' => 'live_session_access'],
-                            ['label' => 'Presenters', 'route_name' => 'admin.presenter.index', 'icon' => 'user-tie', 'permission' => 'presenter_access'],
-                            ['label' => 'Registrations', 'route_name' => 'admin.session-registration.index', 'icon' => 'user-check', 'permission' => 'session_registration_access'],
-                        ],
-                    ],
                 ],
             ],
+
+            // ── SYSTEM ───────────────────────────────────────
             [
                 'item_type' => 'section',
-                'label' => 'Vacancies',
-                'slug' => 'vacancies',
-                'icon' => 'briefcase',
-                'children' => [
-                    [
-                        'label' => 'Vacancies',
-                        'route_name' => 'admin.vacancies.index',
-                        'icon' => 'briefcase',
-                        'permission' => 'vacancy_access',
-                        'active_pattern' => 'admin.vacancies.*',
-                        'children' => [
-                            ['label' => 'Vacancies', 'route_name' => 'admin.vacancies.index', 'icon' => 'briefcase', 'permission' => 'vacancy_access'],
-                            ['label' => 'Job Applications', 'route_name' => 'admin.job-applications.index', 'icon' => 'envelope-open-text', 'permission' => 'job_application_access'],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'item_type' => 'section',
-                'label' => 'Settings',
-                'slug' => 'settings',
+                'label' => 'System',
+                'slug' => 'system',
                 'icon' => 'cog',
                 'children' => [
                     [
-                        'item_type' => 'link',
-                        'label' => 'Media Library',
-                        'slug' => 'media-library',
-                        'route_name' => 'admin.media-library.index',
-                        'icon' => 'folder',
-                        'permission' => 'media_access',
+                        'label' => 'Menus & Navigation',
+                        'route_name' => 'admin.settings.mega-menu.index',
+                        'icon' => 'bars',
+                        'permission' => 'mega_menu_access',
+                        'active_pattern' => 'admin.settings.mega-menu*,admin.sticky-menu-item*,admin.settings.footer-links*',
+                        'children' => [
+                            ['label' => 'Mega Menu', 'route_name' => 'admin.settings.mega-menu.index', 'icon' => 'bars', 'permission' => 'mega_menu_access'],
+                            ['label' => 'Sticky Menu', 'route_name' => 'admin.sticky-menu-item.index', 'icon' => 'bars', 'permission' => 'sticky_menu_item_access'],
+                            ['label' => 'Footer Links', 'route_name' => 'admin.settings.footer-links.index', 'icon' => 'link', 'permission' => 'footer_link_access'],
+                        ],
+                    ],
+                    [
+                        'label' => 'SEO Settings',
+                        'route_name' => 'admin.settings.robots-txt.index',
+                        'icon' => 'search',
+                        'permission' => 'robots_txt_access',
+                        'active_pattern' => 'admin.settings.robots-txt*',
+                    ],
+                    [
+                        'label' => 'AI Settings',
+                        'route_name' => 'admin.settings.ai.index',
+                        'icon' => 'robot',
+                        'active_pattern' => 'admin.settings.ai*',
                     ],
                     [
                         'label' => 'Site Settings',
                         'route_name' => 'admin.settings.general.index',
-                        'icon' => 'user-shield',
+                        'icon' => 'sliders-h',
                         'permission' => 'general_access',
                         'active_pattern' => 'admin.settings.general*,admin.settings.contact*,admin.settings.theme*,admin.settings.login*,admin.settings.cookie*,admin.mail*,admin.translations*,admin.security.two-factor*,admin.external-code*,admin.image-optimizer*',
                         'children' => [
@@ -244,25 +237,7 @@ class Sidebar extends Component
                         ],
                     ],
                     [
-                        'label' => 'AI Settings',
-                        'route_name' => 'admin.settings.ai.index',
-                        'icon' => 'robot',
-                        'active_pattern' => 'admin.settings.ai*',
-                    ],
-                    [
-                        'label' => 'Routes',
-                        'route_name' => 'admin.settings.mega-menu.index',
-                        'icon' => 'user-shield',
-                        'permission' => 'mega_menu_access',
-                        'active_pattern' => 'admin.settings.mega-menu*,admin.sticky-menu-item*,admin.settings.footer-links*',
-                        'children' => [
-                            ['label' => 'Mega Menu', 'route_name' => 'admin.settings.mega-menu.index', 'icon' => 'bars', 'permission' => 'mega_menu_access'],
-                            ['label' => 'Sticky Menu', 'route_name' => 'admin.sticky-menu-item.index', 'icon' => 'bars', 'permission' => 'sticky_menu_item_access'],
-                            ['label' => 'Footer Links', 'route_name' => 'admin.settings.footer-links.index', 'icon' => 'link', 'permission' => 'footer_link_access'],
-                        ],
-                    ],
-                    [
-                        'label' => 'User Management',
+                        'label' => 'Users & Roles',
                         'route_name' => 'admin.administrator.users.index',
                         'icon' => 'user-shield',
                         'permission' => 'user_access',
@@ -275,16 +250,17 @@ class Sidebar extends Component
                     ],
                 ],
             ],
+
+            // ── REPORTS ──────────────────────────────────────
             [
                 'item_type' => 'section',
-                'label' => 'Report',
-                'slug' => 'report',
-                'icon' => 'cog',
+                'label' => 'Reports',
+                'slug' => 'reports',
+                'icon' => 'chart-bar',
                 'children' => [
                     ['label' => 'Web Statistics', 'route_name' => 'admin.analytics.index', 'icon' => 'chart-line', 'permission' => 'analytics_access'],
                     ['label' => 'Activity Logs', 'route_name' => 'admin.activity-log.index', 'icon' => 'history', 'permission' => 'activity_log_access'],
                     ['label' => 'Email Logs', 'route_name' => 'admin.administrator.email-logs.index', 'icon' => 'envelope-open-text', 'permission' => 'email_log_access'],
-                    ['label' => 'Robots.txt', 'route_name' => 'admin.settings.robots-txt.index', 'icon' => 'robot', 'permission' => 'robots_txt_access'],
                 ],
             ],
         ];

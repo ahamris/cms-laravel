@@ -7,6 +7,8 @@ use App\Models\Traits\MegaMenuModuleTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @mixin IdeHelperPage
@@ -27,6 +29,12 @@ class Page extends BaseModel
         'icon',
         'is_active',
         'template',
+        'layout',
+        'parent_id',
+        'sort_order',
+        'is_homepage',
+        'published_at',
+        'og_image_id',
         // Marketing Automation fields
         'funnel_fase',
         'marketing_persona_id',
@@ -40,11 +48,50 @@ class Page extends BaseModel
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
-            // Marketing Automation casts
+            'is_active'          => 'boolean',
+            'is_homepage'        => 'boolean',
+            'sort_order'         => 'integer',
+            'published_at'       => 'datetime',
             'secondary_keywords' => 'array',
-            'seo_analysis' => 'array',
+            'seo_analysis'       => 'array',
         ];
+    }
+
+    public function blocks(): HasMany
+    {
+        return $this->hasMany(PageBlock::class)->orderBy('sort_order');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order');
+    }
+
+    public function ogImage(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'og_image_id');
+    }
+
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('is_active', true)
+                     ->whereNotNull('published_at')
+                     ->where('published_at', '<=', now());
+    }
+
+    public function scopeRoots($query)
+    {
+        return $query->whereNull('parent_id');
     }
 
     /**

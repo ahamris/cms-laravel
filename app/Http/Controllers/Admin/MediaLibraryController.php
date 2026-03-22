@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Media;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -296,6 +298,118 @@ class MediaLibraryController extends AdminBaseController
             'webp' => function_exists('imagewebp') ? imagewebp($image, $path, 90) : false,
             default => false,
         };
+    }
+
+    /**
+     * Upload file(s) and create Media records.
+     */
+    public function upload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'files'  => 'required|array|min:1',
+            'files.*' => 'file|max:51200',
+            'folder' => 'nullable|string|max:200',
+        ]);
+
+        $folder = $request->input('folder', 'uploads');
+        $results = [];
+
+        foreach ($request->file('files') as $file) {
+            $filename = time() . '_' . uniqid('', true) . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs($folder, $filename, 'public');
+
+            $width = null;
+            $height = null;
+            if (str_starts_with($file->getMimeType(), 'image/')) {
+                $dimensions = @getimagesize($file->getRealPath());
+                if ($dimensions) {
+                    [$width, $height] = $dimensions;
+                }
+            }
+
+            $media = Media::create([
+                'filename'          => $filename,
+                'original_filename' => $file->getClientOriginalName(),
+                'path'              => $path,
+                'disk'              => 'public',
+                'mime_type'         => $file->getMimeType(),
+                'size'              => $file->getSize(),
+                'width'             => $width,
+                'height'            => $height,
+                'folder'            => $folder,
+                'uploaded_by'       => auth()->id(),
+            ]);
+
+            $results[] = [
+                'id'  => $media->id,
+                'url' => $media->url,
+                'filename' => $media->original_filename,
+            ];
+        }
+
+        return response()->json(['data' => $results], 201);
+    }
+
+    /**
+     * Update media metadata.
+     */
+    public function updateMedia(Request $request, int $id): JsonResponse
+    {
+        $media = Media::findOrFail($id);
+
+        $validated = $request->validate([
+            'alt_text' => 'nullable|string|max:300',
+            'title'    => 'nullable|string|max:300',
+            'folder'   => 'nullable|string|max:200',
+        ]);
+
+        $media->update($validated);
+
+        return response()->json(['data' => $media]);
+    }
+
+    /**
+     * Delete media record and file.
+     */
+    public function destroyMedia(int $id): JsonResponse
+    {
+        $media = Media::findOrFail($id);
+
+        \Illuminate\Support\Facades\Storage::disk($media->disk)->delete($media->path);
+        $media->delete();
+
+        return response()->json(['message' => 'Media deleted.']);
+    }
+
+    /**
+     * List virtual folders.
+     */
+    public function folders(): JsonResponse
+    {
+        $folders = Media::select('folder')
+            ->distinct()
+            ->whereNotNull('folder')
+            ->orderBy('folder')
+            ->pluck('folder');
+
+        return response()->json(['data' => $folders]);
+    }
+
+    /**
+     * Move files between folders.
+     */
+    public function moveMedia(Request $request): JsonResponse
+    {
+        $request->validate([
+            'media_ids' => 'required|array',
+            'media_ids.*' => 'exists:media,id',
+            'folder' => 'required|string|max:200',
+        ]);
+
+        Media::whereIn('id', $request->input('media_ids'))
+            ->update(['folder' => $request->input('folder')]);
+
+        return response()->json(['message' => 'Files moved.']);
     }
 
     /**

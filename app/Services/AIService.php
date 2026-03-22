@@ -220,6 +220,104 @@ class AIService
     }
 
     /**
+     * Generate page blocks from a topic description.
+     */
+    public function generatePageBlocks(string $topic, string $tone = 'professional', string $language = 'nl', array $blockTypes = ['hero', 'text', 'cta']): array
+    {
+        $typesStr = implode(', ', $blockTypes);
+        $systemPrompt = "You are a content architect. Generate a JSON array of page blocks for a website page. "
+            . "Available block types: {$typesStr}. "
+            . "Each block should have: type (string), content (object with 'title', 'body' keys), settings (object). "
+            . "Tone: {$tone}. Language: {$language}. "
+            . "Return ONLY valid JSON array, no explanations.";
+
+        $result = $this->callAI($systemPrompt, "Create page blocks for: {$topic}");
+
+        if (!$result['success']) return $result;
+
+        $decoded = json_decode($result['content'], true);
+        return ['success' => true, 'blocks' => is_array($decoded) ? $decoded : []];
+    }
+
+    /**
+     * Generate a full article structure.
+     */
+    public function generateArticle(string $topic, string $type = 'article', ?string $category = null, string $tone = 'informative', string $language = 'nl', int $length = 1000): array
+    {
+        $systemPrompt = "You are a professional content writer. Generate a blog article in JSON format with keys: "
+            . "title (string), slug (string, kebab-case), short_body (string, excerpt 1-2 sentences), "
+            . "long_body (string, HTML formatted article), meta_title (string, max 60 chars), "
+            . "meta_description (string, max 155 chars), primary_keyword (string), "
+            . "secondary_keywords (array of strings). "
+            . "Type: {$type}. " . ($category ? "Category context: {$category}. " : "")
+            . "Tone: {$tone}. Language: {$language}. Target length: ~{$length} words. "
+            . "Return ONLY valid JSON, no explanations.";
+
+        $result = $this->callAI($systemPrompt, "Write about: {$topic}");
+
+        if (!$result['success']) return $result;
+
+        $decoded = json_decode($result['content'], true);
+        return ['success' => true, 'article' => is_array($decoded) ? $decoded : []];
+    }
+
+    /**
+     * Optimize SEO for given content.
+     */
+    public function optimizeSEO(string $contentHtml): array
+    {
+        $systemPrompt = "You are an SEO expert. Analyze the provided HTML content and return JSON with keys: "
+            . "meta_title (string, max 60 chars), meta_description (string, max 155 chars), "
+            . "primary_keyword (string), secondary_keywords (array), readability_score (int 0-100), "
+            . "suggestions (array of improvement strings). "
+            . "Return ONLY valid JSON, no explanations.";
+
+        $plainText = strip_tags($contentHtml);
+        $snippet = mb_substr($plainText, 0, 3000);
+
+        $result = $this->callAI($systemPrompt, "Analyze this content:\n\n{$snippet}");
+
+        if (!$result['success']) return $result;
+
+        $decoded = json_decode($result['content'], true);
+        return ['success' => true, 'seo' => is_array($decoded) ? $decoded : []];
+    }
+
+    /**
+     * Draft a reply for CRM messages/tickets.
+     */
+    public function draftReply(string $originalMessage, string $tone = 'professional', string $language = 'nl'): string
+    {
+        $systemPrompt = "You are a customer service representative. Draft a helpful reply to the customer message below. "
+            . "Tone: {$tone}. Language: {$language}. "
+            . "Be concise, empathetic, and solution-oriented. Return ONLY the reply text, no JSON or formatting.";
+
+        $result = $this->callAI($systemPrompt, "Customer message:\n\n{$originalMessage}");
+
+        return $result['success'] ? $result['content'] : '';
+    }
+
+    /**
+     * Generate a content plan.
+     */
+    public function generateContentPlan(string $topic, int $items = 5, string $language = 'nl'): array
+    {
+        $systemPrompt = "You are a content strategist. Generate a content plan as a JSON array. "
+            . "Each item should have: title (string), type (article|video|podcast), "
+            . "category (string), keywords (array), target_funnel_stage (interesseer|overtuig|activeer|inspireer), "
+            . "estimated_effort (string like '2h', '4h'). "
+            . "Language: {$language}. Generate {$items} content items. "
+            . "Return ONLY valid JSON array, no explanations.";
+
+        $result = $this->callAI($systemPrompt, "Create content plan about: {$topic}");
+
+        if (!$result['success']) return $result;
+
+        $decoded = json_decode($result['content'], true);
+        return ['success' => true, 'plan' => is_array($decoded) ? $decoded : []];
+    }
+
+    /**
      * Clean AI response (remove markdown code blocks, etc.)
      */
     protected function cleanAIResponse(string $response): string

@@ -58,7 +58,12 @@ use App\Http\Controllers\Admin\Marketing\MarketingEventController;
 use App\Http\Controllers\Admin\Marketing\MarketingPersonaController;
 use App\Http\Controllers\Admin\Marketing\MarketingTestimonialController;
 use App\Http\Controllers\Admin\Marketing\ProductFeatureController;
+use App\Http\Controllers\Admin\AiController;
+use App\Http\Controllers\Admin\ArticleCategoryController;
+use App\Http\Controllers\Admin\FormBuilderController;
+use App\Http\Controllers\Admin\FormSubmissionController;
 use App\Http\Controllers\Admin\MediaLibraryController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\MegaMenuController;
 use App\Http\Controllers\Admin\Settings\AISettingsController;
 use App\Http\Controllers\Admin\Settings\ImageOptimizerController;
@@ -528,6 +533,25 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             });
         });
 
+        // Article Categories
+        Route::resource('article-category', ArticleCategoryController::class);
+        Route::post('article-category/{articleCategory}/toggle-active', [ArticleCategoryController::class, 'toggleActive'])->name('article-category.toggle-active');
+
+        // Tags
+        Route::resource('tag', TagController::class)->except(['show', 'create', 'edit']);
+        Route::post('tags/merge', [TagController::class, 'merge'])->name('tag.merge');
+
+        // Forms
+        Route::resource('form', FormBuilderController::class);
+        Route::post('form/{form}/duplicate', [FormBuilderController::class, 'duplicate'])->name('form.duplicate');
+        Route::prefix('form/{form}/submissions')->name('form.submissions.')->group(function () {
+            Route::get('/', [FormSubmissionController::class, 'index'])->name('index');
+            Route::get('/export', [FormSubmissionController::class, 'export'])->name('export');
+            Route::get('/{submission}', [FormSubmissionController::class, 'show'])->name('show');
+            Route::put('/{submission}', [FormSubmissionController::class, 'update'])->name('update');
+            Route::post('/{submission}/convert', [FormSubmissionController::class, 'convert'])->name('convert');
+        });
+
         // Media Library (storage file manager)
         Route::group(['prefix' => 'media-library', 'as' => 'media-library.'], function () {
             Route::get('/', [MediaLibraryController::class, 'index'])->name('index');
@@ -535,6 +559,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::get('/preview', [MediaLibraryController::class, 'preview'])->name('preview');
             Route::delete('/', [MediaLibraryController::class, 'destroy'])->name('destroy');
             Route::post('/resize', [MediaLibraryController::class, 'resize'])->name('resize');
+            Route::post('/upload', [MediaLibraryController::class, 'upload'])->name('upload');
+            Route::put('/{id}', [MediaLibraryController::class, 'updateMedia'])->name('update-media');
+            Route::delete('/media/{id}', [MediaLibraryController::class, 'destroyMedia'])->name('destroy-media');
+            Route::get('/folders', [MediaLibraryController::class, 'folders'])->name('folders');
+            Route::post('/move', [MediaLibraryController::class, 'moveMedia'])->name('move');
         });
 
         // Image Optimizer Routes
@@ -542,6 +571,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::get('/', [ImageOptimizerController::class, 'index'])->name('index');
             Route::get('/stream', [ImageOptimizerController::class, 'stream'])->name('stream');
         });
+
+        // AI Endpoints
+        Route::prefix('ai')->name('ai.')->group(function () {
+            Route::post('/generate-page', [AiController::class, 'generatePage'])->name('generate-page');
+            Route::post('/generate-article', [AiController::class, 'generateArticle'])->name('generate-article');
+            Route::post('/optimize-seo', [AiController::class, 'optimizeSeo'])->name('optimize-seo');
+            Route::post('/draft-reply', [AiController::class, 'draftReply'])->name('draft-reply');
+            Route::post('/content-plan', [AiController::class, 'contentPlan'])->name('content-plan');
+        });
+
+        // CRM Module
+        require __DIR__ . '/crm.php';
 
         // Catch-all route for any undefined admin/* routes
         Route::fallback(function () {

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -50,14 +51,35 @@ class Blog extends BaseModel
         'seo_score',
         'seo_status',
         'published_at',
+        // v1.0 additions
+        'type',
+        'category_id',
+        'reading_time',
+        'media_url',
+        'media_embed_code',
+        'media_duration',
+        'media_provider',
+        'transcript',
+        'show_notes',
+        'featured_image_id',
+        'allow_comments',
+        'view_count',
+        'series_id',
+        'series_order',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
-        'is_featured' => 'boolean',
+        'is_active'          => 'boolean',
+        'is_featured'        => 'boolean',
+        'allow_comments'     => 'boolean',
         'secondary_keywords' => 'array',
-        'seo_analysis' => 'array',
-        'seo_score' => 'integer',
+        'seo_analysis'       => 'array',
+        'seo_score'          => 'integer',
+        'reading_time'       => 'integer',
+        'media_duration'     => 'integer',
+        'view_count'         => 'integer',
+        'series_order'       => 'integer',
+        'published_at'       => 'datetime',
     ];
 
 
@@ -68,6 +90,13 @@ class Blog extends BaseModel
     protected static function boot()
     {
         parent::boot();
+
+        static::saving(function (Blog $article) {
+            if ($article->isDirty('long_body') && $article->long_body) {
+                $wordCount = str_word_count(strip_tags($article->long_body));
+                $article->reading_time = max(1, (int) ceil($wordCount / 200));
+            }
+        });
 
         static::created(function () {
             self::clearCarouselCache();
@@ -81,7 +110,6 @@ class Blog extends BaseModel
             self::clearCarouselCache();
         });
 
-        // Also clear cache when saving (catches updates that might not trigger updated event)
         static::saved(function () {
             self::clearCarouselCache();
         });
@@ -95,6 +123,43 @@ class Blog extends BaseModel
     public function blog_type(): BelongsTo
     {
         return $this->belongsTo(BlogType::class, 'blog_type_id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ArticleCategory::class, 'category_id');
+    }
+
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function series(): BelongsTo
+    {
+        return $this->belongsTo(ArticleSeries::class, 'series_id');
+    }
+
+    public function featuredImage(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'featured_image_id');
+    }
+
+    public function relatedInSeries(): HasMany
+    {
+        return $this->hasMany(self::class, 'series_id', 'series_id')
+                    ->where('id', '!=', $this->id)
+                    ->orderBy('series_order');
+    }
+
+    public function scopeOfType($query, string $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    public function scopeByCategory($query, string $categorySlug)
+    {
+        return $query->whereHas('category', fn ($q) => $q->where('slug', $categorySlug));
     }
 
     public function author(): BelongsTo

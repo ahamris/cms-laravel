@@ -18,16 +18,21 @@ class SitemapController extends Controller
     public function index()
     {
         $urls = [];
-        $entry = fn (string $loc, string $priority) => ['loc' => $loc, 'priority' => $priority];
+        $entry = fn (string $loc, string $priority, ?string $lastmod = null, string $changefreq = 'weekly') => array_filter([
+            'loc'        => $loc,
+            'priority'   => $priority,
+            'lastmod'    => $lastmod,
+            'changefreq' => $changefreq,
+        ]);
 
-        $urls[] = $entry(api_path('home'), '1.0');
+        $urls[] = $entry(api_path('home'), '1.0', null, 'daily');
         $urls[] = $entry(api_path('contact'), '0.8');
         $urls[] = $entry(api_path('pricing'), '0.9');
         $urls[] = $entry(api_path('pages'), '0.9');
 
-        $urls[] = $entry(api_path('blog'), '0.9');
-        foreach (Blog::where('is_active', true)->get(['slug']) as $blog) {
-            $urls[] = $entry(api_path('blog_post', $blog->slug), '0.7');
+        $urls[] = $entry(api_path('blog'), '0.9', null, 'daily');
+        foreach (Blog::where('is_active', true)->get(['slug', 'updated_at']) as $blog) {
+            $urls[] = $entry(api_path('blog_post', $blog->slug), '0.7', $blog->updated_at?->toDateString());
         }
 
         $urls[] = $entry(api_path('solutions'), '0.8');
@@ -35,8 +40,8 @@ class SitemapController extends Controller
             $urls[] = $entry(api_path('solution', $s->anchor), '0.7');
         }
 
-        foreach (Page::where('is_active', true)->get(['slug']) as $page) {
-            $urls[] = $entry(api_path('page', $page->slug), '0.6');
+        foreach (Page::where('is_active', true)->get(['slug', 'updated_at']) as $page) {
+            $urls[] = $entry(api_path('page', $page->slug), '0.6', $page->updated_at?->toDateString());
         }
 
         $urls[] = $entry(api_path('partners'), '0.8');
@@ -54,5 +59,36 @@ class SitemapController extends Controller
         return response()->json([
             'data' => $urls,
         ]);
+    }
+
+    /**
+     * XML sitemap format.
+     */
+    public function xml()
+    {
+        $frontendUrl = rtrim(config('app.frontend_url', config('app.url')), '/');
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+        foreach (Page::where('is_active', true)->get(['slug', 'updated_at']) as $page) {
+            $xml .= '<url>';
+            $xml .= '<loc>' . htmlspecialchars($frontendUrl . '/' . $page->slug) . '</loc>';
+            if ($page->updated_at) $xml .= '<lastmod>' . $page->updated_at->toDateString() . '</lastmod>';
+            $xml .= '<changefreq>weekly</changefreq><priority>0.6</priority>';
+            $xml .= '</url>' . "\n";
+        }
+
+        foreach (Blog::where('is_active', true)->get(['slug', 'updated_at']) as $blog) {
+            $xml .= '<url>';
+            $xml .= '<loc>' . htmlspecialchars($frontendUrl . '/blog/' . $blog->slug) . '</loc>';
+            if ($blog->updated_at) $xml .= '<lastmod>' . $blog->updated_at->toDateString() . '</lastmod>';
+            $xml .= '<changefreq>weekly</changefreq><priority>0.7</priority>';
+            $xml .= '</url>' . "\n";
+        }
+
+        $xml .= '</urlset>';
+
+        return response($xml, 200, ['Content-Type' => 'application/xml']);
     }
 }

@@ -103,8 +103,37 @@ class PageController extends Controller
             return response()->json(['message' => 'Page not found.'], 404);
         }
 
-        $page->load(['marketingPersona', 'contentType']);
+        $page->load(['marketingPersona', 'contentType', 'blocks', 'children', 'ogImage', 'tags']);
 
         return new PageResource($page);
+    }
+
+    public function blocks(string $slug)
+    {
+        $page = Page::where('slug', $slug)->where('is_active', true)->first();
+        if (! $page) {
+            return response()->json(['message' => 'Page not found.'], 404);
+        }
+
+        $blocks = $page->blocks()->where('is_visible', true)->orderBy('sort_order')->get();
+
+        return response()->json([
+            'data' => $blocks->map(fn ($block) => [
+                'type'     => $block->type,
+                'content'  => $block->content,
+                'settings' => $block->settings ?? (object) [],
+            ]),
+        ]);
+    }
+
+    public function tree()
+    {
+        $pages = Page::where('is_active', true)
+            ->roots()
+            ->with(['children' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order')])
+            ->orderBy('sort_order')
+            ->get(['id', 'title', 'slug', 'parent_id', 'sort_order', 'template']);
+
+        return response()->json(['data' => $pages]);
     }
 }
