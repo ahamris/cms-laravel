@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\ClearsSitemapCache;
+use App\Models\Traits\ElementTrait;
 use App\Models\Traits\MegaMenuModuleTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Page extends BaseModel
 {
-    use ClearsSitemapCache, HasFactory, MegaMenuModuleTrait, Sluggable;
+    use ClearsSitemapCache, ElementTrait, HasFactory, MegaMenuModuleTrait, Sluggable;
 
     protected $fillable = [
         'title',
