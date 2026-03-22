@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             VacancySeeder::class,
             DocSeeder::class,
             FaqSeeder::class,
+            ElementSeeder::class,
             ContactSubjectSeeder::class,
             PartnerTechStackSeeder::class,
         ]);
