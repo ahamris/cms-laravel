@@ -137,19 +137,8 @@ class PageController extends Controller
         return response()->json(['data' => $pages]);
     }
 
-    /**
-     * Resolve a page by slug, supporting nested paths (e.g. "services/web-development").
-     * Tries exact match first, then falls back to the last path segment.
-     */
     private function resolvePageBySlug(string $slug): ?Page
     {
-        $page = Page::where('slug', $slug)->where('is_active', true)->first();
-
-        if (! $page && str_contains($slug, '/')) {
-            $lastSegment = basename($slug);
-            $page = Page::where('slug', $lastSegment)->where('is_active', true)->first();
-        }
-
-        return $page;
+        return Page::where('slug', $slug)->where('is_active', true)->first();
     }
 }

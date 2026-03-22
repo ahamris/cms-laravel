@@ -34,8 +34,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/pages', [ApiPageController::class, 'index'])->name('api.pages.index');
 Route::get('/pages/search', [ApiPageController::class, 'search'])->middleware('throttle:search')->name('api.pages.search');
 Route::get('/pages/tree', [ApiPageController::class, 'tree'])->name('api.pages.tree');
-Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show')->where('slug', '[a-z0-9\-\/]+');
-Route::get('/pages/{slug}/blocks', [ApiPageController::class, 'blocks'])->name('api.pages.blocks')->where('slug', '[a-z0-9\-\/]+');
+Route::get('/pages/{slug}', [ApiPageController::class, 'show'])->name('api.pages.show');
+Route::get('/pages/{slug}/blocks', [ApiPageController::class, 'blocks'])->name('api.pages.blocks');
 Route::get('/search', [ApiSearchController::class, 'index'])->name('api.search');
 Route::get('/search/suggestions', [ApiSearchController::class, 'suggestions'])->name('search.suggestions');
 
