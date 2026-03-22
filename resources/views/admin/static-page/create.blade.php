@@ -155,8 +155,8 @@
                                 name="image"
                                 label=""
                                 :required="false"
-                                help-text="PNG, JPG, GIF up to 2MB"
-                                :max-size="2048"
+                                help-text="PNG, JPG, GIF up to 20MB"
+                                :max-size="20480"
                                 current-image-alt="Featured image"
                             />
                         </div>

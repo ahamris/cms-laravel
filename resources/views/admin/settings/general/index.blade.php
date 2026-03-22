@@ -146,8 +146,8 @@
                                 name="site_logo"
                                 label="Site Logo"
                                 :current-image="\App\Models\Setting::hasFile('site_logo') ? \App\Models\Setting::getLogoUrl() : null"
-                                help-text="JPEG, PNG, JPG, GIF, SVG, WebP up to 2MB"
-                                :max-size="2048"
+                                help-text="JPEG, PNG, JPG, GIF, SVG, WebP up to 20MB"
+                                :max-size="20480"
                                 current-image-alt="Site logo"
                             />
                         </div>
@@ -159,8 +159,8 @@
                                 name="site_favicon"
                                 label="Site Favicon"
                                 :current-image="\App\Models\Setting::hasFile('site_favicon') ? \App\Models\Setting::getFaviconUrl() : null"
-                                help-text="ICO, PNG, GIF, JPG, JPEG, WebP up to 1MB"
-                                :max-size="1024"
+                                help-text="ICO, PNG, GIF, JPG, JPEG, WebP up to 20MB"
+                                :max-size="20480"
                                 current-image-alt="Site favicon"
                             />
                         </div>
@@ -172,8 +172,8 @@
                                 name="admin_logo"
                                 label="Admin Logo"
                                 :current-image="\App\Models\Setting::hasFile('admin_logo') ? \App\Models\Setting::getFileUrl('admin_logo') : null"
-                                help-text="Logo displayed in admin panel. JPEG, PNG, JPG, GIF, SVG, WebP up to 2MB"
-                                :max-size="2048"
+                                help-text="Logo displayed in admin panel. JPEG, PNG, JPG, GIF, SVG, WebP up to 20MB"
+                                :max-size="20480"
                                 current-image-alt="Admin logo"
                             />
                         </div>
@@ -185,8 +185,8 @@
                                 name="footer_logo"
                                 label="Footer Logo"
                                 :current-image="\App\Models\Setting::hasFile('footer_logo') ? \App\Models\Setting::getFileUrl('footer_logo') : null"
-                                help-text="Logo shown in site footer. JPEG, PNG, JPG, GIF, SVG, WebP up to 2MB"
-                                :max-size="2048"
+                                help-text="Logo shown in site footer. JPEG, PNG, JPG, GIF, SVG, WebP up to 20MB"
+                                :max-size="20480"
                                 current-image-alt="Footer logo"
                             />
                         </div>

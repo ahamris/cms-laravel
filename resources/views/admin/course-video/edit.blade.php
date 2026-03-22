@@ -135,7 +135,7 @@
                     class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Thumbnail</h2>
                     <x-image-upload id="thumbnail" name="thumbnail" label="Cover image" :required="false"
-                        help-text="Used for both videos and documentation. Upload JPG, PNG, or GIF. Max 2MB." :max-size="2048" size="small"
+                        help-text="Used for both videos and documentation. Upload JPG, PNG, or GIF. Max 20MB." :max-size="20480" size="small"
                         :current-image="$courseVideo->thumbnail_path ? $courseVideo->thumbnail_url : null"
                         :current-image-alt="$courseVideo->title" />
                 </div>

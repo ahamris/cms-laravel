@@ -27,7 +27,7 @@ class BlogRequest extends FormRequest
             'slug' => 'required|string|max:255|unique:blogs,slug,' . $this->route('blog')?->id,
             'short_body' => 'required|string|min:10|max:150',
             'long_body' => 'required|string|min:20',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'meta_title' => 'nullable|string|max:255',
@@ -45,7 +45,7 @@ class BlogRequest extends FormRequest
 
         // For update, make image optional
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480';
         }
 
         return $rules;
@@ -71,7 +71,7 @@ class BlogRequest extends FormRequest
             'long_body.min' => 'Content must be at least 20 characters.',
             'image.image' => 'File must be an image.',
             'image.mimes' => 'Image must be a file of type: jpeg, png, jpg, gif, webp.',
-            'image.max' => 'Image may not be greater than 2MB.',
+            'image.max' => 'Image may not be greater than 20MB.',
 
         ];
     }

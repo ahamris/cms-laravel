@@ -41,7 +41,7 @@ class MarketingPersonaController extends AdminBaseController
             'pain_points' => 'nullable|array',
             'goals' => 'nullable|array',
             'preferred_channels' => 'nullable|array',
-            'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
         ]);
@@ -86,7 +86,7 @@ class MarketingPersonaController extends AdminBaseController
             'pain_points' => 'nullable|array',
             'goals' => 'nullable|array',
             'preferred_channels' => 'nullable|array',
-            'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
         ]);

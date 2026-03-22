@@ -71,8 +71,8 @@ class SettingSeeder extends Seeder
         $this->createSetting('theme_login_form_mode', 'white', 'select', 'login', 'Login Form Mode', 'Choose between white form style or glass form style (white/glass)', 1);
         $this->createSetting('login_page_title', 'Log in', 'text', 'login', 'Login Page Title', 'The main title displayed on the login page', 2);
         $this->createSetting('login_page_subtitle', 'Enter your credentials to access your account', 'text', 'login', 'Login Page Subtitle', 'The subtitle/description text displayed on the login page', 3);
-        $this->createSetting('login_page_logo', 'assets/logo/logo.png', 'image', 'login', 'Login Page Logo', 'The logo displayed on the login page (JPEG, PNG, JPG, GIF, SVG - Max: 2MB)', 4);
-        $this->createSetting('login_background_image', 'front/images/login-image.jpg', 'image', 'login', 'Login Background Image', 'The background image for the login page (JPEG, PNG, JPG - Max: 5MB)', 5);
+        $this->createSetting('login_page_logo', 'assets/logo/logo.png', 'image', 'login', 'Login Page Logo', 'The logo displayed on the login page (JPEG, PNG, JPG, GIF, SVG - Max: 20MB)', 4);
+        $this->createSetting('login_background_image', 'front/images/login-image.jpg', 'image', 'login', 'Login Background Image', 'The background image for the login page (JPEG, PNG, JPG - Max: 20MB)', 5);
         $this->createSetting('login_footer_copyright', '© {{year}} All rights reserved.', 'text', 'login', 'Login Footer Copyright', 'The copyright text displayed in the login page footer. Use {{year}} for current year', 6);
         $this->createSetting('login_enable_remember_me', '1', 'boolean', 'login', 'Enable Remember Me', 'Show or hide the remember me checkbox on the login form', 7);
         $this->createSetting('login_enable_forgot_password', '1', 'boolean', 'login', 'Enable Forgot Password', 'Show or hide the forgot password link on the login form', 8);

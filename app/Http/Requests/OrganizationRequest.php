@@ -21,7 +21,7 @@ class OrganizationRequest extends FormRequest
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,gif,webp,svg|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,gif,webp,svg|max:20480',
         ];
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             $rules['remove_logo'] = 'nullable|in:1';

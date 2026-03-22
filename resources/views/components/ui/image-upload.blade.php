@@ -27,10 +27,10 @@
 
             {{-- Current Image Preview (for edit mode) --}}
             @if($currentImage)
-                <div id="{{ $id }}_current_preview" class="absolute inset-0 w-full h-full">
+                <div id="{{ $id }}_current_preview" class="absolute inset-0 w-full h-full p-2 flex items-center justify-center">
                     <img src="{{ $currentImage }}"
                          alt="{{ $currentImageAlt }}"
-                         class="w-full h-full object-cover object-center rounded-lg">
+                         class="max-w-full max-h-full object-contain rounded">
                     <div class="absolute inset-0 bg-black/0 hover:bg-black/10 rounded-lg transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <button type="button"
                                 onclick="event.stopPropagation(); removeCurrentImage('{{ $id }}');"
@@ -53,11 +53,11 @@
             </div>
 
             {{-- Preview State (hidden by default) --}}
-            <div id="{{ $id }}_preview" class="hidden absolute inset-0 w-full h-full">
+            <div id="{{ $id }}_preview" class="hidden absolute inset-0 w-full h-full p-2 flex items-center justify-center">
                 <img id="{{ $id }}_preview_img"
                      src=""
                      alt="Preview"
-                     class="w-full h-full object-cover object-center rounded-lg">
+                     class="max-w-full max-h-full object-contain rounded">
                 <div class="absolute inset-0 bg-black/0 hover:bg-black/30 rounded-lg transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <button type="button"
                             onclick="event.stopPropagation(); removeImagePreview('{{ $id }}');"

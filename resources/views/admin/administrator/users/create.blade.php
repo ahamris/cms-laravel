@@ -44,8 +44,8 @@
                                 name="avatar"
                                 label="Avatar"
                                 :required="false"
-                                help-text="Upload avatar image (max 2MB)"
-                                :max-size="2048"
+                                help-text="Upload avatar image (max 20MB)"
+                                :max-size="20480"
                                 size="small"
                                 current-image-alt="User avatar"
                             />

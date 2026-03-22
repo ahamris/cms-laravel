@@ -187,7 +187,7 @@
                                    name="photo"
                                    accept="image/*"
                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary @error('photo') border-red-500 @enderror">
-                            <p class="text-xs text-gray-500 mt-1">Max 2MB. Leave empty to keep current.</p>
+                            <p class="text-xs text-gray-500 mt-1">Max 20MB. Leave empty to keep current.</p>
                             @error('photo')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                         </div>
 
@@ -199,7 +199,7 @@
                                    name="company_logo"
                                    accept="image/*"
                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary @error('company_logo') border-red-500 @enderror">
-                            <p class="text-xs text-gray-500 mt-1">Max 2MB. Leave empty to keep current.</p>
+                            <p class="text-xs text-gray-500 mt-1">Max 20MB. Leave empty to keep current.</p>
                             @error('company_logo')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                         </div>
                     </div>

@@ -35,7 +35,7 @@ class HeroBackgroundSettingsController extends AdminBaseController
     {
         $rules = [];
         foreach (self::HERO_KEYS as $key) {
-            $rules[$key] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
+            $rules[$key] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480';
             $rules["remove_{$key}"] = 'nullable|boolean';
         }
         $request->validate($rules);

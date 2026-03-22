@@ -40,8 +40,8 @@
                             name="{{ $key }}"
                             label="{{ $label[0] }}"
                             :current-image="\App\Models\Setting::hasFile($key) ? get_image(get_setting($key)) : null"
-                            help-text="{{ $label[1] }} — JPEG, PNG, WebP max 5MB"
-                            :max-size="5120"
+                            help-text="{{ $label[1] }} — JPEG, PNG, WebP max 20MB"
+                            :max-size="20480"
                             current-image-alt="Hero background"
                         />
                     </div>

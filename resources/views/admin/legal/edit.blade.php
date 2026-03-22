@@ -223,8 +223,8 @@
                                 name="image"
                                 label=""
                                 :required="false"
-                                help-text="PNG, JPG, GIF, SVG up to 2MB"
-                                :max-size="2048"
+                                help-text="PNG, JPG, GIF, SVG up to 20MB"
+                                :max-size="20480"
                                 :current-image="$legal->image ? Storage::disk('public')->url($legal->image) : null"
                                 :current-image-alt="$legal->title"
                             />

@@ -216,9 +216,9 @@
                                     label="Login Page Logo"
                                     :current-image="$currentLoginPageLogo"
                                     current-image-alt="Login Page Logo"
-                                    help-text="JPEG, PNG, JPG, GIF, SVG up to 2MB"
+                                    help-text="JPEG, PNG, JPG, GIF, SVG up to 20MB"
                                     accept="image/jpeg,image/png,image/jpg,image/gif,image/svg+xml"
-                                    :max-size="2048"
+                                    :max-size="20480"
                                     size="medium"
                                     wire:model="loginPageLogo"
                                 />
@@ -244,9 +244,9 @@
                                     label="Login Background Image"
                                     :current-image="$currentLoginBackgroundImage"
                                     current-image-alt="Login Background Image"
-                                    help-text="JPEG, PNG, JPG, GIF up to 5MB"
+                                    help-text="JPEG, PNG, JPG, GIF up to 20MB"
                                     accept="image/jpeg,image/png,image/jpg,image/gif"
-                                    :max-size="5120"
+                                    :max-size="20480"
                                     size="large"
                                     wire:model="loginBackgroundImage"
                                 />

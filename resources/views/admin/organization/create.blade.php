@@ -34,8 +34,8 @@
                             name="logo"
                             label="Logo"
                             :required="false"
-                            help-text="JPG, PNG, GIF, WebP or SVG. Max 2MB."
-                            :max-size="2048"
+                            help-text="JPG, PNG, GIF, WebP or SVG. Max 20MB."
+                            :max-size="20480"
                             size="large"
                             current-image-alt="Organization logo"
                         />

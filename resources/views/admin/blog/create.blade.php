@@ -232,7 +232,7 @@
 
                     <div class="space-y-4">
                         <x-image-upload id="image" name="image" label="" :required="false"
-                            help-text="Optimal: 1200x630px (Max 2MB)" :max-size="2048" />
+                            help-text="Optimal: 1200x630px (Max 20MB)" :max-size="20480" />
                     </div>
                 </div>
 

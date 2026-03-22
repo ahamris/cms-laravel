@@ -47,7 +47,7 @@ class UserCrudRequest extends FormRequest
                 Password::min(8)
                     ->uncompromised(),
             ],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:20480'],
             'roles' => ['sometimes', 'array'],
             'roles.*' => ['exists:roles,id'],
             'permissions' => ['sometimes', 'array'],

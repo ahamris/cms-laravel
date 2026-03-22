@@ -306,8 +306,8 @@
                         name="image"
                         label=""
                         :required="false"
-                        help-text="PNG, JPG, GIF, WEBP, SVG up to 2MB"
-                        :max-size="2048"
+                        help-text="PNG, JPG, GIF, WEBP, SVG up to 20MB"
+                        :max-size="20480"
                         current-image-alt="Module image"
                     />
                 </div>

@@ -34,15 +34,15 @@ class EventRequest extends FormRequest
             'address' => 'nullable|string|max:500',
             'price' => 'nullable|numeric|min:0',
             'registration_url' => 'nullable|url',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
             'is_active' => 'required|boolean',
         ];
 
         // For update, make images optional
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules['cover_image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
-            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+            $rules['cover_image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480';
+            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480';
         }
 
         return $rules;
@@ -81,10 +81,10 @@ class EventRequest extends FormRequest
             'registration_url.url' => 'Registration URL must be a valid URL.',
             'cover_image.image' => 'Cover image must be an image.',
             'cover_image.mimes' => 'Cover image must be a file of type: jpeg, png, jpg, gif, webp.',
-            'cover_image.max' => 'Cover image may not be greater than 2MB.',
+            'cover_image.max' => 'Cover image may not be greater than 20MB.',
             'image.image' => 'Image must be an image.',
             'image.mimes' => 'Image must be a file of type: jpeg, png, jpg, gif, webp.',
-            'image.max' => 'Image may not be greater than 2MB.',
+            'image.max' => 'Image may not be greater than 20MB.',
             'is_active.required' => 'Active status is required.',
             'is_active.boolean' => 'Active status must be true or false.',
         ];

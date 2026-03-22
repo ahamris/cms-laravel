@@ -35,7 +35,7 @@ class CourseVideoRequest extends FormRequest
         ];
 
         $rules['video'] = 'nullable|file|mimes:mp4,mov,webm,ogg|max:512000'; // max 512MB
-        $rules['thumbnail'] = 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120'; // max 5MB
+        $rules['thumbnail'] = 'nullable|image|mimes:jpeg,png,jpg,webp|max:20480'; // max 20MB
 
         return $rules;
     }

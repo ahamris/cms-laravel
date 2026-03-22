@@ -59,7 +59,7 @@ class SolutionRequest extends FormRequest
             'testimonial_company' => 'nullable|string|max:255',
 
             // Media
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:20480',
             'image_position' => 'nullable|string|in:left,right',
 
             // Status & Order
