@@ -48,6 +48,7 @@
                                    id="slug"
                                    name="slug"
                                    value="{{ old('slug') }}"
+                                   data-slug-from="title"
                                    placeholder="Auto-generated from title"
                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary @error('slug') border-red-500 @enderror">
                             <p class="text-xs text-gray-500 mt-1">Leave empty to auto-generate</p>
@@ -411,4 +412,7 @@ function removeTag(button) {
     button.closest('.tag-item').remove();
 }
 </script>
+@push('scripts')
+<x-ui.slug-script />
+@endpush
 </x-layouts.admin>

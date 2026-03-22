@@ -58,6 +58,7 @@
                             <div>
                                 <label for="slug" class="block text-xs font-medium text-gray-600 mb-1.5">URL Slug <span class="text-red-500">*</span></label>
                                 <input type="text" id="slug" name="slug" value="{{ old('slug') }}" required
+                                    data-slug-from="title"
                                     class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 @error('slug') border-red-500 @enderror"
                                     placeholder="url-slug">
                                 @error('slug')
@@ -211,4 +212,7 @@
             </div>
         </form>
     </div>
+@push('scripts')
+<x-ui.slug-script />
+@endpush
 </x-layouts.admin>

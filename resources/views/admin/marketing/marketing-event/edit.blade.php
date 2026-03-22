@@ -49,6 +49,7 @@
                                    id="slug"
                                    name="slug"
                                    value="{{ old('slug', $marketingEvent->slug) }}"
+                                   data-slug-from="title"
                                    placeholder="Auto-generated from title"
                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary @error('slug') border-red-500 @enderror">
                             @error('slug')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
@@ -417,4 +418,7 @@ function removeAgenda(button) {
     button.closest('.agenda-item').remove();
 }
 </script>
+@push('scripts')
+<x-ui.slug-script />
+@endpush
 </x-layouts.admin>
