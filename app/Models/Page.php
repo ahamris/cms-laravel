@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @mixin IdeHelperPage
@@ -17,6 +18,11 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 class Page extends BaseModel
 {
     use ClearsSitemapCache, ElementTrait, HasFactory, MegaMenuModuleTrait, Sluggable;
+
+    /**
+     * Reserved for future cached page listings that include elements.
+     */
+    public const CACHE_KEY = 'active_pages_with_elements';
 
     protected $fillable = [
         'title',
@@ -45,6 +51,17 @@ class Page extends BaseModel
         'ai_briefing',
         'seo_analysis',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => self::forgetCache());
+        static::deleted(fn () => self::forgetCache());
+    }
+
+    public static function forgetCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
 
     protected function casts(): array
     {

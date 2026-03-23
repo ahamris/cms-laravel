@@ -14,6 +14,9 @@ class StaticPageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $staticPage = $this->resource;
+        $elements = $staticPage->relationLoaded('elements') ? $staticPage->elements : collect();
+
         return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
@@ -25,6 +28,7 @@ class StaticPageResource extends JsonResource
             'image' => $this->image ? asset($this->image) : null,
             'url' => route('api.static.show', ['slug' => $this->slug]),
             'template' => resolve_menu_template('/api/static/'.$this->slug),
+            'elements' => ElementResource::collection($elements)->resolve($request),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ]);

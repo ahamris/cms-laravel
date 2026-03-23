@@ -14,6 +14,9 @@ class PageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $page = $this->resource;
+        $elements = $page->relationLoaded('elements') ? $page->elements : collect();
+
         return resource_urls_to_paths([
             'id' => $this->id,
             'title' => $this->title,
@@ -28,6 +31,7 @@ class PageResource extends JsonResource
             'layout' => $this->template ?? config('page_templates.default', 'default'),
             'template' => resolve_menu_template(api_path('page', $this->slug), $this->slug),
             'url' => route('api.pages.show', ['slug' => $this->slug]),
+            'elements' => ElementResource::collection($elements)->resolve($request),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ]);

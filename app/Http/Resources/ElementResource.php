@@ -12,13 +12,17 @@ class ElementResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $type = $this->type;
+
         return [
             'id' => $this->id,
-            'type' => $this->type,
+            'type' => $type instanceof \BackedEnum ? $type->value : $type,
             'title' => $this->title,
             'sub_title' => $this->sub_title,
             'description' => $this->description,
-            'options' => $this->options,
+            'options' => $this->options ?? [],
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

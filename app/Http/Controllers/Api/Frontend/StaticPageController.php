@@ -24,7 +24,10 @@ class StaticPageController extends Controller
     )]
     public function show(string $slug)
     {
-        $staticPage = StaticPage::where('slug', $slug)->where('is_active', true)->first();
+        $staticPage = StaticPage::where('slug', $slug)
+            ->where('is_active', true)
+            ->with('elements')
+            ->first();
 
         if (! $staticPage) {
             return response()->json(['message' => 'Static page not found.'], 404);

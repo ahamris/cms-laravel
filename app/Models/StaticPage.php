@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ElementTrait;
 use App\Models\Traits\FaqTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -11,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class StaticPage extends BaseModel
 {
-    use FaqTrait, Sluggable;
+    use ElementTrait, FaqTrait, Sluggable;
 
     const CACHE_KEY = 'static_pages';
 
@@ -44,11 +46,27 @@ class StaticPage extends BaseModel
         ];
     }
 
-    public function getCached(): array
+    protected static function booted(): void
+    {
+        static::saved(fn () => self::forgetCache());
+        static::deleted(fn () => self::forgetCache());
+    }
+
+    public static function forgetCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    /**
+     * Cached active static pages with related elements eager-loaded (pivot order by id).
+     */
+    public static function getCached(): Collection
     {
         return Cache::remember(self::CACHE_KEY, 86400, function () {
-            return self::toBase()
+            return static::query()
                 ->where('is_active', true)
+                ->with('elements')
+                ->orderBy('title')
                 ->get();
         });
     }

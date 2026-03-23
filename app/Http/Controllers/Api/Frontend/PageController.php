@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ElementResource;
 use App\Http\Resources\PageListResource;
 use App\Http\Resources\PageResource;
 use App\Models\Page;
@@ -27,6 +28,7 @@ class PageController extends Controller
     {
         $perPage = max(1, min((int) $request->input('per_page', 12), 100));
         $pages = Page::where('is_active', true)
+            ->with('elements')
             ->orderBy('title')
             ->paginate($perPage);
 
@@ -64,6 +66,7 @@ class PageController extends Controller
 
         $like = '%'.$query.'%';
         $pages = Page::where('is_active', true)
+            ->with('elements')
             ->whereAny(['title', 'short_body', 'long_body'], 'like', $like)
             ->orderBy('title')
             ->paginate($perPage);
@@ -103,7 +106,7 @@ class PageController extends Controller
             return response()->json(['message' => 'Page not found.'], 404);
         }
 
-        $page->load(['marketingPersona', 'contentType', 'blocks', 'children', 'ogImage', 'tags']);
+        $page->load(['marketingPersona', 'contentType', 'blocks', 'children', 'ogImage', 'tags', 'elements']);
 
         return new PageResource($page);
     }
@@ -126,15 +129,47 @@ class PageController extends Controller
         ]);
     }
 
-    public function tree()
+    public function tree(Request $request)
     {
         $pages = Page::where('is_active', true)
             ->roots()
-            ->with(['children' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order')])
+            ->with([
+                'elements',
+                'children' => fn ($q) => $q->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->with('elements'),
+            ])
             ->orderBy('sort_order')
             ->get(['id', 'title', 'slug', 'parent_id', 'sort_order', 'template']);
 
-        return response()->json(['data' => $pages]);
+        return response()->json([
+            'data' => $pages->map(fn (Page $page) => $this->pageTreeNode($page, $request))->values()->all(),
+        ]);
+    }
+
+    /**
+     * Tree nodes always include `elements` as a JSON array (empty when none) for the SPA.
+     *
+     * @return array<string, mixed>
+     */
+    private function pageTreeNode(Page $page, Request $request): array
+    {
+        $elements = $page->relationLoaded('elements') ? $page->elements : collect();
+
+        $node = array_merge($page->only(['id', 'title', 'slug', 'parent_id', 'sort_order', 'template']), [
+            'elements' => ElementResource::collection($elements)->resolve($request),
+        ]);
+
+        if ($page->relationLoaded('children')) {
+            $node['children'] = $page->children
+                ->map(fn (Page $child) => $this->pageTreeNode($child, $request))
+                ->values()
+                ->all();
+        } else {
+            $node['children'] = [];
+        }
+
+        return $node;
     }
 
     private function resolvePageBySlug(string $slug): ?Page

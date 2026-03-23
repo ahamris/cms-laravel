@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Enums\ElementType;
+use App\Models\Pivots\ElementPagePivot;
+use App\Models\Pivots\ElementStaticPagePivot;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Element extends BaseModel
 {
@@ -24,5 +27,33 @@ class Element extends BaseModel
         $value = $type instanceof ElementType ? $type->value : $type;
 
         return $query->where('type', $value);
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => self::forgetParentCaches());
+        static::deleted(fn () => self::forgetParentCaches());
+    }
+
+    protected static function forgetParentCaches(): void
+    {
+        Page::forgetCache();
+        StaticPage::forgetCache();
+    }
+
+    public function pages(): BelongsToMany
+    {
+        return $this->belongsToMany(Page::class, 'element_page', 'element_id', 'page_id')
+            ->using(ElementPagePivot::class)
+            ->withTimestamps()
+            ->orderByPivot('id');
+    }
+
+    public function staticPages(): BelongsToMany
+    {
+        return $this->belongsToMany(StaticPage::class, 'element_static_page', 'element_id', 'static_page_id')
+            ->using(ElementStaticPagePivot::class)
+            ->withTimestamps()
+            ->orderByPivot('id');
     }
 }
