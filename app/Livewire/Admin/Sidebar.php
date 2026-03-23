@@ -184,6 +184,44 @@ class Sidebar extends Component
                 ],
             ],
 
+            // ── ELEMENTS ─────────────────────────────────────
+            [
+                'item_type' => 'section',
+                'label' => 'Elements',
+                'slug' => 'elements',
+                'icon' => 'cubes',
+                'children' => [
+                    [
+                        'label' => 'CTA',
+                        'route_name' => 'admin.element-cta.index',
+                        'icon' => 'bullhorn',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.element-cta*',
+                    ],
+                    [
+                        'label' => 'FAQ',
+                        'route_name' => 'admin.element-faq.index',
+                        'icon' => 'circle-question',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.element-faq*',
+                    ],
+                    [
+                        'label' => 'Related content',
+                        'route_name' => 'admin.element-related-content.index',
+                        'icon' => 'diagram-project',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.element-related-content*',
+                    ],
+                    [
+                        'label' => 'Card grid',
+                        'route_name' => 'admin.element-card-grid.index',
+                        'icon' => 'table-cells',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.element-card-grid*',
+                    ],
+                ],
+            ],
+
             // ── SYSTEM ───────────────────────────────────────
             [
                 'item_type' => 'section',

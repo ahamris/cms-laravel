@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseVideoController;
 use App\Http\Controllers\Admin\DocPageController;
 use App\Http\Controllers\Admin\DocSectionController;
+use App\Http\Controllers\Admin\Element\CardGridElementController;
 use App\Http\Controllers\Admin\Element\CtaElementController;
 use App\Http\Controllers\Admin\Element\FaqElementController;
 use App\Http\Controllers\Admin\Element\RelatedContentElementController;
@@ -160,6 +161,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::resource('element-cta', CtaElementController::class)->parameters(['element-cta' => 'element']);
         Route::resource('element-faq', FaqElementController::class)->parameters(['element-faq' => 'element']);
         Route::resource('element-related-content', RelatedContentElementController::class)->parameters(['element-related-content' => 'element']);
+        Route::resource('element-card-grid', CardGridElementController::class)->parameters(['element-card-grid' => 'element']);
 
         // Legal Pages
         Route::resource('legal', LegalController::class);

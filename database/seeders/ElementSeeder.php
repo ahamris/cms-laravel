@@ -11,16 +11,17 @@ class ElementSeeder extends Seeder
     public function run(): void
     {
         if (app()->environment('production')) {
-            return;
+            // return;
         }
 
         $this->seedCtaElements();
         $this->seedFaqElements();
+        $this->seedCardGridElements();
     }
 
     private function seedCtaElements(): void
     {
-        if (Element::where('type', ElementType::Cta)->where('title', 'Klaar om te starten?')->exists()) {
+        if (Element::where('type', ElementType::Cta)->exists()) {
             return;
         }
 
@@ -53,7 +54,7 @@ class ElementSeeder extends Seeder
 
     private function seedFaqElements(): void
     {
-        if (Element::where('type', ElementType::Faq)->where('title', 'Veelgestelde vragen')->exists()) {
+        if (Element::where('type', ElementType::Faq)->exists()) {
             return;
         }
 
@@ -106,6 +107,48 @@ class ElementSeeder extends Seeder
                 ],
                 'layout' => 'accordion',
                 'columns' => 1,
+            ],
+        ]);
+    }
+
+    private function seedCardGridElements(): void
+    {
+        if (Element::where('type', ElementType::CardGrid)->exists()) {
+            return;
+        }
+
+        Element::create([
+            'type' => ElementType::CardGrid,
+            'title' => 'Strategische controle over digitale infrastructuur',
+            'sub_title' => 'VOOR BELEIDSMAKERS',
+            'description' => 'Ministeries bepalen samen de richting van het platform en behouden volledige eigenaarschap over kritieke systemen.',
+            'options' => [
+                'label' => 'VOOR BELEIDSMAKERS',
+                'title' => 'Strategische controle over digitale infrastructuur',
+                'description' => 'Ministeries bepalen samen de richting van het platform en behouden volledige eigenaarschap over kritieke systemen.',
+                'cards' => [
+                    [
+                        'label' => 'Voor organisaties',
+                        'title' => 'Deelname zonder grote implementatie-inspanning',
+                        'description' => 'Provincies en gemeenten sluiten aan op bestaande infrastructuur en besparen aanzienlijk op IT-kosten.',
+                        'button_text' => 'Meer',
+                        'button_link' => '#',
+                    ],
+                    [
+                        'label' => 'Voor gebruikers',
+                        'title' => 'Betere toegang tot overheidsgegevens',
+                        'description' => 'Burgers en bedrijven vinden informatie sneller en gemakkelijker omdat deze centraal doorzoekbaar en consistent gepubliceerd is.',
+                        'button_text' => 'Meer',
+                        'button_link' => '#',
+                    ],
+                    [
+                        'label' => 'Voor experts',
+                        'title' => 'Technische vrijheid en innovatie',
+                        'description' => 'Ontwikkelaars werken met open standaarden en kunnen het platform aanpassen aan specifieke behoeften van hun organisatie.',
+                        'button_text' => 'Meer',
+                        'button_link' => '#',
+                    ],
+                ],
             ],
         ]);
     }
