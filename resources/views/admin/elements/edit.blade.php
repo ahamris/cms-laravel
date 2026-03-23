@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Edit {{ $heading }}</h1>
-            <p class="text-gray-600">This item is locked to type: <code>{{ $type }}</code>.</p>
+            <p class="text-gray-600">This item is locked to type: <code>{{ $type->value }}</code>.</p>
         </div>
         <a href="{{ route($routeBase . '.index') }}"
            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
@@ -21,35 +21,8 @@
         @csrf
         @method('PUT')
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                    <input type="text" name="title" value="{{ old('title', $element->title) }}"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 @error('title') border-red-500 @enderror">
-                    @error('title')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Sub Title</label>
-                    <input type="text" name="sub_title" value="{{ old('sub_title', $element->sub_title) }}"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 @error('sub_title') border-red-500 @enderror">
-                    @error('sub_title')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="description" rows="4"
-                          class="w-full border border-gray-300 rounded-lg px-3 py-2 @error('description') border-red-500 @enderror">{{ old('description', $element->description) }}</textarea>
-                @error('description')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Options (JSON)</label>
-                <textarea name="options" rows="12"
-                          class="w-full font-mono text-sm border border-gray-300 rounded-lg px-3 py-2 @error('options') border-red-500 @enderror">{{ old('options', json_encode($element->options ?? new \stdClass(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) }}</textarea>
-                @error('options')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-            </div>
-
+            @include('admin.elements.partials.base-fields', ['element' => $element])
+            @include($optionsFormView, ['element' => $element])
         </div>
 
         <button type="submit"

@@ -17,6 +17,12 @@ abstract class BaseTypedElementController extends AdminBaseController
 
     abstract protected function routeBase(): string;
 
+    /** Blade include for create/edit option fields (e.g. admin.elements.forms.cta-options). */
+    abstract protected function optionsFormView(): string;
+
+    /** Blade include for show page option display (e.g. admin.elements.show.cta-options). */
+    abstract protected function showOptionsView(): string;
+
     protected function typeHelp(): string
     {
         return '';
@@ -41,12 +47,14 @@ abstract class BaseTypedElementController extends AdminBaseController
             'routeBase' => $this->routeBase(),
             'type' => $this->type(),
             'typeHelp' => $this->typeHelp(),
+            'optionsFormView' => $this->optionsFormView(),
+            'element' => null,
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validatePayload($request);
+        $validated = $this->validatedPayload($request);
 
         Element::create([
             'type' => $this->type(),
@@ -69,6 +77,7 @@ abstract class BaseTypedElementController extends AdminBaseController
             'heading' => $this->heading(),
             'routeBase' => $this->routeBase(),
             'typeHelp' => $this->typeHelp(),
+            'showOptionsView' => $this->showOptionsView(),
         ]);
     }
 
@@ -82,13 +91,14 @@ abstract class BaseTypedElementController extends AdminBaseController
             'routeBase' => $this->routeBase(),
             'type' => $this->type(),
             'typeHelp' => $this->typeHelp(),
+            'optionsFormView' => $this->optionsFormView(),
         ]);
     }
 
     public function update(Request $request, int $element): RedirectResponse
     {
         $item = $this->findTypedElement($element);
-        $validated = $this->validatePayload($request);
+        $validated = $this->validatedPayload($request);
 
         $item->update([
             'type' => $this->type(),
@@ -119,19 +129,31 @@ abstract class BaseTypedElementController extends AdminBaseController
             ->firstOrFail();
     }
 
-    protected function validatePayload(Request $request): array
+    /**
+     * @return array{title: ?string, sub_title: ?string, description: ?string, options: array}
+     */
+    protected function validatedPayload(Request $request): array
     {
-        $validated = $request->validate([
+        $common = $this->validateCommon($request);
+        $options = $this->validateOptions($request);
+
+        return array_merge($common, ['options' => $options]);
+    }
+
+    /**
+     * @return array{title: ?string, sub_title: ?string, description: ?string}
+     */
+    protected function validateCommon(Request $request): array
+    {
+        return $request->validate([
             'title' => 'nullable|string|max:255',
             'sub_title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'options' => 'nullable|json',
         ]);
-
-        $validated['options'] = isset($validated['options']) && $validated['options'] !== ''
-            ? json_decode($validated['options'], true)
-            : null;
-
-        return $validated;
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    abstract protected function validateOptions(Request $request): array;
 }

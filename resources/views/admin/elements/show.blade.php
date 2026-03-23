@@ -24,7 +24,7 @@
     @endif
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-        <div><span class="font-semibold">Type:</span> <code>{{ $element->type }}</code></div>
+        <div><span class="font-semibold">Type:</span> <code>{{ $element->type->value }}</code></div>
         <div><span class="font-semibold">Title:</span> {{ $element->title ?: '-' }}</div>
         <div><span class="font-semibold">Sub title:</span> {{ $element->sub_title ?: '-' }}</div>
         <div>
@@ -32,8 +32,8 @@
             <p class="mt-2 text-gray-700 whitespace-pre-wrap">{{ $element->description ?: '-' }}</p>
         </div>
         <div>
-            <span class="font-semibold">Options (JSON):</span>
-            <pre class="mt-2 bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm overflow-x-auto">{{ json_encode($element->options, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+            <span class="font-semibold block mb-2">Options</span>
+            @include($showOptionsView, ['element' => $element])
         </div>
     </div>
 </div>
