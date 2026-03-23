@@ -24,7 +24,7 @@ class ElementSeeder extends Seeder
 
     private function seedCtaElements(string $entityType, int $entityId): void
     {
-        if (Element::where('identifier', 'homepage_cta')->exists()) {
+        if (Element::where('type', Element::TYPE_CTA)->where('title', 'Klaar om te starten?')->exists()) {
             return;
         }
 
@@ -32,7 +32,6 @@ class ElementSeeder extends Seeder
             'type' => Element::TYPE_CTA,
             'title' => 'Klaar om te starten?',
             'sub_title' => 'Neem vandaag nog contact op en ontdek wat wij voor u kunnen betekenen.',
-            'identifier' => 'homepage_cta',
             'entity_type' => $entityType,
             'entity_id' => $entityId,
             'options' => [
@@ -48,7 +47,6 @@ class ElementSeeder extends Seeder
             'type' => Element::TYPE_CTA,
             'title' => 'Gratis demo aanvragen',
             'sub_title' => 'Ervaar zelf hoe ons platform werkt met een vrijblijvende demonstratie.',
-            'identifier' => 'demo_cta',
             'entity_type' => $entityType,
             'entity_id' => $entityId,
             'options' => [
@@ -63,7 +61,7 @@ class ElementSeeder extends Seeder
 
     private function seedFaqElements(string $entityType, int $entityId): void
     {
-        if (Element::where('identifier', 'homepage_faq')->exists()) {
+        if (Element::where('type', Element::TYPE_FAQ)->where('title', 'Veelgestelde vragen')->exists()) {
             return;
         }
 
@@ -71,7 +69,6 @@ class ElementSeeder extends Seeder
             'type' => Element::TYPE_FAQ,
             'title' => 'Veelgestelde vragen',
             'sub_title' => 'Hier vindt u antwoorden op de meest gestelde vragen.',
-            'identifier' => 'homepage_faq',
             'entity_type' => $entityType,
             'entity_id' => $entityId,
             'options' => [
@@ -102,7 +99,6 @@ class ElementSeeder extends Seeder
             'type' => Element::TYPE_FAQ,
             'title' => 'Vragen over prijzen',
             'sub_title' => null,
-            'identifier' => 'pricing_faq',
             'entity_type' => $entityType,
             'entity_id' => $entityId,
             'options' => [
