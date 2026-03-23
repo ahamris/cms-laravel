@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ElementType;
 use App\Models\Element;
-use App\Models\Page;
 use Illuminate\Database\Seeder;
 
 class ElementSeeder extends Seeder
@@ -14,26 +14,20 @@ class ElementSeeder extends Seeder
             return;
         }
 
-        $page = Page::first();
-        $entityType = $page ? Page::class : Page::class;
-        $entityId = $page ? $page->id : 0;
-
-        $this->seedCtaElements($entityType, $entityId);
-        $this->seedFaqElements($entityType, $entityId);
+        $this->seedCtaElements();
+        $this->seedFaqElements();
     }
 
-    private function seedCtaElements(string $entityType, int $entityId): void
+    private function seedCtaElements(): void
     {
-        if (Element::where('type', Element::TYPE_CTA)->where('title', 'Klaar om te starten?')->exists()) {
+        if (Element::where('type', ElementType::Cta)->where('title', 'Klaar om te starten?')->exists()) {
             return;
         }
 
         Element::create([
-            'type' => Element::TYPE_CTA,
+            'type' => ElementType::Cta,
             'title' => 'Klaar om te starten?',
             'sub_title' => 'Neem vandaag nog contact op en ontdek wat wij voor u kunnen betekenen.',
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
             'options' => [
                 'button_text' => 'Neem contact op',
                 'button_url' => '/contact',
@@ -44,11 +38,9 @@ class ElementSeeder extends Seeder
         ]);
 
         Element::create([
-            'type' => Element::TYPE_CTA,
+            'type' => ElementType::Cta,
             'title' => 'Gratis demo aanvragen',
             'sub_title' => 'Ervaar zelf hoe ons platform werkt met een vrijblijvende demonstratie.',
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
             'options' => [
                 'button_text' => 'Plan een demo',
                 'button_url' => '/demo',
@@ -59,18 +51,16 @@ class ElementSeeder extends Seeder
         ]);
     }
 
-    private function seedFaqElements(string $entityType, int $entityId): void
+    private function seedFaqElements(): void
     {
-        if (Element::where('type', Element::TYPE_FAQ)->where('title', 'Veelgestelde vragen')->exists()) {
+        if (Element::where('type', ElementType::Faq)->where('title', 'Veelgestelde vragen')->exists()) {
             return;
         }
 
         Element::create([
-            'type' => Element::TYPE_FAQ,
+            'type' => ElementType::Faq,
             'title' => 'Veelgestelde vragen',
             'sub_title' => 'Hier vindt u antwoorden op de meest gestelde vragen.',
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
             'options' => [
                 'items' => [
                     [
@@ -96,11 +86,9 @@ class ElementSeeder extends Seeder
         ]);
 
         Element::create([
-            'type' => Element::TYPE_FAQ,
+            'type' => ElementType::Faq,
             'title' => 'Vragen over prijzen',
             'sub_title' => null,
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
             'options' => [
                 'items' => [
                     [

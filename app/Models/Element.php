@@ -2,35 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Enums\ElementType;
 
 class Element extends BaseModel
 {
-    const TYPE_CTA = 'cta';
-    const TYPE_FAQ = 'faq';
-    const TYPE_RELATED_CONTENT = 'related_content';
-
     protected $fillable = [
         'type',
         'title',
         'sub_title',
         'description',
         'options',
-        'entity_type',
-        'entity_id',
     ];
 
     protected $casts = [
+        'type' => ElementType::class,
         'options' => 'array',
     ];
 
-    public function entity(): MorphTo
+    public function scopeByType($query, ElementType|string $type)
     {
-        return $this->morphTo();
-    }
+        $value = $type instanceof ElementType ? $type->value : $type;
 
-    public function scopeByType($query, string $type)
-    {
-        return $query->where('type', $type);
+        return $query->where('type', $value);
     }
 }

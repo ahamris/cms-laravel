@@ -1,0 +1,10 @@
+<?php
+
+namespace App\Enums;
+
+enum ElementType: string
+{
+    case Cta = 'cta';
+    case Faq = 'faq';
+    case RelatedContent = 'related_content';
+}

@@ -23,6 +23,9 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseVideoController;
 use App\Http\Controllers\Admin\DocPageController;
 use App\Http\Controllers\Admin\DocSectionController;
+use App\Http\Controllers\Admin\Element\CtaElementController;
+use App\Http\Controllers\Admin\Element\FaqElementController;
+use App\Http\Controllers\Admin\Element\RelatedContentElementController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ExternalCodeController;
 use App\Http\Controllers\Admin\FeatureController;
@@ -152,6 +155,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         // Pages
         Route::resource('page', PageController::class);
         Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
+
+        // Elements (strict per type)
+        Route::resource('element-cta', CtaElementController::class)->parameters(['element-cta' => 'element']);
+        Route::resource('element-faq', FaqElementController::class)->parameters(['element-faq' => 'element']);
+        Route::resource('element-related-content', RelatedContentElementController::class)->parameters(['element-related-content' => 'element']);
 
         // Legal Pages
         Route::resource('legal', LegalController::class);
