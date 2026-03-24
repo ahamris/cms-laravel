@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\Element\CardGridElementController;
 use App\Http\Controllers\Admin\Element\CtaElementController;
 use App\Http\Controllers\Admin\Element\FaqElementController;
 use App\Http\Controllers\Admin\Element\HeroVideoElementController;
+use App\Http\Controllers\Admin\Element\NewsletterElementController;
 use App\Http\Controllers\Admin\Element\RelatedContentElementController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ExternalCodeController;
@@ -164,6 +165,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::resource('element-related-content', RelatedContentElementController::class)->parameters(['element-related-content' => 'element']);
         Route::resource('element-card-grid', CardGridElementController::class)->parameters(['element-card-grid' => 'element']);
         Route::resource('element-hero-video', HeroVideoElementController::class)->parameters(['element-hero-video' => 'element']);
+        Route::resource('element-newsletter', NewsletterElementController::class)->parameters(['element-newsletter' => 'element']);
 
         // Legal Pages
         Route::resource('legal', LegalController::class);

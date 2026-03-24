@@ -226,6 +226,13 @@ class Sidebar extends Component
                         'permission' => 'page_access',
                         'active_pattern' => 'admin.element-hero-video*',
                     ],
+                    [
+                        'label' => 'Newsletter',
+                        'route_name' => 'admin.element-newsletter.index',
+                        'icon' => 'envelope-open-text',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.element-newsletter*',
+                    ],
                 ],
             ],
 

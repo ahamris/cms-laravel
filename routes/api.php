@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Frontend\LiveSessionController as ApiLiveSessionCon
 use App\Http\Controllers\Api\Frontend\MediaController as ApiMediaController;
 use App\Http\Controllers\Api\Frontend\MenuController as ApiMenuController;
 use App\Http\Controllers\Api\Frontend\ModuleController as ApiModuleController;
+use App\Http\Controllers\Api\Frontend\NewsletterController as ApiNewsletterController;
 use App\Http\Controllers\Api\Frontend\PageController as ApiPageController;
 use App\Http\Controllers\Api\Frontend\PartnersController as ApiPartnersController;
 use App\Http\Controllers\Api\Frontend\TechStackController as ApiTechStackController;
@@ -80,6 +81,7 @@ Route::post('/vacancies/{slug}/apply', [ApiVacancyController::class, 'submit'])-
 Route::get('/contact', [ApiContactController::class, 'index'])->name('api.contact.index');
 Route::get('/contact/subjects', [ApiContactController::class, 'subjects'])->name('api.contact.subjects');
 Route::post('/contact/verstuur', [ApiContactController::class, 'storeContact'])->middleware('throttle:forms')->name('api.contact.submit');
+Route::post('/newsletter/subscribe', [ApiNewsletterController::class, 'subscribe'])->middleware('throttle:forms')->name('api.newsletter.subscribe');
 
 // Pricing (prijzen)
 Route::get('/prijzen', [ApiPricingController::class, 'index'])->name('api.pricing.index');

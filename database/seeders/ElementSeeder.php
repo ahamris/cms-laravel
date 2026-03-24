@@ -18,6 +18,7 @@ class ElementSeeder extends Seeder
         $this->seedFaqElements();
         $this->seedCardGridElements();
         $this->seedHeroVideoElements();
+        $this->seedNewsletterElements();
     }
 
     private function seedCtaElements(): void
@@ -171,6 +172,26 @@ class ElementSeeder extends Seeder
                 'primary_button_url' => '/contact',
                 'secondary_button_text' => 'Bekijk onze aanpak',
                 'secondary_button_url' => '/aanpak',
+            ],
+        ]);
+    }
+
+    private function seedNewsletterElements(): void
+    {
+        if (Element::where('type', ElementType::Newsletter)->exists()) {
+            return;
+        }
+
+        Element::create([
+            'type' => ElementType::Newsletter,
+            'title' => 'Sluit je aan bij Staterra',
+            'sub_title' => 'Staterra wordt samen met publieke partners ontwikkeld.',
+            'description' => 'Organisaties die willen samenwerken zijn welkom.',
+            'options' => [
+                'email_placeholder' => 'Je e-mailadres',
+                'button_text' => 'Aanmelden',
+                'submit_endpoint' => '/api/newsletter/subscribe',
+                'terms_text' => 'Door aan te melden ga je akkoord met onze voorwaarden.',
             ],
         ]);
     }
