@@ -75,7 +75,7 @@ if (! function_exists('get_image')) {
         $result = null;
 
         if (empty($url)) {
-            $result = $default ?? asset('front/images/blog.png');
+            $result = $default ?? asset('assets/images/default-image.svg');
         } elseif (filter_var($url, FILTER_VALIDATE_URL)) {
             $result = $url;
         } else {
@@ -88,7 +88,7 @@ if (! function_exists('get_image')) {
             } elseif (file_exists(public_path($url))) {
                 $result = asset($url);
             } else {
-                $result = $default ?? asset('front/images/blog.png');
+                $result = $default ?? asset('assets/images/default-image.svg');
             }
         }
 

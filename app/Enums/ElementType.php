@@ -10,4 +10,5 @@ enum ElementType: string
     case CardGrid = 'card_grid';
     case HeroVideo = 'hero_video';
     case Newsletter = 'newsletter';
+    case Feature = 'feature';
 }
