@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ElementType;
+use App\Models\Pivots\ElementHomepageSectionPivot;
 use App\Models\Pivots\ElementPagePivot;
 use App\Models\Pivots\ElementStaticPagePivot;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -53,6 +54,14 @@ class Element extends BaseModel
     {
         return $this->belongsToMany(StaticPage::class, 'element_static_page', 'element_id', 'static_page_id')
             ->using(ElementStaticPagePivot::class)
+            ->withTimestamps()
+            ->orderByPivot('id');
+    }
+
+    public function homepageSections(): BelongsToMany
+    {
+        return $this->belongsToMany(HomepageSection::class, 'element_homepage_section', 'element_id', 'homepage_section_id')
+            ->using(ElementHomepageSectionPivot::class)
             ->withTimestamps()
             ->orderByPivot('id');
     }

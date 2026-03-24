@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\ElementHomepageSectionPivot;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -74,5 +76,13 @@ class HomepageSection extends BaseModel
     {
         static::saved(fn () => Cache::forget(self::CACHE_KEY));
         static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+    }
+
+    public function elements(): BelongsToMany
+    {
+        return $this->belongsToMany(Element::class, 'element_homepage_section', 'homepage_section_id', 'element_id')
+            ->using(ElementHomepageSectionPivot::class)
+            ->withTimestamps()
+            ->orderByPivot('id');
     }
 }
