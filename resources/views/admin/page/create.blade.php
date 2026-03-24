@@ -19,7 +19,7 @@
                 get visibleSections() {
                     const t = this.templates[this.currentTemplate];
                     const def = this.templates['default'];
-                    const fallback = ['page_info', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'seo'];
+                    const fallback = ['page_info', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'];
                     return (t && t.sections) ? t.sections : (def && def.sections) ? def.sections : fallback;
                 }
             }"
@@ -172,6 +172,42 @@
                             :max-size="20480"
                             :required="false"
                         />
+                    </div>
+
+                    {{-- Element selection (FAQ & CTA) --}}
+                    <div class="bg-gray-50/50 rounded-md border border-gray-200 p-6 space-y-4" data-section="sidebar_elements" x-show="visibleSections.includes('sidebar_elements')" x-transition>
+                        <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center">
+                            <span class="flex items-center justify-center w-7 h-7 rounded-md bg-amber-50 mr-2.5">
+                                <i class="fa-solid fa-puzzle-piece text-amber-600 text-xs"></i>
+                            </span>
+                            Element selection
+                        </h3>
+                        <div>
+                            <label for="faq_element_id" class="block text-xs font-medium text-gray-700 mb-1">FAQ element</label>
+                            <select id="faq_element_id" name="faq_element_id"
+                                class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none @error('faq_element_id') border-red-500 @enderror">
+                                <option value="">— None —</option>
+                                @foreach($faqElements ?? [] as $el)
+                                    <option value="{{ $el->id }}" @selected(old('faq_element_id') == $el->id)>{{ $el->title ?: 'FAQ #'.$el->id }}</option>
+                                @endforeach
+                            </select>
+                            @error('faq_element_id')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="cta_element_id" class="block text-xs font-medium text-gray-700 mb-1">CTA element</label>
+                            <select id="cta_element_id" name="cta_element_id"
+                                class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none @error('cta_element_id') border-red-500 @enderror">
+                                <option value="">— None —</option>
+                                @foreach($ctaElements ?? [] as $el)
+                                    <option value="{{ $el->id }}" @selected(old('cta_element_id') == $el->id)>{{ $el->title ?: 'CTA #'.$el->id }}</option>
+                                @endforeach
+                            </select>
+                            @error('cta_element_id')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     {{-- SEO Settings --}}

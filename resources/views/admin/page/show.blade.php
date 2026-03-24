@@ -96,6 +96,30 @@
                 </div>
             </div>
             
+            @php
+                $linkedFaq = $page->elements->firstWhere('type', \App\Enums\ElementType::Faq);
+                $linkedCta = $page->elements->firstWhere('type', \App\Enums\ElementType::Cta);
+            @endphp
+            @if($linkedFaq || $linkedCta)
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">Linked elements</h3>
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @if($linkedFaq)
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">FAQ element</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $linkedFaq->title ?: 'FAQ #'.$linkedFaq->id }}</dd>
+                            </div>
+                        @endif
+                        @if($linkedCta)
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">CTA element</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $linkedCta->title ?: 'CTA #'.$linkedCta->id }}</dd>
+                            </div>
+                        @endif
+                    </dl>
+                </div>
+            @endif
+
             {{-- SEO Information --}}
             @if($page->meta_title || $page->meta_body)
                 <div class="border-t border-gray-200 pt-6">
