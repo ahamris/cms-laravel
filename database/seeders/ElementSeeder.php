@@ -17,6 +17,7 @@ class ElementSeeder extends Seeder
         $this->seedCtaElements();
         $this->seedFaqElements();
         $this->seedCardGridElements();
+        $this->seedHeroVideoElements();
     }
 
     private function seedCtaElements(): void
@@ -149,6 +150,27 @@ class ElementSeeder extends Seeder
                         'button_link' => '#',
                     ],
                 ],
+            ],
+        ]);
+    }
+
+    private function seedHeroVideoElements(): void
+    {
+        if (Element::where('type', ElementType::HeroVideo)->exists()) {
+            return;
+        }
+
+        Element::create([
+            'type' => ElementType::HeroVideo,
+            'title' => 'Wij bouwen ecosystemen.',
+            'sub_title' => 'Niet zomaar software.',
+            'description' => 'Van verouderde legacy naar open, schaalbare digitale omgevingen, volledig in eigendom van de overheid. Zonder vendor lock-in. Zonder big tech. Binnen vier weken een werkende MVP.',
+            'options' => [
+                'video_path' => null,
+                'primary_button_text' => 'Plan een adviesgesprek',
+                'primary_button_url' => '/contact',
+                'secondary_button_text' => 'Bekijk onze aanpak',
+                'secondary_button_url' => '/aanpak',
             ],
         ]);
     }

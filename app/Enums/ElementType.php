@@ -8,4 +8,5 @@ enum ElementType: string
     case Faq = 'faq';
     case RelatedContent = 'related_content';
     case CardGrid = 'card_grid';
+    case HeroVideo = 'hero_video';
 }

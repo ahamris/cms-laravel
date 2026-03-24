@@ -219,6 +219,13 @@ class Sidebar extends Component
                         'permission' => 'page_access',
                         'active_pattern' => 'admin.element-card-grid*',
                     ],
+                    [
+                        'label' => 'Hero video',
+                        'route_name' => 'admin.element-hero-video.index',
+                        'icon' => 'film',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.element-hero-video*',
+                    ],
                 ],
             ],
 
