@@ -15,16 +15,16 @@ return [
     | Page templates
     |--------------------------------------------------------------------------
     | Each template defines which form sections are visible in the admin.
-    | Sections: page_info, body, marketing, sidebar_settings, sidebar_image, seo
+    | Sections: page_info, body, marketing, sidebar_settings, sidebar_image, sidebar_elements, seo
     */
     'templates' => [
         'default' => [
             'label' => 'Default (full)',
-            'sections' => ['page_info', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'seo'],
+            'sections' => ['page_info', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
         ],
         'landing' => [
             'label' => 'Landing page',
-            'sections' => ['page_info', 'body', 'sidebar_settings', 'sidebar_image', 'seo'],
+            'sections' => ['page_info', 'body', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
         ],
         'minimal' => [
             'label' => 'Minimal',
