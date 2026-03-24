@@ -233,6 +233,13 @@ class Sidebar extends Component
                         'permission' => 'page_access',
                         'active_pattern' => 'admin.element-newsletter*',
                     ],
+                    [
+                        'label' => 'Feature',
+                        'route_name' => 'admin.element-feature.index',
+                        'icon' => 'object-group',
+                        'permission' => 'page_access',
+                        'active_pattern' => 'admin.element-feature*',
+                    ],
                 ],
             ],
 

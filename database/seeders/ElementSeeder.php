@@ -19,6 +19,7 @@ class ElementSeeder extends Seeder
         $this->seedCardGridElements();
         $this->seedHeroVideoElements();
         $this->seedNewsletterElements();
+        $this->seedFeatureElements();
     }
 
     private function seedCtaElements(): void
@@ -192,6 +193,52 @@ class ElementSeeder extends Seeder
                 'button_text' => 'Aanmelden',
                 'submit_endpoint' => '/api/newsletter/subscribe',
                 'terms_text' => 'Door aan te melden ga je akkoord met onze voorwaarden.',
+            ],
+        ]);
+    }
+
+    private function seedFeatureElements(): void
+    {
+        if (Element::where('type', ElementType::Feature)->exists()) {
+            return;
+        }
+
+        Element::create([
+            'type' => ElementType::Feature,
+            'title' => 'Gefragmenteerde openbaarmaking vraagt om betere systemen',
+            'sub_title' => 'Woo',
+            'description' => 'Overheden publiceren informatie via verschillende kanalen zonder centrale toegang. Burgers zoeken vergeefs naar consistente, doorzoekbare gegevens. Woo-verzoeken worden handmatig verwerkt, wat leidt tot vertragingen en fouten.',
+            'options' => [
+                'section_label' => '01 Het probleem',
+                'primary_button_text' => 'Verkennen',
+                'primary_button_url' => '#',
+                'image_path' => null,
+            ],
+        ]);
+
+        Element::create([
+            'type' => ElementType::Feature,
+            'title' => 'Geintegreerde workflow van intake tot publicatie',
+            'sub_title' => 'OPMS',
+            'description' => 'OPMS is een end-to-end systeem dat intake, beoordeling, zoekmogelijkheden en publicatie integreert. AI-ondersteuning helpt bij validatie en metadata-verrijking. Alle documenten worden centraal gearchiveerd en tegelijk via meerdere kanalen gepubliceerd.',
+            'options' => [
+                'section_label' => '02 De oplossing',
+                'primary_button_text' => 'Ontdekken',
+                'primary_button_url' => '#',
+                'image_path' => null,
+            ],
+        ]);
+
+        Element::create([
+            'type' => ElementType::Feature,
+            'title' => 'Gedeelde basis voor alle overheidsprocessen',
+            'sub_title' => 'Infrastructuur',
+            'description' => 'Staterra bouwt gedeelde infrastructuur die overheden samen eigenaar zijn en beheren. Dit gaat verder dan Woo en schept basis voor standaardisatie en hergebruik in alle overheidsprocessen. Organisaties werken samen aan duurzame, schaalbare oplossingen.',
+            'options' => [
+                'section_label' => '03 De toekomst',
+                'primary_button_text' => 'Meer informatie',
+                'primary_button_url' => '#',
+                'image_path' => null,
             ],
         ]);
     }

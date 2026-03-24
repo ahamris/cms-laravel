@@ -13,6 +13,11 @@ class ElementResource extends JsonResource
     public function toArray(Request $request): array
     {
         $type = $this->type;
+        $options = $this->options ?? [];
+
+        if (is_array($options) && array_key_exists('image_path', $options)) {
+            $options['image_path'] = get_image($options['image_path'] ?? null);
+        }
 
         return [
             'id' => $this->id,
@@ -20,7 +25,7 @@ class ElementResource extends JsonResource
             'title' => $this->title,
             'sub_title' => $this->sub_title,
             'description' => $this->description,
-            'options' => $this->options ?? [],
+            'options' => $options,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
