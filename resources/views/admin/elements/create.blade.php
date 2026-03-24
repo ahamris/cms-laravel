@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Create {{ $heading }}</h1>
-            <p class="text-gray-600">A new item will always be saved as type: <code>{{ $type->value }}</code>.</p>
+            <p class="text-gray-600">A new item will always be saved as type: <code>{{ is_object($type) ? $type->value : $type }}</code>.</p>
         </div>
         <a href="{{ route($routeBase . '.index') }}"
            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
@@ -17,7 +17,7 @@
         </div>
     @endif
 
-    <form action="{{ route($routeBase . '.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route($routeBase . '.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
             @include('admin.elements.partials.base-fields', ['element' => $element])
