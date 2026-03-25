@@ -32,14 +32,16 @@
     <div>
         <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-gray-700">Items</span>
-            <button type="button" id="rc-add-row" class="text-sm text-primary hover:underline">+ Add item</button>
+            <x-button type="button" id="rc-add-row" variant="sky" size="sm">+ Add item</x-button>
         </div>
         <div id="rc-items" class="space-y-4">
             @foreach($items as $idx => $row)
                 <div class="rc-item rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50" data-index="{{ $idx }}">
                     <div class="flex justify-between items-start gap-2">
                         <span class="text-xs font-medium text-gray-500">Item {{ $idx + 1 }}</span>
-                        <button type="button" class="rc-remove-row text-xs text-red-600 hover:underline">Remove</button>
+                        <x-button type="button" variant="error" size="sm" class="rc-remove-row">
+                            Remove
+                        </x-button>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
@@ -67,7 +69,9 @@
     <div class="rc-item rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50" data-index="__INDEX__">
         <div class="flex justify-between items-start gap-2">
             <span class="text-xs font-medium text-gray-500">New item</span>
-            <button type="button" class="rc-remove-row text-xs text-red-600 hover:underline">Remove</button>
+            <x-button type="button" variant="error" size="sm" class="rc-remove-row">
+                Remove
+            </x-button>
         </div>
         <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>

@@ -31,14 +31,16 @@
     <div>
         <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-gray-700">Kaarten</span>
-            <button type="button" id="cg-add-row" class="text-sm text-primary hover:underline">+ Kaart toevoegen</button>
+            <x-button type="button" id="cg-add-row" variant="sky" size="sm">+ Kaart toevoegen</x-button>
         </div>
         <div id="cg-items" class="space-y-4">
             @foreach($cards as $idx => $row)
                 <div class="cg-item rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50" data-index="{{ $idx }}">
                     <div class="flex justify-between items-start gap-2">
                         <span class="text-xs font-medium text-gray-500">Kaart {{ $idx + 1 }}</span>
-                        <button type="button" class="cg-remove-row text-xs text-red-600 hover:underline">Verwijderen</button>
+                        <x-button type="button" variant="error" size="sm" class="cg-remove-row">
+                            Verwijderen
+                        </x-button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
@@ -81,7 +83,9 @@
     <div class="cg-item rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50" data-index="__INDEX__">
         <div class="flex justify-between items-start gap-2">
             <span class="text-xs font-medium text-gray-500">Nieuwe kaart</span>
-            <button type="button" class="cg-remove-row text-xs text-red-600 hover:underline">Verwijderen</button>
+            <x-button type="button" variant="error" size="sm" class="cg-remove-row">
+                Verwijderen
+            </x-button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
