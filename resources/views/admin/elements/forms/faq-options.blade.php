@@ -39,7 +39,9 @@
                 <div class="faq-item rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50" data-index="{{ $idx }}">
                     <div class="flex justify-between items-start gap-2">
                         <span class="text-xs font-medium text-gray-500">Item {{ $idx + 1 }}</span>
-                        <button type="button" class="faq-remove-row text-xs text-red-600 hover:underline">Remove</button>
+                        <x-button type="button" variant="error" size="sm" class="faq-remove-row">
+                            Remove
+                        </x-button>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Question</label>
@@ -62,7 +64,9 @@
     <div class="faq-item rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50" data-index="__INDEX__">
         <div class="flex justify-between items-start gap-2">
             <span class="text-xs font-medium text-gray-500">New item</span>
-            <button type="button" class="faq-remove-row text-xs text-red-600 hover:underline">Remove</button>
+            <x-button type="button" variant="error" size="sm" class="faq-remove-row">
+                Remove
+            </x-button>
         </div>
         <div>
             <label class="block text-xs font-medium text-gray-600 mb-1">Question</label>
