@@ -32,7 +32,7 @@
     <div>
         <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-gray-700">Questions &amp; answers</span>
-            <button type="button" id="faq-add-row" class="text-sm text-primary hover:underline">+ Add row</button>
+            <x-button type="button" id="faq-add-row" variant="sky" size="sm">+ Add row</x-button>
         </div>
         <div id="faq-items" class="space-y-4">
             @foreach($items as $idx => $row)
