@@ -37,13 +37,17 @@
                                     <div class="text-xs text-gray-500">{{ $element->sub_title ?: '-' }}</div>
                                 </td>
                                 <td class="px-6 py-4 text-right text-sm">
-                                    <div class="inline-flex items-center gap-3">
-                                        <a href="{{ route($routeBase . '.show', $element->id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                        <a href="{{ route($routeBase . '.edit', $element->id) }}" class="text-blue-600 hover:text-blue-900">Edit</a>
-                                        <form action="{{ route($routeBase . '.destroy', $element->id) }}" method="POST" onsubmit="return confirm('Delete this element?')">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route($routeBase . '.show', $element->id) }}" title="View">
+                                            <x-button variant="sky" size="sm" icon="eye" title="View"></x-button>
+                                        </a>
+                                        <a href="{{ route($routeBase . '.edit', $element->id) }}" title="Edit">
+                                            <x-button variant="warning" size="sm" icon="edit" title="Edit"></x-button>
+                                        </a>
+                                        <form action="{{ route($routeBase . '.destroy', $element->id) }}" method="POST" onsubmit="return confirm('Delete this element?')" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                                            <x-button variant="error" size="sm" icon="trash" title="Delete" type="submit"></x-button>
                                         </form>
                                     </div>
                                 </td>
