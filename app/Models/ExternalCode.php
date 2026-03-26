@@ -11,7 +11,9 @@ class ExternalCode extends BaseModel
 {
     const CACHE_KEY = 'external_codes';
 
-    protected $fillable = [ 
+    public const string NESTED_ROWS_CACHE_KEY = 'external_codes_nested_rows_v1';
+
+    protected $fillable = [
         'name',
         'content',
         'before_header',
@@ -70,6 +72,7 @@ class ExternalCode extends BaseModel
     public static function getHeaderCodes()
     {
         $cached = self::getCached();
+
         return $cached['header']->pluck('content')->implode("\n");
     }
 
@@ -79,6 +82,7 @@ class ExternalCode extends BaseModel
     public static function getBodyCodes()
     {
         $cached = self::getCached();
+
         return $cached['body']->pluck('content')->implode("\n");
     }
 
@@ -88,6 +92,7 @@ class ExternalCode extends BaseModel
     public static function hasHeaderCodes()
     {
         $cached = self::getCached();
+
         return $cached['header']->isNotEmpty();
     }
 
@@ -97,6 +102,7 @@ class ExternalCode extends BaseModel
     public static function hasBodyCodes()
     {
         $cached = self::getCached();
+
         return $cached['body']->isNotEmpty();
     }
 
@@ -113,30 +119,67 @@ class ExternalCode extends BaseModel
         parent::boot();
 
         // Clear cache on model events
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetExternalCodeCache());
+        static::updated(fn () => self::forgetExternalCodeCache());
+        static::deleted(fn () => self::forgetExternalCodeCache());
+    }
+
+    public static function forgetExternalCodeCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::NESTED_ROWS_CACHE_KEY);
     }
 
     public static function getCached()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            $cachedData = [
-                'header' => self::query()
-                    ->active()
-                    ->beforeHeader()
-                    ->ordered()
-                    ->get(),
-                'body' => self::query()
-                    ->active()
-                    ->beforeBody()
-                    ->ordered()
-                    ->get()
-            ];
-
-            return Cache::remember(self::CACHE_KEY, 60 * 60, fn () => $cachedData);
+        $data = Cache::get(self::NESTED_ROWS_CACHE_KEY);
+        if (! self::nestedRowPayloadIsValid($data)) {
+            self::forgetExternalCodeCache();
+            $data = Cache::remember(self::NESTED_ROWS_CACHE_KEY, 60 * 60, function () {
+                return [
+                    'header' => self::query()
+                        ->active()
+                        ->beforeHeader()
+                        ->ordered()
+                        ->get()
+                        ->map->getAttributes()
+                        ->values()
+                        ->all(),
+                    'body' => self::query()
+                        ->active()
+                        ->beforeBody()
+                        ->ordered()
+                        ->get()
+                        ->map->getAttributes()
+                        ->values()
+                        ->all(),
+                ];
+            });
         }
 
-        return Cache::get(self::CACHE_KEY);
+        if (! self::nestedRowPayloadIsValid($data)) {
+            return [
+                'header' => self::hydrate([]),
+                'body' => self::hydrate([]),
+            ];
+        }
+
+        return [
+            'header' => self::hydrate($data['header']),
+            'body' => self::hydrate($data['body']),
+        ];
+    }
+
+    /**
+     * @param  mixed  $data
+     */
+    protected static function nestedRowPayloadIsValid($data): bool
+    {
+        if (! is_array($data) || ! isset($data['header'], $data['body'])) {
+            return false;
+        }
+
+        return self::cachePayloadIsListOfRowArrays($data['header'])
+            && self::cachePayloadIsListOfRowArrays($data['body']);
     }
 }

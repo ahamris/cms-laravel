@@ -59,9 +59,12 @@ class ProductFeature extends BaseModel
      */
     public static function getCached()
     {
-        return Cache::remember(self::CACHE_KEY, self::CACHE_DURATION, function () {
-            return self::active()->ordered()->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            self::CACHE_DURATION,
+            fn () => self::active()->ordered()->get(),
+            [self::CACHE_KEY],
+        );
     }
 
     /**
@@ -69,9 +72,14 @@ class ProductFeature extends BaseModel
      */
     public static function getByCategory(string $category)
     {
-        return Cache::remember(self::CACHE_KEY."_category_{$category}", self::CACHE_DURATION, function () use ($category) {
-            return self::active()->where('category', $category)->ordered()->get();
-        });
+        $legacyKey = self::CACHE_KEY."_category_{$category}";
+
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY."_category_{$category}_rows_v1",
+            self::CACHE_DURATION,
+            fn () => self::active()->where('category', $category)->ordered()->get(),
+            [$legacyKey],
+        );
     }
 
     /**

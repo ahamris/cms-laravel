@@ -11,6 +11,8 @@ class MailSetting extends BaseModel
 {
     const string CACHE_KEY = 'mail_settings';
 
+    public const string ROW_CACHE_KEY = 'mail_settings_row_v1';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -42,6 +44,7 @@ class MailSetting extends BaseModel
     {
         static::saved(function () {
             Cache::forget(self::CACHE_KEY);
+            Cache::forget(self::ROW_CACHE_KEY);
         });
     }
 
@@ -50,8 +53,10 @@ class MailSetting extends BaseModel
      */
     public static function getSettings()
     {
-        return Cache::rememberForever(self::CACHE_KEY, function () {
-            return self::firstOrCreate([], [
+        return self::cacheRememberModelRow(
+            self::ROW_CACHE_KEY,
+            null,
+            fn () => self::firstOrCreate([], [
                 'mail_mailer' => config('mail.default', 'smtp'),
                 'mail_host' => config('mail.mailers.smtp.host', 'localhost'),
                 'mail_port' => config('mail.mailers.smtp.port', 587),
@@ -59,8 +64,9 @@ class MailSetting extends BaseModel
                 'mail_encryption' => config('mail.mailers.smtp.encryption', 'tls'),
                 'mail_from_address' => config('mail.from.address', 'hello@example.com'),
                 'mail_from_name' => config('mail.from.name', 'Laravel'),
-            ]);
-        });
+            ]),
+            [self::CACHE_KEY],
+        );
     }
 
     /**

@@ -1,0 +1,57 @@
+{
+    "name": "siberfx/typesense-scout",
+    "description": "Laravel Scout Driver for Typesense",
+    "keywords": [
+        "laravel",
+        "typesense",
+        "search"
+    ],
+    "type": "library",
+    "homepage": "https://typesense.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Selim Görmüş",
+            "email": "info@siberfx.com",
+            "homepage": "https://siberfx.com",
+            "role": "Developer"
+        }
+    ],
+    "version": "1.1.99",
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Siberfx\\Typesense\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Siberfx\\Typesense\\TypesenseServiceProvider"
+            ],
+            "aliases": {
+                "Typesense": "Siberfx\\Typesense\\TypesenseFacade"
+            }
+        }
+    },
+    "require": {
+        "php": "^8.3|^8.4",
+        "laravel/scout": "^10.0|^11.0",
+        "illuminate/bus": "^11.0|^12.0|^13.0",
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
+        "illuminate/database": "^11.0|^12.0|^13.0",
+        "illuminate/pagination": "^11.0|^12.0|^13.0",
+        "illuminate/queue": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0",
+        "typesense/typesense-php": "^4.9|^5.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "suggest": {
+        "typesense/typesense-php": "Required to use the Typesense php client."
+    }
+}

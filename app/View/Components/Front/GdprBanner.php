@@ -2,6 +2,9 @@
 
 namespace App\View\Components\Front;
 
+use App\Models\Legal;
+use App\Models\Page;
+use App\Models\StaticPage;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -32,9 +35,9 @@ class GdprBanner extends Component
     ) {
         // Check if banner is enabled
         $bannerEnabled = get_setting('cookie_banner_enabled', '1') == '1';
-        
+
         // Only load settings if banner is enabled
-        if (!$bannerEnabled) {
+        if (! $bannerEnabled) {
             $this->settingsLabel = '';
             $this->settingsUrl = '';
             $this->introTitle = '';
@@ -42,29 +45,30 @@ class GdprBanner extends Component
             $this->preferencesTitle = '';
             $this->preferencesSummary = '';
             $this->categories = [];
+
             return;
         }
 
         $this->settingsLabel = $settingsLabel ?? get_setting('cookie_settings_label', 'Cookie policy');
-        
-        // Get settings URL - check if it's a page selection
+
+        $legalTemplateKey = config('page_templates.cookie_legal_template', 'legal');
+
+        // Get settings URL - CMS page (Legal template), legacy types, or custom URL
         $settingsPageType = get_setting('cookie_settings_page_type', 'custom');
-        if ($settingsPageType === 'legal') {
-            $pageId = get_setting('cookie_settings_page_id');
-            if ($pageId) {
-                $legal = \App\Models\Legal::find($pageId);
-                $this->settingsUrl = $settingsUrl ?? ($legal ? route('legal.show', $legal->slug) : get_setting('cookie_settings_url', 'javascript:void(0)'));
-            } else {
-                $this->settingsUrl = $settingsUrl ?? get_setting('cookie_settings_url', 'javascript:void(0)');
-            }
-        } elseif ($settingsPageType === 'static') {
-            $pageId = get_setting('cookie_settings_page_id');
-            if ($pageId) {
-                $static = \App\Models\StaticPage::find($pageId);
-                $this->settingsUrl = $settingsUrl ?? ($static ? route('static.show', $static->slug) : get_setting('cookie_settings_url', 'javascript:void(0)'));
-            } else {
-                $this->settingsUrl = $settingsUrl ?? get_setting('cookie_settings_url', 'javascript:void(0)');
-            }
+        $pageId = get_setting('cookie_settings_page_id');
+        if ($settingsPageType === 'page' && $pageId) {
+            $page = Page::query()
+                ->whereKey($pageId)
+                ->where('is_active', true)
+                ->where('template', $legalTemplateKey)
+                ->first();
+            $this->settingsUrl = $settingsUrl ?? ($page ? url('/pagina/'.$page->slug) : get_setting('cookie_settings_url', 'javascript:void(0)'));
+        } elseif ($settingsPageType === 'legal' && $pageId) {
+            $legal = Legal::find($pageId);
+            $this->settingsUrl = $settingsUrl ?? ($legal ? url(api_path('legal', $legal->slug)) : get_setting('cookie_settings_url', 'javascript:void(0)'));
+        } elseif ($settingsPageType === 'static' && $pageId) {
+            $static = StaticPage::find($pageId);
+            $this->settingsUrl = $settingsUrl ?? ($static ? route('static.show', $static->slug) : get_setting('cookie_settings_url', 'javascript:void(0)'));
         } else {
             $this->settingsUrl = $settingsUrl ?? get_setting('cookie_settings_url', 'javascript:void(0)');
         }
@@ -128,4 +132,3 @@ class GdprBanner extends Component
         ];
     }
 }
-

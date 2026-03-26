@@ -1,4 +1,15 @@
 <x-layouts.admin title="Edit Mega Menu Item">
+<x-slot:styles>
+    <style>
+        .sortable-ghost {
+            background-color: #c8ebfb;
+            opacity: 0.5;
+        }
+        .sortable-drag {
+            opacity: 1 !important;
+        }
+    </style>
+</x-slot:styles>
 <div class="container mx-auto px-4 py-6">
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
@@ -52,6 +63,7 @@
                         Sub-Items
                     </h2>
                     <p class="text-sm text-gray-600 mt-1">{{ $megaMenu->children->count() }} {{ Str::plural('item', $megaMenu->children->count()) }}</p>
+                    <p class="text-xs text-gray-500 mt-1">Drag the grip icon to reorder</p>
                 </div>
                 <button @click="showAddModal = true" 
                         class="px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary/90">
@@ -61,13 +73,22 @@
 
             <div class="p-6">
                 @if($megaMenu->children->count() > 0)
-                    <div class="space-y-3">
+                    <div id="mega-menu-edit-children-list" class="space-y-3">
                         @foreach($megaMenu->children as $child)
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-white transition-colors">
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-white transition-colors" data-id="{{ $child->id }}">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center flex-1">
+                                    <button type="button"
+                                            class="mega-dnd-handle flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-move"
+                                            title="Drag to reorder"
+                                            aria-label="Drag to reorder">
+                                        <i class="fas fa-grip-vertical"></i>
+                                    </button>
+                                    <span class="mega-order-badge text-xs font-semibold text-gray-400 tabular-nums w-6 text-right">
+                                        {{ $loop->iteration }}
+                                    </span>
                                     @if($child->icon)
-                                    <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3" 
+                                    <div class="w-10 h-10 rounded-lg flex items-center justify-center ml-1"
                                          style="background-color: {{ $child->icon_bg_color ?? '#3B82F6' }}">
                                         <i class="{{ $child->icon }} text-white text-sm"></i>
                                     </div>
@@ -641,4 +662,62 @@ function subItemManager() {
     };
 }
 </script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const updateOrderUrl = @json(route('admin.settings.mega-menu.update-order'));
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            const listEl = document.getElementById('mega-menu-edit-children-list');
+            if (!listEl) return;
+
+            async function saveOrder() {
+                // Update visible order badges immediately (DOM already changed).
+                Array.from(listEl.children).forEach((el, index) => {
+                    const badge = el.querySelector('.mega-order-badge');
+                    if (badge) badge.textContent = String(index + 1);
+                });
+
+                const items = Array.from(listEl.children)
+                    .map((el, index) => ({
+                        id: el.dataset.id,
+                        order: index,
+                    }))
+                    .filter(item => item.id);
+
+                if (!items.length) return;
+
+                try {
+                    const response = await fetch(updateOrderUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken ?? '',
+                        },
+                        body: JSON.stringify({ items }),
+                    });
+
+                    const data = await response.json().catch(() => ({}));
+                    if (!data.success) throw new Error('Failed to save order');
+
+                    window.dispatchEvent(new CustomEvent('notify', {
+                        detail: { type: 'success', message: 'Order updated.' },
+                    }));
+                } catch (e) {
+                    console.error(e);
+                    window.dispatchEvent(new CustomEvent('notify', {
+                        detail: { type: 'info', message: 'Failed to save order.' },
+                    }));
+                }
+            }
+
+            new Sortable(listEl, {
+                animation: 150,
+                handle: '.mega-dnd-handle',
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: saveOrder,
+            });
+        });
+    </script>
 </x-layouts.admin>

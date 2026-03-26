@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Admin\Crm;
 
 use App\Http\Controllers\Admin\AdminBaseController;
+use App\Models\Contact;
 use App\Models\ContactForm;
-use App\Models\ContactFormMessage;
 use App\Models\CrmDeal;
 use App\Models\CrmTicket;
+use App\Services\AIService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -21,12 +22,12 @@ class CrmMessageController extends AdminBaseController
         }
 
         if ($request->filled('search')) {
-            $search = '%' . $request->input('search') . '%';
+            $search = '%'.$request->input('search').'%';
             $query->where(function ($q) use ($search) {
                 $q->where('first_name', 'like', $search)
-                  ->orWhere('last_name', 'like', $search)
-                  ->orWhere('email', 'like', $search)
-                  ->orWhere('bericht', 'like', $search);
+                    ->orWhere('last_name', 'like', $search)
+                    ->orWhere('email', 'like', $search)
+                    ->orWhere('bericht', 'like', $search);
             });
         }
 
@@ -55,7 +56,7 @@ class CrmMessageController extends AdminBaseController
         $request->validate(['body' => 'required|string']);
 
         $message->messages()->create([
-            'body'      => $request->input('body'),
+            'body' => $request->input('body'),
             'direction' => 'outbound',
         ]);
 
@@ -67,10 +68,24 @@ class CrmMessageController extends AdminBaseController
     public function aiReply(ContactForm $message)
     {
         try {
-            $aiService = app(\App\Services\AIService::class);
-            $draft = $aiService->draftReply($message->bericht, 'professional', 'nl');
+            $aiService = app(AIService::class);
+            $contactId = $message->converted_contact_id
+                ? (int) $message->converted_contact_id
+                : (int) (Contact::query()->where('email', $message->email)->value('id') ?? 0);
+            $contactId = $contactId > 0 ? $contactId : null;
 
-            return response()->json(['draft' => $draft]);
+            $assist = $aiService->crmStructuredAssist($message->bericht, $contactId, 'professional', 'nl');
+
+            if (! $assist['success']) {
+                return response()->json(['error' => $assist['error'] ?? 'AI service unavailable.'], 503);
+            }
+
+            return response()->json([
+                'draft' => $assist['draft'] ?? '',
+                'summary' => $assist['summary'] ?? '',
+                'suggested_status' => $assist['suggested_status'] ?? '',
+                'risk_flags' => $assist['risk_flags'] ?? [],
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'AI service unavailable.'], 503);
         }
@@ -86,11 +101,11 @@ class CrmMessageController extends AdminBaseController
     public function convertToTicket(ContactForm $message)
     {
         $ticket = CrmTicket::create([
-            'contact_id'  => $message->converted_contact_id,
-            'subject'     => "Message from {$message->first_name} {$message->last_name}",
+            'contact_id' => $message->converted_contact_id,
+            'subject' => "Message from {$message->first_name} {$message->last_name}",
             'description' => $message->bericht,
-            'source'      => 'form',
-            'priority'    => 'medium',
+            'source' => 'form',
+            'priority' => 'medium',
         ]);
 
         return redirect()->route('admin.crm.tickets.show', $ticket)
@@ -99,15 +114,15 @@ class CrmMessageController extends AdminBaseController
 
     public function convertToDeal(ContactForm $message)
     {
-        if (!$message->converted_contact_id) {
+        if (! $message->converted_contact_id) {
             return back()->with('error', 'Convert to contact first.');
         }
 
         $deal = CrmDeal::create([
             'contact_id' => $message->converted_contact_id,
-            'title'      => "Lead from {$message->first_name} {$message->last_name}",
-            'stage'      => 'lead',
-            'value'      => 0,
+            'title' => "Lead from {$message->first_name} {$message->last_name}",
+            'stage' => 'lead',
+            'value' => 0,
         ]);
 
         $message->update(['converted_deal_id' => $deal->id]);

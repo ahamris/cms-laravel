@@ -13,6 +13,8 @@ class AdminThemeSetting extends BaseModel
 {
     use HasFactory;
 
+    public const string ROW_CACHE_KEY = 'admin_theme_settings_row_v1';
+
     protected $fillable = [
         'base_color',
         'accent_color',
@@ -30,16 +32,18 @@ class AdminThemeSetting extends BaseModel
             return static::$cachedInstance;
         }
 
-        // Load from cache (or database if not cached)
-        static::$cachedInstance = Cache::remember('admin_theme_settings', 3600, function () {
-            return static::firstOrCreate(
+        static::$cachedInstance = static::cacheRememberModelRow(
+            self::ROW_CACHE_KEY,
+            3600,
+            fn () => static::firstOrCreate(
                 ['id' => 1],
                 [
                     'base_color' => 'zinc',
                     'accent_color' => 'indigo',
                 ]
-            );
-        });
+            ),
+            ['admin_theme_settings'],
+        );
 
         return static::$cachedInstance;
     }
@@ -51,13 +55,13 @@ class AdminThemeSetting extends BaseModel
     {
         static::saved(function () {
             Cache::forget('admin_theme_settings');
-            // Clear in-memory cache
+            Cache::forget(self::ROW_CACHE_KEY);
             static::$cachedInstance = null;
         });
 
         static::deleted(function () {
             Cache::forget('admin_theme_settings');
-            // Clear in-memory cache
+            Cache::forget(self::ROW_CACHE_KEY);
             static::$cachedInstance = null;
         });
     }

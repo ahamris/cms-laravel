@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Helpers\Variable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -27,9 +28,9 @@ class ContactSubject extends BaseModel
     protected static function boot(): void
     {
         parent::boot();
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetContactSubjectCache());
+        static::updated(fn () => self::forgetContactSubjectCache());
+        static::deleted(fn () => self::forgetContactSubjectCache());
     }
 
     public function scopeOrdered(Builder $query): Builder
@@ -45,14 +46,19 @@ class ContactSubject extends BaseModel
     /**
      * Cached list of active subjects for contact form dropdown (API / frontend).
      */
-    public static function getCached(): \Illuminate\Database\Eloquent\Collection
+    public static function forgetContactSubjectCache(): void
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, Variable::CACHE_TTL, function () {
-                return self::active()->ordered()->get();
-            });
-        }
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
+    }
 
-        return Cache::get(self::CACHE_KEY);
+    public static function getCached(): Collection
+    {
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            Variable::CACHE_TTL,
+            fn () => self::active()->ordered()->get(),
+            [self::CACHE_KEY],
+        );
     }
 }

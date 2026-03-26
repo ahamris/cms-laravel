@@ -1,4 +1,4 @@
-<x-layouts.admin title="View FAQ Group">
+<x-layouts.admin-faq-hub title="FAQ group" active="groups">
 <div class="space-y-6">
     {{-- Header --}}
     <div class="flex items-center justify-between">
@@ -259,9 +259,9 @@ function confirmDelete() {
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function() {
         // You can add a toast notification here
-        console.log('Copied to clipboard: ' + text);
+        // Intentionally no console logging (keeps production logs clean).
     });
 }
 </script>
     </script>
-</x-layouts.admin>
+</x-layouts.admin-faq-hub>

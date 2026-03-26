@@ -32,15 +32,19 @@ class PricingBooster extends BaseModel
         'is_active' => 'boolean',
     ];
 
+    public static function forgetPricingBoosterCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        // Clear cache on model events
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
-
+        static::created(fn () => self::forgetPricingBoosterCache());
+        static::updated(fn () => self::forgetPricingBoosterCache());
+        static::deleted(fn () => self::forgetPricingBoosterCache());
     }
 
     public function sluggable(): array
@@ -76,16 +80,15 @@ class PricingBooster extends BaseModel
      */
     public static function getCached()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, 60 * 60,
-                fn () => self::query()
-                    ->active()
-                    ->ordered()
-                    ->get()
-            );
-        }
-
-        return Cache::get(self::CACHE_KEY);
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            60 * 60,
+            fn () => self::query()
+                ->active()
+                ->ordered()
+                ->get(),
+            [self::CACHE_KEY],
+        );
     }
 
     /**

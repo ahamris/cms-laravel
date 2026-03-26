@@ -32,7 +32,7 @@ class Variable
 
     public const array DEFAULT_ACCOUNTS = [
         ['Admin', 'Account', 'admin@openpublication.eu', self::DEFAULT_ADMIN_PASSWORD, self::ROLE_ADMIN],
-//        ['Webmaster', 'Account', 'selim@code-labs.nl', '@14396Oem!!', self::ROLE_ADMIN],
+        //        ['Webmaster', 'Account', 'selim@code-labs.nl', '@14396Oem!!', self::ROLE_ADMIN],
 
     ]; // default admin accounts
 
@@ -98,18 +98,10 @@ class Variable
         'page_edit' => [self::ROLE_ADMIN],
         'page_delete' => [self::ROLE_ADMIN],
 
-        'legal_access' => [self::ROLE_ADMIN],
-        'legal_show' => [self::ROLE_ADMIN],
-        'legal_create' => [self::ROLE_ADMIN],
-        'legal_edit' => [self::ROLE_ADMIN],
-        'legal_delete' => [self::ROLE_ADMIN],
-
         'static_page_access' => [self::ROLE_ADMIN],
         'static_page_show' => [self::ROLE_ADMIN],
         'static_page_create' => [self::ROLE_ADMIN],
         'static_page_edit' => [self::ROLE_ADMIN],
-        'static_page_delete' => [self::ROLE_ADMIN],
-
         'changelog_access' => [self::ROLE_ADMIN],
         'changelog_show' => [self::ROLE_ADMIN],
         'changelog_create' => [self::ROLE_ADMIN],

@@ -10,30 +10,43 @@ class ThemeSettings extends Component
 {
     // Color Properties
     public string $colorPrimary = '#081245';
+
     public string $colorSecondary = '#0073e6';
+
     public string $colorNatural = '#dfd4d4';
 
     // Header & Footer Colors
     public string $footerBg = '#1a1a2e';
+
     public string $footerText = '#ffffff';
+
     public string $headerBg = '#ffffff';
+
     public string $headerText = '#1a1a2e';
 
     // Font Family Properties
     public string $fontSans = 'Inter';
+
     public string $fontOutfit = 'Outfit';
 
     // Font Search Properties
     public string $fontSearchSans = '';
+
     public string $fontSearchOutfit = '';
 
     // Font Size Properties (px values - user input)
     public ?int $fontSizeH1Px = 48;
+
     public ?int $fontSizeH2Px = 36;
+
     public ?int $fontSizeH3Px = 24;
+
     public ?int $fontSizeH4Px = 18;
+
     public ?int $fontSizeH5Px = 16;
+
     public ?int $fontSizeH6Px = 14;
+
     public ?int $fontSizePPx = 16;
 
     // UI State
@@ -177,6 +190,7 @@ class ThemeSettings extends Component
     public function getRemValue(?int $px): float
     {
         $px = $px ?? 16;
+
         return round($px / 16, 4);
     }
 
@@ -199,14 +213,14 @@ class ThemeSettings extends Component
             $value = $this->$property;
             if ($value === null || $value === '' || (is_string($value) && trim($value) === '')) {
                 $this->$property = $default;
-            } elseif (!is_numeric($value)) {
+            } elseif (! is_numeric($value)) {
                 $this->$property = $default;
-            } elseif ((int)$value < 1) {
+            } elseif ((int) $value < 1) {
                 $this->$property = 1;
-            } elseif ((int)$value > 3200) {
+            } elseif ((int) $value > 3200) {
                 $this->$property = 3200;
             } else {
-                $this->$property = (int)$value;
+                $this->$property = (int) $value;
             }
         }
     }
@@ -216,7 +230,7 @@ class ThemeSettings extends Component
      */
     private function pxToRem(int $px): string
     {
-        return round($px / 16, 4) . 'rem';
+        return round($px / 16, 4).'rem';
     }
 
     /**
@@ -225,6 +239,7 @@ class ThemeSettings extends Component
     private function remToPx(string $remValue): int
     {
         $rem = (float) str_replace('rem', '', $remValue);
+
         return (int) round($rem * 16);
     }
 
@@ -242,6 +257,7 @@ class ThemeSettings extends Component
     private function getFontSetting(string $key, string $default): string
     {
         $value = Setting::getValue($key, $default);
+
         return str_replace(['"', ', sans-serif'], '', $value);
     }
 
@@ -283,6 +299,7 @@ class ThemeSettings extends Component
         } elseif (str_starts_with($key, 'theme_font_size_')) {
             return 'text';
         }
+
         return 'text';
     }
 
@@ -372,7 +389,7 @@ class ThemeSettings extends Component
      */
     private function clearCaches(): void
     {
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
         $settingKeys = [
             'theme_color_primary',
             'theme_color_secondary',
@@ -703,7 +720,7 @@ class ThemeSettings extends Component
     private function getFilteredFonts(string $searchTerm): array
     {
         $allFonts = $this->getGoogleFonts();
-        
+
         if (empty($searchTerm)) {
             return $allFonts;
         }

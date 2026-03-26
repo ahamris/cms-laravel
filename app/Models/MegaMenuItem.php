@@ -381,25 +381,26 @@ class MegaMenuItem extends BaseModel
             Log::info('Module table not available: '.$e->getMessage());
         }
 
-        // Get Legal Pages
+        // CMS pages using the Legal template (replaces legacy Legal Pages admin/API list for menus)
         try {
-            if (class_exists(Legal::class)) {
-                $legalPages = Legal::where('is_active', true)
-                    ->select('id', 'title', 'slug')
-                    ->orderBy('title')
-                    ->get();
+            $legalTemplate = config('page_templates.cookie_legal_template', 'legal');
+            $legalTemplatePages = Page::query()
+                ->where('is_active', true)
+                ->where('template', $legalTemplate)
+                ->select('id', 'title', 'slug')
+                ->orderBy('title')
+                ->get();
 
-                foreach ($legalPages as $legal) {
-                    $content['Legal Pages'][] = [
-                        'id' => $legal->id,
-                        'title' => $legal->title,
-                        'url' => api_path('legal', $legal->slug),
-                        'type' => 'legal',
-                    ];
-                }
+            foreach ($legalTemplatePages as $page) {
+                $content['Legal pages'][] = [
+                    'id' => $page->id,
+                    'title' => $page->title,
+                    'url' => api_path('page', $page->slug),
+                    'type' => 'page',
+                ];
             }
         } catch (Exception $e) {
-            Log::info('Legal table not available: '.$e->getMessage());
+            Log::info('Legal-template pages not available: '.$e->getMessage());
         }
 
         // Get Static Pages

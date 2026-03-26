@@ -42,8 +42,8 @@ class CachedProvider extends ServiceProvider
 
         }
 
-        // Set mail configuration from database
-        if (Schema::hasTable('mail_settings') && ! app()->runningInConsole()) {
+        // Set mail configuration from database (console check first avoids DB during artisan)
+        if (! app()->runningInConsole() && Schema::hasTable('mail_settings')) {
             try {
                 $mailSettings = MailSetting::getSettings();
                 if ($mailSettings && $mailSettings->mail_mailer && $mailSettings->mail_host) {

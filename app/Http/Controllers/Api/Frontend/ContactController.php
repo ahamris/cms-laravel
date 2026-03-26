@@ -114,7 +114,6 @@ class ContactController extends Controller
             'last_name' => $request->input('last_name') ?? $request->input('achternaam'),
             'reden' => $request->input('reden') ?? $request->input('onderwerp'),
             'company_name' => $request->input('company_name') ?? $request->input('organisatie'),
-            'contact_preference' => $request->input('contact_preference') ?? 'query',
         ]);
 
         $fileRules = ['file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,txt,doc,docx,xls,xlsx,ppt,pptx'];
@@ -123,7 +122,7 @@ class ContactController extends Controller
             'last_name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'required|string|max:50',
             'country_code' => 'nullable|string|max:10',
             'reden' => 'required|string|max:255',
             'bericht' => 'required|string',

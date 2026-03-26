@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\MegaMenuItem;
 use App\Models\MegaMenuSidebar;
 use App\Models\Setting;
+use App\Traits\HandlesNavigationLinks;
 use App\View\Composers\MegaMenuComposer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -12,7 +13,7 @@ use Illuminate\View\View;
 
 class MegaMenuController extends AdminBaseController
 {
-    use \App\Traits\HandlesNavigationLinks;
+    use HandlesNavigationLinks;
 
     /**
      * Display a listing of mega menu items.
@@ -454,7 +455,7 @@ class MegaMenuController extends AdminBaseController
         Setting::setValue('header_cta_button_text', $headerCtaButtonText);
         Setting::setValue('header_cta_button_url', $headerCtaButtonUrl);
 
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
         Cache::forget('settings.header_cta_button_text');
         Cache::forget('settings.header_cta_button_url');
         MegaMenuComposer::clearCache();
@@ -480,7 +481,7 @@ class MegaMenuController extends AdminBaseController
         Setting::setValue('header_cta_button_url', $buttonUrl);
 
         // Clear cache - setValue already clears individual cache, but clear all related caches
-        Cache::forget('settings'); // Clear the main settings cache used by get_setting() helper
+        Setting::forgetAggregateCache(); // Clear the main settings cache used by get_setting() helper
         Cache::forget('settings.header_cta_button_text');
         Cache::forget('settings.header_cta_button_url');
         MegaMenuComposer::clearCache();
@@ -499,9 +500,11 @@ class MegaMenuController extends AdminBaseController
         }
         if (is_array($input)) {
             $tags = array_values(array_filter(array_map('trim', $input)));
+
             return empty($tags) ? null : $tags;
         }
         $tags = array_values(array_filter(array_map('trim', explode(',', (string) $input))));
+
         return empty($tags) ? null : $tags;
     }
 

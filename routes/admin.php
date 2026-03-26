@@ -7,20 +7,24 @@ use App\Http\Controllers\Admin\Administrator\EmailLogController;
 use App\Http\Controllers\Admin\Administrator\PermissionController;
 use App\Http\Controllers\Admin\Administrator\RolesController;
 use App\Http\Controllers\Admin\Administrator\UserCrudController;
+use App\Http\Controllers\Admin\AiController;
 use App\Http\Controllers\Admin\AnalyticsController;
-use App\Http\Controllers\Admin\ContactFormController;
-use App\Http\Controllers\Admin\ContactPageSettingsController;
-use App\Http\Controllers\Admin\ContactSubjectController;
 use App\Http\Controllers\Admin\ApiChangelogController;
+use App\Http\Controllers\Admin\ArticleCategoryController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\BlogTypeController;
 use App\Http\Controllers\Admin\CarouselWidgetController;
 use App\Http\Controllers\Admin\ChangelogController;
 use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\ContactFormController;
+use App\Http\Controllers\Admin\ContactPageSettingsController;
+use App\Http\Controllers\Admin\ContactSubjectController;
+use App\Http\Controllers\Admin\CookieSettingsController;
 use App\Http\Controllers\Admin\CourseCategoryController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseVideoController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DocPageController;
 use App\Http\Controllers\Admin\DocSectionController;
 use App\Http\Controllers\Admin\Element\CardGridElementController;
@@ -32,27 +36,16 @@ use App\Http\Controllers\Admin\Element\NewsletterElementController;
 use App\Http\Controllers\Admin\Element\RelatedContentElementController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ExternalCodeController;
+use App\Http\Controllers\Admin\FaqHubController;
 use App\Http\Controllers\Admin\FeatureController;
-use App\Http\Controllers\Admin\HomepageContentController;
-use App\Http\Controllers\Admin\HomepageFaqController;
-use App\Http\Controllers\Admin\LegalController;
-use App\Http\Controllers\Admin\LiveSessionController;
-use App\Http\Controllers\Admin\ModuleController;
-use App\Http\Controllers\Admin\OrganizationController;
-use App\Http\Controllers\Admin\PageController;
-use App\Http\Controllers\Admin\PartnerTechItemController;
-use App\Http\Controllers\Admin\PresenterController;
-use App\Http\Controllers\Admin\PricingBoosterController;
-use App\Http\Controllers\Admin\PricingFeatureController;
-use App\Http\Controllers\Admin\PricingPlanController;
-use App\Http\Controllers\Admin\SessionRegistrationController;
-use App\Http\Controllers\Admin\SolutionController;
-use App\Http\Controllers\Admin\StaticPageController;
-use App\Http\Controllers\Admin\StickyMenuItemController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FooterLinkController;
+use App\Http\Controllers\Admin\FormBuilderController;
+use App\Http\Controllers\Admin\FormSubmissionController;
 use App\Http\Controllers\Admin\GeneralSettingsController;
 use App\Http\Controllers\Admin\HeroBackgroundSettingsController;
+use App\Http\Controllers\Admin\HomepageContentController;
+use App\Http\Controllers\Admin\HomepageFaqController;
+use App\Http\Controllers\Admin\LiveSessionController;
 use App\Http\Controllers\Admin\LoginSettingController;
 use App\Http\Controllers\Admin\MailSettingController;
 use App\Http\Controllers\Admin\Marketing\CaseStudyController;
@@ -65,18 +58,27 @@ use App\Http\Controllers\Admin\Marketing\MarketingEventController;
 use App\Http\Controllers\Admin\Marketing\MarketingPersonaController;
 use App\Http\Controllers\Admin\Marketing\MarketingTestimonialController;
 use App\Http\Controllers\Admin\Marketing\ProductFeatureController;
-use App\Http\Controllers\Admin\AiController;
-use App\Http\Controllers\Admin\ArticleCategoryController;
-use App\Http\Controllers\Admin\FormBuilderController;
-use App\Http\Controllers\Admin\FormSubmissionController;
 use App\Http\Controllers\Admin\MediaLibraryController;
-use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\MegaMenuController;
+use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\OrganizationController;
+use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\PageLayoutTemplateController;
+use App\Http\Controllers\Admin\PartnerTechItemController;
+use App\Http\Controllers\Admin\PresenterController;
+use App\Http\Controllers\Admin\PricingBoosterController;
+use App\Http\Controllers\Admin\PricingFeatureController;
+use App\Http\Controllers\Admin\PricingPlanController;
+use App\Http\Controllers\Admin\SessionRegistrationController;
 use App\Http\Controllers\Admin\Settings\AISettingsController;
 use App\Http\Controllers\Admin\Settings\ImageOptimizerController;
 use App\Http\Controllers\Admin\Settings\RobotsTxtController;
 use App\Http\Controllers\Admin\SocialMediaPlatformController;
 use App\Http\Controllers\Admin\SocialSettingController;
+use App\Http\Controllers\Admin\SolutionController;
+use App\Http\Controllers\Admin\StaticPageController;
+use App\Http\Controllers\Admin\StickyMenuItemController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\ThemeSettingController;
 use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\TwoFactorController as AdminTwoFactorController;
@@ -158,33 +160,25 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         // Content Management
         // Pages
         Route::resource('page', PageController::class);
+        // Backwards-compatible route names used by existing tests/older frontend code.
+        // (resource route names are `admin.page.*`; tests expect `admin.content.page.*`.)
+        Route::post('page', [PageController::class, 'store'])->name('content.page.store');
+        Route::resource('page-layout-template', PageLayoutTemplateController::class)->except(['show']);
+        Route::post('page/{page}/duplicate', [PageController::class, 'duplicate'])->name('page.duplicate');
         Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
 
         // Elements (strict per type)
         Route::resource('element-cta', CtaElementController::class)->parameters(['element-cta' => 'element']);
         Route::resource('element-faq', FaqElementController::class)->parameters(['element-faq' => 'element']);
+        Route::get('faq', [FaqHubController::class, 'index'])->name('faq.hub');
         Route::resource('element-related-content', RelatedContentElementController::class)->parameters(['element-related-content' => 'element']);
         Route::resource('element-card-grid', CardGridElementController::class)->parameters(['element-card-grid' => 'element']);
         Route::resource('element-hero-video', HeroVideoElementController::class)->parameters(['element-hero-video' => 'element']);
         Route::resource('element-newsletter', NewsletterElementController::class)->parameters(['element-newsletter' => 'element']);
         Route::resource('element-feature', FeatureElementController::class)->parameters(['element-feature' => 'element']);
 
-        // Legal Pages
-        Route::resource('legal', LegalController::class);
-        Route::post('legal/{legal}/toggle-active', [LegalController::class, 'toggleActive'])->name('legal.toggle-active');
-        Route::post('legal/{legal}/faq', [LegalController::class, 'storeFaq'])->name('legal.store-faq');
-        Route::put('legal/{legal}/faq/{faqId}', [LegalController::class, 'updateFaq'])->name('legal.update-faq');
-        Route::delete('legal/{legal}/faq/{faqId}', [LegalController::class, 'destroyFaq'])->name('legal.destroy-faq');
-        Route::post('legal/{legal}/faq/{faqId}/toggle-active', [LegalController::class, 'toggleFaqActive'])->name('legal.toggle-faq-active');
-
-        // Legal Page Versions
-        Route::get('legal/{legal}/versions', [LegalController::class, 'versions'])->name('legal.versions');
-        Route::get('legal/{legal}/versions/{versionNumber}', [LegalController::class, 'showVersion'])->name('legal.version.show');
-        Route::post('legal/{legal}/versions/{versionNumber}/restore', [LegalController::class, 'restoreVersion'])->name('legal.version.restore');
-        Route::post('legal/{legal}/versions/create', [LegalController::class, 'createVersion'])->name('legal.version.create');
-
         // Static Pages
-        Route::resource('static-page', StaticPageController::class);
+        Route::resource('static-page', StaticPageController::class)->except(['destroy']);
         Route::post('static-page/{staticPage}/toggle-active', [StaticPageController::class, 'toggleActive'])->name('static-page.toggle-active');
         Route::post('static-page/{staticPage}/faq', [StaticPageController::class, 'storeFaq'])->name('static-page.store-faq');
         Route::put('static-page/{staticPage}/faq/{faqId}', [StaticPageController::class, 'updateFaq'])->name('static-page.update-faq');
@@ -206,6 +200,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
         // Blogs
         Route::resource('blog', BlogController::class);
+        Route::post('blog', [BlogController::class, 'store'])->name('content.blog.store');
         Route::post('blog/{blog}/toggle-active', [BlogController::class, 'toggleActive'])->name('blog.toggle-active');
         Route::post('blog/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('blog.toggle-featured');
         Route::post('blog/{blog}/social-media-post', [BlogController::class, 'createSocialMediaPost'])->name('blog.social-media-post');
@@ -232,6 +227,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
         // Changelog
         Route::resource('changelog', ChangelogController::class);
+        Route::post('changelog', [ChangelogController::class, 'store'])->name('content.changelog.store');
         Route::post('changelogs/update-order', [ChangelogController::class, 'updateOrder'])->name('changelogs.update-order');
 
         // Documentation
@@ -254,7 +250,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
         // Homepage FAQs
         Route::resource('faq-module', HomepageFaqController::class)->parameters(['faq-module' => 'faq']);
-        Route::post('faq-modules/update-order', [HomepageFaqController::class, 'updateOrder'])->name('faq-modules.update-order');
 
         // External Codes
         Route::resource('external-code', ExternalCodeController::class);
@@ -496,8 +491,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
             // Cookie Settings
             Route::group(['prefix' => 'cookie', 'as' => 'cookie.'], function () {
-                Route::get('/', [\App\Http\Controllers\Admin\CookieSettingsController::class, 'index'])->name('index');
-                Route::put('/', [\App\Http\Controllers\Admin\CookieSettingsController::class, 'update'])->name('update');
+                Route::get('/', [CookieSettingsController::class, 'index'])->name('index');
+                Route::put('/', [CookieSettingsController::class, 'update'])->name('update');
             });
 
             // Footer Links
@@ -598,7 +593,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         });
 
         // CRM Module
-        require __DIR__ . '/crm.php';
+        require __DIR__.'/crm.php';
 
         // Catch-all route for any undefined admin/* routes
         Route::fallback(function () {

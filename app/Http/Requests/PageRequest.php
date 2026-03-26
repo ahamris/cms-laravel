@@ -2,9 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ElementType;
+use App\Enums\PageLayoutRowKind;
+use App\Models\Element;
+use App\Models\PageLayoutTemplateRow;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\ElementType;
+use Illuminate\Validation\Validator;
 
 class PageRequest extends FormRequest
 {
@@ -42,6 +46,65 @@ class PageRequest extends FormRequest
                 $this->merge([$key => null]);
             }
         }
+
+        $plt = $this->input('page_layout_template_id');
+        $this->merge([
+            'page_layout_template_id' => ($plt === '' || $plt === null) ? null : (int) $plt,
+            'layout_row_element' => $this->input('layout_row_element', []) ?: [],
+        ]);
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $templateId = $this->input('page_layout_template_id');
+            if (! $templateId) {
+                return;
+            }
+
+            $rows = PageLayoutTemplateRow::query()
+                ->where('page_layout_template_id', $templateId)
+                ->get()
+                ->keyBy(fn (PageLayoutTemplateRow $r) => (string) $r->id);
+
+            foreach ($this->input('layout_row_element', []) as $rowId => $elementId) {
+                if ($elementId === null || $elementId === '') {
+                    continue;
+                }
+
+                $row = $rows->get((string) $rowId);
+                if (! $row) {
+                    continue;
+                }
+
+                $rowKind = $row->row_kind instanceof \BackedEnum ? $row->row_kind : PageLayoutRowKind::tryFrom((string) $row->row_kind) ?? PageLayoutRowKind::Element;
+
+                if (in_array($rowKind, [PageLayoutRowKind::ShortBody, PageLayoutRowKind::LongBody], true)) {
+                    if ($elementId !== null && $elementId !== '') {
+                        $validator->errors()->add(
+                            'layout_row_element.'.$rowId,
+                            __('This row uses page content only; no element may be selected (:row).', ['row' => $row->label])
+                        );
+                    }
+
+                    continue;
+                }
+
+                $allowed = config('page_row_section_categories.categories.'.$row->section_category.'.element_types', []);
+                $element = Element::query()->find($elementId);
+                if (! $element) {
+                    continue;
+                }
+
+                $type = $element->type instanceof \BackedEnum ? $element->type->value : $element->type;
+                if ($allowed !== [] && ! in_array($type, $allowed, true)) {
+                    $validator->errors()->add(
+                        'layout_row_element.'.$rowId,
+                        __('The selected element type does not match this row (:row).', ['row' => $row->label])
+                    );
+                }
+            }
+        });
     }
 
     /**
@@ -70,6 +133,9 @@ class PageRequest extends FormRequest
             'icon' => 'nullable|string|max:255',
             'is_active' => 'required|boolean',
             'template' => 'nullable|string|in:'.implode(',', array_keys(config('page_templates.templates', []))),
+            'page_layout_template_id' => 'nullable|integer|exists:page_layout_templates,id',
+            'layout_row_element' => 'nullable|array',
+            'layout_row_element.*' => 'nullable|integer|exists:elements,id',
 
             // Marketing Automation fields
             'funnel_fase' => 'nullable|string|in:interesseer,overtuig,activeer,inspireer',
@@ -146,6 +212,8 @@ class PageRequest extends FormRequest
             'icon' => 'Icon',
             'is_active' => 'Active status',
             'template' => 'Template',
+            'page_layout_template_id' => 'Layout template',
+            'layout_row_element' => 'Row elements',
 
             // Marketing Automation attributes
             'funnel_fase' => 'Funnel phase',

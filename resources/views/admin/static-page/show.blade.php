@@ -155,25 +155,9 @@
                         <i class="fa fa-edit mr-2"></i>
                         Edit Page
                     </a>
-                    
-                    <form action="{{ route('admin.static-page.destroy', $staticPage) }}" 
-                          method="POST" 
-                          class="w-full"
-                          onsubmit="return confirm('Are you sure you want to delete this static page?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" 
-                                class="w-full text-left px-4 py-2 text-sm text-red-600 bg-white border border-red-200 rounded-md hover:bg-red-50 transition-colors duration-200 focus:outline-none">
-                            <i class="fa fa-trash mr-2"></i>
-                            Delete Page
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-<script>
-</script>
 
 </x-layouts.admin>

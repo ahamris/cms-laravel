@@ -97,11 +97,11 @@ class SettingSeeder extends Seeder
         $this->createSetting('cookie_preferences_title', 'Manage cookie preferences', 'text', 'cookie', 'Cookie Preferences Title', 'Title for the cookie preferences modal', 4);
         $this->createSetting('cookie_preferences_summary', 'Configure your cookie preferences below. Need more information? Read our policy.', 'textarea', 'cookie', 'Cookie Preferences Summary', 'Summary in the cookie preferences modal', 5);
         $this->createSetting('cookie_settings_label', 'Cookie policy', 'text', 'cookie', 'Cookie Settings Label', 'Label for the link to cookie settings/policy', 6);
-        $this->createSetting('cookie_settings_page_type', 'custom', 'text', 'cookie', 'Cookie Settings Page Type', 'Type of cookie settings link: custom, legal, or static', 7);
-        $this->createSetting('cookie_settings_page_id', null, 'number', 'cookie', 'Cookie Settings Page ID', 'Page ID when cookie settings link points to a legal/static page', 8);
+        $this->createSetting('cookie_settings_page_type', 'custom', 'text', 'cookie', 'Cookie Settings Page Type', 'Type of cookie settings link: custom or page (Legal template)', 7);
+        $this->createSetting('cookie_settings_page_id', null, 'number', 'cookie', 'Cookie Settings Page ID', 'CMS pages.id when type is page (must use Legal template)', 8);
         $this->createSetting('cookie_settings_url', 'javascript:void(0)', 'text', 'cookie', 'Cookie Settings URL', 'URL for cookie settings when using custom link', 9);
-        $this->createSetting('cookie_policy_page_type', 'custom', 'text', 'cookie', 'Cookie Policy Page Type', 'Type of cookie policy link: custom, legal, or static', 10);
-        $this->createSetting('cookie_policy_page_id', null, 'number', 'cookie', 'Cookie Policy Page ID', 'Page ID when cookie policy link points to a legal/static page', 11);
+        $this->createSetting('cookie_policy_page_type', 'custom', 'text', 'cookie', 'Cookie Policy Page Type', 'Type of cookie policy link: custom or page (Legal template)', 10);
+        $this->createSetting('cookie_policy_page_id', null, 'number', 'cookie', 'Cookie Policy Page ID', 'CMS pages.id when type is page (must use Legal template)', 11);
         $this->createSetting('cookie_policy_url', 'javascript:void(0)', 'text', 'cookie', 'Cookie Policy URL', 'URL for cookie policy when using custom link', 12);
         $this->createSetting('cookie_category_functional_label', 'Functional cookies', 'text', 'cookie', 'Functional Cookies Label', 'Label for the functional cookies category', 13);
         $this->createSetting('cookie_category_functional_description', 'Required for core functionality of the website.', 'textarea', 'cookie', 'Functional Cookies Description', 'Description for the functional cookies category', 14);

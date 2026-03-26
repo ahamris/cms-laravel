@@ -27,9 +27,15 @@ class Faq extends BaseModel
      */
     public static function getByIdentifier(string $identifier)
     {
-        return Cache::remember("faqs.identifier.{$identifier}", 3600, function () use ($identifier) {
-            return self::where('identifier', $identifier)->first();
-        });
+        $rowKey = "faqs.identifier.{$identifier}.row_v1";
+        $legacyKey = "faqs.identifier.{$identifier}";
+
+        return self::cacheRememberNullableModelRow(
+            $rowKey,
+            3600,
+            fn () => self::where('identifier', $identifier)->first(),
+            [$legacyKey],
+        );
     }
 
     /**
@@ -42,12 +48,14 @@ class Faq extends BaseModel
         static::saved(function ($faq) {
             if ($faq->identifier) {
                 Cache::forget("faqs.identifier.{$faq->identifier}");
+                Cache::forget("faqs.identifier.{$faq->identifier}.row_v1");
             }
         });
 
         static::deleted(function ($faq) {
             if ($faq->identifier) {
                 Cache::forget("faqs.identifier.{$faq->identifier}");
+                Cache::forget("faqs.identifier.{$faq->identifier}.row_v1");
             }
         });
     }

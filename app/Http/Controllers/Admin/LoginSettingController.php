@@ -36,16 +36,16 @@ class LoginSettingController extends AdminBaseController
 
         // Validate footer links JSON structure if provided
         $footerLinks = null;
-        if ($request->has('login_footer_links') && !empty($request->login_footer_links)) {
+        if ($request->has('login_footer_links') && ! empty($request->login_footer_links)) {
             $footerLinks = json_decode($request->login_footer_links, true);
-            
+
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return redirect()->back()
                     ->withErrors(['login_footer_links' => 'Invalid JSON format for footer links'])
                     ->withInput();
             }
 
-            if (!is_array($footerLinks)) {
+            if (! is_array($footerLinks)) {
                 return redirect()->back()
                     ->withErrors(['login_footer_links' => 'Footer links must be an array'])
                     ->withInput();
@@ -53,24 +53,24 @@ class LoginSettingController extends AdminBaseController
 
             // Validate each footer link item
             foreach ($footerLinks as $index => $link) {
-                if (!isset($link['title']) || empty(trim($link['title']))) {
+                if (! isset($link['title']) || empty(trim($link['title']))) {
                     return redirect()->back()
-                        ->withErrors(["login_footer_links" => "Footer link #{$index} must have a title"])
+                        ->withErrors(['login_footer_links' => "Footer link #{$index} must have a title"])
                         ->withInput();
                 }
-                if (!isset($link['link']) || empty(trim($link['link']))) {
+                if (! isset($link['link']) || empty(trim($link['link']))) {
                     return redirect()->back()
-                        ->withErrors(["login_footer_links" => "Footer link #{$index} must have a link"])
+                        ->withErrors(['login_footer_links' => "Footer link #{$index} must have a link"])
                         ->withInput();
                 }
-                if (!isset($link['order']) || !is_numeric($link['order']) || $link['order'] < 0) {
+                if (! isset($link['order']) || ! is_numeric($link['order']) || $link['order'] < 0) {
                     return redirect()->back()
-                        ->withErrors(["login_footer_links" => "Footer link #{$index} must have a valid order (integer >= 0)"])
+                        ->withErrors(['login_footer_links' => "Footer link #{$index} must have a valid order (integer >= 0)"])
                         ->withInput();
                 }
-                if (!isset($link['target']) || !in_array($link['target'], ['_self', '_blank'])) {
+                if (! isset($link['target']) || ! in_array($link['target'], ['_self', '_blank'])) {
                     return redirect()->back()
-                        ->withErrors(["login_footer_links" => "Footer link #{$index} target must be either '_self' or '_blank'"])
+                        ->withErrors(['login_footer_links' => "Footer link #{$index} target must be either '_self' or '_blank'"])
                         ->withInput();
                 }
             }
@@ -112,10 +112,10 @@ class LoginSettingController extends AdminBaseController
             // Update footer links JSON
             if ($footerLinks !== null) {
                 // Sort by order
-                usort($footerLinks, function($a, $b) {
+                usort($footerLinks, function ($a, $b) {
                     return $a['order'] <=> $b['order'];
                 });
-                
+
                 // Re-encode as JSON
                 $this->updateSetting('login_footer_links', json_encode($footerLinks));
             } elseif ($request->has('login_footer_links') && empty($request->login_footer_links)) {
@@ -144,22 +144,22 @@ class LoginSettingController extends AdminBaseController
     private function handleFileUpload(Request $request, string $fieldName): void
     {
         $file = $request->file($fieldName);
-        
+
         // Delete old file if exists
         $oldSetting = Setting::where('key', $fieldName)->first();
-        if ($oldSetting && !empty($oldSetting->value) && trim($oldSetting->value) !== '') {
+        if ($oldSetting && ! empty($oldSetting->value) && trim($oldSetting->value) !== '') {
             if (Storage::disk('public')->exists($oldSetting->value)) {
                 Storage::disk('public')->delete($oldSetting->value);
             }
         }
 
         // Store new file
-        $directory = match($fieldName) {
+        $directory = match ($fieldName) {
             'login_page_logo' => 'logos',
             'login_background_image' => 'login',
             default => 'uploads',
         };
-        
+
         $originalName = $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
 
@@ -179,8 +179,8 @@ class LoginSettingController extends AdminBaseController
             $publicPath = storage_path('app/public/'.$directory);
 
             // Create directory if it doesn't exist
-            if (!file_exists($publicPath)) {
-                if (!mkdir($publicPath, 0755, true) && !is_dir($publicPath)) {
+            if (! file_exists($publicPath)) {
+                if (! mkdir($publicPath, 0755, true) && ! is_dir($publicPath)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $publicPath));
                 }
             }
@@ -198,7 +198,7 @@ class LoginSettingController extends AdminBaseController
             }
 
             // Method 2: Try Laravel's move method
-            if (!$success) {
+            if (! $success) {
                 try {
                     $file->move($publicPath, $filename);
                     $success = true;
@@ -208,7 +208,7 @@ class LoginSettingController extends AdminBaseController
             }
 
             // Method 3: Copy file if other methods fail
-            if (!$success && $file->getRealPath() && file_exists($file->getRealPath())) {
+            if (! $success && $file->getRealPath() && file_exists($file->getRealPath())) {
                 if (copy($file->getRealPath(), $targetFile)) {
                     $success = true;
                 }
@@ -234,14 +234,14 @@ class LoginSettingController extends AdminBaseController
     private function deleteFileSetting(string $key): void
     {
         $setting = Setting::where('key', $key)->first();
-        
+
         if ($setting) {
             // Delete file from storage if it exists and is a storage path
-            if (!empty($setting->value) && trim($setting->value) !== '') {
+            if (! empty($setting->value) && trim($setting->value) !== '') {
                 // Only delete from storage if it looks like a storage path (not a full URL or public path)
-                if (!filter_var($setting->value, FILTER_VALIDATE_URL) && 
-                    !str_starts_with($setting->value, 'assets/') && 
-                    !str_starts_with($setting->value, 'front/')) {
+                if (! filter_var($setting->value, FILTER_VALIDATE_URL) &&
+                    ! str_starts_with($setting->value, 'assets/') &&
+                    ! str_starts_with($setting->value, 'front/')) {
                     if (Storage::disk('public')->exists($setting->value)) {
                         Storage::disk('public')->delete($setting->value);
                     }
@@ -355,7 +355,7 @@ class LoginSettingController extends AdminBaseController
      */
     private function clearCaches(): void
     {
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
 
         $settingKeys = [
             'theme_login_form_mode',
@@ -374,4 +374,3 @@ class LoginSettingController extends AdminBaseController
         }
     }
 }
-

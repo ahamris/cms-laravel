@@ -56,7 +56,7 @@ class HeroBackgroundSettingsController extends AdminBaseController
             return redirect()->back()->with('status', 'hero-settings-updated');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])
+                ->withErrors(['error' => 'An error occurred: '.$e->getMessage()])
                 ->withInput();
         }
     }
@@ -76,18 +76,18 @@ class HeroBackgroundSettingsController extends AdminBaseController
         $originalName = $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
         if (empty($originalName) || trim($originalName) === '') {
-            $originalName = 'upload_' . uniqid('', true) . '.' . ($extension ?: 'jpg');
+            $originalName = 'upload_'.uniqid('', true).'.'.($extension ?: 'jpg');
         }
-        $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
+        $filename = time().'_'.preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
 
-        $publicPath = storage_path('app/public/' . $directory);
+        $publicPath = storage_path('app/public/'.$directory);
         if (! file_exists($publicPath)) {
             if (! mkdir($publicPath, 0755, true) && ! is_dir($publicPath)) {
                 throw new \RuntimeException(sprintf('Directory "%s" was not created', $publicPath));
             }
         }
 
-        $targetFile = $publicPath . '/' . $filename;
+        $targetFile = $publicPath.'/'.$filename;
         $success = false;
         if (is_uploaded_file($file->getPathname())) {
             $success = move_uploaded_file($file->getPathname(), $targetFile);
@@ -108,7 +108,7 @@ class HeroBackgroundSettingsController extends AdminBaseController
             throw new \Exception('Unable to store file');
         }
 
-        $this->updateSetting($fieldName, $directory . '/' . $filename);
+        $this->updateSetting($fieldName, $directory.'/'.$filename);
     }
 
     private function deleteFileSetting(string $key): void
@@ -142,7 +142,7 @@ class HeroBackgroundSettingsController extends AdminBaseController
 
     private function clearCaches(): void
     {
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
         foreach (self::HERO_KEYS as $key) {
             Cache::forget("settings.{$key}");
         }

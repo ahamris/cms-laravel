@@ -1,4 +1,15 @@
 <x-layouts.admin title="Cookie Settings">
+    @php
+        $cookieSettingsTypeRaw = old('cookie_settings_page_type', get_setting('cookie_settings_page_type', 'custom'));
+        $cookieSettingsTypeDisplay = in_array($cookieSettingsTypeRaw, ['legal', 'page'], true)
+            ? 'page'
+            : (($cookieSettingsTypeRaw === 'static') ? 'custom' : $cookieSettingsTypeRaw);
+
+        $cookiePolicyTypeRaw = old('cookie_policy_page_type', get_setting('cookie_policy_page_type', 'custom'));
+        $cookiePolicyTypeDisplay = in_array($cookiePolicyTypeRaw, ['legal', 'page'], true)
+            ? 'page'
+            : (($cookiePolicyTypeRaw === 'static') ? 'custom' : $cookiePolicyTypeRaw);
+    @endphp
     {{-- Header with Title --}}
     <div class="flex items-center justify-between mb-6">
         <div class="flex flex-col gap-2">
@@ -160,41 +171,26 @@
                                         <select name="cookie_settings_page_type" id="cookie_settings_page_type"
                                                 class="block bg-white w-full px-4 py-3 border border-gray-200 rounded-md text-gray-900 focus:outline-none mb-3"
                                                 onchange="togglePageSelect('cookie_settings')">
-                                            <option value="custom" {{ old('cookie_settings_page_type', get_setting('cookie_settings_page_type', 'custom')) == 'custom' ? 'selected' : '' }}>Custom URL</option>
-                                            <option value="legal" {{ old('cookie_settings_page_type', get_setting('cookie_settings_page_type')) == 'legal' ? 'selected' : '' }}>Legal Page</option>
-                                            <option value="static" {{ old('cookie_settings_page_type', get_setting('cookie_settings_page_type')) == 'static' ? 'selected' : '' }}>Static Page</option>
+                                            <option value="custom" {{ $cookieSettingsTypeDisplay === 'custom' ? 'selected' : '' }}>Custom URL</option>
+                                            <option value="page" {{ $cookieSettingsTypeDisplay === 'page' ? 'selected' : '' }}>CMS page (Legal template)</option>
                                         </select>
                                     </div>
 
-                                    <div id="cookie_settings_legal_select" style="display: {{ old('cookie_settings_page_type', get_setting('cookie_settings_page_type', 'custom')) == 'legal' ? 'block' : 'none' }};">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Legal Page</label>
+                                    <div id="cookie_settings_page_select" style="display: {{ $cookieSettingsTypeDisplay === 'page' ? 'block' : 'none' }};">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Select page (Legal template)</label>
                                         <select name="cookie_settings_page_id" id="cookie_settings_page_id"
                                                 class="block bg-white w-full px-4 py-3 border border-gray-200 rounded-md text-gray-900 focus:outline-none">
-                                            <option value="">-- Select a legal page --</option>
-                                            @foreach($legalPages as $page)
-                                                <option value="{{ $page->id }}" 
-                                                    {{ old('cookie_settings_page_id', get_setting('cookie_settings_page_id')) == $page->id ? 'selected' : '' }}>
+                                            <option value="">— Select a page —</option>
+                                            @foreach($legalTemplatePages as $page)
+                                                <option value="{{ $page->id }}"
+                                                    {{ (string) old('cookie_settings_page_id', get_setting('cookie_settings_page_id')) === (string) $page->id ? 'selected' : '' }}>
                                                     {{ $page->title }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
 
-                                    <div id="cookie_settings_static_select" style="display: {{ old('cookie_settings_page_type', get_setting('cookie_settings_page_type', 'custom')) == 'static' ? 'block' : 'none' }};">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Static Page</label>
-                                        <select name="cookie_settings_page_id" id="cookie_settings_static_page_id"
-                                                class="block bg-white w-full px-4 py-3 border border-gray-200 rounded-md text-gray-900 focus:outline-none">
-                                            <option value="">-- Select a static page --</option>
-                                            @foreach($staticPages as $page)
-                                                <option value="{{ $page->id }}" 
-                                                    {{ old('cookie_settings_page_id', get_setting('cookie_settings_page_id')) == $page->id ? 'selected' : '' }}>
-                                                    {{ $page->title }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div id="cookie_settings_custom_url" style="display: {{ old('cookie_settings_page_type', get_setting('cookie_settings_page_type', 'custom')) == 'custom' ? 'block' : 'none' }};">
+                                    <div id="cookie_settings_custom_url" style="display: {{ $cookieSettingsTypeDisplay === 'custom' ? 'block' : 'none' }};">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Custom URL</label>
                                         <input type="text" name="cookie_settings_url"
                                                value="{{ old('cookie_settings_url', get_setting('cookie_settings_url', 'javascript:void(0)')) }}"
@@ -210,40 +206,25 @@
                                 <select name="cookie_policy_page_type" id="cookie_policy_page_type"
                                         class="block bg-white w-full px-4 py-3 border border-gray-200 rounded-md text-gray-900 focus:outline-none mb-3"
                                         onchange="togglePageSelect('cookie_policy')">
-                                    <option value="custom" {{ old('cookie_policy_page_type', get_setting('cookie_policy_page_type', 'custom')) == 'custom' ? 'selected' : '' }}>Custom URL</option>
-                                    <option value="legal" {{ old('cookie_policy_page_type', get_setting('cookie_policy_page_type')) == 'legal' ? 'selected' : '' }}>Legal Page</option>
-                                    <option value="static" {{ old('cookie_policy_page_type', get_setting('cookie_policy_page_type')) == 'static' ? 'selected' : '' }}>Static Page</option>
+                                    <option value="custom" {{ $cookiePolicyTypeDisplay === 'custom' ? 'selected' : '' }}>Custom URL</option>
+                                    <option value="page" {{ $cookiePolicyTypeDisplay === 'page' ? 'selected' : '' }}>CMS page (Legal template)</option>
                                 </select>
 
-                                <div id="cookie_policy_legal_select" style="display: {{ old('cookie_policy_page_type', get_setting('cookie_policy_page_type', 'custom')) == 'legal' ? 'block' : 'none' }};">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Legal Page</label>
+                                <div id="cookie_policy_page_select" style="display: {{ $cookiePolicyTypeDisplay === 'page' ? 'block' : 'none' }};">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select page (Legal template)</label>
                                     <select name="cookie_policy_page_id" id="cookie_policy_page_id"
                                             class="block bg-white w-full px-4 py-3 border border-gray-200 rounded-md text-gray-900 focus:outline-none">
-                                        <option value="">-- Select a legal page --</option>
-                                        @foreach($legalPages as $page)
-                                            <option value="{{ $page->id }}" 
-                                                {{ old('cookie_policy_page_id', get_setting('cookie_policy_page_id')) == $page->id ? 'selected' : '' }}>
+                                        <option value="">— Select a page —</option>
+                                        @foreach($legalTemplatePages as $page)
+                                            <option value="{{ $page->id }}"
+                                                {{ (string) old('cookie_policy_page_id', get_setting('cookie_policy_page_id')) === (string) $page->id ? 'selected' : '' }}>
                                                 {{ $page->title }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div id="cookie_policy_static_select" style="display: {{ old('cookie_policy_page_type', get_setting('cookie_policy_page_type', 'custom')) == 'static' ? 'block' : 'none' }};">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Static Page</label>
-                                    <select name="cookie_policy_page_id" id="cookie_policy_static_page_id"
-                                            class="block bg-white w-full px-4 py-3 border border-gray-200 rounded-md text-gray-900 focus:outline-none">
-                                        <option value="">-- Select a static page --</option>
-                                        @foreach($staticPages as $page)
-                                            <option value="{{ $page->id }}" 
-                                                {{ old('cookie_policy_page_id', get_setting('cookie_policy_page_id')) == $page->id ? 'selected' : '' }}>
-                                                {{ $page->title }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div id="cookie_policy_custom_url" style="display: {{ old('cookie_policy_page_type', get_setting('cookie_policy_page_type', 'custom')) == 'custom' ? 'block' : 'none' }};">
+                                <div id="cookie_policy_custom_url" style="display: {{ $cookiePolicyTypeDisplay === 'custom' ? 'block' : 'none' }};">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Custom URL</label>
                                     <input type="text" name="cookie_policy_url"
                                            value="{{ old('cookie_policy_url', get_setting('cookie_policy_url', 'javascript:void(0)')) }}"
@@ -352,7 +333,7 @@
                         Configure your cookie consent banner settings here. The banner will appear on the frontend based on your configuration.
                     </p>
                     <p>
-                        You can link to legal pages or static pages for the cookie policy and settings links, or use custom URLs.
+                        Cookie links can point to a CMS page that uses the Legal template, or to a custom URL.
                     </p>
                     <p>
                         The cookie categories can be customized with your own labels and descriptions.
@@ -362,7 +343,6 @@
         </div>
     </div>
 
-    <style>
     <style>
         input:checked + .block {
             background-color: #3b82f6;
@@ -380,28 +360,21 @@
     <script>
         function togglePageSelect(type) {
             const pageType = document.getElementById(type + '_page_type').value;
-            
-            // Hide all selects
-            document.getElementById(type + '_legal_select').style.display = 'none';
-            document.getElementById(type + '_static_select').style.display = 'none';
+
+            document.getElementById(type + '_page_select').style.display = 'none';
             document.getElementById(type + '_custom_url').style.display = 'none';
-            
-            // Show relevant select
-            if (pageType === 'legal') {
-                document.getElementById(type + '_legal_select').style.display = 'block';
-            } else if (pageType === 'static') {
-                document.getElementById(type + '_static_select').style.display = 'block';
+
+            if (pageType === 'page') {
+                document.getElementById(type + '_page_select').style.display = 'block';
             } else {
                 document.getElementById(type + '_custom_url').style.display = 'block';
             }
         }
 
-        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             togglePageSelect('cookie_settings');
             togglePageSelect('cookie_policy');
         });
-    </script>
     </script>
 </x-layouts.admin>
 

@@ -41,13 +41,32 @@ class Sidebar extends Component
 
         foreach ($nodes as $node) {
             $permission = $node['permission'] ?? null;
-            if ($permission !== null && ! Gate::allows($permission)) {
+            $permissionAny = $node['permission_any'] ?? null;
+
+            if ($permissionAny !== null) {
+                $allowedAny = false;
+                foreach ((array) $permissionAny as $perm) {
+                    if (Gate::allows($perm)) {
+                        $allowedAny = true;
+                        break;
+                    }
+                }
+                if (! $allowedAny) {
+                    continue;
+                }
+            } elseif ($permission !== null && ! Gate::allows($permission)) {
                 continue;
             }
 
-            $children = isset($node['children']) && is_array($node['children'])
-                ? $this->filterMenuByPermission($node['children'])
+            $rawChildren = $node['children'] ?? null;
+            $children = is_array($rawChildren)
+                ? $this->filterMenuByPermission($rawChildren)
                 : [];
+
+            // Drop container items whose children were all hidden (e.g. Custom with no page/static access).
+            if (is_array($rawChildren) && $rawChildren !== [] && $children === []) {
+                continue;
+            }
 
             $isSection = ($node['item_type'] ?? 'link') === 'section';
             if ($isSection && empty($children)) {
@@ -64,6 +83,7 @@ class Sidebar extends Component
     /**
      * Static sidebar menu definition (typed structure). Public so Search and others can use it.
      * Each item may have a 'permission' key; the item is only shown when the user has that permission (Gate).
+     * Use 'permission_any' => ['a', 'b'] when the user needs at least one of the listed permissions.
      *
      * @return array<int, array<string, mixed>>
      */
@@ -86,24 +106,39 @@ class Sidebar extends Component
                 'icon' => 'layer-group',
                 'children' => [
                     [
-                        'label' => 'Pages',
-                        'route_name' => 'admin.page.index',
-                        'icon' => 'file-text',
-                        'permission' => 'page_access',
-                        'active_pattern' => 'admin.page*,admin.legal*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*,admin.faq-module*,admin.partner-tech-item*,admin.static-page*',
+                        'label' => 'Website',
+                        'icon' => 'globe',
+                        'active_pattern' => 'admin.page.index,admin.page.create,admin.page.edit,admin.page.show,admin.page.duplicate,admin.page.toggle-active,admin.page-layout-template*,admin.homepage*,admin.changelog*,admin.event*,admin.settings.hero-backgrounds*,admin.partner-tech-item*,admin.static-page*',
                         'children' => [
-                            ['label' => 'Homepage', 'route_name' => 'admin.homepage.edit', 'icon' => 'home', 'permission' => 'page_access'],
-                            ['label' => 'Pages', 'route_name' => 'admin.page.index', 'icon' => 'file-text', 'permission' => 'page_access'],
-                            ['label' => 'Legal Pages', 'route_name' => 'admin.legal.index', 'icon' => 'list-alt', 'permission' => 'legal_access'],
-                            ['label' => 'Static Pages', 'route_name' => 'admin.static-page.index', 'icon' => 'file-alt', 'permission' => 'static_page_access'],
-                            ['label' => 'FAQ Modules', 'route_name' => 'admin.faq-module.index', 'icon' => 'question-circle', 'permission' => 'faq_module_access'],
+                            [
+                                'label' => 'Custom',
+                                'icon' => 'pen-to-square',
+                                'active_pattern' => 'admin.homepage*,admin.static-page*',
+                                'children' => [
+                                    ['label' => 'Homepage', 'route_name' => 'admin.homepage.edit', 'icon' => 'home', 'permission' => 'page_access'],
+                                    ['label' => 'Static pages', 'route_name' => 'admin.static-page.index', 'icon' => 'file-lines', 'permission' => 'static_page_access'],
+                                ],
+                            ],
+                            [
+                                'label' => 'Pages',
+                                'route_name' => 'admin.page.index',
+                                'icon' => 'file-lines',
+                                'permission' => 'page_access',
+                                'active_pattern' => 'admin.page.index,admin.page.create,admin.page.edit,admin.page.show,admin.page.duplicate,admin.page.toggle-active',
+                            ],
+                            [
+                                'label' => 'Templates',
+                                'route_name' => 'admin.page-layout-template.index',
+                                'icon' => 'layer-group',
+                                'permission' => 'page_access',
+                                'active_pattern' => 'admin.page-layout-template*',
+                            ],
                         ],
                     ],
                     [
                         'label' => 'Elements',
-                        'icon' => 'cubes',
-                        'permission' => 'page_access',
-                        'active_pattern' => 'admin.element-cta*,admin.element-faq*,admin.element-related-content*,admin.element-card-grid*,admin.element-hero-video*,admin.element-newsletter*,admin.element-feature*',
+                        'icon' => 'cubes-stacked',
+                        'active_pattern' => 'admin.element-cta*,admin.element-faq*,admin.element-related-content*,admin.element-card-grid*,admin.element-hero-video*,admin.element-newsletter*,admin.element-feature*,admin.faq-module*,admin.faq.hub',
                         'children' => [
                             [
                                 'label' => 'CTA',
@@ -114,10 +149,10 @@ class Sidebar extends Component
                             ],
                             [
                                 'label' => 'FAQ',
-                                'route_name' => 'admin.element-faq.index',
+                                'route_name' => 'admin.faq.hub',
                                 'icon' => 'circle-question',
-                                'permission' => 'page_access',
-                                'active_pattern' => 'admin.element-faq*',
+                                'permission_any' => ['faq_module_access', 'page_access'],
+                                'active_pattern' => 'admin.faq-module*,admin.element-faq*,admin.faq.hub',
                             ],
                             [
                                 'label' => 'Related content',

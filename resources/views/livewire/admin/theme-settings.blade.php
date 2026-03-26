@@ -595,12 +595,10 @@
 
                 // Wait for font to load
                 link.onload = function () {
-                    console.log(`Font loaded successfully: ${fontName}`);
                     // Force font to apply by dispatching a custom event
                     document.dispatchEvent(new CustomEvent('fontLoaded', { detail: { fontName } }));
                 };
                 link.onerror = function () {
-                    console.error(`Failed to load font: ${fontName} from URL: ${fontUrl}`);
                     // Try alternative loading method
                     const alternativeUrl = `https://fonts.googleapis.com/css2?family=${fontNameNormalized.replace(/\s+/g, '+')}:wght@400;500;600;700&display=swap`;
                     if (alternativeUrl !== fontUrl) {

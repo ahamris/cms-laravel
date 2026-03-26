@@ -73,9 +73,12 @@ class HelpArticle extends BaseModel
      */
     public static function getCached()
     {
-        return Cache::remember(self::CACHE_KEY, self::CACHE_DURATION, function () {
-            return self::published()->ordered()->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            self::CACHE_DURATION,
+            fn () => self::published()->ordered()->get(),
+            [self::CACHE_KEY],
+        );
     }
 
     /**
@@ -83,9 +86,12 @@ class HelpArticle extends BaseModel
      */
     public static function getFeatured()
     {
-        return Cache::remember(self::CACHE_KEY.'_featured', self::CACHE_DURATION, function () {
-            return self::published()->featured()->ordered()->limit(5)->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_featured_rows_v1',
+            self::CACHE_DURATION,
+            fn () => self::published()->featured()->ordered()->limit(5)->get(),
+            [self::CACHE_KEY.'_featured'],
+        );
     }
 
     /**
@@ -94,7 +100,9 @@ class HelpArticle extends BaseModel
     public static function clearCache()
     {
         Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
         Cache::forget(self::CACHE_KEY.'_featured');
+        Cache::forget(self::CACHE_KEY.'_featured_rows_v1');
     }
 
     /**

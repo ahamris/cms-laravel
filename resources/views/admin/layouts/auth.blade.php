@@ -11,9 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    {{-- FontAwesome Pro Links --}}
-    <link href="{{ asset('assets/fontawesome/css/all.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('assets/fontawesome/css/brands.css') }}" rel="stylesheet"/>
+    <x-fontawesome-pro />
 
     {{-- Styles / Scripts --}}
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])

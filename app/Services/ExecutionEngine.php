@@ -2,14 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\ContentPlanItem;
+use App\Jobs\PublishScheduledContentJob;
 use App\Models\Blog;
 use App\Models\BlogCategory;
-use App\Models\SocialMediaPost;
-use App\Models\SocialMediaPlatform;
-use App\Services\SocialMediaPostingService;
-use Illuminate\Support\Facades\Log;
+use App\Models\ContentPlanItem;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ExecutionEngine extends AIService
 {
@@ -38,7 +36,7 @@ class ExecutionEngine extends AIService
 
             // Get or create blog category
             $category = BlogCategory::first();
-            if (!$category) {
+            if (! $category) {
                 $category = BlogCategory::create([
                     'name' => 'General',
                     'slug' => 'general',
@@ -69,7 +67,7 @@ class ExecutionEngine extends AIService
 
             // Schedule if needed
             if ($item->scheduled_at && $item->scheduled_at->isFuture()) {
-                \App\Jobs\PublishScheduledContentJob::dispatch($blog)
+                PublishScheduledContentJob::dispatch($blog)
                     ->delay($item->scheduled_at);
             }
 
@@ -83,9 +81,10 @@ class ExecutionEngine extends AIService
         } catch (\Exception $e) {
             Log::error('Execution Engine Error - Blog Generation', [
                 'item_id' => $item->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             $item->update(['status' => 'failed']);
+
             return null;
         }
     }
@@ -95,6 +94,18 @@ class ExecutionEngine extends AIService
      */
     protected function generateBlogPostContent(string $title, string $brief, array $keywords, $intentBrief): array
     {
+        $contentGen = app(ContentGenerationService::class);
+        $structured = $contentGen->generatePlanBlog($title, $brief, $keywords, $intentBrief);
+        if ($structured['success'] && isset($structured['data'])) {
+            $d = $structured['data'];
+
+            return [
+                'title' => $d['title'] ?? $title,
+                'excerpt' => $d['excerpt'] ?? $brief,
+                'body' => $d['body'] ?? '',
+            ];
+        }
+
         $systemPrompt = "You are an expert content writer specializing in SEO-optimized blog posts. 
 Your task is to write a comprehensive, engaging blog post based on the provided title and brief.
 
@@ -105,22 +116,22 @@ Requirements:
 4. Use clear headings (H2, H3) to structure the content
 5. Write in a {$intentBrief->tone} tone
 6. Target audience: {$intentBrief->audience}
-7. Primary keyword: " . ($keywords['primary'] ?? 'N/A') . "
+7. Primary keyword: ".($keywords['primary'] ?? 'N/A').'
 8. Make it comprehensive but readable (1500-2500 words)
 
 Return your response as JSON in this exact format:
 {
-  \"title\": \"Final optimized title\",
-  \"excerpt\": \"150-200 word excerpt/summary\",
-  \"body\": \"Full blog post content in HTML format with proper headings\"
-}";
+  "title": "Final optimized title",
+  "excerpt": "150-200 word excerpt/summary",
+  "body": "Full blog post content in HTML format with proper headings"
+}';
 
         $userMessage = "Title: {$title}\n\nBrief: {$brief}\n\nWrite a comprehensive blog post.";
 
         $result = $this->callAI($systemPrompt, $userMessage, 0.8, 16384);
 
-        if (!$result['success']) {
-            throw new \Exception('Failed to generate content: ' . ($result['error'] ?? 'Unknown error'));
+        if (! $result['success']) {
+            throw new \Exception('Failed to generate content: '.($result['error'] ?? 'Unknown error'));
         }
 
         // Parse JSON response
@@ -136,7 +147,7 @@ Return your response as JSON in this exact format:
             }
         }
 
-        if (json_last_error() !== JSON_ERROR_NONE || !$json) {
+        if (json_last_error() !== JSON_ERROR_NONE || ! $json) {
             // Fallback: use title and brief
             return [
                 'title' => $title,
@@ -172,7 +183,7 @@ Return your response as JSON in this exact format:
         } catch (\Exception $e) {
             Log::error('Failed to generate social posts', [
                 'blog_id' => $blog->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -196,7 +207,7 @@ Return your response as JSON in this exact format:
         try {
             $content = $item->relatedContent;
 
-            if (!$content) {
+            if (! $content) {
                 // Generate content if not exists
                 if (in_array($item->item_type, ['pillar', 'supporting', 'evergreen'])) {
                     $content = $this->generateBlogContent($item);
@@ -206,6 +217,7 @@ Return your response as JSON in this exact format:
             if ($content instanceof Blog) {
                 $content->update(['is_active' => true]);
                 $item->markAsPublished();
+
                 return true;
             }
 
@@ -214,10 +226,10 @@ Return your response as JSON in this exact format:
         } catch (\Exception $e) {
             Log::error('Failed to publish content', [
                 'item_id' => $item->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
 }
-

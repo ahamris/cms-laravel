@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\BlogRequest;
+use App\Models\AIServiceSetting;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\BlogType;
-use App\Models\User;
-use App\Models\MarketingPersona;
 use App\Models\ContentType;
-use App\Models\SocialMediaPlatform;
-use App\Models\AIServiceSetting;
-use App\Services\SocialMediaPostingService;
+use App\Models\MarketingPersona;
+use App\Models\User;
+use App\Services\ContentGenerationService;
 use App\Services\MarketingIntelligence;
-use Illuminate\Support\Facades\Storage;
+use App\Services\SocialMediaPostingService;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Carbon\Carbon;
 
 class BlogController extends AdminBaseController
 {
@@ -51,9 +50,9 @@ class BlogController extends AdminBaseController
         // Marketing Automation data
         $marketingPersonas = MarketingPersona::active()->ordered()->get();
         $contentTypes = ContentType::active()
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereJsonContains('applicable_models', 'App\Models\Blog')
-                      ->orWhereNull('applicable_models');
+                    ->orWhereNull('applicable_models');
             })
             ->ordered()
             ->get();
@@ -114,7 +113,7 @@ class BlogController extends AdminBaseController
         $blog->load(['blog_category', 'author', 'marketingPersona', 'contentType', 'contentPlan']);
 
         // Update SEO analysis if not recent
-        if (!$blog->seo_score || !isset($blog->seo_analysis['last_analyzed'])) {
+        if (! $blog->seo_score || ! isset($blog->seo_analysis['last_analyzed'])) {
             $intelligence->updateSEOAnalysis($blog);
             $blog->refresh();
         }
@@ -133,9 +132,9 @@ class BlogController extends AdminBaseController
         // Marketing Automation data
         $marketingPersonas = MarketingPersona::active()->ordered()->get();
         $contentTypes = ContentType::active()
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereJsonContains('applicable_models', 'App\Models\Blog')
-                      ->orWhereNull('applicable_models');
+                    ->orWhereNull('applicable_models');
             })
             ->ordered()
             ->get();
@@ -149,7 +148,7 @@ class BlogController extends AdminBaseController
             'blogCategories',
             'blogTypes',
             'authors',
-            'marketingPersonas', 
+            'marketingPersonas',
             'contentTypes',
             'seoRecommendations',
             'internalLinkSuggestions'
@@ -318,10 +317,10 @@ class BlogController extends AdminBaseController
             $totalCount = count($results);
 
             if ($successCount === $totalCount) {
-                $message = $request->schedule_type === 'scheduled' 
+                $message = $request->schedule_type === 'scheduled'
                     ? "Successfully scheduled posts to {$successCount} platform(s)!"
                     : "Successfully posted to {$successCount} platform(s)!";
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => $message,
@@ -329,7 +328,7 @@ class BlogController extends AdminBaseController
                 ]);
             } else {
                 $message = "Posted to {$successCount} out of {$totalCount} platforms. Check the details below.";
-                
+
                 return response()->json([
                     'success' => false,
                     'message' => $message,
@@ -340,7 +339,7 @@ class BlogController extends AdminBaseController
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while creating social media posts: ' . $e->getMessage(),
+                'message' => 'An error occurred while creating social media posts: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -394,12 +393,31 @@ class BlogController extends AdminBaseController
         $tone = $validated['tone'] ?? 'professional';
         $length = $validated['length'] ?? 'medium';
 
-        $lengthGuide = match($length) {
+        $lengthGuide = match ($length) {
             'short' => '800-1200 words',
             'medium' => '1500-2000 words',
             'long' => '2500-3500 words',
             default => '1500-2000 words',
         };
+
+        $contentGen = app(ContentGenerationService::class);
+        $agentResult = $contentGen->generateAdminBlog($topic, $keywords, $tone, $lengthGuide);
+
+        if ($agentResult['success'] && isset($agentResult['data'])) {
+            $json = $agentResult['data'];
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'title' => $json['title'] ?? '',
+                    'short_body' => substr($json['short_body'] ?? '', 0, 150),
+                    'long_body' => $json['long_body'] ?? '',
+                    'meta_title' => $json['meta_title'] ?? '',
+                    'meta_description' => $json['meta_description'] ?? '',
+                    'meta_keywords' => $json['meta_keywords'] ?? '',
+                ],
+            ]);
+        }
 
         $systemPrompt = "You are an expert content writer specializing in SEO-optimized blog posts. 
 Your task is to write a comprehensive, engaging blog post based on the provided topic.
@@ -426,26 +444,24 @@ Return your response as valid JSON in this exact format:
 }";
 
         $userMessage = "Topic: {$topic}";
-        if (!empty($keywords)) {
+        if (! empty($keywords)) {
             $userMessage .= "\n\nTarget keywords to include: {$keywords}";
         }
         $userMessage .= "\n\nWrite a comprehensive blog post about this topic.";
 
-        // Try AI services in priority order
         $result = $this->callAI($systemPrompt, $userMessage);
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json([
                 'success' => false,
-                'error' => $result['error'] ?? 'Failed to generate content. Please try again.',
+                'error' => $result['error'] ?? ($agentResult['error'] ?? 'Failed to generate content. Please try again.'),
             ], 500);
         }
 
-        // Parse JSON response
         $content = $result['content'];
         $json = $this->parseAIJsonResponse($content);
 
-        if (!$json) {
+        if (! $json) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to parse AI response. Please try again.',
@@ -515,7 +531,7 @@ Return your response as valid JSON in this exact format:
             }
 
             $model = AIServiceSetting::getModel('groq', 'llama-3.3-70b-versatile');
-            
+
             $payload = [
                 'model' => $model,
                 'messages' => [
@@ -534,20 +550,20 @@ Return your response as valid JSON in this exact format:
             if ($response->failed()) {
                 Log::error('Groq API Error', [
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body' => $response->body(),
                 ]);
-                
+
                 if ($response->status() === 429) {
                     return ['success' => false, 'error' => 'API rate limit exceeded. Please wait a moment and try again.'];
                 }
-                
+
                 return ['success' => false, 'error' => 'Groq API request failed'];
             }
 
             $data = $response->json();
             $content = $data['choices'][0]['message']['content'] ?? null;
 
-            if (!$content) {
+            if (! $content) {
                 return ['success' => false, 'error' => 'No response from Groq AI'];
             }
 
@@ -555,6 +571,7 @@ Return your response as valid JSON in this exact format:
 
         } catch (\Exception $e) {
             Log::error('Groq AI Error', ['message' => $e->getMessage()]);
+
             return ['success' => false, 'error' => $e->getMessage()];
         }
     }
@@ -571,19 +588,19 @@ Return your response as valid JSON in this exact format:
             }
 
             $model = AIServiceSetting::getModel('gemini', 'gemini-2.0-flash');
-            
+
             $payload = [
                 'contents' => [
                     [
                         'parts' => [
-                            ['text' => $systemPrompt . "\n\n" . $userMessage]
-                        ]
-                    ]
+                            ['text' => $systemPrompt."\n\n".$userMessage],
+                        ],
+                    ],
                 ],
                 'generationConfig' => [
                     'temperature' => 0.7,
                     'maxOutputTokens' => 16384,
-                ]
+                ],
             ];
 
             $response = Http::withHeaders([
@@ -593,20 +610,20 @@ Return your response as valid JSON in this exact format:
             if ($response->failed()) {
                 Log::error('Gemini API Error', [
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body' => $response->body(),
                 ]);
-                
+
                 if ($response->status() === 429) {
                     return ['success' => false, 'error' => 'API rate limit exceeded. Please wait a moment and try again.'];
                 }
-                
+
                 return ['success' => false, 'error' => 'Gemini API request failed'];
             }
 
             $data = $response->json();
             $content = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
-            if (!$content) {
+            if (! $content) {
                 return ['success' => false, 'error' => 'No response from Gemini AI'];
             }
 
@@ -614,6 +631,7 @@ Return your response as valid JSON in this exact format:
 
         } catch (\Exception $e) {
             Log::error('Gemini AI Error', ['message' => $e->getMessage()]);
+
             return ['success' => false, 'error' => $e->getMessage()];
         }
     }
@@ -625,7 +643,7 @@ Return your response as valid JSON in this exact format:
     {
         // Clean the response
         $content = trim($content);
-        
+
         // Remove markdown code blocks if present
         $content = preg_replace('/^```json?\s*/i', '', $content);
         $content = preg_replace('/\s*```$/i', '', $content);

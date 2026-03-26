@@ -49,10 +49,13 @@ class Legal extends BaseModel
 
     public function getCached(): array
     {
-        return Cache::remember(self::CACHE_KEY, 86400, function () {
-            return self::toBase()
+        return Cache::remember(self::CACHE_KEY.'_rows_v1', 86400, function () {
+            return self::query()
                 ->where('is_active', true)
-                ->get();
+                ->get()
+                ->map(fn (self $page) => $page->getAttributes())
+                ->values()
+                ->all();
         });
     }
 
@@ -128,8 +131,8 @@ class Legal extends BaseModel
         $this->updateQuietly(['current_version' => $nextVersion]);
         $this->timestamps = true;
 
-        // Clear cache
         Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
 
         return $version;
     }
@@ -163,8 +166,8 @@ class Legal extends BaseModel
         $this->updateQuietly(['current_version' => $nextVersion]);
         $this->timestamps = true;
 
-        // Clear cache
         Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
 
         return $version;
     }

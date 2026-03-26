@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Storage;
 class Setting extends BaseModel
 {
     use SoftDeletes;
+
+    /** Aggregate cache for getCached(); stores key => row array only (not Eloquent), for Laravel cache without serializable classes. */
+    public const string AGGREGATE_CACHE_KEY = 'settings_by_key_v1';
 
     protected $fillable = [
         'key',
@@ -70,23 +74,56 @@ class Setting extends BaseModel
         parent::boot();
         static::saved(function ($setting) {
             Cache::forget("settings.{$setting->key}");
+            self::forgetAggregateCache();
         });
 
         static::deleted(function ($setting) {
             Cache::forget("settings.{$setting->key}");
+            self::forgetAggregateCache();
         });
     }
 
-    public static function getCached()
+    public static function forgetAggregateCache(): void
     {
+        Cache::forget('settings');
+        Cache::forget(self::AGGREGATE_CACHE_KEY);
+    }
 
-        if (! Cache::has('settings')) {
-            return Cache::remember('settings', 60 * 60, function () {
-                return self::query()->get()->keyBy('key');
-            });
+    public static function getCached(): Collection
+    {
+        $payload = Cache::get(self::AGGREGATE_CACHE_KEY);
+
+        if (! self::isValidAggregatePayload($payload)) {
+            self::forgetAggregateCache();
+            $payload = Cache::remember(self::AGGREGATE_CACHE_KEY, 60 * 60, fn () => self::buildAggregateCachePayload());
         }
 
-        return Cache::get('settings');
+        return collect($payload)->map(fn (array $attrs) => (new self)->newFromBuilder($attrs));
+    }
+
+    /**
+     * @param  mixed  $payload
+     */
+    protected static function isValidAggregatePayload($payload): bool
+    {
+        if (! is_array($payload)) {
+            return false;
+        }
+
+        foreach ($payload as $k => $row) {
+            if (! is_string($k) || ! is_array($row)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected static function buildAggregateCachePayload(): array
+    {
+        return self::query()->get()->mapWithKeys(fn (self $setting) => [
+            $setting->key => $setting->getAttributes(),
+        ])->all();
     }
 
     /**

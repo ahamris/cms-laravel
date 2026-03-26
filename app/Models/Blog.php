@@ -13,13 +13,14 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * @mixin IdeHelperBlog
  */
 class Blog extends BaseModel
 {
-    use HasFactory, ImageGetterTrait, Sluggable, ClearsSitemapCache;
+    use ClearsSitemapCache, HasFactory, ImageGetterTrait, Sluggable;
 
     const string CAROUSEL_CACHE_KEY = 'carousel_blogs';
 
@@ -69,20 +70,18 @@ class Blog extends BaseModel
     ];
 
     protected $casts = [
-        'is_active'          => 'boolean',
-        'is_featured'        => 'boolean',
-        'allow_comments'     => 'boolean',
+        'is_active' => 'boolean',
+        'is_featured' => 'boolean',
+        'allow_comments' => 'boolean',
         'secondary_keywords' => 'array',
-        'seo_analysis'       => 'array',
-        'seo_score'          => 'integer',
-        'reading_time'       => 'integer',
-        'media_duration'     => 'integer',
-        'view_count'         => 'integer',
-        'series_order'       => 'integer',
-        'published_at'       => 'datetime',
+        'seo_analysis' => 'array',
+        'seo_score' => 'integer',
+        'reading_time' => 'integer',
+        'media_duration' => 'integer',
+        'view_count' => 'integer',
+        'series_order' => 'integer',
+        'published_at' => 'datetime',
     ];
-
-
 
     /**
      * Boot the model and set up event listeners
@@ -148,8 +147,8 @@ class Blog extends BaseModel
     public function relatedInSeries(): HasMany
     {
         return $this->hasMany(self::class, 'series_id', 'series_id')
-                    ->where('id', '!=', $this->id)
-                    ->orderBy('series_order');
+            ->where('id', '!=', $this->id)
+            ->orderBy('series_order');
     }
 
     public function scopeOfType($query, string $type)
@@ -226,9 +225,9 @@ class Blog extends BaseModel
      */
     public function setSlugAttribute($value)
     {
-        if (!empty($value)) {
+        if (! empty($value)) {
             // Clean the slug using the sluggable package helper
-            $this->attributes['slug'] = \Illuminate\Support\Str::slug($value, '-');
+            $this->attributes['slug'] = Str::slug($value, '-');
         } else {
             // Let the sluggable trait handle auto-generation
             $this->attributes['slug'] = null;
@@ -240,16 +239,18 @@ class Blog extends BaseModel
      */
     public static function getCachedCarouselBlogs($limit = 6)
     {
-        $cacheKey = self::CAROUSEL_CACHE_KEY . '_limit_' . $limit;
+        $legacyKey = self::CAROUSEL_CACHE_KEY.'_limit_'.$limit;
 
-        return Cache::remember(
-            $cacheKey,
+        return self::cacheRememberManyRows(
+            self::CAROUSEL_CACHE_KEY.'_limit_'.$limit.'_rows_v1',
             Variable::CACHE_TTL,
-            fn() => self::with(['blog_category', 'author'])
+            fn () => self::query()
                 ->where('is_active', true)
                 ->latest()
                 ->take($limit)
-                ->get()
+                ->get(),
+            [$legacyKey],
+            ['blog_category', 'author'],
         );
     }
 
@@ -258,17 +259,19 @@ class Blog extends BaseModel
      */
     public static function getCachedCarouselBlogsByCategory($categoryId, $limit = 6)
     {
-        $cacheKey = self::CAROUSEL_CACHE_KEY . '_category_' . $categoryId . '_limit_' . $limit;
+        $legacyKey = self::CAROUSEL_CACHE_KEY.'_category_'.$categoryId.'_limit_'.$limit;
 
-        return Cache::remember(
-            $cacheKey,
+        return self::cacheRememberManyRows(
+            self::CAROUSEL_CACHE_KEY.'_category_'.$categoryId.'_limit_'.$limit.'_rows_v1',
             Variable::CACHE_TTL,
-            fn() => self::with(['blog_category', 'author'])
+            fn () => self::query()
                 ->where('is_active', true)
                 ->where('blog_category_id', $categoryId)
                 ->latest()
                 ->take($limit)
-                ->get()
+                ->get(),
+            [$legacyKey],
+            ['blog_category', 'author'],
         );
     }
 
@@ -287,18 +290,18 @@ class Blog extends BaseModel
 
             // Clear limit-specific caches (for all possible limits)
             foreach ($commonLimits as $limit) {
-                Cache::forget(self::CAROUSEL_CACHE_KEY . '_limit_' . $limit);
+                Cache::forget(self::CAROUSEL_CACHE_KEY.'_limit_'.$limit);
+                Cache::forget(self::CAROUSEL_CACHE_KEY.'_limit_'.$limit.'_rows_v1');
             }
 
             // Clear category-specific caches
-            if (!empty($categories)) {
+            if (! empty($categories)) {
                 foreach ($categories as $categoryId) {
-                    // Clear category cache without limit
-                    Cache::forget(self::CAROUSEL_CACHE_KEY . '_category_' . $categoryId);
+                    Cache::forget(self::CAROUSEL_CACHE_KEY.'_category_'.$categoryId);
 
-                    // Clear category cache with all possible limits
                     foreach ($commonLimits as $limit) {
-                        Cache::forget(self::CAROUSEL_CACHE_KEY . '_category_' . $categoryId . '_limit_' . $limit);
+                        Cache::forget(self::CAROUSEL_CACHE_KEY.'_category_'.$categoryId.'_limit_'.$limit);
+                        Cache::forget(self::CAROUSEL_CACHE_KEY.'_category_'.$categoryId.'_limit_'.$limit.'_rows_v1');
                     }
                 }
             }

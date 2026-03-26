@@ -10,6 +10,11 @@
     </a>
 @endif
 
+<form action="{{ route('admin.page.duplicate', $item) }}" method="POST" class="inline">
+    @csrf
+    <x-button type="submit" variant="secondary" size="sm" icon="copy" title="{{ __('Duplicate') }}"></x-button>
+</form>
+
 @if(in_array('delete', $actions))
     @php
         $modelName = class_basename($this->modelClass ?? \App\Models\Page::class);

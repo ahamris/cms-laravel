@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Module extends BaseModel
 {
-    use ImageGetterTrait, MegaMenuModuleTrait, Sluggable, ClearsSitemapCache;
+    use ClearsSitemapCache, ImageGetterTrait, MegaMenuModuleTrait, Sluggable;
 
     const CACHE_KEY = 'modules';
 
@@ -58,7 +58,7 @@ class Module extends BaseModel
      */
     public function socialMediaPosts()
     {
-        return $this->morphMany(\App\Models\SocialMediaPost::class, 'postable');
+        return $this->morphMany(SocialMediaPost::class, 'postable');
     }
 
     public function sluggable(): array
@@ -107,27 +107,31 @@ class Module extends BaseModel
         return $slug !== '' ? api_path('module', $slug) : api_path('modules');
     }
 
+    public static function forgetModuleCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        // Clear cache on model events
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetModuleCache());
+        static::updated(fn () => self::forgetModuleCache());
+        static::deleted(fn () => self::forgetModuleCache());
     }
 
     public static function getCached()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, 60 * 60,
-                fn () => self::query()
-                    ->where('is_active', true)
-                    ->ordered()
-                    ->get()
-            );
-        }
-
-        return Cache::get(self::CACHE_KEY);
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            60 * 60,
+            fn () => self::query()
+                ->where('is_active', true)
+                ->ordered()
+                ->get(),
+            [self::CACHE_KEY],
+        );
     }
 }

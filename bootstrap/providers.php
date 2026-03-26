@@ -1,10 +1,19 @@
 <?php
 
+use App\Providers\ActivityLogServiceProvider;
+use App\Providers\AiDatabaseConfigServiceProvider;
+use App\Providers\AppServiceProvider;
+use App\Providers\BladeComponentsServiceProvider;
+use App\Providers\CachedProvider;
+use App\Providers\MorphMapServiceProvider;
+use App\Providers\TranslationServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\BladeComponentsServiceProvider::class,
-    App\Providers\CachedProvider::class,
-    App\Providers\TranslationServiceProvider::class,
-    App\Providers\MorphMapServiceProvider::class,
-    App\Providers\ActivityLogServiceProvider::class,
+    AiDatabaseConfigServiceProvider::class,
+    AppServiceProvider::class,
+    BladeComponentsServiceProvider::class,
+    CachedProvider::class,
+    TranslationServiceProvider::class,
+    MorphMapServiceProvider::class,
+    ActivityLogServiceProvider::class,
 ];

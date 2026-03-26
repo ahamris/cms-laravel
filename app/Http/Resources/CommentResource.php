@@ -23,7 +23,11 @@ class CommentResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
             'likes' => (int) ($this->likes ?? 0),
             'dislikes' => (int) ($this->dislikes ?? 0),
-            'replies' => CommentResource::collection($this->whenLoaded('replies')),
+            // Always return a key for API stability. When `replies` isn't eager-loaded,
+            // we still want `replies: []` instead of omitting the property.
+            'replies' => $this->relationLoaded('replies')
+                ? CommentResource::collection($this->replies)
+                : [],
         ];
     }
 }

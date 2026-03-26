@@ -55,6 +55,7 @@ class StaticPage extends BaseModel
     public static function forgetCache(): void
     {
         Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
     }
 
     /**
@@ -62,12 +63,15 @@ class StaticPage extends BaseModel
      */
     public static function getCached(): Collection
     {
-        return Cache::remember(self::CACHE_KEY, 86400, function () {
-            return static::query()
+        return static::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            86400,
+            fn () => static::query()
                 ->where('is_active', true)
-                ->with('elements')
                 ->orderBy('title')
-                ->get();
-        });
+                ->get(),
+            [self::CACHE_KEY],
+            'elements',
+        );
     }
 }

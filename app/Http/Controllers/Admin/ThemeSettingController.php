@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
 class ThemeSettingController extends AdminBaseController
 {
@@ -55,13 +54,13 @@ class ThemeSettingController extends AdminBaseController
             $this->updateSetting('theme_color_natural', $request->theme_color_natural);
             $this->updateSetting('theme_font_sans', $request->theme_font_sans);
             $this->updateSetting('theme_font_outfit', $request->theme_font_outfit);
-            $this->updateSetting('theme_font_size_h1', $request->theme_font_size_h1 . 'rem');
-            $this->updateSetting('theme_font_size_h2', $request->theme_font_size_h2 . 'rem');
-            $this->updateSetting('theme_font_size_h3', $request->theme_font_size_h3 . 'rem');
-            $this->updateSetting('theme_font_size_h4', $request->theme_font_size_h4 . 'rem');
-            $this->updateSetting('theme_font_size_h5', $request->theme_font_size_h5 . 'rem');
-            $this->updateSetting('theme_font_size_h6', $request->theme_font_size_h6 . 'rem');
-            $this->updateSetting('theme_font_size_p', $request->theme_font_size_p . 'rem');
+            $this->updateSetting('theme_font_size_h1', $request->theme_font_size_h1.'rem');
+            $this->updateSetting('theme_font_size_h2', $request->theme_font_size_h2.'rem');
+            $this->updateSetting('theme_font_size_h3', $request->theme_font_size_h3.'rem');
+            $this->updateSetting('theme_font_size_h4', $request->theme_font_size_h4.'rem');
+            $this->updateSetting('theme_font_size_h5', $request->theme_font_size_h5.'rem');
+            $this->updateSetting('theme_font_size_h6', $request->theme_font_size_h6.'rem');
+            $this->updateSetting('theme_font_size_p', $request->theme_font_size_p.'rem');
 
             // Clear relevant caches
             $this->clearCaches();
@@ -170,7 +169,7 @@ class ThemeSettingController extends AdminBaseController
      */
     private function clearCaches(): void
     {
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
 
         $settingKeys = [
             'theme_color_primary',

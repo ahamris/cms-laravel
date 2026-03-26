@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Element;
 use App\Enums\ElementType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\View\View;
 
 class FaqElementController extends BaseTypedElementController
 {
@@ -36,6 +37,28 @@ class FaqElementController extends BaseTypedElementController
     protected function typeHelp(): string
     {
         return 'Add question and answer pairs. Empty rows are ignored when saving.';
+    }
+
+    public function index(): View
+    {
+        return parent::index()
+            ->with('faqHub', true)
+            ->with('faqHubContext', true);
+    }
+
+    public function create(): View
+    {
+        return parent::create()->with('faqHub', true);
+    }
+
+    public function show(int $element): View
+    {
+        return parent::show($element)->with('faqHub', true);
+    }
+
+    public function edit(int $element): View
+    {
+        return parent::edit($element)->with('faqHub', true);
     }
 
     protected function validateOptions(Request $request): array

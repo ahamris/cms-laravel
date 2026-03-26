@@ -72,6 +72,7 @@ class PageController extends Controller
             ->paginate($perPage);
 
         $resolved = PageListResource::collection($pages->items())->resolve();
+
         return response()->json([
             'data' => $resolved['data'] ?? $resolved,
             'template' => 'pages-search',
@@ -106,7 +107,18 @@ class PageController extends Controller
             return response()->json(['message' => 'Page not found.'], 404);
         }
 
-        $page->load(['marketingPersona', 'contentType', 'blocks', 'children', 'ogImage', 'tags', 'elements']);
+        $page->load([
+            'marketingPersona',
+            'contentType',
+            'blocks',
+            'children',
+            'ogImage',
+            'tags',
+            'elements',
+            'pageLayoutTemplate',
+            'layoutAssignments.templateRow',
+            'layoutAssignments.element',
+        ]);
 
         return new PageResource($page);
     }
@@ -122,8 +134,8 @@ class PageController extends Controller
 
         return response()->json([
             'data' => $blocks->map(fn ($block) => [
-                'type'     => $block->type,
-                'content'  => $block->content,
+                'type' => $block->type,
+                'content' => $block->content,
                 'settings' => $block->settings ?? (object) [],
             ]),
         ]);

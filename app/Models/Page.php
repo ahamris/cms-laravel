@@ -36,6 +36,7 @@ class Page extends BaseModel
         'icon',
         'is_active',
         'template',
+        'page_layout_template_id',
         'layout',
         'parent_id',
         'sort_order',
@@ -66,18 +67,28 @@ class Page extends BaseModel
     protected function casts(): array
     {
         return [
-            'is_active'          => 'boolean',
-            'is_homepage'        => 'boolean',
-            'sort_order'         => 'integer',
-            'published_at'       => 'datetime',
+            'is_active' => 'boolean',
+            'is_homepage' => 'boolean',
+            'sort_order' => 'integer',
+            'published_at' => 'datetime',
             'secondary_keywords' => 'array',
-            'seo_analysis'       => 'array',
+            'seo_analysis' => 'array',
         ];
     }
 
     public function blocks(): HasMany
     {
         return $this->hasMany(PageBlock::class)->orderBy('sort_order');
+    }
+
+    public function pageLayoutTemplate(): BelongsTo
+    {
+        return $this->belongsTo(PageLayoutTemplate::class);
+    }
+
+    public function layoutAssignments(): HasMany
+    {
+        return $this->hasMany(PageLayoutAssignment::class);
     }
 
     public function parent(): BelongsTo
@@ -103,8 +114,8 @@ class Page extends BaseModel
     public function scopePublished($query)
     {
         return $query->where('is_active', true)
-                     ->whereNotNull('published_at')
-                     ->where('published_at', '<=', now());
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function scopeRoots($query)
@@ -117,7 +128,7 @@ class Page extends BaseModel
      */
     public function socialMediaPosts()
     {
-        return $this->morphMany(\App\Models\SocialMediaPost::class, 'postable');
+        return $this->morphMany(SocialMediaPost::class, 'postable');
     }
 
     // Marketing Automation relationships

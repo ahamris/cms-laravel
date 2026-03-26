@@ -24,19 +24,24 @@ class SocialSetting extends BaseModel
     protected static function boot()
     {
         parent::boot();
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetSocialCache());
+        static::updated(fn () => self::forgetSocialCache());
+        static::deleted(fn () => self::forgetSocialCache());
+    }
+
+    public static function forgetSocialCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
     }
 
     public static function getCached()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, 60 * 60,
-                fn () => self::query()->get()
-            );
-        }
-
-        return Cache::get(self::CACHE_KEY);
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            60 * 60,
+            fn () => self::query()->get(),
+            [self::CACHE_KEY],
+        );
     }
 }

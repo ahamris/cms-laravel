@@ -14,12 +14,19 @@ class LoginSettings extends Component
 
     // Login Form Settings
     public string $loginFormMode = 'white';
+
     public string $loginPageTitle = 'Log in';
+
     public string $loginPageSubtitle = 'Enter your credentials to access your account';
+
     public $loginPageLogo;
+
     public $loginBackgroundImage;
+
     public string $loginFooterCopyright = '© {{year}} All rights reserved.';
+
     public bool $loginEnableRememberMe = true;
+
     public bool $loginEnableForgotPassword = true;
 
     // Footer Links
@@ -27,7 +34,9 @@ class LoginSettings extends Component
 
     // UI State
     public bool $saved = false;
+
     public ?string $currentLoginPageLogo = null;
+
     public ?string $currentLoginBackgroundImage = null;
 
     public function mount(): void
@@ -43,17 +52,17 @@ class LoginSettings extends Component
         // Load current images using get_image helper
         $logoPath = Setting::getValue('login_page_logo', null);
         $this->currentLoginPageLogo = $logoPath ? get_image($logoPath) : null;
-        
+
         $backgroundPath = Setting::getValue('login_background_image', null);
         $this->currentLoginBackgroundImage = $backgroundPath ? get_image($backgroundPath) : null;
 
         // Load footer links
         $footerLinksJson = Setting::getValue('login_footer_links', '[]');
         $this->footerLinks = json_decode($footerLinksJson, true) ?: [];
-        
+
         // Ensure each link has link_type field
         foreach ($this->footerLinks as $index => $link) {
-            if (!isset($this->footerLinks[$index]['link_type'])) {
+            if (! isset($this->footerLinks[$index]['link_type'])) {
                 $this->footerLinks[$index]['link_type'] = 'custom';
             }
         }
@@ -134,7 +143,7 @@ class LoginSettings extends Component
             $this->updateSetting('login_enable_forgot_password', $this->loginEnableForgotPassword ? '1' : '0');
 
             // Save footer links
-            usort($this->footerLinks, function($a, $b) {
+            usort($this->footerLinks, function ($a, $b) {
                 return $a['order'] <=> $b['order'];
             });
             $this->updateSetting('login_footer_links', json_encode($this->footerLinks));
@@ -148,7 +157,7 @@ class LoginSettings extends Component
             // Dispatch success event
             $this->dispatch('notify', type: 'success', message: 'Login settings updated successfully!');
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Error updating settings: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Error updating settings: '.$e->getMessage());
         }
     }
 
@@ -156,8 +165,8 @@ class LoginSettings extends Component
     {
         $setting = Setting::where('key', 'login_page_logo')->first();
         if ($setting && $setting->value) {
-            if (file_exists(storage_path('app/public/' . $setting->value))) {
-                unlink(storage_path('app/public/' . $setting->value));
+            if (file_exists(storage_path('app/public/'.$setting->value))) {
+                unlink(storage_path('app/public/'.$setting->value));
             }
         }
         $this->updateSetting('login_page_logo', null);
@@ -168,8 +177,8 @@ class LoginSettings extends Component
     {
         $setting = Setting::where('key', 'login_background_image')->first();
         if ($setting && $setting->value) {
-            if (file_exists(storage_path('app/public/' . $setting->value))) {
-                unlink(storage_path('app/public/' . $setting->value));
+            if (file_exists(storage_path('app/public/'.$setting->value))) {
+                unlink(storage_path('app/public/'.$setting->value));
             }
         }
         $this->updateSetting('login_background_image', null);
@@ -279,7 +288,7 @@ class LoginSettings extends Component
      */
     private function clearCaches(): void
     {
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
         $settingKeys = [
             'theme_login_form_mode',
             'login_page_title',
@@ -309,4 +318,3 @@ class LoginSettings extends Component
         ]);
     }
 }
-

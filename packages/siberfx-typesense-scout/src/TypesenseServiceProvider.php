@@ -1,0 +1,60 @@
+<?php
+
+namespace Siberfx\Typesense;
+
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Scout\Builder;
+use Laravel\Scout\EngineManager;
+use Siberfx\Typesense\Engines\TypesenseEngine;
+use Siberfx\Typesense\Mixin\BuilderMixin;
+use Typesense\Client;
+
+/**
+ * Class TypesenseServiceProvider.
+ *
+ * @date    4/5/20
+ *
+ * @author  Selim Görmüş <info@siberfx.com>
+ */
+class TypesenseServiceProvider extends ServiceProvider
+{
+    /**
+     * @throws \ReflectionException
+     * @throws BindingResolutionException
+     */
+    public function boot(): void
+    {
+        $this->app[EngineManager::class]->extend('typesense', function ($app) {
+            $client = new Client(Config::get('scout.typesense.client-settings'));
+
+            return new TypesenseEngine(new Typesense($client));
+        });
+
+        $this->registerMacros();
+    }
+
+    /**
+     * Register singletons and aliases.
+     */
+    public function register(): void
+    {
+        $this->app->singleton(Typesense::class, static function () {
+            $client = new Client(Config::get('scout.typesense.client-settings'));
+
+            return new Typesense($client);
+        });
+
+        $this->app->alias(Typesense::class, 'typesense');
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws BindingResolutionException
+     */
+    private function registerMacros(): void
+    {
+        Builder::mixin($this->app->make(BuilderMixin::class));
+    }
+}

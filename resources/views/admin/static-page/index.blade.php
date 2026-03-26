@@ -73,15 +73,6 @@
                                             <i class="fa-solid fa-{{ $staticPage->is_active ? 'pause' : 'play' }}"></i>
                                         </button>
                                     </form>
-                                    <form action="{{ route('admin.static-page.destroy', $staticPage) }}"
-                                          method="POST" class="inline"
-                                          onsubmit="return confirm('Are you sure you want to delete this static page?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-xs text-gray-600 hover:text-red-600 transition-colors duration-200 focus:outline-none">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>

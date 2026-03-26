@@ -1,6 +1,9 @@
 <div>
     {{-- Search and Filters --}}
     <div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        @php
+            $formId = 'table-filter-form-' . md5(($this->resource ?? '') . '|' . ($this->routePrefix ?? ''));
+        @endphp
         <div class="flex-1 w-full sm:max-w-md">
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -8,7 +11,7 @@
                 </div>
                 @if($isExternal)
                     {{-- Controller Mode: Standard Form Submission --}}
-                    <form action="{{ request()->url() }}" method="GET">
+                    <form id="{{ $formId }}" action="{{ request()->url() }}" method="GET">
                         <input
                             type="text"
                             name="search"
@@ -16,7 +19,7 @@
                             placeholder="{{ $searchPlaceholder }}"
                             class="block w-full pl-10 pr-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md leading-5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[var(--color-accent)] text-sm"
                         />
-                        @foreach(request()->except(['search', 'page']) as $key => $value)
+                        @foreach(request()->except(['search', 'page', 'template', 'status', 'home']) as $key => $value)
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
                     </form>
@@ -30,6 +33,92 @@
                     />
                 @endif
             </div>
+
+            {{-- Facet Filters --}}
+            @if(count($this->templateFilterOptions ?? []) > 0 || count($this->statusFilterOptions ?? []) > 0 || count($this->homeFilterOptions ?? []) > 0)
+                <div class="mt-3 flex flex-col sm:flex-row gap-3 w-full">
+                    {{-- Template --}}
+                    @if(count($this->templateFilterOptions ?? []) > 0)
+                        @if($isExternal)
+                            <select
+                                name="template"
+                                form="{{ $formId }}"
+                                onchange="this.form.submit()"
+                                class="block w-full sm:w-56 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-zinc-700 dark:bg-zinc-900"
+                            >
+                                @foreach($this->templateFilterOptions as $value => $label)
+                                    <option value="{{ $value }}" {{ request('template') == $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @else
+                            <select
+                                wire:model.live="templateFilter"
+                                class="block w-full sm:w-56 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-zinc-700 dark:bg-zinc-900"
+                            >
+                                @foreach($this->templateFilterOptions as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        @endif
+                    @endif
+
+                    {{-- Status --}}
+                    @if(count($this->statusFilterOptions ?? []) > 0)
+                        @if($isExternal)
+                            <select
+                                name="status"
+                                form="{{ $formId }}"
+                                onchange="this.form.submit()"
+                                class="block w-full sm:w-44 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-zinc-700 dark:bg-zinc-900"
+                            >
+                                @foreach($this->statusFilterOptions as $value => $label)
+                                    <option value="{{ $value }}" {{ request('status') == $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @else
+                            <select
+                                wire:model.live="statusFilter"
+                                class="block w-full sm:w-44 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-zinc-700 dark:bg-zinc-900"
+                            >
+                                @foreach($this->statusFilterOptions as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        @endif
+                    @endif
+
+                    {{-- Homepage --}}
+                    @if(count($this->homeFilterOptions ?? []) > 0)
+                        @if($isExternal)
+                            <select
+                                name="home"
+                                form="{{ $formId }}"
+                                onchange="this.form.submit()"
+                                class="block w-full sm:w-44 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-zinc-700 dark:bg-zinc-900"
+                            >
+                                @foreach($this->homeFilterOptions as $value => $label)
+                                    <option value="{{ $value }}" {{ request('home') == $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @else
+                            <select
+                                wire:model.live="homeFilter"
+                                class="block w-full sm:w-44 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-zinc-700 dark:bg-zinc-900"
+                            >
+                                @foreach($this->homeFilterOptions as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        @endif
+                    @endif
+                </div>
+            @endif
         </div>
 
         {{-- Bulk Actions --}}

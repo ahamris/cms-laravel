@@ -17,9 +17,9 @@ class AiController extends AdminBaseController
     public function generatePage(Request $request): JsonResponse
     {
         $request->validate([
-            'topic'       => 'required|string|max:500',
-            'tone'        => 'nullable|string|max:30',
-            'language'    => 'nullable|string|max:5',
+            'topic' => 'required|string|max:500',
+            'tone' => 'nullable|string|max:30',
+            'language' => 'nullable|string|max:5',
             'block_types' => 'nullable|array',
         ]);
 
@@ -30,7 +30,7 @@ class AiController extends AdminBaseController
             $request->input('block_types', ['hero', 'text', 'cta'])
         );
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json(['error' => $result['error'] ?? 'Generation failed.'], 422);
         }
 
@@ -40,12 +40,12 @@ class AiController extends AdminBaseController
     public function generateArticle(Request $request): JsonResponse
     {
         $request->validate([
-            'topic'    => 'required|string|max:500',
-            'type'     => 'nullable|string|max:20',
+            'topic' => 'required|string|max:500',
+            'type' => 'nullable|string|max:20',
             'category' => 'nullable|string|max:100',
-            'tone'     => 'nullable|string|max:30',
+            'tone' => 'nullable|string|max:30',
             'language' => 'nullable|string|max:5',
-            'length'   => 'nullable|integer|min:200|max:5000',
+            'length' => 'nullable|integer|min:200|max:5000',
         ]);
 
         $result = $this->aiService->generateArticle(
@@ -57,7 +57,7 @@ class AiController extends AdminBaseController
             $request->input('length', 1000)
         );
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json(['error' => $result['error'] ?? 'Generation failed.'], 422);
         }
 
@@ -72,7 +72,7 @@ class AiController extends AdminBaseController
 
         $result = $this->aiService->optimizeSEO($request->input('content'));
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json(['error' => $result['error'] ?? 'Optimization failed.'], 422);
         }
 
@@ -82,15 +82,17 @@ class AiController extends AdminBaseController
     public function draftReply(Request $request): JsonResponse
     {
         $request->validate([
-            'message'  => 'required|string',
-            'tone'     => 'nullable|string|max:30',
+            'message' => 'required|string',
+            'tone' => 'nullable|string|max:30',
             'language' => 'nullable|string|max:5',
+            'contact_id' => 'nullable|integer|exists:contacts,id',
         ]);
 
         $draft = $this->aiService->draftReply(
             $request->input('message'),
             $request->input('tone', 'professional'),
-            $request->input('language', 'nl')
+            $request->input('language', 'nl'),
+            $request->filled('contact_id') ? (int) $request->input('contact_id') : null
         );
 
         if (empty($draft)) {
@@ -103,8 +105,8 @@ class AiController extends AdminBaseController
     public function contentPlan(Request $request): JsonResponse
     {
         $request->validate([
-            'topic'    => 'required|string|max:500',
-            'items'    => 'nullable|integer|min:1|max:20',
+            'topic' => 'required|string|max:500',
+            'items' => 'nullable|integer|min:1|max:20',
             'language' => 'nullable|string|max:5',
         ]);
 
@@ -114,7 +116,7 @@ class AiController extends AdminBaseController
             $request->input('language', 'nl')
         );
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json(['error' => $result['error'] ?? 'Plan generation failed.'], 422);
         }
 

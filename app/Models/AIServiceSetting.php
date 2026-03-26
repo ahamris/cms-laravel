@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 class AIServiceSetting extends BaseModel
 {
     protected $table = 'ai_service_settings';
-    
+
     protected $fillable = [
         'service',
         'api_key',
@@ -30,21 +31,35 @@ class AIServiceSetting extends BaseModel
      */
     public static function getForService(string $service): ?self
     {
-        return Cache::remember("ai_service_setting_{$service}", 3600, function () use ($service) {
-            return self::where('service', $service)->first();
+        $id = Cache::remember("ai_service_setting_id_{$service}", 3600, function () use ($service) {
+            return self::query()->where('service', $service)->value('id');
         });
+
+        return $id ? self::query()->find($id) : null;
     }
 
     /**
      * Get active services ordered by priority
      */
-    public static function getActiveServices(): \Illuminate\Database\Eloquent\Collection
+    public static function getActiveServices(): EloquentCollection
     {
-        return Cache::remember('ai_service_settings_active', 3600, function () {
-            return self::where('is_active', true)
+        $ids = Cache::remember('ai_service_settings_active_ids', 3600, function () {
+            return self::query()
+                ->where('is_active', true)
                 ->orderBy('priority')
-                ->get();
+                ->pluck('id')
+                ->all();
         });
+
+        if ($ids === []) {
+            return new EloquentCollection;
+        }
+
+        $models = self::query()->whereIn('id', $ids)->get();
+
+        return new EloquentCollection(
+            $models->sortBy(fn (self $m) => array_search($m->id, $ids, true))->values()->all()
+        );
     }
 
     /**
@@ -53,13 +68,14 @@ class AIServiceSetting extends BaseModel
     public static function isServiceActive(string $service): bool
     {
         $setting = self::getForService($service);
-        if (!$setting || !$setting->is_active) {
+        if (! $setting || ! $setting->is_active) {
             return false;
         }
         if ($service === 'ollama') {
-            return !empty($setting->base_url);
+            return ! empty($setting->base_url);
         }
-        return !empty($setting->api_key);
+
+        return ! empty($setting->api_key);
     }
 
     /**
@@ -68,6 +84,7 @@ class AIServiceSetting extends BaseModel
     public static function getApiKey(string $service): ?string
     {
         $setting = self::getForService($service);
+
         return $setting && $setting->is_active ? $setting->api_key : null;
     }
 
@@ -77,15 +94,17 @@ class AIServiceSetting extends BaseModel
     public static function getBaseUrl(string $service): ?string
     {
         $setting = self::getForService($service);
+
         return $setting && $setting->is_active ? ($setting->base_url ?? null) : null;
     }
 
     /**
      * Get model for a service
      */
-    public static function getModel(string $service, string $default = null): ?string
+    public static function getModel(string $service, ?string $default = null): ?string
     {
         $setting = self::getForService($service);
+
         return $setting && $setting->is_active ? ($setting->model !== 'default' ? $setting->model : $default) : $default;
     }
 
@@ -98,12 +117,16 @@ class AIServiceSetting extends BaseModel
 
         static::saved(function ($setting) {
             Cache::forget("ai_service_setting_{$setting->service}");
+            Cache::forget("ai_service_setting_id_{$setting->service}");
             Cache::forget('ai_service_settings_active');
+            Cache::forget('ai_service_settings_active_ids');
         });
 
         static::deleted(function ($setting) {
             Cache::forget("ai_service_setting_{$setting->service}");
+            Cache::forget("ai_service_setting_id_{$setting->service}");
             Cache::forget('ai_service_settings_active');
+            Cache::forget('ai_service_settings_active_ids');
         });
     }
 }

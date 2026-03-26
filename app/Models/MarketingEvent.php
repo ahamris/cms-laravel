@@ -75,9 +75,12 @@ class MarketingEvent extends BaseModel
      */
     public static function getCached()
     {
-        return Cache::remember(self::CACHE_KEY, self::CACHE_DURATION, function () {
-            return self::published()->upcoming()->ordered()->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            self::CACHE_DURATION,
+            fn () => self::published()->upcoming()->ordered()->get(),
+            [self::CACHE_KEY],
+        );
     }
 
     /**
@@ -86,6 +89,7 @@ class MarketingEvent extends BaseModel
     public static function clearCache()
     {
         Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
         Cache::forget(self::CACHE_KEY.'_upcoming');
     }
 

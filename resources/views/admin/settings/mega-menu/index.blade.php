@@ -1,9 +1,21 @@
 <x-layouts.admin title="Mega Menu Management">
+    <x-slot:styles>
+        <style>
+            .sortable-ghost {
+                background-color: #c8ebfb;
+                opacity: 0.5;
+            }
+            .sortable-drag {
+                opacity: 1 !important;
+            }
+        </style>
+    </x-slot:styles>
     <div class="px-4 py-6">
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Mega Menu Management</h1>
                 <p class="text-gray-600 mt-1">Manage navigation menu structure</p>
+                <p class="text-xs text-gray-500 mt-2">Drag the grip icon to reorder root and sub-items</p>
             </div>
             <a href="{{ route('admin.settings.mega-menu.create') }}"
                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
@@ -37,13 +49,19 @@
                     </div>
                 @else
                     <!-- Menu Items List -->
-                    <div class="bg-white rounded-lg shadow">
+                    <div id="mega-menu-root-list" class="bg-white rounded-lg shadow">
                         @foreach($menuItems as $item)
-                            <div class="border-b border-gray-200 last:border-b-0" x-data="{ childrenOpen: false }">
+                            <div class="mega-root-item border-b border-gray-200 last:border-b-0" data-id="{{ $item->id }}" x-data="{ childrenOpen: false }">
                                 <!-- Root Item -->
                                 <div class="p-4 hover:bg-gray-50 transition-colors">
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center space-x-3 flex-1">
+                                            <button type="button"
+                                                    class="mega-dnd-handle flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-move"
+                                                    title="Drag to reorder"
+                                                    aria-label="Drag to reorder">
+                                                <i class="fas fa-grip-vertical"></i>
+                                            </button>
                                             @if($item->children->count() > 0)
                                                 <button @click="childrenOpen = !childrenOpen" class="text-gray-500 hover:text-gray-700">
                                                     <i class="fas fa-chevron-right transition-transform text-sm" :class="childrenOpen && 'rotate-90'"></i>
@@ -51,6 +69,9 @@
                                             @else
                                                 <span class="w-5"></span>
                                             @endif
+                                            <span class="mega-order-badge text-xs font-semibold text-gray-400 tabular-nums w-6 text-right">
+                                                {{ $loop->iteration }}
+                                            </span>
 
                                             @if($item->icon)
                                                 <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -107,10 +128,19 @@
                                 <!-- Children List -->
                                 @if($item->children->count() > 0)
                                     <div x-show="childrenOpen" x-collapse class="bg-gray-50 px-4 pb-4">
-                                        <div class="pl-8 space-y-2">
+                                        <div class="mega-children-list pl-8 space-y-2">
                                             @foreach($item->children as $child)
-                                                <div class="flex items-center justify-between p-3 bg-white rounded hover:bg-gray-50 transition-colors">
+                                                <div class="mega-child-item flex items-center justify-between p-3 bg-white rounded hover:bg-gray-50 transition-colors" data-id="{{ $child->id }}">
                                                     <div class="flex items-center space-x-3 flex-1">
+                                                        <button type="button"
+                                                                class="mega-dnd-handle flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-move"
+                                                                title="Drag to reorder"
+                                                                aria-label="Drag to reorder">
+                                                            <i class="fas fa-grip-vertical"></i>
+                                                        </button>
+                                                        <span class="mega-order-badge text-xs font-semibold text-gray-400 tabular-nums w-6 text-right">
+                                                            {{ $loop->iteration }}
+                                                        </span>
                                                         @if($child->icon)
                                                             <div class="w-8 h-8 rounded flex items-center justify-center flex-shrink-0"
                                                                  style="background-color: {{ $child->icon_bg_color }}20">
@@ -225,6 +255,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
         function openHeaderCtaSettingsModal() {
             document.getElementById('header-cta-settings-modal').classList.remove('hidden');
@@ -257,23 +288,99 @@
 
         // Show temporary success/info message
         function showTemporaryMessage(message, type) {
+            const isSuccess = type === 'success';
             const messageDiv = document.createElement('div');
-            messageDiv.className = `mb-4 bg-${type === 'success' ? 'green' : 'blue'}-50 border border-${type === 'success' ? 'green' : 'blue'}-200 rounded-lg p-3`;
+            messageDiv.className = isSuccess
+                ? 'mb-4 bg-green-50 border border-green-200 rounded-xl p-4'
+                : 'mb-4 bg-blue-50 border border-blue-200 rounded-xl p-4';
+
+            const icon = isSuccess ? 'check-circle' : 'info-circle';
+            const iconColor = isSuccess ? 'text-green-500' : 'text-blue-500';
+            const textColor = isSuccess ? 'text-green-800' : 'text-blue-800';
+
             messageDiv.innerHTML = `
-            <div class="flex items-center">
-                <i class="fa-solid fa-${type === 'success' ? 'check' : 'info'}-circle text-${type === 'success' ? 'green' : 'blue'}-500 text-sm mr-2"></i>
-                <p class="text-sm font-medium text-${type === 'success' ? 'green' : 'blue'}-800">${message}</p>
-            </div>
-        `;
+                <div class="flex items-center">
+                    <i class="fa-solid fa-${icon} ${iconColor} text-sm mr-2"></i>
+                    <p class="text-sm font-medium ${textColor}">${message}</p>
+                </div>
+            `;
 
             const settingsForm = document.getElementById('settings-form');
             settingsForm.parentElement.insertBefore(messageDiv, settingsForm);
 
-            // Remove message after 5 seconds
-            setTimeout(function() {
+            setTimeout(function () {
                 messageDiv.remove();
             }, 5000);
         }
+
+        // Drag & Drop ordering (SortableJS)
+        document.addEventListener('DOMContentLoaded', function () {
+            const updateOrderUrl = @json(route('admin.settings.mega-menu.update-order'));
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            async function saveListOrder(listEl) {
+                // Update the visible order badges immediately (DOM already changed).
+                Array.from(listEl.children).forEach((el, index) => {
+                    const badge = el.querySelector('.mega-order-badge');
+                    if (badge) badge.textContent = String(index + 1);
+                });
+
+                const items = Array.from(listEl.children)
+                    .map((el, index) => ({
+                        id: el.dataset.id,
+                        order: index,
+                    }))
+                    .filter(item => item.id);
+
+                if (!items.length) return;
+
+                try {
+                    const response = await fetch(updateOrderUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken ?? '',
+                        },
+                        body: JSON.stringify({ items }),
+                    });
+
+                    const data = await response.json().catch(() => ({}));
+                    if (!data.success) {
+                        throw new Error('Failed to save order');
+                    }
+
+                    showTemporaryMessage('Order updated.', 'success');
+                } catch (error) {
+                    console.error(error);
+                    showTemporaryMessage('Failed to save order.', 'info');
+                }
+            }
+
+            const rootList = document.getElementById('mega-menu-root-list');
+            if (rootList) {
+                new Sortable(rootList, {
+                    animation: 150,
+                    handle: '.mega-dnd-handle',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onEnd: function () {
+                        saveListOrder(rootList);
+                    },
+                });
+            }
+
+            document.querySelectorAll('.mega-children-list').forEach(function (listEl) {
+                new Sortable(listEl, {
+                    animation: 150,
+                    handle: '.mega-dnd-handle',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onEnd: function () {
+                        saveListOrder(listEl);
+                    },
+                });
+            });
+        });
 
     </script>
 </x-layouts.admin>

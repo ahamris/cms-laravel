@@ -1,0 +1,791 @@
+<?php
+
+namespace Siberfx\Typesense\Engines;
+
+use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
+use Illuminate\Support\Str;
+use Laravel\Scout\Builder;
+use Laravel\Scout\Engines\Engine;
+use Siberfx\Typesense\Typesense;
+use Typesense\Exceptions\ObjectNotFound;
+use Typesense\Exceptions\TypesenseClientError;
+
+/**
+ * Class TypesenseEngine.
+ *
+ * @date    4/5/20
+ *
+ * @author  Selim Görmüş <info@siberfx.com>
+ */
+class TypesenseEngine extends Engine
+{
+    private Typesense $typesense;
+
+    private array $groupBy = [];
+
+    private int $groupByLimit = 3;
+
+    private string $startTag = '<mark>';
+
+    private string $endTag = '</mark>';
+
+    private int $limitHits = -1;
+
+    private array $locationOrderBy = [];
+
+    private array $facetBy = [];
+
+    private int $maxFacetValues = 10;
+
+    private bool $useCache = false;
+
+    private int $cacheTtl = 60;
+
+    private int $snippetThreshold = 30;
+
+    private bool $exhaustiveSearch = false;
+
+    private bool $prioritizeExactMatch = true;
+
+    private bool $enableOverrides = true;
+
+    private int $highlightAffixNumTokens = 4;
+
+    private string $facetQuery = '';
+
+    private string $infix = 'off';
+
+    private array $includeFields = [];
+
+    private array $excludeFields = [];
+
+    private array $highlightFields = [];
+
+    private array $highlightFullFields = [];
+
+    private array $pinnedHits = [];
+
+    private array $hiddenHits = [];
+
+    private array $optionsMulti = [];
+
+    private ?string $prefix = null;
+
+    /**
+     * TypesenseEngine constructor.
+     */
+    public function __construct(Typesense $typesense)
+    {
+        $this->typesense = $typesense;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Collection<int, Model>|Model[]  $models
+     *
+     * @throws \Http\Client\Exception
+     * @throws \JsonException
+     * @throws TypesenseClientError
+     *
+     * @noinspection NotOptimalIfConditionsInspection
+     */
+    public function update($models): void
+    {
+        $collection = $this->typesense->getCollectionIndex($models->first());
+
+        if ($this->usesSoftDelete($models->first()) && config('scout.soft_delete', false)) {
+            $models->each->pushSoftDeleteMetadata();
+        }
+
+        if (! $this->usesSoftDelete($models->first()) || is_null($models->first()?->deleted_at) || config('scout.soft_delete', false)) {
+            $this->typesense->importDocuments($collection, $models->map(fn ($m) => $m->toSearchableArray())
+                ->toArray());
+        }
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     *
+     * @throws \Http\Client\Exception
+     * @throws TypesenseClientError
+     */
+    public function delete($models): void
+    {
+        $models->each(function (Model $model) {
+            $collectionIndex = $this->typesense->getCollectionIndex($model);
+
+            // TODO look into this vs $model->getKey()
+            $this->typesense->deleteDocument($collectionIndex, $model->getScoutKey());
+        });
+    }
+
+    /**
+     * @throws \Http\Client\Exception
+     * @throws TypesenseClientError
+     */
+    public function search(Builder $builder): mixed
+    {
+        return $this->performSearch($builder, array_filter($this->buildSearchParams($builder, 1, $builder->limit)));
+    }
+
+    /**
+     * @param  int  $perPage
+     * @param  int  $page
+     *
+     * @throws \Http\Client\Exception
+     * @throws TypesenseClientError
+     */
+    public function paginate(Builder $builder, $perPage, $page): mixed
+    {
+        return $this->performSearch($builder, array_filter($this->buildSearchParams($builder, $page, $perPage)));
+    }
+
+    private function buildSearchParams(Builder $builder, int $page, ?int $perPage): array
+    {
+        $params = [
+            'q' => $builder->query,
+            'query_by' => implode(',', $builder->model->typesenseQueryBy()),
+            'filter_by' => $this->filters($builder),
+            'per_page' => $perPage,
+            'page' => $page,
+            'highlight_start_tag' => $this->startTag,
+            'highlight_end_tag' => $this->endTag,
+            'snippet_threshold' => $this->snippetThreshold,
+            'exhaustive_search' => $this->exhaustiveSearch,
+            'use_cache' => $this->useCache,
+            'cache_ttl' => $this->cacheTtl,
+            'prioritize_exact_match' => $this->prioritizeExactMatch,
+            'enable_overrides' => $this->enableOverrides,
+            'highlight_affix_num_tokens' => $this->highlightAffixNumTokens,
+            'infix' => $this->infix,
+        ];
+
+        if ($this->limitHits > 0) {
+            $params['limit_hits'] = $this->limitHits;
+        }
+
+        if (! empty($this->groupBy)) {
+            $params['group_by'] = implode(',', $this->groupBy);
+            $params['group_limit'] = $this->groupByLimit;
+        }
+
+        if (! empty($this->facetBy)) {
+            $params['facet_by'] = implode(',', $this->facetBy);
+            $params['max_facet_values'] = $this->maxFacetValues;
+        }
+
+        if (! empty($this->facetQuery)) {
+            $params['facet_query'] = $this->facetQuery;
+        }
+
+        if (! empty($this->includeFields)) {
+            $params['include_fields'] = implode(',', $this->includeFields);
+        }
+
+        if (! empty($this->excludeFields)) {
+            $params['exclude_fields'] = implode(',', $this->excludeFields);
+        }
+
+        if (! empty($this->highlightFields)) {
+            $params['highlight_fields'] = implode(',', $this->highlightFields);
+        }
+
+        if (! empty($this->highlightFullFields)) {
+            $params['highlight_full_fields'] = implode(',', $this->highlightFullFields);
+        }
+
+        if (! empty($this->pinnedHits)) {
+            $params['pinned_hits'] = implode(',', $this->pinnedHits);
+        }
+
+        if (! empty($this->hiddenHits)) {
+            $params['hidden_hits'] = implode(',', $this->hiddenHits);
+        }
+
+        if (! empty($this->locationOrderBy)) {
+            $params['sort_by'] = $this->parseOrderByLocation(...$this->locationOrderBy);
+        }
+
+        if (! empty($builder->orders)) {
+            if (! empty($params['sort_by'])) {
+                $params['sort_by'] .= ',';
+            } else {
+                $params['sort_by'] = '';
+            }
+            $params['sort_by'] .= $this->parseOrderBy($builder->orders);
+        }
+
+        if (! empty($this->prefix)) {
+            $params['prefix'] = $this->prefix;
+        }
+
+        return $params;
+    }
+
+    /**
+     * Parse location order by for sort_by.
+     *
+     *
+     * @noinspection PhpPureAttributeCanBeAddedInspection
+     */
+    private function parseOrderByLocation(string $column, float $lat, float $lng, string $direction = 'asc'): string
+    {
+        $direction = Str::lower($direction) === 'asc' ? 'asc' : 'desc';
+        $str = $column.'('.$lat.', '.$lng.')';
+
+        return $str.':'.$direction;
+    }
+
+    /**
+     * Parse sort_by fields.
+     */
+    private function parseOrderBy(array $orders): string
+    {
+        $sortByArr = [];
+        foreach ($orders as $order) {
+            $sortByArr[] = $order['column'].':'.$order['direction'];
+        }
+
+        return implode(',', $sortByArr);
+    }
+
+    /**
+     * @throws \Http\Client\Exception
+     * @throws TypesenseClientError
+     */
+    protected function performSearch(Builder $builder, array $options = []): mixed
+    {
+        $documents = $this->typesense->getCollectionIndex($builder->model)
+            ->getDocuments();
+        if ($builder->callback) {
+            return call_user_func($builder->callback, $documents, $builder->query, $options);
+        }
+        if (! $this->optionsMulti) {
+            $documents = $this->typesense->getCollectionIndex($builder->model)
+                ->getDocuments();
+            if ($builder->callback) {
+                return call_user_func($builder->callback, $documents, $builder->query, $options);
+            }
+
+            return $documents->search($options);
+        } else {
+            return $this->typesense->multiSearch(['searches' => $this->optionsMulti], $options);
+        }
+    }
+
+    /**
+     * Prepare filters.
+     */
+    protected function filters(Builder $builder): string
+    {
+        $whereFilter = collect($builder->wheres)
+            ->map([
+                $this,
+                'parseWhereFilter',
+            ])
+            ->values()
+            ->implode(' && ');
+
+        $whereInFilter = collect($builder->whereIns)
+            ->map([
+                $this,
+                'parseWhereInFilter',
+            ])
+            ->values()
+            ->implode(' && ');
+
+        return $whereFilter.(
+            ($whereFilter !== '' && $whereInFilter !== '') ? ' && ' : ''
+        ).$whereInFilter;
+    }
+
+    /**
+     * Parse typesense where filter.
+     */
+    public function parseWhereFilter(array|string $value, string $key): string
+    {
+        if (is_array($value)) {
+            return sprintf('%s:%s', $key, implode('', $value));
+        }
+
+        return sprintf('%s:=%s', $key, $value);
+    }
+
+    /**
+     * Parse typesense  whereIn filter.
+     */
+    public function parseWhereInFilter(array $value, string $key): string
+    {
+        return sprintf('%s:=%s', $key, '['.implode(', ', $value).']');
+    }
+
+    /**
+     * @param  mixed  $results
+     */
+    public function mapIds($results): Collection
+    {
+        return collect($results['hits'])
+            ->pluck('document.id')
+            ->values();
+    }
+
+    /**
+     * @param  mixed  $results
+     * @param  Model  $model
+     */
+    public function map(Builder $builder, $results, $model): \Illuminate\Database\Eloquent\Collection
+    {
+        if ($this->getTotalCount($results) === 0) {
+            return $model->newCollection();
+        }
+
+        $hits = isset($results['grouped_hits']) && ! empty($results['grouped_hits']) ?
+            $results['grouped_hits'] :
+            $results['hits'];
+        $pluck = isset($results['grouped_hits']) && ! empty($results['grouped_hits']) ?
+            'hits.0.document.id' :
+            'document.id';
+
+        $objectIds = collect($hits)
+            ->pluck($pluck)
+            ->values()
+            ->all();
+
+        $objectIdPositions = array_flip($objectIds);
+
+        return $model->getScoutModelsByIds($builder, $objectIds)
+            ->filter(static function ($model) use ($objectIds) {
+                return in_array($model->getScoutKey(), $objectIds, false);
+            })
+            ->sortBy(static function ($model) use ($objectIdPositions) {
+                return $objectIdPositions[$model->getScoutKey()];
+            })
+            ->values();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalCount($results): int
+    {
+        return (int) ($results['found'] ?? 0);
+    }
+
+    /**
+     * @param  Model  $model
+     *
+     * @throws \Http\Client\Exception
+     * @throws TypesenseClientError
+     */
+    public function flush($model): void
+    {
+        $collection = $this->typesense->getCollectionIndex($model);
+        $collection->delete();
+    }
+
+    protected function usesSoftDelete($model): bool
+    {
+        return in_array(SoftDeletes::class, class_uses_recursive($model), true);
+    }
+
+    /**
+     * @param  mixed  $results
+     * @param  Model  $model
+     */
+    public function lazyMap(Builder $builder, $results, $model): LazyCollection
+    {
+        if ((int) ($results['found'] ?? 0) === 0) {
+            return LazyCollection::make($model->newCollection());
+        }
+
+        $objectIds = collect($results['hits'])
+            ->pluck('document.id')
+            ->values()
+            ->all();
+
+        $objectIdPositions = array_flip($objectIds);
+
+        return $model->queryScoutModelsByIds($builder, $objectIds)
+            ->cursor()
+            ->filter(static function ($model) use ($objectIds) {
+                return in_array($model->getScoutKey(), $objectIds, false);
+            })
+            ->sortBy(static function ($model) use ($objectIdPositions) {
+                return $objectIdPositions[$model->getScoutKey()];
+            })
+            ->values();
+    }
+
+    /**
+     * @param  string  $name
+     *
+     * @throws Exception
+     */
+    public function createIndex($name, array $options = []): void
+    {
+        throw new Exception('Typesense indexes are created automatically upon adding objects.');
+    }
+
+    /**
+     * You can aggregate search results into groups or buckets by specify one or more group_by fields. Separate multiple fields with a comma.
+     *
+     * @param  mixed  $groupBy
+     * @return $this
+     */
+    public function groupBy(array $groupBy): static
+    {
+        $this->groupBy = $groupBy;
+
+        return $this;
+    }
+
+    /**
+     * Maximum number of hits to be returned for every group. (default: 3).
+     *
+     *
+     * @return $this
+     */
+    public function groupByLimit(int $groupByLimit): static
+    {
+        $this->groupByLimit = $groupByLimit;
+
+        return $this;
+    }
+
+    /**
+     * The start tag used for the highlighted snippets. (default: <mark>).
+     *
+     *
+     * @return $this
+     */
+    public function setHighlightStartTag(string $startTag): static
+    {
+        $this->startTag = $startTag;
+
+        return $this;
+    }
+
+    /**
+     * The end tag used for the highlighted snippets. (default: </mark>).
+     *
+     *
+     * @return $this
+     */
+    public function setHighlightEndTag(string $endTag): static
+    {
+        $this->endTag = $endTag;
+
+        return $this;
+    }
+
+    /**
+     * Maximum number of hits that can be fetched from the collection (default: no limit).
+     *
+     * (page * per_page) should be less than this number for the search request to return results.
+     *
+     *
+     * @return $this
+     */
+    public function limitHits(int $limitHits): static
+    {
+        $this->limitHits = $limitHits;
+
+        return $this;
+    }
+
+    /**
+     * A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
+     *
+     * @param  mixed  $facetBy
+     * @return $this
+     */
+    public function facetBy(array $facetBy): static
+    {
+        $this->facetBy = $facetBy;
+
+        return $this;
+    }
+
+    /**
+     * Maximum number of facet values to be returned.
+     *
+     *
+     * @return $this
+     */
+    public function setMaxFacetValues(int $maxFacetValues): static
+    {
+        $this->maxFacetValues = $maxFacetValues;
+
+        return $this;
+    }
+
+    /**
+     * Facet values that are returned can now be filtered via this parameter.
+     *
+     * The matching facet text is also highlighted. For example, when faceting by category,
+     * you can set facet_query=category:shoe to return only facet values that contain the prefix "shoe".
+     *
+     *
+     * @return $this
+     */
+    public function facetQuery(string $facetQuery): static
+    {
+        $this->facetQuery = $facetQuery;
+
+        return $this;
+    }
+
+    /**
+     * Comma-separated list of fields from the document to include in the search result.
+     *
+     * @param  mixed  $includeFields
+     * @return $this
+     */
+    public function setIncludeFields(array $includeFields): static
+    {
+        $this->includeFields = $includeFields;
+
+        return $this;
+    }
+
+    /**
+     * Comma-separated list of fields from the document to exclude in the search result.
+     *
+     * @param  mixed  $excludeFields
+     * @return $this
+     */
+    public function setExcludeFields(array $excludeFields): static
+    {
+        $this->excludeFields = $excludeFields;
+
+        return $this;
+    }
+
+    /**
+     * Comma separated list of fields that should be highlighted with snippetting.
+     *
+     * You can use this parameter to highlight fields that you don't query for, as well.
+     *
+     * @param  mixed  $highlightFields
+     * @return $this
+     */
+    public function setHighlightFields(array $highlightFields): static
+    {
+        $this->highlightFields = $highlightFields;
+
+        return $this;
+    }
+
+    /**
+     * A list of records to unconditionally include in the search results at specific positions.
+     *
+     * @param  mixed  $pinnedHits
+     * @return $this
+     */
+    public function setPinnedHits(array $pinnedHits): static
+    {
+        $this->pinnedHits = $pinnedHits;
+
+        return $this;
+    }
+
+    /**
+     * A list of records to unconditionally hide from search results.
+     *
+     * @param  mixed  $hiddenHits
+     * @return $this
+     */
+    public function setHiddenHits(array $hiddenHits): static
+    {
+        $this->hiddenHits = $hiddenHits;
+
+        return $this;
+    }
+
+    /**
+     * Comma separated list of fields which should be highlighted fully without snippeting.
+     *
+     * @param  mixed  $highlightFullFields
+     * @return $this
+     */
+    public function setHighlightFullFields(array $highlightFullFields): static
+    {
+        $this->highlightFullFields = $highlightFullFields;
+
+        return $this;
+    }
+
+    /**
+     * The number of tokens that should surround the highlighted text on each side.
+     *
+     * This controls the length of the snippet.
+     *
+     *
+     * @return $this
+     */
+    public function setHighlightAffixNumTokens(int $highlightAffixNumTokens): static
+    {
+        $this->highlightAffixNumTokens = $highlightAffixNumTokens;
+
+        return $this;
+    }
+
+    /**
+     * Set the infix search option for the field.
+     *
+     * @param  string  $infix  The infix search option to enable for the field.
+     *                         Possible values: "off" (disabled, default), "always" (along with regular search),
+     *                         "fallback" (if regular search produces no results).
+     * @return $this
+     */
+    public function setInfix(string $infix): static
+    {
+        $this->infix = $infix;
+
+        return $this;
+    }
+
+    /**
+     * Field values under this length will be fully highlighted, instead of showing a snippet of relevant portion.
+     *
+     *
+     * @return $this
+     */
+    public function setSnippetThreshold(int $snippetThreshold): static
+    {
+        $this->snippetThreshold = $snippetThreshold;
+
+        return $this;
+    }
+
+    /**
+     * Setting this to true will make Typesense consider all variations of prefixes and typo corrections of the words
+     *
+     * in the query exhaustively, without stopping early when enough results are found.
+     *
+     *
+     * @return $this
+     */
+    public function exhaustiveSearch(bool $exhaustiveSearch): static
+    {
+        $this->exhaustiveSearch = $exhaustiveSearch;
+
+        return $this;
+    }
+
+    /**
+     * Enable server side caching of search query results. By default, caching is disabled.
+     *
+     *
+     * @return $this
+     */
+    public function setUseCache(bool $useCache): static
+    {
+        $this->useCache = $useCache;
+
+        return $this;
+    }
+
+    /**
+     * The duration (in seconds) that determines how long the search query is cached.
+     *
+     *
+     * @return $this
+     */
+    public function setCacheTtl(int $cacheTtl): static
+    {
+        $this->cacheTtl = $cacheTtl;
+
+        return $this;
+    }
+
+    /**
+     * By default, Typesense prioritizes documents whose field value matches exactly with the query.
+     *
+     *
+     * @return $this
+     */
+    public function setPrioritizeExactMatch(bool $prioritizeExactMatch): static
+    {
+        $this->prioritizeExactMatch = $prioritizeExactMatch;
+
+        return $this;
+    }
+
+    /**
+     * Indicates that the last word in the query should be treated as a prefix, and not as a whole word.
+     *
+     * You can also control the behavior of prefix search on a per field basis.
+     * For example, if you are querying 3 fields and want to enable prefix searching only on the first field, use ?prefix=true,false,false.
+     * The order should match the order of fields in query_by.
+     * If a single value is specified for prefix the same value is used for all fields specified in query_by.
+     *
+     *
+     * @return $this
+     */
+    public function setPrefix(string $prefix): static
+    {
+        $this->prefix = $prefix;
+
+        return $this;
+    }
+
+    /**
+     * If you have some overrides defined but want to disable all of them for a particular search query
+     *
+     *
+     * @return $this
+     */
+    public function enableOverrides(bool $enableOverrides): static
+    {
+        $this->enableOverrides = $enableOverrides;
+
+        return $this;
+    }
+
+    /**
+     * If you want to search multi queries in the same call
+     *
+     *
+     * @return $this
+     */
+    public function searchMulti(array $optionsMulti): static
+    {
+        $this->optionsMulti = $optionsMulti;
+
+        return $this;
+    }
+
+    /**
+     * Add location to order by clause.
+     *
+     *
+     * @return $this
+     */
+    public function orderByLocation(string $column, float $lat, float $lng, string $direction): static
+    {
+        $this->locationOrderBy = [
+            'column' => $column,
+            'lat' => $lat,
+            'lng' => $lng,
+            'direction' => $direction,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @param  string  $name
+     *
+     * @throws TypesenseClientError
+     * @throws \Http\Client\Exception
+     * @throws ObjectNotFound
+     */
+    public function deleteIndex($name): array
+    {
+        return $this->typesense->deleteCollection($name);
+    }
+}

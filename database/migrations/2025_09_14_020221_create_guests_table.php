@@ -14,7 +14,8 @@ return new class extends Migration
     {
         $path = config('database.connections.sqlite.database');
 
-        if (! File::exists($path)) {
+        if ($path !== ':memory:' && ! File::exists($path)) {
+            File::ensureDirectoryExists(dirname($path));
             File::put($path, '');
         }
 

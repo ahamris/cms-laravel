@@ -39,7 +39,7 @@ class Feature extends BaseModel
      */
     public function socialMediaPosts()
     {
-        return $this->morphMany(\App\Models\SocialMediaPost::class, 'postable');
+        return $this->morphMany(SocialMediaPost::class, 'postable');
     }
 
     /**
@@ -84,28 +84,32 @@ class Feature extends BaseModel
         return $anchor !== '' ? api_path('feature', $anchor) : api_path('features');
     }
 
+    public static function forgetFeatureCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        // Clear cache on model events
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetFeatureCache());
+        static::updated(fn () => self::forgetFeatureCache());
+        static::deleted(fn () => self::forgetFeatureCache());
     }
 
     public static function getCached()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, 60 * 60,
-                fn () => self::query()
-                    ->where('is_active', true)
-                    ->with('solution', 'modules')
-                    ->ordered()
-                    ->get()
-            );
-        }
-
-        return Cache::get(self::CACHE_KEY);
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            60 * 60,
+            fn () => self::query()
+                ->where('is_active', true)
+                ->ordered()
+                ->get(),
+            [self::CACHE_KEY],
+            ['solution', 'modules'],
+        );
     }
 }

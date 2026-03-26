@@ -119,7 +119,7 @@ class ContactPageSettingsController extends AdminBaseController
             );
         }
 
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
         foreach (self::CONTACT_KEYS as $key) {
             Cache::forget("settings.{$key}");
         }

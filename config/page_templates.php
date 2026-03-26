@@ -12,23 +12,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Template key for “legal” CMS pages (cookie banner links, mega menu, etc.)
+    |--------------------------------------------------------------------------
+    */
+    'cookie_legal_template' => 'legal',
+
+    /*
+    |--------------------------------------------------------------------------
     | Page templates
     |--------------------------------------------------------------------------
     | Each template defines which form sections are visible in the admin.
-    | Sections: page_info, body, marketing, sidebar_settings, sidebar_image, sidebar_elements, seo
+    | Sections: page_info, page_rows, body, marketing, sidebar_settings, sidebar_image, sidebar_elements, seo
     */
     'templates' => [
         'default' => [
             'label' => 'Default (full)',
-            'sections' => ['page_info', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
+            'sections' => ['page_info', 'page_rows', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
         ],
         'landing' => [
             'label' => 'Landing page',
-            'sections' => ['page_info', 'body', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
+            'sections' => ['page_info', 'page_rows', 'body', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
         ],
         'minimal' => [
             'label' => 'Minimal',
             'sections' => ['page_info', 'body', 'sidebar_settings'],
+        ],
+        'legal' => [
+            'label' => 'Legal',
+            'sections' => ['page_info', 'body', 'seo'],
         ],
     ],
 ];

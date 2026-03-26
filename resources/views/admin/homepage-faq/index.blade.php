@@ -1,141 +1,147 @@
-<x-layouts.admin title="FAQ Groups">
-<div>
-    <!-- Page Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Contact Page FAQ</h1>
-            <p class="text-gray-600 mt-1">Manage the frequently asked questions on the contact page (identifier: contact)</p>
+<x-layouts.admin-faq-hub title="FAQ groups" active="groups">
+    <div
+        class="space-y-6"
+        x-data="{
+            open: false,
+            deleteUrl: '',
+            openDelete(url) {
+                this.deleteUrl = url;
+                this.open = true;
+            },
+            closeDelete() {
+                this.open = false;
+                this.deleteUrl = '';
+            },
+        }"
+        @keydown.escape.window="closeDelete()"
+    >
+        <div class="rounded-lg border border-sky-200/80 bg-sky-50/90 px-4 py-3 text-sm text-sky-950 dark:border-sky-900/50 dark:bg-sky-950/35 dark:text-sky-100">
+            <strong class="font-semibold">FAQ groups</strong> are loaded by <strong class="font-semibold">identifier</strong> (e.g. contact page). For accordion blocks inside page layouts, use <strong class="font-semibold">Questions &amp; answers</strong> in the sidebar.
         </div>
-    </div>
 
-    <!-- FAQs Table -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-gray-900">Contact FAQ</h3>
-            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">{{ $faqs->total() }} Total</span>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">FAQ groups</h1>
+                <p class="mt-1 text-zinc-600 dark:text-zinc-400">Identifiers, titles, and Q&amp;A sets used across the site and builder.</p>
+            </div>
+            <span class="inline-flex shrink-0 items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200">
+                {{ $faqs->total() }} {{ $faqs->total() === 1 ? 'group' : 'groups' }}
+            </span>
         </div>
-        <div class="p-6">
-            @if($faqs->count() > 0)
+
+        <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-800/40">
+            @if ($faqs->count() > 0)
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-600">
+                        <thead class="bg-zinc-50 dark:bg-zinc-900/50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">#</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Identifier</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title & Subtitle</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 text-center">Items</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">Actions</th>
+                                <th class="w-16 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Identifier</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Title</th>
+                                <th class="w-28 px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Q&amp;A</th>
+                                <th class="w-44 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($faqs as $faq)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $faq->id }}</td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-mono font-semibold">{{ $faq->identifier }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    @if($faq->title)
-                                        <div class="font-semibold text-gray-900">{{ $faq->title }}</div>
-                                    @else
-                                        <div class="text-gray-400 italic">No title</div>
-                                    @endif
-                                    @if($faq->subtitle)
-                                        <div class="text-sm text-gray-500 mt-1">{{ $faq->subtitle }}</div>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <span class="inline-flex items-center justify-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
-                                        {{ is_array($faq->items) ? count($faq->items) : 0 }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex space-x-2">
-                                        <a href="{{ route('admin.faq-module.show', ['faq' => $faq]) }}" 
-                                           class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition-colors" title="View">
-                                            <i class="fas fa-eye text-sm"></i>
-                                        </a>
-                                        <a href="{{ route('admin.faq-module.edit', ['faq' => $faq]) }}" 
-                                           class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 p-2 rounded-lg transition-colors" title="Edit">
-                                            <i class="fas fa-edit text-sm"></i>
-                                        </a>
-                                        <button type="button" class="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-lg transition-colors" 
-                                                data-delete-url="{{ route('admin.faq-module.destroy', ['faq' => $faq]) }}"
-                                                onclick="confirmDelete(this)" title="Delete">
-                                            <i class="fas fa-trash text-sm"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-600 dark:bg-zinc-800/20">
+                            @foreach ($faqs as $faq)
+                                <tr class="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/30">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100">{{ $faq->id }}</td>
+                                    <td class="px-6 py-4">
+                                        <code class="rounded-md bg-zinc-100 px-2 py-1 text-xs font-semibold text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100">{{ $faq->identifier }}</code>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if ($faq->title)
+                                            <div class="font-medium text-zinc-900 dark:text-white">{{ $faq->title }}</div>
+                                        @else
+                                            <span class="text-zinc-400 italic dark:text-zinc-500">No title</span>
+                                        @endif
+                                        @if ($faq->subtitle)
+                                            <div class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">{{ $faq->subtitle }}</div>
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-center">
+                                        <span class="inline-flex min-w-[2rem] items-center justify-center rounded-full bg-emerald-100 px-2 py-0.5 text-sm font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
+                                            {{ is_array($faq->items) ? count($faq->items) : 0 }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('admin.faq-module.show', ['faq' => $faq]) }}" title="View">
+                                                <x-button variant="sky" size="sm" icon="eye" title="View"></x-button>
+                                            </a>
+                                            <a href="{{ route('admin.faq-module.edit', ['faq' => $faq]) }}" title="Edit">
+                                                <x-button variant="warning" size="sm" icon="edit" title="Edit"></x-button>
+                                            </a>
+                                            <x-button
+                                                variant="error"
+                                                size="sm"
+                                                icon="trash"
+                                                title="Delete"
+                                                type="button"
+                                                x-on:click="openDelete(@js(route('admin.faq-module.destroy', ['faq' => $faq])))"
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Pagination -->
-                <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
-                    <div class="text-sm text-gray-700">
-                        Showing {{ $faqs->firstItem() }} to {{ $faqs->lastItem() }} of {{ $faqs->total() }} results
-                    </div>
-                    <div>
-                        {{ $faqs->links() }}
-                    </div>
+                <div class="flex flex-col gap-3 border-t border-zinc-200 px-6 py-4 text-sm text-zinc-600 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-600 dark:text-zinc-400">
+                    <span>
+                        Showing {{ $faqs->firstItem() }}–{{ $faqs->lastItem() }} of {{ $faqs->total() }}
+                    </span>
+                    {{ $faqs->links() }}
                 </div>
             @else
-                <div class="text-center py-12">
-                    <i class="fas fa-question-circle text-6xl text-gray-300 mb-4"></i>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">No Contact FAQ Found</h3>
-                    <p class="text-gray-600 mb-6">Run the FaqSeeder to create the contact page FAQ: <code class="bg-gray-100 px-2 py-1 rounded">php artisan db:seed --class=FaqSeeder</code></p>
+                <div class="px-6 py-14 text-center">
+                    <i class="fa-solid fa-layer-group mb-4 text-5xl text-zinc-300 dark:text-zinc-600" aria-hidden="true"></i>
+                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">No FAQ groups yet</h3>
+                    <p class="mt-2 text-zinc-600 dark:text-zinc-400">
+                        Run <code class="rounded bg-zinc-100 px-2 py-0.5 text-sm dark:bg-zinc-700">php artisan db:seed --class=FaqSeeder</code> to create the default contact FAQ.
+                    </p>
                 </div>
             @endif
         </div>
-    </div>
-</div>
 
-<!-- Delete Confirmation Modal -->
-<div x-data="{ open: false }" x-show="open" id="deleteModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-            <div class="sm:flex sm:items-start">
-                <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+        <div
+            x-show="open"
+            x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            x-transition.opacity
+        >
+            <div
+                class="w-full max-w-md overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-600 dark:bg-zinc-800"
+                @click.outside="closeDelete()"
+                x-transition
+            >
+                <div class="border-b border-zinc-100 px-6 py-4 dark:border-zinc-700">
+                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Delete FAQ group?</h3>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                        This removes the group and all of its questions. This cannot be undone.
+                    </p>
                 </div>
-                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900">Confirm Delete</h3>
-                    <div class="mt-2">
-                        <p class="text-sm text-gray-500">Are you sure you want to delete this FAQ group? This will delete all FAQ items within this group. This action cannot be undone.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                <form id="deleteForm" method="POST" class="inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Delete
+                <div class="flex justify-end gap-2 px-6 py-4">
+                    <button
+                        type="button"
+                        class="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
+                        x-on:click="closeDelete()"
+                    >
+                        Cancel
                     </button>
-                </form>
-                <button type="button" @click="open = false" class="w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm">
-                    Cancel
-                </button>
+                    <form x-bind:action="deleteUrl" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button
+                            type="submit"
+                            class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+                        >
+                            Delete
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
-function confirmDelete(btn) {
-    const url = btn && btn.dataset && btn.dataset.deleteUrl;
-    if (!url) return;
-    const deleteForm = document.getElementById('deleteForm');
-    deleteForm.action = url;
-    const modal = document.getElementById('deleteModal');
-    if (modal && modal.__x) {
-        modal.__x.$data.open = true;
-    }
-    modal.style.display = 'block';
-}
-</script>
-</x-layouts.admin>
+</x-layouts.admin-faq-hub>

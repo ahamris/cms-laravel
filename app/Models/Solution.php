@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Solution extends BaseModel
 {
-    use ImageGetterTrait, MegaMenuModuleTrait, Sluggable, ClearsSitemapCache;
+    use ClearsSitemapCache, ImageGetterTrait, MegaMenuModuleTrait, Sluggable;
 
     const CACHE_KEY = 'solutions';
 
@@ -133,29 +133,33 @@ class Solution extends BaseModel
         }
     }
 
+    public static function forgetSolutionCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        // Clear cache on model events
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetSolutionCache());
+        static::updated(fn () => self::forgetSolutionCache());
+        static::deleted(fn () => self::forgetSolutionCache());
 
     }
 
     public static function getCached()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, 60 * 60,
-                fn () => self::query()
-                    ->with('features')
-                    ->where('is_active', true)
-                    ->ordered()
-                    ->get()
-            );
-        }
-
-        return Cache::get(self::CACHE_KEY);
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            60 * 60,
+            fn () => self::query()
+                ->where('is_active', true)
+                ->ordered()
+                ->get(),
+            [self::CACHE_KEY],
+            'features',
+        );
     }
 }

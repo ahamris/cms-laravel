@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\StaticPageRequest;
 use App\Models\StaticPage;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class StaticPageController extends AdminBaseController
@@ -17,7 +15,7 @@ class StaticPageController extends AdminBaseController
     public function index(): View
     {
         $staticPages = StaticPage::orderBy('created_at', 'desc')->paginate(15);
-        
+
         return view('admin.static-page.index', compact('staticPages'));
     }
 
@@ -89,7 +87,7 @@ class StaticPageController extends AdminBaseController
             if ($staticPage->image && \Storage::disk('public')->exists($staticPage->image)) {
                 \Storage::disk('public')->delete($staticPage->image);
             }
-            
+
             $imagePath = $request->file('image')->store('static-pages', 'public');
             $validated['image'] = $imagePath;
         }
@@ -102,34 +100,16 @@ class StaticPageController extends AdminBaseController
     }
 
     /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(StaticPage $staticPage): RedirectResponse
-    {
-        // Delete image if exists
-        if ($staticPage->image && \Storage::disk('public')->exists($staticPage->image)) {
-            \Storage::disk('public')->delete($staticPage->image);
-        }
-
-        $staticPage->delete();
-
-        return redirect()
-            ->route('admin.static-page.index')
-            ->with('success', 'Static page deleted successfully.');
-    }
-
-    /**
      * Toggle active status
      */
     public function toggleActive(StaticPage $staticPage): RedirectResponse
     {
-        $staticPage->update(['is_active' => !$staticPage->is_active]);
+        $staticPage->update(['is_active' => ! $staticPage->is_active]);
 
         $status = $staticPage->is_active ? 'activated' : 'deactivated';
-        
+
         return redirect()
             ->back()
             ->with('success', "Static page {$status} successfully.");
     }
-
 }

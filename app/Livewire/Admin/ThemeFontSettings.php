@@ -10,57 +10,71 @@ class ThemeFontSettings extends Component
 {
     // Font Family Properties
     public string $fontSans = '';
+
     public string $fontOutfit = '';
 
     // Font Size Properties (px values - user input)
     public ?int $fontSizeH1Px = 48;  // 3rem
+
     public ?int $fontSizeH2Px = 36;  // 2.25rem
+
     public ?int $fontSizeH3Px = 24;  // 1.5rem
+
     public ?int $fontSizeH4Px = 18;  // 1.125rem
+
     public ?int $fontSizeH5Px = 16;  // 1rem
+
     public ?int $fontSizeH6Px = 14;  // 0.875rem
+
     public ?int $fontSizePPx = 16;   // 1rem
 
     // Computed properties for rem values (read-only, for display)
     public function getFontSizeH1RemProperty(): float
     {
         $px = $this->fontSizeH1Px ?? 48;
+
         return round($px / 16, 4);
     }
 
     public function getFontSizeH2RemProperty(): float
     {
         $px = $this->fontSizeH2Px ?? 36;
+
         return round($px / 16, 4);
     }
 
     public function getFontSizeH3RemProperty(): float
     {
         $px = $this->fontSizeH3Px ?? 24;
+
         return round($px / 16, 4);
     }
 
     public function getFontSizeH4RemProperty(): float
     {
         $px = $this->fontSizeH4Px ?? 18;
+
         return round($px / 16, 4);
     }
 
     public function getFontSizeH5RemProperty(): float
     {
         $px = $this->fontSizeH5Px ?? 16;
+
         return round($px / 16, 4);
     }
 
     public function getFontSizeH6RemProperty(): float
     {
         $px = $this->fontSizeH6Px ?? 14;
+
         return round($px / 16, 4);
     }
 
     public function getFontSizePRemProperty(): float
     {
         $px = $this->fontSizePPx ?? 16;
+
         return round($px / 16, 4);
     }
 
@@ -110,14 +124,14 @@ class ThemeFontSettings extends Component
             $value = $this->$property;
             if ($value === null || $value === '' || (is_string($value) && trim($value) === '')) {
                 $this->$property = $default;
-            } elseif (!is_numeric($value)) {
+            } elseif (! is_numeric($value)) {
                 $this->$property = $default;
-            } elseif ((int)$value < 1) {
+            } elseif ((int) $value < 1) {
                 $this->$property = 1;
-            } elseif ((int)$value > 3200) {
+            } elseif ((int) $value > 3200) {
                 $this->$property = 3200;
             } else {
-                $this->$property = (int)$value;
+                $this->$property = (int) $value;
             }
         }
     }
@@ -155,7 +169,8 @@ class ThemeFontSettings extends Component
     private function pxToRem(?int $px): string
     {
         $px = $px ?? 16; // Default to 16px (1rem) if null
-        return round($px / 16, 4) . 'rem';
+
+        return round($px / 16, 4).'rem';
     }
 
     /**
@@ -164,6 +179,7 @@ class ThemeFontSettings extends Component
     private function remToPx(string $remValue): int
     {
         $rem = (float) str_replace('rem', '', $remValue);
+
         return (int) round($rem * 16);
     }
 
@@ -173,6 +189,7 @@ class ThemeFontSettings extends Component
     private function getFontSetting(string $key, string $default): string
     {
         $value = Setting::getValue($key, $default);
+
         // Remove quotes and sans-serif suffix if present
         return str_replace(['"', ', sans-serif'], '', $value);
     }
@@ -268,7 +285,7 @@ class ThemeFontSettings extends Component
      */
     private function clearCaches(): void
     {
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
         $settingKeys = [
             'theme_font_sans',
             'theme_font_outfit',

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Changelog extends BaseModel
 {
-    use HasFactory, Sluggable, ClearsSitemapCache;
+    use ClearsSitemapCache, HasFactory, Sluggable;
 
     /**
      * Cache key for changelog entries
@@ -57,7 +57,7 @@ class Changelog extends BaseModel
      */
     public function socialMediaPosts()
     {
-        return $this->morphMany(\App\Models\SocialMediaPost::class, 'postable');
+        return $this->morphMany(SocialMediaPost::class, 'postable');
     }
 
     /**
@@ -80,10 +80,24 @@ class Changelog extends BaseModel
     {
         parent::boot();
 
-        // Clear cache when model is created, updated, or deleted
         static::created(fn () => self::clearCache());
-        static::updated(fn () => self::clearCache());
-        static::deleted(fn () => self::clearCache());
+
+        static::updated(function (self $changelog) {
+            if ($changelog->wasChanged('slug') && $changelog->getOriginal('slug')) {
+                $old = $changelog->getOriginal('slug');
+                Cache::forget(self::CACHE_KEY."_slug_{$old}");
+                Cache::forget(self::CACHE_KEY."_slug_{$old}_row_v1");
+            }
+            self::clearCache();
+        });
+
+        static::deleted(function (self $changelog) {
+            if ($changelog->slug) {
+                Cache::forget(self::CACHE_KEY."_slug_{$changelog->slug}");
+                Cache::forget(self::CACHE_KEY."_slug_{$changelog->slug}_row_v1");
+            }
+            self::clearCache();
+        });
     }
 
     /**
@@ -115,9 +129,12 @@ class Changelog extends BaseModel
      */
     public static function getCached()
     {
-        return Cache::remember(self::CACHE_KEY, self::CACHE_DURATION, function () {
-            return self::active()->ordered()->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            self::CACHE_DURATION,
+            fn () => self::active()->ordered()->get(),
+            [self::CACHE_KEY],
+        );
     }
 
     /**
@@ -125,9 +142,12 @@ class Changelog extends BaseModel
      */
     public static function getCachedFour()
     {
-        return Cache::remember(self::CACHE_KEY.'_four', self::CACHE_DURATION, function () {
-            return self::active()->whereNotIn('status', ['api'])->ordered()->take(4)->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY.'_four_rows_v1',
+            self::CACHE_DURATION,
+            fn () => self::active()->whereNotIn('status', ['api'])->ordered()->take(4)->get(),
+            [self::CACHE_KEY.'_four'],
+        );
     }
 
     /**
@@ -135,9 +155,12 @@ class Changelog extends BaseModel
      */
     public static function getCachedFourByStatus($status)
     {
-        return Cache::remember(self::CACHE_KEY.'_four_by_status_'.$status, self::CACHE_DURATION, function () use ($status) {
-            return self::active()->byStatus($status)->ordered()->take(4)->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY."_four_by_status_{$status}_rows_v1",
+            self::CACHE_DURATION,
+            fn () => self::active()->byStatus($status)->ordered()->take(4)->get(),
+            [self::CACHE_KEY."_four_by_status_{$status}"],
+        );
     }
 
     /**
@@ -145,11 +168,15 @@ class Changelog extends BaseModel
      */
     public static function getBySlug($slug)
     {
-        $cacheKey = self::CACHE_KEY."_slug_{$slug}";
+        $rowKey = self::CACHE_KEY."_slug_{$slug}_row_v1";
+        $legacyKey = self::CACHE_KEY."_slug_{$slug}";
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($slug) {
-            return self::active()->where('slug', $slug)->first();
-        });
+        return self::cacheRememberNullableModelRow(
+            $rowKey,
+            self::CACHE_DURATION,
+            fn () => self::active()->where('slug', $slug)->first(),
+            [$legacyKey],
+        );
     }
 
     /**
@@ -157,11 +184,14 @@ class Changelog extends BaseModel
      */
     public static function getRecent($limit = 5)
     {
-        $cacheKey = self::CACHE_KEY."_recent_{$limit}";
+        $legacyKey = self::CACHE_KEY."_recent_{$limit}";
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($limit) {
-            return self::active()->ordered()->limit($limit)->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY."_recent_{$limit}_rows_v1",
+            self::CACHE_DURATION,
+            fn () => self::active()->ordered()->limit($limit)->get(),
+            [$legacyKey],
+        );
     }
 
     /**
@@ -169,11 +199,14 @@ class Changelog extends BaseModel
      */
     public static function getByStatus($status)
     {
-        $cacheKey = self::CACHE_KEY."_status_{$status}";
+        $legacyKey = self::CACHE_KEY."_status_{$status}";
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($status) {
-            return self::active()->byStatus($status)->ordered()->get();
-        });
+        return self::cacheRememberManyRows(
+            self::CACHE_KEY."_status_{$status}_rows_v1",
+            self::CACHE_DURATION,
+            fn () => self::active()->byStatus($status)->ordered()->get(),
+            [$legacyKey],
+        );
     }
 
     /**
@@ -181,22 +214,34 @@ class Changelog extends BaseModel
      */
     public static function clearCache()
     {
-        Cache::forget(self::CACHE_KEY);
+        $keys = [
+            self::CACHE_KEY,
+            self::CACHE_KEY.'_rows_v1',
+            self::CACHE_KEY.'_four',
+            self::CACHE_KEY.'_four_rows_v1',
+        ];
 
-        // Clear related caches
         $statuses = ['new', 'improved', 'fixed', 'api'];
         foreach ($statuses as $status) {
-            Cache::forget(self::CACHE_KEY."_status_{$status}");
+            $keys[] = self::CACHE_KEY."_status_{$status}";
+            $keys[] = self::CACHE_KEY."_status_{$status}_rows_v1";
+            $keys[] = self::CACHE_KEY."_four_by_status_{$status}";
+            $keys[] = self::CACHE_KEY."_four_by_status_{$status}_rows_v1";
         }
 
-        // Clear recent cache variations
-        for ($i = 1; $i <= 10; $i++) {
-            Cache::forget(self::CACHE_KEY."_recent_{$i}");
+        for ($i = 1; $i <= 50; $i++) {
+            $keys[] = self::CACHE_KEY."_recent_{$i}";
+            $keys[] = self::CACHE_KEY."_recent_{$i}_rows_v1";
         }
 
-        Cache::forget(self::CACHE_KEY.'_four');
+        foreach (self::query()->pluck('slug')->filter() as $slug) {
+            $keys[] = self::CACHE_KEY."_slug_{$slug}";
+            $keys[] = self::CACHE_KEY."_slug_{$slug}_row_v1";
+        }
 
-        // Note: Individual slug caches will be cleared naturally when they expire
+        foreach ($keys as $key) {
+            Cache::forget($key);
+        }
     }
 
     /**
@@ -265,4 +310,3 @@ class Changelog extends BaseModel
         return 'slug';
     }
 }
-

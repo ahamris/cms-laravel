@@ -12,6 +12,8 @@ class StickyMenuItem extends BaseModel
 {
     use HasFactory;
 
+    public const string ROWS_CACHE_KEY = 'sticky_menu_items_rows_v1';
+
     protected $fillable = [
         'title',
         'icon',
@@ -55,9 +57,12 @@ class StickyMenuItem extends BaseModel
      */
     public static function getActiveItems()
     {
-        return Cache::remember('sticky_menu_items', 3600, function () {
-            return self::active()->ordered()->get();
-        });
+        return self::cacheRememberManyRows(
+            self::ROWS_CACHE_KEY,
+            3600,
+            fn () => self::active()->ordered()->get(),
+            ['sticky_menu_items'],
+        );
     }
 
     /**
@@ -69,10 +74,12 @@ class StickyMenuItem extends BaseModel
 
         static::saved(function () {
             Cache::forget('sticky_menu_items');
+            Cache::forget(self::ROWS_CACHE_KEY);
         });
 
         static::deleted(function () {
             Cache::forget('sticky_menu_items');
+            Cache::forget(self::ROWS_CACHE_KEY);
         });
     }
 

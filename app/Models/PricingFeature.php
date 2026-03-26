@@ -27,14 +27,19 @@ class PricingFeature extends BaseModel
         'is_active' => 'boolean',
     ];
 
+    public static function forgetPricingFeatureCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        // Clear cache on model events
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetPricingFeatureCache());
+        static::updated(fn () => self::forgetPricingFeatureCache());
+        static::deleted(fn () => self::forgetPricingFeatureCache());
     }
 
     /**
@@ -66,17 +71,17 @@ class PricingFeature extends BaseModel
      */
     public static function getCachedGrouped()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, 60 * 60,
-                fn () => self::query()
-                    ->active()
-                    ->ordered()
-                    ->get()
-                    ->groupBy('category')
-            );
-        }
+        $models = self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            60 * 60,
+            fn () => self::query()
+                ->active()
+                ->ordered()
+                ->get(),
+            [self::CACHE_KEY],
+        );
 
-        return Cache::get(self::CACHE_KEY);
+        return $models->groupBy('category');
     }
 
     /**

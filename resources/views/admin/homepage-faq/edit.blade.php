@@ -1,4 +1,4 @@
-<x-layouts.admin title="Edit FAQ Group">
+<x-layouts.admin-faq-hub title="Edit FAQ group" active="groups">
 <div class="space-y-6">
     {{-- Header --}}
     <div class="flex items-center justify-between">
@@ -270,4 +270,4 @@ function updateItemNumbers() {
     });
 }
 </script>
-</x-layouts.admin>
+</x-layouts.admin-faq-hub>

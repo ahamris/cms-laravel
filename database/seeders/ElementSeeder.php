@@ -16,6 +16,7 @@ class ElementSeeder extends Seeder
 
         $this->seedCtaElements();
         $this->seedFaqElements();
+        $this->seedRelatedContentElements();
         $this->seedCardGridElements();
         $this->seedHeroVideoElements();
         $this->seedNewsletterElements();
@@ -110,6 +111,41 @@ class ElementSeeder extends Seeder
                 ],
                 'layout' => 'accordion',
                 'columns' => 1,
+            ],
+        ]);
+    }
+
+    private function seedRelatedContentElements(): void
+    {
+        if (Element::where('type', ElementType::RelatedContent)->exists()) {
+            return;
+        }
+
+        Element::create([
+            'type' => ElementType::RelatedContent,
+            'title' => 'Verder lezen',
+            'sub_title' => null,
+            'description' => null,
+            'options' => [
+                'layout' => 'grid',
+                'columns' => 3,
+                'items' => [
+                    [
+                        'title' => 'Documentatie',
+                        'url' => '/docs',
+                        'excerpt' => 'Technische documentatie en API-referentie.',
+                    ],
+                    [
+                        'title' => 'Blog',
+                        'url' => '/blog',
+                        'excerpt' => 'Nieuws en artikelen.',
+                    ],
+                    [
+                        'title' => 'Contact',
+                        'url' => '/contact',
+                        'excerpt' => 'Neem contact op met het team.',
+                    ],
+                ],
             ],
         ]);
     }

@@ -146,7 +146,7 @@ class GeneralSettingsController extends AdminBaseController
         }
 
         // Store new file
-        $directory = match($fieldName) {
+        $directory = match ($fieldName) {
             'site_logo' => 'logos',
             'admin_logo' => 'logos',
             'footer_logo' => 'logos',
@@ -229,14 +229,14 @@ class GeneralSettingsController extends AdminBaseController
     private function deleteFileSetting(string $key): void
     {
         $setting = Setting::where('key', $key)->first();
-        
+
         if ($setting) {
             // Delete file from storage if it exists and is a storage path
-            if (!empty($setting->value) && trim($setting->value) !== '') {
+            if (! empty($setting->value) && trim($setting->value) !== '') {
                 // Only delete from storage if it looks like a storage path (not a full URL or public path)
-                if (!filter_var($setting->value, FILTER_VALIDATE_URL) && 
-                    !str_starts_with($setting->value, 'assets/') && 
-                    !str_starts_with($setting->value, 'front/')) {
+                if (! filter_var($setting->value, FILTER_VALIDATE_URL) &&
+                    ! str_starts_with($setting->value, 'assets/') &&
+                    ! str_starts_with($setting->value, 'front/')) {
                     if (Storage::disk('public')->exists($setting->value)) {
                         Storage::disk('public')->delete($setting->value);
                     }
@@ -431,11 +431,11 @@ class GeneralSettingsController extends AdminBaseController
     private function clearCaches(): void
     {
         // Clear general settings cache
-        Cache::forget('settings');
+        Setting::forgetAggregateCache();
 
         // Clear individual setting caches that might be affected
         $settingKeys = [
-            'site_name','copyright_footer', 'site_description', 'site_email', 'site_phone', 'site_address',
+            'site_name', 'copyright_footer', 'site_description', 'site_email', 'site_phone', 'site_address',
             'site_logo', 'site_favicon', 'admin_logo', 'footer_logo', 'meta_title', 'meta_description', 'meta_keywords',
             'google_analytics', 'posts_per_page', 'default_category', 'enable_comments',
             'moderate_comments', 'doculoket_sandbox', 'map_latitude', 'map_longitude', 'map_zoom',

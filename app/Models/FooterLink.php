@@ -23,24 +23,30 @@ class FooterLink extends BaseModel
     protected static function boot()
     {
         parent::boot();
-        static::created(fn () => Cache::forget(self::CACHE_KEY));
-        static::updated(fn () => Cache::forget(self::CACHE_KEY));
-        static::deleted(fn () => Cache::forget(self::CACHE_KEY));
+        static::created(fn () => self::forgetFooterCache());
+        static::updated(fn () => self::forgetFooterCache());
+        static::deleted(fn () => self::forgetFooterCache());
+    }
+
+    public static function forgetFooterCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY.'_rows_v1');
     }
 
     public static function getCached()
     {
-        if (! Cache::has(self::CACHE_KEY)) {
-            return Cache::remember(self::CACHE_KEY, Variable::CACHE_TTL,
-                fn () => self::query()
-                    ->where('is_active', true)
-                    ->orderBy('column')
-                    ->orderBy('order')
-                    ->get()
-                    ->groupBy('column')
-            );
-        }
+        $models = self::cacheRememberManyRows(
+            self::CACHE_KEY.'_rows_v1',
+            Variable::CACHE_TTL,
+            fn () => self::query()
+                ->where('is_active', true)
+                ->orderBy('column')
+                ->orderBy('order')
+                ->get(),
+            [self::CACHE_KEY],
+        );
 
-        return Cache::get(self::CACHE_KEY);
+        return $models->groupBy('column');
     }
 }

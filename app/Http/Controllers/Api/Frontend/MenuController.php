@@ -24,6 +24,14 @@ class MenuController extends Controller
 
         $payload = [
             'items' => array_values($tree),
+            // Keep the response contract stable for headless consumers.
+            // Sticky/login-link are stored as settings in the Setting table (when configured),
+            // but default values are provided to avoid missing keys.
+            'settings' => [
+                'sticky' => get_setting('header_sticky_enabled', '0') == '1',
+                'login_link_enabled' => get_setting('header_login_link_enabled', '1') == '1',
+                'login_link_url' => (string) get_setting('header_login_link_url', '#'),
+            ],
         ];
 
         return response()->json($payload);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminBaseController;
 use App\Models\Contact;
 use App\Models\CrmTicket;
 use App\Models\User;
+use App\Services\AIService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -39,12 +40,12 @@ class CrmTicketController extends AdminBaseController
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'contact_id'  => 'nullable|exists:contacts,id',
+            'contact_id' => 'nullable|exists:contacts,id',
             'assigned_to' => 'nullable|exists:users,id',
-            'subject'     => 'required|string|max:300',
+            'subject' => 'required|string|max:300',
             'description' => 'required|string',
-            'priority'    => 'required|in:low,medium,high,urgent',
-            'source'      => 'nullable|in:form,email,phone,chat',
+            'priority' => 'required|in:low,medium,high,urgent',
+            'source' => 'nullable|in:form,email,phone,chat',
         ]);
 
         $ticket = CrmTicket::create($validated);
@@ -72,10 +73,10 @@ class CrmTicketController extends AdminBaseController
     {
         $validated = $request->validate([
             'assigned_to' => 'nullable|exists:users,id',
-            'subject'     => 'required|string|max:300',
+            'subject' => 'required|string|max:300',
             'description' => 'required|string',
-            'priority'    => 'required|in:low,medium,high,urgent',
-            'status'      => 'required|in:open,in_progress,waiting,resolved,closed',
+            'priority' => 'required|in:low,medium,high,urgent',
+            'status' => 'required|in:open,in_progress,waiting,resolved,closed',
         ]);
 
         $ticket->update($validated);
@@ -97,9 +98,9 @@ class CrmTicketController extends AdminBaseController
         $request->validate(['body' => 'required|string']);
 
         $ticket->replies()->create([
-            'user_id'   => auth()->id(),
+            'user_id' => auth()->id(),
             'direction' => 'outbound',
-            'body'      => $request->input('body'),
+            'body' => $request->input('body'),
         ]);
 
         if ($ticket->status === 'open') {
@@ -112,11 +113,25 @@ class CrmTicketController extends AdminBaseController
     public function aiReply(CrmTicket $ticket)
     {
         try {
-            $aiService = app(\App\Services\AIService::class);
-            $context = $ticket->description . "\n\n" . $ticket->replies->pluck('body')->implode("\n---\n");
-            $draft = $aiService->draftReply($context, 'professional', 'nl');
+            $aiService = app(AIService::class);
+            $context = $ticket->description."\n\n".$ticket->replies->pluck('body')->implode("\n---\n");
+            $assist = $aiService->crmStructuredAssist(
+                $context,
+                $ticket->contact_id ? (int) $ticket->contact_id : null,
+                'professional',
+                'nl'
+            );
 
-            return response()->json(['draft' => $draft]);
+            if (! $assist['success']) {
+                return response()->json(['error' => $assist['error'] ?? 'AI service unavailable.'], 503);
+            }
+
+            return response()->json([
+                'draft' => $assist['draft'] ?? '',
+                'summary' => $assist['summary'] ?? '',
+                'suggested_status' => $assist['suggested_status'] ?? '',
+                'risk_flags' => $assist['risk_flags'] ?? [],
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'AI service unavailable.'], 503);
         }

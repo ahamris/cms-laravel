@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
@@ -53,6 +54,21 @@ class Table extends Component
     #[Url(as: 'search')]
     public string $search = '';
 
+    #[Url(as: 'template')]
+    public ?string $templateFilter = null;
+
+    #[Url(as: 'status')]
+    public ?string $statusFilter = null;
+
+    #[Url(as: 'home')]
+    public ?string $homeFilter = null;
+
+    public array $templateFilterOptions = [];
+
+    public array $statusFilterOptions = [];
+
+    public array $homeFilterOptions = [];
+
     #[Url(as: 'sort')]
     public string $sortField = 'created_at';
 
@@ -77,6 +93,9 @@ class Table extends Component
         bool $showCheckbox = true,
         bool $showBulkDelete = true,
         ?string $customActionsView = null,
+        array $templateFilterOptions = [],
+        array $statusFilterOptions = [],
+        array $homeFilterOptions = [],
     ): void {
         // Resolve model class from resource
         if ($resource instanceof Model) {
@@ -110,7 +129,7 @@ class Table extends Component
         }
 
         $this->providedItems = $items;
-        $this->isExternal = !is_null($items);
+        $this->isExternal = ! is_null($items);
 
         // Normalize columns: support both simple string array and detailed array
         $this->columns = $this->normalizeColumns($columns);
@@ -126,9 +145,12 @@ class Table extends Component
         $this->showCheckbox = $showCheckbox;
         $this->showBulkDelete = $showBulkDelete;
         $this->customActionsView = $customActionsView;
+        $this->templateFilterOptions = $templateFilterOptions;
+        $this->statusFilterOptions = $statusFilterOptions;
+        $this->homeFilterOptions = $homeFilterOptions;
 
         // Set default sort field if not provided
-        if (!in_array($this->sortField, $this->sortableFields)) {
+        if (! in_array($this->sortField, $this->sortableFields)) {
             $this->sortField = $this->sortableFields[0] ?? 'id';
         }
     }
@@ -136,7 +158,7 @@ class Table extends Component
     protected function getModelInstance(): Model
     {
         // Re-resolve model class if not set (e.g. on subsequent requests)
-        if (!isset($this->modelClass)) {
+        if (! isset($this->modelClass)) {
             // Try resources array first (legacy)
             if (array_key_exists($this->resource, $this->resources)) {
                 $this->modelClass = $this->resources[$this->resource];
@@ -230,15 +252,15 @@ class Table extends Component
                     ];
                 } elseif (is_array($column)) {
                     // Already in detailed format, ensure 'key' exists
-                    if (!isset($column['key'])) {
+                    if (! isset($column['key'])) {
                         $column['key'] = $index;
                     }
                     // Set default label if not provided
-                    if (!isset($column['label'])) {
+                    if (! isset($column['label'])) {
                         $column['label'] = str($column['key'])->replace('_', ' ')->ucfirst()->toString();
                     }
                     // Default sortable to true if not specified
-                    if (!isset($column['sortable'])) {
+                    if (! isset($column['sortable'])) {
                         $column['sortable'] = true;
                     }
                     $normalized[] = $column;
@@ -311,12 +333,12 @@ class Table extends Component
         }
 
         // Load unique relationships
-        if (!blank($relationships)) {
+        if (! blank($relationships)) {
             $query->with(array_unique($relationships));
         }
 
         // Apply search
-        if ($this->search && !blank($this->searchFields)) {
+        if ($this->search && ! blank($this->searchFields)) {
             $query->where(function (Builder $q) {
                 foreach ($this->searchFields as $index => $field) {
                     // Check if field is a relationship field (e.g., 'user.name')
@@ -346,6 +368,27 @@ class Table extends Component
             });
         }
 
+        // Apply facet filters (optional)
+        if (! blank($this->templateFilter) && ! blank($this->templateFilterOptions)) {
+            $query->where('template', $this->templateFilter);
+        }
+
+        if (! blank($this->statusFilter) && ! blank($this->statusFilterOptions)) {
+            if ($this->statusFilter === 'active') {
+                $query->where('is_active', true);
+            } elseif ($this->statusFilter === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        if (! blank($this->homeFilter) && ! blank($this->homeFilterOptions)) {
+            if ($this->homeFilter === 'yes') {
+                $query->where('is_homepage', true);
+            } elseif ($this->homeFilter === 'no') {
+                $query->where('is_homepage', false);
+            }
+        }
+
         // Apply sorting
         if (in_array($this->sortField, $this->sortableFields)) {
             // Handle relationship sorting
@@ -354,11 +397,11 @@ class Table extends Component
                 if (count($parts) === 2) {
                     [$relation, $column] = $parts;
                     $modelTable = $this->getModelInstance()->getTable();
-                    $relationTable = $relation === 'user' ? 'users' : $relation . 's';
-                    $foreignKey = $relation === 'user' ? 'user_id' : $relation . '_id';
-                    $query->join($relationTable, $modelTable . '.' . $foreignKey, '=', $relationTable . '.id')
-                        ->orderBy($relationTable . '.' . $column, $this->sortDirection)
-                        ->select($modelTable . '.*');
+                    $relationTable = $relation === 'user' ? 'users' : $relation.'s';
+                    $foreignKey = $relation === 'user' ? 'user_id' : $relation.'_id';
+                    $query->join($relationTable, $modelTable.'.'.$foreignKey, '=', $relationTable.'.id')
+                        ->orderBy($relationTable.'.'.$column, $this->sortDirection)
+                        ->select($modelTable.'.*');
                 } else {
                     $query->orderBy($this->sortField, $this->sortDirection);
                 }
@@ -372,7 +415,7 @@ class Table extends Component
 
     public function sortBy(string $field): void
     {
-        if (!in_array($field, $this->sortableFields)) {
+        if (! in_array($field, $this->sortableFields)) {
             return;
         }
 
@@ -383,6 +426,21 @@ class Table extends Component
             $this->sortDirection = 'asc';
         }
 
+        $this->resetPage();
+    }
+
+    public function updatedTemplateFilter(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedStatusFilter(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedHomeFilter(): void
+    {
         $this->resetPage();
     }
 
@@ -402,7 +460,7 @@ class Table extends Component
 
     public function deleteSelected(): void
     {
-        if (blank($this->selected) || !$this->showBulkDelete) {
+        if (blank($this->selected) || ! $this->showBulkDelete) {
             return;
         }
 
@@ -422,13 +480,13 @@ class Table extends Component
         $this->selectAll = false;
 
         $modelName = class_basename($this->modelClass);
-        $message = "{$count} " . str($modelName)->lower()->toString() . ($count > 1 ? 's' : '') . ' deleted successfully.';
+        $message = "{$count} ".str($modelName)->lower()->toString().($count > 1 ? 's' : '').' deleted successfully.';
         $this->dispatch('notify', type: 'success', message: $message);
     }
 
     public function delete(int $id): void
     {
-        if (!in_array('delete', $this->actions)) {
+        if (! in_array('delete', $this->actions)) {
             return;
         }
 
@@ -438,21 +496,21 @@ class Table extends Component
         $modelName = class_basename($this->modelClass);
 
         $item->delete();
-        $this->selected = array_filter($this->selected, fn($item) => $item !== $id);
+        $this->selected = array_filter($this->selected, fn ($item) => $item !== $id);
 
-        $message = str($modelName)->ucfirst()->toString() . " '{$itemName}' deleted successfully.";
+        $message = str($modelName)->ucfirst()->toString()." '{$itemName}' deleted successfully.";
         $this->dispatch('notify', type: 'success', message: $message);
     }
 
     public function getRoute(string $action, int $id): ?string
     {
-        if (!$this->routePrefix) {
+        if (! $this->routePrefix) {
             return null;
         }
 
         $routeName = "{$this->routePrefix}.{$action}";
 
-        if (!Route::has($routeName)) {
+        if (! Route::has($routeName)) {
             return null;
         }
 
@@ -466,7 +524,7 @@ class Table extends Component
         $item = $modelInstance->query()->findOrFail($id);
 
         if (isset($item->file_path) && $item->file_path) {
-            return \Illuminate\Support\Facades\Storage::url($item->file_path);
+            return Storage::url($item->file_path);
         }
 
         return $this->getRoute('show', $id);
@@ -489,7 +547,7 @@ class Table extends Component
 
         // Check if item has file_path (for file models)
         if (isset($item->file_path) && $item->file_path) {
-            return \Illuminate\Support\Facades\Storage::url($item->file_path);
+            return Storage::url($item->file_path);
         }
 
         return null;
@@ -539,7 +597,7 @@ class Table extends Component
         // Security: Only allow toggling fields that are explicitly defined as toggle type in columns
         $columnType = $this->getColumnType($field);
         if ($columnType !== 'toggle') {
-            abort(403, 'Invalid field for toggle operation. Ensure the column has type "toggle", e.g. [\'key\' => \'' . $field . '\', \'type\' => \'toggle\'].');
+            abort(403, 'Invalid field for toggle operation. Ensure the column has type "toggle", e.g. [\'key\' => \''.$field.'\', \'type\' => \'toggle\'].');
         }
 
         // Security: Validate field exists in columns to prevent mass assignment
@@ -550,7 +608,7 @@ class Table extends Component
             }
         }
 
-        if (!in_array($field, $allowedFields, true)) {
+        if (! in_array($field, $allowedFields, true)) {
             abort(403, 'Field not allowed for toggle operation.');
         }
 
@@ -558,12 +616,12 @@ class Table extends Component
         $item = $modelInstance->query()->findOrFail($id);
 
         // Security: Ensure field exists on model
-        if (!isset($item->$field)) {
+        if (! isset($item->$field)) {
             abort(404, 'Field not found on model.');
         }
 
         $oldValue = $item->$field;
-        $newValue = !$oldValue;
+        $newValue = ! $oldValue;
 
         // Security: Use fillable/guarded protection - only update the specific allowed field
         $item->update([$field => $newValue]);
@@ -575,7 +633,7 @@ class Table extends Component
 
         $status = $newValue ? 'activated' : 'deactivated';
         $variant = $newValue ? 'success' : 'warning';
-        $message = str($modelName)->ucfirst()->toString() . " '{$itemName}' {$status} successfully.";
+        $message = str($modelName)->ucfirst()->toString()." '{$itemName}' {$status} successfully.";
 
         $this->dispatch('notify', type: $variant, message: $message);
     }
