@@ -25,9 +25,11 @@
         </div>
         <div class="mt-6 flex gap-3">
             <a href="{{ route('admin.blog-type.index') }}" class="inline-flex items-center rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-gray-300 dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">Cancel</a>
-            <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90">
-                <i class="fa-solid fa-check"></i>
-                Create Blog Type
+            <button type="submit" name="submit_action" value="edit" class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-gray-300 dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
+                Save
+            </button>
+            <button type="submit" name="submit_action" value="index" class="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90">
+                Save & close
             </button>
         </div>
     </form>

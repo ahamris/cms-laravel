@@ -85,14 +85,15 @@ class BlogController extends AdminBaseController
         // Log activity
         $this->logCreate($blog);
 
-        // Check if user wants to continue editing
-        if ($request->input('action') === 'save_and_stay') {
+        $submitAction = $request->input('submit_action', $request->input('action'));
+
+        if ($submitAction === 'edit' || $submitAction === 'save_and_stay') {
             return redirect()->route('admin.blog.edit', $blog)
-                ->with('success', 'Blog created successfully! You can continue editing.');
+                ->with('success', 'Article created successfully! You can continue editing.');
         }
 
         return redirect()->route('admin.blog.index')
-            ->with('success', 'Blog created successfully!');
+            ->with('success', 'Article created successfully!');
     }
 
     /**
@@ -190,14 +191,15 @@ class BlogController extends AdminBaseController
         $intelligence = app(MarketingIntelligence::class);
         $intelligence->updateSEOAnalysis($blog);
 
-        // Check if user wants to continue editing
-        if ($request->input('action') === 'save_and_stay') {
+        $submitAction = $request->input('submit_action', $request->input('action'));
+
+        if ($submitAction === 'edit' || $submitAction === 'save_and_stay') {
             return redirect()->route('admin.blog.edit', $blog)
-                ->with('success', 'Blog updated successfully! You can continue editing.');
+                ->with('success', 'Article updated successfully! You can continue editing.');
         }
 
         return redirect()->route('admin.blog.index')
-            ->with('success', 'Blog updated successfully!');
+            ->with('success', 'Article updated successfully!');
     }
 
     /**

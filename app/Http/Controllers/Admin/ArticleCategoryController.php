@@ -23,21 +23,27 @@ class ArticleCategoryController extends AdminBaseController
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:100',
-            'slug'        => 'nullable|string|max:100|unique:article_categories,slug',
+            'name' => 'required|string|max:100',
+            'slug' => 'nullable|string|max:100|unique:article_categories,slug',
             'description' => 'nullable|string',
-            'color'       => 'nullable|string|max:7',
-            'icon'        => 'nullable|string|max:50',
-            'parent_id'   => 'nullable|exists:article_categories,id',
-            'sort_order'  => 'nullable|integer',
-            'is_active'   => 'nullable|boolean',
+            'color' => 'nullable|string|max:7',
+            'icon' => 'nullable|string|max:50',
+            'parent_id' => 'nullable|exists:article_categories,id',
+            'sort_order' => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
-        ArticleCategory::create($validated);
+        $articleCategory = ArticleCategory::create($validated);
 
         $this->logActivity('article_category', 'created', "Created article category: {$validated['name']}");
+
+        $submitAction = $request->input('submit_action', 'index');
+        if ($submitAction === 'edit') {
+            return redirect()->route('admin.article-category.edit', $articleCategory)
+                ->with('success', 'Category created successfully. You can continue editing.');
+        }
 
         return redirect()->route('admin.article-category.index')
             ->with('success', 'Category created successfully.');
@@ -64,14 +70,14 @@ class ArticleCategoryController extends AdminBaseController
     public function update(Request $request, ArticleCategory $articleCategory)
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:100',
-            'slug'        => 'nullable|string|max:100|unique:article_categories,slug,' . $articleCategory->id,
+            'name' => 'required|string|max:100',
+            'slug' => 'nullable|string|max:100|unique:article_categories,slug,'.$articleCategory->id,
             'description' => 'nullable|string',
-            'color'       => 'nullable|string|max:7',
-            'icon'        => 'nullable|string|max:50',
-            'parent_id'   => 'nullable|exists:article_categories,id',
-            'sort_order'  => 'nullable|integer',
-            'is_active'   => 'nullable|boolean',
+            'color' => 'nullable|string|max:7',
+            'icon' => 'nullable|string|max:50',
+            'parent_id' => 'nullable|exists:article_categories,id',
+            'sort_order' => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
@@ -80,7 +86,13 @@ class ArticleCategoryController extends AdminBaseController
 
         $this->logActivity('article_category', 'updated', "Updated article category: {$articleCategory->name}");
 
-        return redirect()->route('admin.article-category.index')
+        $submitAction = $request->input('submit_action', 'edit');
+        if ($submitAction === 'index') {
+            return redirect()->route('admin.article-category.index')
+                ->with('success', 'Category updated successfully.');
+        }
+
+        return redirect()->route('admin.article-category.edit', $articleCategory)
             ->with('success', 'Category updated successfully.');
     }
 
@@ -97,7 +109,7 @@ class ArticleCategoryController extends AdminBaseController
 
     public function toggleActive(ArticleCategory $articleCategory)
     {
-        $articleCategory->update(['is_active' => !$articleCategory->is_active]);
+        $articleCategory->update(['is_active' => ! $articleCategory->is_active]);
 
         return back()->with('success', 'Category status updated.');
     }

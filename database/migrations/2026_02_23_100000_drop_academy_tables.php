@@ -14,13 +14,14 @@ return new class extends Migration
     {
         if (Schema::hasTable('academy_videos')) {
             Schema::table('academy_videos', function (Blueprint $table) {
-                $table->dropForeign('academy_videos_academy_category_id_foreign');
-                $table->dropForeign('academy_videos_academy_chapter_id_foreign');
+                // SQLite can't drop foreign keys by constraint name. Dropping by column works across drivers.
+                $table->dropForeign(['academy_category_id']);
+                $table->dropForeign(['academy_chapter_id']);
             });
         }
         if (Schema::hasTable('academy_chapters')) {
             Schema::table('academy_chapters', function (Blueprint $table) {
-                $table->dropForeign('academy_chapters_academy_category_id_foreign');
+                $table->dropForeign(['academy_category_id']);
             });
         }
 

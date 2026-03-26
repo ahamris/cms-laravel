@@ -18,6 +18,7 @@ class ElementSeeder extends Seeder
         $this->seedFaqElements();
         $this->seedRelatedContentElements();
         $this->seedCardGridElements();
+        $this->seedHeroSectionElements();
         $this->seedHeroVideoElements();
         $this->seedNewsletterElements();
         $this->seedFeatureElements();
@@ -209,6 +210,34 @@ class ElementSeeder extends Seeder
                 'primary_button_url' => '/contact',
                 'secondary_button_text' => 'Bekijk onze aanpak',
                 'secondary_button_url' => '/aanpak',
+            ],
+        ]);
+    }
+
+    private function seedHeroSectionElements(): void
+    {
+        if (Element::where('type', ElementType::HeroSection)->exists()) {
+            return;
+        }
+
+        Element::create([
+            'type' => ElementType::HeroSection,
+            'title' => 'Build better products faster',
+            'sub_title' => 'Hero Sections',
+            'description' => 'A generalized hero block schema for wireframe-driven frontend rendering.',
+            'options' => [
+                'variant' => 'hero_split_image',
+                'layout' => 'split',
+                'eyebrow' => 'Introducing',
+                'media_type' => 'image',
+                'media_url' => null,
+                'image_path' => null,
+                'primary_button_text' => 'Get started',
+                'primary_button_url' => '/contact',
+                'secondary_button_text' => 'Learn more',
+                'secondary_button_url' => '/about',
+                'background_style' => 'default',
+                'text_alignment' => 'left',
             ],
         ]);
     }

@@ -17,7 +17,7 @@ class HeroVideoElementController extends BaseTypedElementController
 
     protected function heading(): string
     {
-        return 'Hero video elements';
+        return 'Hero sections';
     }
 
     protected function routeBase(): string
@@ -37,7 +37,7 @@ class HeroVideoElementController extends BaseTypedElementController
 
     protected function typeHelp(): string
     {
-        return 'Hero section with video URL and two CTA buttons.';
+        return 'Create reusable hero sections with optional video and two call-to-action buttons.';
     }
 
     protected function validateOptions(Request $request): array
@@ -111,5 +111,31 @@ class HeroVideoElementController extends BaseTypedElementController
 
         return redirect()->route($this->routeBase().'.index')
             ->with('success', $this->heading().' item updated successfully.');
+    }
+
+    public function clone(int $element): RedirectResponse
+    {
+        $item = $this->findTypedElement($element);
+        $options = $item->options ?? [];
+        $newVideoPath = $options['video_path'] ?? null;
+
+        // Duplicate media file so clone can be managed independently.
+        if (! empty($newVideoPath) && Storage::disk('public')->exists($newVideoPath)) {
+            $extension = pathinfo($newVideoPath, PATHINFO_EXTENSION);
+            $copyPath = 'element-hero-videos/'.uniqid('clone_', true).($extension ? '.'.$extension : '');
+            Storage::disk('public')->copy($newVideoPath, $copyPath);
+            $options['video_path'] = $copyPath;
+        }
+
+        $clone = Element::create([
+            'type' => $this->type(),
+            'title' => $item->title ? $item->title.' (copy)' : 'Untitled hero (copy)',
+            'sub_title' => $item->sub_title,
+            'description' => $item->description,
+            'options' => $options,
+        ]);
+
+        return redirect()->route($this->routeBase().'.edit', $clone->id)
+            ->with('success', 'Hero section cloned successfully. You can now edit the copy.');
     }
 }

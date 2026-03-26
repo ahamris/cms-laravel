@@ -69,6 +69,15 @@ class Table extends Component
 
     public array $homeFilterOptions = [];
 
+    /** Plural noun for the row count, e.g. "articles", "pages". */
+    public ?string $entityCountLabel = null;
+
+    public ?string $emptyStateTitle = null;
+
+    public ?string $emptyCtaUrl = null;
+
+    public ?string $emptyCtaLabel = null;
+
     #[Url(as: 'sort')]
     public string $sortField = 'created_at';
 
@@ -96,6 +105,10 @@ class Table extends Component
         array $templateFilterOptions = [],
         array $statusFilterOptions = [],
         array $homeFilterOptions = [],
+        ?string $entityCountLabel = null,
+        ?string $emptyStateTitle = null,
+        ?string $emptyCtaUrl = null,
+        ?string $emptyCtaLabel = null,
     ): void {
         // Resolve model class from resource
         if ($resource instanceof Model) {
@@ -148,6 +161,10 @@ class Table extends Component
         $this->templateFilterOptions = $templateFilterOptions;
         $this->statusFilterOptions = $statusFilterOptions;
         $this->homeFilterOptions = $homeFilterOptions;
+        $this->entityCountLabel = $entityCountLabel;
+        $this->emptyStateTitle = $emptyStateTitle;
+        $this->emptyCtaUrl = $emptyCtaUrl;
+        $this->emptyCtaLabel = $emptyCtaLabel;
 
         // Set default sort field if not provided
         if (! in_array($this->sortField, $this->sortableFields)) {

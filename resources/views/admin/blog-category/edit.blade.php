@@ -110,9 +110,13 @@
                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 Cancel
             </a>
-            <button type="submit"
+            <button type="submit" name="submit_action" value="edit"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
+                Save
+            </button>
+            <button type="submit" name="submit_action" value="index"
                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-accent)] px-6 py-2 text-sm font-semibold text-white shadow-xs ring-1 ring-inset ring-[var(--color-accent)] hover:opacity-90 transition-opacity">
-                Update Blog Category
+                Save & close
             </button>
         </div>
     </form>

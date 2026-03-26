@@ -13,33 +13,37 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('features', function (Blueprint $table) {
-            $table->unsignedBigInteger('solution_id')->nullable()->after('id');
-        });
+        if (! Schema::hasColumn('features', 'solution_id')) {
+            Schema::table('features', function (Blueprint $table) {
+                $table->unsignedBigInteger('solution_id')->nullable()->after('id');
+            });
+        }
 
-        Schema::table('modules', function (Blueprint $table) {
-            $table->unsignedBigInteger('feature_id')->nullable()->after('id');
-        });
+        if (! Schema::hasColumn('modules', 'feature_id')) {
+            Schema::table('modules', function (Blueprint $table) {
+                $table->unsignedBigInteger('feature_id')->nullable()->after('id');
+            });
+        }
 
         // Migrate: assign one solution per feature (from module_solution via module_feature)
         DB::statement('
-            UPDATE features f
+            UPDATE features
             SET solution_id = (
                 SELECT ms.solution_id
                 FROM module_feature mf
                 JOIN module_solution ms ON ms.module_id = mf.module_id
-                WHERE mf.feature_id = f.id
+                WHERE mf.feature_id = features.id
                 LIMIT 1
             )
         ');
 
         // Migrate: assign one feature per module (from module_feature)
         DB::statement('
-            UPDATE modules m
+            UPDATE modules
             SET feature_id = (
                 SELECT mf.feature_id
                 FROM module_feature mf
-                WHERE mf.module_id = m.id
+                WHERE mf.module_id = modules.id
                 LIMIT 1
             )
         ');

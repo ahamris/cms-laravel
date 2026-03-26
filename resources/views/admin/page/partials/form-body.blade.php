@@ -77,7 +77,7 @@
                                                     </template>
                                                 </select>
                                                 <p class="mt-1 text-xs text-amber-700 dark:text-amber-400/90" x-show="elementsForRow(row).length === 0" x-cloak>
-                                                    {{ __('No elements of this type yet. Create one under Elements in the sidebar.') }}
+                                                    {{ __('No elements of this type yet. Create one under UI Blocks in the sidebar.') }}
                                                 </p>
                                             </div>
                                             <p class="rounded-md border border-dashed border-zinc-300 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 dark:border-zinc-600 dark:bg-zinc-900/40 dark:text-zinc-400" x-show="row.row_kind === 'short_body'" x-cloak>

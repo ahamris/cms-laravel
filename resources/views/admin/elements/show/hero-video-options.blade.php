@@ -27,6 +27,7 @@
 </dl>
 @if($videoUrl)
     <div class="mt-4">
+        <div class="mb-2 text-xs font-medium text-gray-500">Video preview</div>
         <video controls class="w-full max-w-2xl rounded-lg border border-gray-200">
             <source src="{{ $videoUrl }}">
             Your browser does not support the video tag.

@@ -42,6 +42,7 @@ class PageLayoutTemplateRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
+            'shell_section' => ['required', 'string', Rule::in(['none', 'header', 'hero'])],
             'use_header_section' => 'sometimes|boolean',
             'use_hero_section' => 'sometimes|boolean',
             'rows' => 'required|array|min:1',

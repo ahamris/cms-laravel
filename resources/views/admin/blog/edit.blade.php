@@ -1,9 +1,10 @@
-<x-layouts.admin title="Edit Blog Post">
+<x-layouts.admin title="Edit Article">
+    <div x-data="{ showAiOverwriteModal: false }" @ai-generate-request.window="showAiOverwriteModal = true">
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Edit Blog Post</h1>
-            <p class="text-zinc-600 dark:text-zinc-400">Update blog post information</p>
+            <h1 class="mb-1 text-xl font-semibold text-zinc-900 dark:text-white">Edit Article</h1>
+            <p class="text-[12.5px] text-zinc-600 dark:text-zinc-400">Update article information</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
             <a href="{{ route('admin.blog.show', $blog) }}"
@@ -14,7 +15,7 @@
             <a href="{{ route('admin.blog.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20 transition-all">
                 <i class="fa-solid fa-arrow-left"></i>
-                Back to Blogs
+                Back to Articles
             </a>
         </div>
     </div>
@@ -31,14 +32,14 @@
                 <div
                     class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                     <div class="mb-6">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Post Details</h2>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Basic information about your blog post.
+                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Article details</h2>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Basic information about your article.
                         </p>
                     </div>
 
                     <div class="space-y-6">
                         {{-- Title --}}
-                        <x-ui.input id="title" name="title" :value="old('title', $blog->title)" label="Blog Title"
+                        <x-ui.input id="title" name="title" :value="old('title', $blog->title)" label="Article title"
                             placeholder="e.g. 10 Tips for Better SEO" required />
 
                         {{-- Slug --}}
@@ -249,7 +250,7 @@
                             class="flex items-center justify-between py-4 border-y border-gray-100 dark:border-white/5">
                             <div>
                                 <label class="block text-sm font-medium text-gray-900 dark:text-white">Featured
-                                    Post</label>
+                                    article</label>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Show on homepage</p>
                             </div>
                             <x-ui.toggle name="is_featured" :checked="old('is_featured', $blog->is_featured) == 1" />
@@ -258,8 +259,8 @@
                         {{-- Status Toggle --}}
                         <div class="flex items-center justify-between">
                             <div>
-                                <label class="block text-sm font-medium text-gray-900 dark:text-white">Post
-                                    Status</label>
+                                <label class="block text-sm font-medium text-gray-900 dark:text-white">Publication
+                                    status</label>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Active and visible to public</p>
                             </div>
                             <x-ui.toggle name="is_active" :checked="old('is_active', $blog->is_active) == 1" />
@@ -285,14 +286,14 @@
 
                 {{-- Form Actions --}}
                 <div class="sticky top-24 space-y-4">
-                    <x-ui.button type="submit" name="action" value="save" variant="primary"
-                        class="w-full !py-3 font-bold" icon="floppy-disk">
-                        Update Post
+                    <x-ui.button type="submit" name="submit_action" value="index" variant="primary"
+                        class="w-full !py-3 font-bold" icon="save">
+                        Save & close
                     </x-ui.button>
 
-                    <x-ui.button type="submit" name="action" value="save_and_stay" variant="default"
-                        class="w-full !py-3 font-bold" icon="keyboard">
-                        Save & Keep Editing
+                    <x-ui.button type="submit" name="submit_action" value="edit" variant="default"
+                        class="w-full !py-3 font-bold" icon="save">
+                        Save
                     </x-ui.button>
 
                     <a href="{{ route('admin.blog.index') }}"
@@ -303,6 +304,16 @@
             </div>
         </div>
     </form>
+
+    <x-ui.modal alpine-show="showAiOverwriteModal" modal-id="ai-overwrite-modal" size="sm">
+        <x-slot:title>Replace existing content?</x-slot:title>
+        <p class="text-[13px] text-zinc-600 dark:text-zinc-400">Generated text will replace the current title, summary, and main content.</p>
+        <x-slot:footer>
+            <x-ui.button variant="secondary" type="button" @click="showAiOverwriteModal = false">Cancel</x-ui.button>
+            <x-ui.button variant="primary" color="red" type="button" @click="showAiOverwriteModal = false; window.__executeAiGenerate && window.__executeAiGenerate();">Continue</x-ui.button>
+        </x-slot:footer>
+    </x-ui.modal>
+    </div>
 
     @push('scripts')
         <script>
@@ -315,6 +326,7 @@
             function analyzeSEO(blogId) {
                 const btn = document.getElementById('analyzeBtn');
                 const icon = document.getElementById('analyzeIcon');
+                if (!btn || !icon) return;
 
                 btn.disabled = true;
                 icon.classList.add('fa-spin');
@@ -330,12 +342,14 @@
                     .then(data => {
                         if (data.success) {
                             location.reload();
-                        } else {
-                            alert('Failed to analyze SEO: ' + (data.error || 'Unknown error'));
+                        } else if (typeof toastManager !== 'undefined') {
+                            toastManager.show('error', 'Failed to analyze SEO: ' + (data.error || 'Unknown error'));
                         }
                     })
                     .catch(error => {
-                        alert('Error analyzing SEO: ' + error.message);
+                        if (typeof toastManager !== 'undefined') {
+                            toastManager.show('error', 'Error analyzing SEO: ' + error.message);
+                        }
                     })
                     .finally(() => {
                         btn.disabled = false;
@@ -361,77 +375,81 @@
                     return;
                 }
 
-                if (!confirm('This will replace existing content. Continue?')) return;
+                window.__executeAiGenerate = function() {
+                    errorDiv.classList.add('hidden');
+                    btn.disabled = true;
+                    btnText.textContent = 'Generating...';
+                    btnIcon.classList.remove('fa-wand-magic-sparkles');
+                    btnIcon.classList.add('fa-spinner', 'fa-spin');
 
-                errorDiv.classList.add('hidden');
-                btn.disabled = true;
-                btnText.textContent = 'Generating...';
-                btnIcon.classList.remove('fa-wand-magic-sparkles');
-                btnIcon.classList.add('fa-spinner', 'fa-spin');
-
-                fetch('{{ route('admin.blog.generate-with-ai') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ topic, keywords, tone, length }),
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            if (data.data.title) {
-                                document.getElementById('title').value = data.data.title;
-                                document.getElementById('title').dispatchEvent(new Event('input'));
-                            }
-                            if (data.data.short_body) {
-                                document.getElementById('short_body').value = data.data.short_body.substring(0, 150);
-                                document.getElementById('short_body').dispatchEvent(new Event('input'));
-                            }
-                            if (data.data.long_body) {
-                                const longBodyInput = document.getElementById('input-long_body');
-                                if (longBodyInput) {
-                                    longBodyInput.value = data.data.long_body;
-                                    longBodyInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                    const editorWrapper = longBodyInput.closest('[x-data]');
-                                    if (editorWrapper && editorWrapper._x_dataStack) {
-                                        const alpineData = editorWrapper._x_dataStack[0];
-                                        if (alpineData && alpineData.setHTML) {
-                                            alpineData.setHTML(data.data.long_body);
+                    fetch('{{ route('admin.blog.generate-with-ai') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ topic, keywords, tone, length }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                if (data.data.title) {
+                                    document.getElementById('title').value = data.data.title;
+                                    document.getElementById('title').dispatchEvent(new Event('input'));
+                                }
+                                if (data.data.short_body) {
+                                    document.getElementById('short_body').value = data.data.short_body.substring(0, 150);
+                                    document.getElementById('short_body').dispatchEvent(new Event('input'));
+                                }
+                                if (data.data.long_body) {
+                                    const longBodyInput = document.getElementById('input-long_body');
+                                    if (longBodyInput) {
+                                        longBodyInput.value = data.data.long_body;
+                                        longBodyInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                        const editorWrapper = longBodyInput.closest('[x-data]');
+                                        if (editorWrapper && editorWrapper._x_dataStack) {
+                                            const alpineData = editorWrapper._x_dataStack[0];
+                                            if (alpineData && alpineData.setHTML) {
+                                                alpineData.setHTML(data.data.long_body);
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            if (data.data.meta_title) document.getElementById('meta_title').value = data.data.meta_title;
-                            if (data.data.meta_description) document.getElementById('meta_description').value = data.data.meta_description;
+                                if (data.data.meta_title) document.getElementById('meta_title').value = data.data.meta_title;
+                                if (data.data.meta_description) document.getElementById('meta_description').value = data.data.meta_description;
 
-                            // Handle tag-input for keywords
-                            if (data.data.meta_keywords) {
-                                const tagInputContainer = document.getElementById('meta_keywords').closest('[x-data]');
-                                if (tagInputContainer && tagInputContainer._x_dataStack) {
-                                    const tagData = tagInputContainer._x_dataStack[0];
-                                    const keywordsArray = data.data.meta_keywords.split(',').map(k => k.trim()).filter(k => k);
-                                    tagData.tags = keywordsArray;
+                                if (data.data.meta_keywords) {
+                                    const tagInputContainer = document.getElementById('meta_keywords').closest('[x-data]');
+                                    if (tagInputContainer && tagInputContainer._x_dataStack) {
+                                        const tagData = tagInputContainer._x_dataStack[0];
+                                        const keywordsArray = data.data.meta_keywords.split(',').map(k => k.trim()).filter(k => k);
+                                        tagData.tags = keywordsArray;
+                                    }
                                 }
-                            }
 
-                            alert('✓ Content generated successfully!');
-                        } else {
+                                if (typeof toastManager !== 'undefined') {
+                                    toastManager.show('success', 'Content generated successfully.');
+                                }
+                            } else {
+                                errorDiv.classList.remove('hidden');
+                                errorText.textContent = data.error || 'Failed to generate content.';
+                            }
+                        })
+                        .catch(() => {
                             errorDiv.classList.remove('hidden');
-                            errorText.textContent = data.error || 'Failed to generate content.';
-                        }
-                    })
-                    .catch(error => {
-                        errorDiv.classList.remove('hidden');
-                        errorText.textContent = 'An error occurred during generation.';
-                    })
-                    .finally(() => {
-                        btn.disabled = false;
-                        btnText.textContent = 'Regenerate';
-                        btnIcon.classList.remove('fa-spinner', 'fa-spin');
-                        btnIcon.classList.add('fa-wand-magic-sparkles');
-                    });
+                            errorText.textContent = 'An error occurred during generation.';
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btnText.textContent = 'Regenerate';
+                            btnIcon.classList.remove('fa-spinner', 'fa-spin');
+                            btnIcon.classList.add('fa-wand-magic-sparkles');
+                            window.__executeAiGenerate = null;
+                        });
+                };
+
+                window.dispatchEvent(new CustomEvent('ai-generate-request'));
             }
         </script>
     @endpush

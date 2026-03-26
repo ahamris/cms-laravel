@@ -1,5 +1,32 @@
 # Changelog
 
+## 2026-03-26 — Admin UX, design system, and fixes
+
+### Added
+
+- Hero Section UI block: `ElementType::HeroSection`, `HeroSectionElementController`, admin form and show partials, `admin/element-hero-section` resource routes, `ElementSeeder` sample, and `hero_section` allowed in page row section categories.
+- `resources/views/components/ui/slide-over.blade.php` (`x-ui.slide-over`) for non-destructive side panels (e.g. article social posting).
+- Design docs: `docs/cursor-admin-design-system.md`, `docs/admin-ds-compliance-checklist.md`, `docs/OPCM_Design_Guide_Standard.md`, `docs/ui-ux-guidelines.md` (plus `docs/OPCM_Design_System.md` / `.docx` where tracked).
+- OpenAPI scaffolding: `app/OpenApi/AnalyticsPaths.php`, `FrontendExtraPaths.php`, `V1Paths.php`, and `openapi.json`.
+- Hero Video element: `POST admin/element-hero-video/{element}/clone` and clearer index/show UX (clone, delete confirmation, labels).
+
+### Changed
+
+- Admin sidebar: Content structure (Pages, UI Blocks with hero section entry), Articles children (Categories, Category groups, Types, Tags, Comments), naming aligned with UI terminology.
+- Shared `livewire:admin.table`: toolbar layout (search, filters, live row count, bulk delete), DS-oriented typography and row actions, optional empty-state CTA; new props `entityCountLabel`, `emptyStateTitle`, `emptyCtaUrl`, `emptyCtaLabel`.
+- Pages and Articles modules: consistent headers (`text-xl` titles), `x-ui.button`, table metadata on index, save / save-and-close behaviour on forms where applicable.
+- Articles (`blog`): index uses slide-overs for social flows; create/edit use toasts instead of `alert()`; AI regenerate uses a confirmation modal instead of `confirm()`; copy uses “article” wording.
+- Taxonomies: article categories, category groups (blog categories), article types, tags, comments — list headers and table integration; tags quick-add uses `x-ui.input` / `x-ui.button`.
+- UI block element index/show: delete via `x-ui.modal`; clone without `confirm()`.
+- Breadcrumbs: default `maxItems` reduced; overflow dropdown uses `z-50` instead of `z-[9999]`.
+
+### Fixed
+
+- `DashboardController`: cache key `dashboard.contentStatsQuery.v2` stores only plain arrays so PHP 8.4+ does not hit `array_column()` on incomplete objects after cache round-trips.
+- `routes/admin.php`: compatibility POST routes for `content/page` and `content/blog` no longer steal names from `admin.page.store` / `admin.blog.store`.
+
+---
+
 ## Unreleased
 
 Note: I couldn’t locate the literal marker `download@docs` anywhere in this workspace, so the entry below summarizes the changes that are present in the repo right now (especially the newly added Changelog feature + the docs resources that exist under `docs/` and `resources/docs/`).

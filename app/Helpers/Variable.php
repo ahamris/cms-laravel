@@ -97,11 +97,6 @@ class Variable
         'page_create' => [self::ROLE_ADMIN],
         'page_edit' => [self::ROLE_ADMIN],
         'page_delete' => [self::ROLE_ADMIN],
-
-        'static_page_access' => [self::ROLE_ADMIN],
-        'static_page_show' => [self::ROLE_ADMIN],
-        'static_page_create' => [self::ROLE_ADMIN],
-        'static_page_edit' => [self::ROLE_ADMIN],
         'changelog_access' => [self::ROLE_ADMIN],
         'changelog_show' => [self::ROLE_ADMIN],
         'changelog_create' => [self::ROLE_ADMIN],

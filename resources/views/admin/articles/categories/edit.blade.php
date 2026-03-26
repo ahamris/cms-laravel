@@ -33,11 +33,14 @@
                         <span class="text-zinc-700 dark:text-zinc-300">Active</span>
                     </label>
                 </div>
-                <div class="flex justify-end">
-                    <button type="submit"
+                <div class="flex justify-end gap-3">
+                    <button type="submit" name="submit_action" value="edit"
+                        class="inline-flex items-center gap-2 rounded-md border border-zinc-300 dark:border-zinc-600 px-6 py-2 font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                        Save
+                    </button>
+                    <button type="submit" name="submit_action" value="index"
                         class="inline-flex items-center gap-2 rounded-md bg-[var(--color-accent)] px-6 py-2 font-semibold text-white shadow-xs hover:opacity-90 transition-opacity">
-                        <i class="fa-solid fa-check"></i>
-                        Update Category
+                        Save & close
                     </button>
                 </div>
             </form>

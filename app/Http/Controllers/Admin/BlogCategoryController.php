@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\BlogCategoryRequest;
 use App\Models\BlogCategory;
 use Illuminate\View\View;
@@ -35,7 +34,13 @@ class BlogCategoryController extends AdminBaseController
         // Set is_active (toggle sends '1' when checked, '0' when unchecked)
         $validated['is_active'] = $request->input('is_active', '0') === '1';
 
-        BlogCategory::create($validated);
+        $category = BlogCategory::create($validated);
+        $submitAction = $request->input('submit_action', 'index');
+
+        if ($submitAction === 'edit' && $category) {
+            return redirect()->route('admin.blog-category.edit', $category)
+                ->with('success', 'Blog category created successfully! You can continue editing.');
+        }
 
         return redirect()->route('admin.blog-category.index')
             ->with('success', 'Blog category created successfully!');
@@ -69,7 +74,13 @@ class BlogCategoryController extends AdminBaseController
 
         $blogCategory->update($validated);
 
-        return redirect()->route('admin.blog-category.index')
+        $submitAction = $request->input('submit_action', 'edit');
+        if ($submitAction === 'index') {
+            return redirect()->route('admin.blog-category.index')
+                ->with('success', 'Blog category updated successfully!');
+        }
+
+        return redirect()->route('admin.blog-category.edit', $blogCategory)
             ->with('success', 'Blog category updated successfully!');
     }
 

@@ -13,13 +13,13 @@
         {{-- Page Header --}}
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Pages</h1>
-                <p class="text-zinc-600 dark:text-zinc-400">Manage website pages and content</p>
+                <h1 class="mb-1 text-xl font-semibold text-zinc-900 dark:text-white">Pages</h1>
+                <p class="text-[12.5px] text-zinc-600 dark:text-zinc-400">Manage website pages and content</p>
             </div>
             <div class="flex items-center gap-3">
-                <x-button variant="primary" icon="plus" icon-position="left" href="{{ route('admin.page.create') }}">
-                    Add Page
-                </x-button>
+                <x-ui.button variant="primary" icon="plus" icon-position="left" href="{{ route('admin.page.create') }}">
+                    Add page
+                </x-ui.button>
             </div>
         </div>
 
@@ -43,6 +43,10 @@
             :paginate="15"
             custom-actions-view="admin.page.partials.table-actions"
             :search-fields="['title', 'slug']"
+            entity-count-label="pages"
+            empty-state-title="No pages found"
+            :empty-cta-url="route('admin.page.create')"
+            empty-cta-label="Add page"
         />
     </div>
 

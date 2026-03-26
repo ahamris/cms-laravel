@@ -2,18 +2,27 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('doc_sections', function (Blueprint $table) {
-            $table->dropForeign('doc_sections_doc_version_id_foreign');
-        });
-        Schema::table('doc_sections', function (Blueprint $table) {
-            $table->dropColumn('doc_version_id');
-        });
+        if (Schema::hasColumn('doc_sections', 'doc_version_id')) {
+            // SQLite doesn't support dropping foreign keys by constraint name.
+            // Dropping by column works across database drivers.
+            Schema::table('doc_sections', function (Blueprint $table) {
+                $table->dropForeign(['doc_version_id']);
+            });
+
+            // SQLite can’t drop a column that still has dependent indexes.
+            DB::statement('DROP INDEX IF EXISTS doc_sections_doc_version_id_slug_index');
+
+            Schema::table('doc_sections', function (Blueprint $table) {
+                $table->dropColumn('doc_version_id');
+            });
+        }
         Schema::dropIfExists('doc_versions');
     }
 

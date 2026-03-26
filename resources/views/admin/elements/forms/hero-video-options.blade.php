@@ -3,12 +3,13 @@
     $videoPath = $o['video_path'] ?? null;
     $currentVideoUrl = $videoPath ? \Illuminate\Support\Facades\Storage::disk('public')->url($videoPath) : null;
 @endphp
-<div class="space-y-4">
+<div class="border-t border-gray-200 pt-4 mt-4 space-y-4">
+    <div class="font-semibold text-gray-900">Hero media & actions</div>
     <x-ui.video-upload
         id="hero_video_upload"
         name="video_file"
         :current-video-url="$currentVideoUrl"
-        label="Video upload"
+        label="Hero video upload"
     />
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -47,7 +48,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">URL</label>
                 <input type="text" name="options[secondary_button_url]"
-                    value="{{ $o['secondary_button_url'] ?? '' }}" placeholder="/aanpak"
+                    value="{{ $o['secondary_button_url'] ?? '' }}" placeholder="/learn-more"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 @error('options.secondary_button_url') border-red-500 @enderror">
                 @error('options.secondary_button_url')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helpers\Variable;
 use App\Models\Blog;
+use App\Models\CaseStudy;
 use App\Models\Contact;
 use App\Models\DailyPageView;
 use App\Models\DailyStat;
+use App\Models\HelpArticle;
+use App\Models\Page;
 use App\Models\Solution;
 use App\Models\User;
 use Carbon\Carbon;
@@ -30,21 +33,23 @@ class DashboardController extends AdminBaseController
             ];
         });
 
-        // Get content statistics from existing models (SQL compatible with SQLite and MySQL)
-        $contentStatsQuery = Cache::remember('dashboard.contentStatsQuery', 600, function () {
+        // Get content statistics from existing models (SQL compatible with SQLite and MySQL).
+        // Store only plain arrays in cache so drivers that JSON-encode or unserialize never leave
+        // __PHP_Incomplete_Class rows that break array_column() on PHP 8.4+.
+        $contentStatsRows = Cache::remember('dashboard.contentStatsQuery.v2', 600, function () {
             $driver = DB::getDriverName();
             if ($driver === 'sqlite') {
-                $rows = [
-                    ['blogs', \App\Models\Blog::count()],
-                    ['pages', \App\Models\Page::count()],
-                    ['solutions', Solution::count()],
-                    ['case_studies', \App\Models\CaseStudy::count()],
-                    ['help_articles', \App\Models\HelpArticle::count()],
-                    ['contacts', Contact::count()],
+                return [
+                    ['name' => 'blogs', 'count' => Blog::count()],
+                    ['name' => 'pages', 'count' => Page::count()],
+                    ['name' => 'solutions', 'count' => Solution::count()],
+                    ['name' => 'case_studies', 'count' => CaseStudy::count()],
+                    ['name' => 'help_articles', 'count' => HelpArticle::count()],
+                    ['name' => 'contacts', 'count' => Contact::count()],
                 ];
-                return array_map(fn ($r) => (object) ['name' => $r[0], 'count' => $r[1]], $rows);
             }
-            return DB::select("
+
+            $rows = DB::select("
                 (SELECT 'blogs' as name, COUNT(*) as count FROM blogs) UNION ALL
                 (SELECT 'pages' as name, COUNT(*) as count FROM pages) UNION ALL
                 (SELECT 'solutions' as name, COUNT(*) as count FROM solutions) UNION ALL
@@ -52,8 +57,13 @@ class DashboardController extends AdminBaseController
                 (SELECT 'help_articles' as name, COUNT(*) as count FROM help_articles) UNION ALL
                 (SELECT 'contacts' as name, COUNT(*) as count FROM contacts)
             ");
+
+            return array_map(
+                fn ($row) => ['name' => $row->name, 'count' => (int) $row->count],
+                $rows
+            );
         });
-        $contentStats = array_column($contentStatsQuery, 'count', 'name');
+        $contentStats = array_column($contentStatsRows, 'count', 'name');
 
         $dailyPageViewStats = Cache::remember('dashboard.dailyPageViewStats', 300, function () {
             try {

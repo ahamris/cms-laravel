@@ -22,7 +22,7 @@ class Breadcrumbs extends Component
     public function __construct(
         public ?array $items = null,
         ?string $separator = null, // FontAwesome icon name (e.g., 'chevron-right', 'angle-right') or text (default: '›')
-        public int $maxItems = 5, // Maximum items to show before truncation
+        public int $maxItems = 4, // Maximum items to show before truncation (keeps trail shorter; see design system)
     ) {
         $this->separator = $separator ?? '›';
         $this->generateCrumbs();

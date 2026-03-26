@@ -31,7 +31,7 @@ class PageLayoutTemplateController extends AdminBaseController
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated) {
-            $shell = $validated['shell_section'];
+            $shell = $validated['shell_section'] ?? 'none';
             $template = PageLayoutTemplate::create([
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? null,

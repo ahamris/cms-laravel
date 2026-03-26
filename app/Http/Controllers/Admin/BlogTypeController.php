@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\BlogTypeRequest;
 use App\Models\BlogType;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +23,13 @@ class BlogTypeController extends AdminBaseController
 
     public function store(BlogTypeRequest $request): RedirectResponse
     {
-        BlogType::create($request->validated());
+        $blogType = BlogType::create($request->validated());
+        $submitAction = $request->input('submit_action', 'index');
+
+        if ($submitAction === 'edit') {
+            return redirect()->route('admin.blog-type.edit', $blogType)
+                ->with('success', 'Blog type created successfully. You can continue editing.');
+        }
 
         return redirect()->route('admin.blog-type.index')
             ->with('success', 'Blog type created successfully.');
@@ -44,7 +49,13 @@ class BlogTypeController extends AdminBaseController
     {
         $blogType->update($request->validated());
 
-        return redirect()->route('admin.blog-type.index')
+        $submitAction = $request->input('submit_action', 'edit');
+        if ($submitAction === 'index') {
+            return redirect()->route('admin.blog-type.index')
+                ->with('success', 'Blog type updated successfully.');
+        }
+
+        return redirect()->route('admin.blog-type.edit', $blogType)
             ->with('success', 'Blog type updated successfully.');
     }
 

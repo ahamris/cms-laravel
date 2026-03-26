@@ -1,15 +1,15 @@
-<x-layouts.admin title="Create Blog Post">
+<x-layouts.admin title="Create Article">
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Create Blog Post</h1>
-            <p class="text-zinc-600 dark:text-zinc-400">Add a new blog post to your website</p>
+            <h1 class="mb-1 text-xl font-semibold text-zinc-900 dark:text-white">Create Article</h1>
+            <p class="text-[12.5px] text-zinc-600 dark:text-zinc-400">Add a new article to your website</p>
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.blog.index') }}"
                 class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs ring-1 ring-gray-300 ring-inset dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/20">
                 <i class="fa-solid fa-arrow-left"></i>
-                Back to Blogs
+                Back to Articles
             </a>
         </div>
     </div>
@@ -24,14 +24,14 @@
                 <div
                     class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
                     <div class="mb-6">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Post Details</h2>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Basic information about your blog post.
+                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Article details</h2>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Basic information about your article.
                         </p>
                     </div>
 
                     <div class="space-y-6">
                         {{-- Title --}}
-                        <x-ui.input id="title" name="title" :value="old('title')" label="Blog Title"
+                        <x-ui.input id="title" name="title" :value="old('title')" label="Article title"
                             placeholder="e.g. 10 Tips for Better SEO" required />
 
                         {{-- Slug --}}
@@ -238,12 +238,12 @@
 
                 {{-- Form Actions --}}
                 <div class="sticky top-24 space-y-4">
-                    <x-ui.button type="submit" name="action" value="save" variant="primary" class="w-full !py-3 font-bold" icon="cloud-arrow-up">
-                        Publish Blog Post
+                    <x-ui.button type="submit" name="submit_action" value="index" variant="primary" class="w-full !py-3 font-bold" icon="save">
+                        Save & close
                     </x-ui.button>
 
-                    <x-ui.button type="submit" name="action" value="save_and_stay" variant="default" class="w-full !py-3 font-bold" icon="keyboard">
-                        Save & Continue Editing
+                    <x-ui.button type="submit" name="submit_action" value="edit" variant="default" class="w-full !py-3 font-bold" icon="save">
+                        Save
                     </x-ui.button>
 
                     <a href="{{ route('admin.blog.index') }}"
@@ -336,7 +336,9 @@
                                 }
                             }
 
-                            alert('✓ Content generated successfully! Review and edit as needed.');
+                            if (typeof toastManager !== 'undefined') {
+                                toastManager.show('success', 'Content generated successfully. Review and edit as needed.');
+                            }
                         } else {
                             errorDiv.classList.remove('hidden');
                             errorText.textContent = data.error || 'Failed to generate content.';

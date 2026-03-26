@@ -12,7 +12,7 @@ return [
             'label' => 'Hero Sections',
             'default_row_label' => 'Hero',
             'component_count' => 12,
-            'element_types' => ['hero_video'],
+            'element_types' => ['hero_section', 'hero_video'],
         ],
         'features' => [
             'label' => 'Feature Sections',

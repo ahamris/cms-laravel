@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\Element\CardGridElementController;
 use App\Http\Controllers\Admin\Element\CtaElementController;
 use App\Http\Controllers\Admin\Element\FaqElementController;
 use App\Http\Controllers\Admin\Element\FeatureElementController;
+use App\Http\Controllers\Admin\Element\HeroSectionElementController;
 use App\Http\Controllers\Admin\Element\HeroVideoElementController;
 use App\Http\Controllers\Admin\Element\NewsletterElementController;
 use App\Http\Controllers\Admin\Element\RelatedContentElementController;
@@ -76,7 +77,6 @@ use App\Http\Controllers\Admin\Settings\RobotsTxtController;
 use App\Http\Controllers\Admin\SocialMediaPlatformController;
 use App\Http\Controllers\Admin\SocialSettingController;
 use App\Http\Controllers\Admin\SolutionController;
-use App\Http\Controllers\Admin\StaticPageController;
 use App\Http\Controllers\Admin\StickyMenuItemController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\ThemeSettingController;
@@ -161,8 +161,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         // Pages
         Route::resource('page', PageController::class);
         // Backwards-compatible route names used by existing tests/older frontend code.
+        // Keep compatibility on /content/* paths to avoid overriding resource routes.
         // (resource route names are `admin.page.*`; tests expect `admin.content.page.*`.)
-        Route::post('page', [PageController::class, 'store'])->name('content.page.store');
+        Route::post('content/page', [PageController::class, 'store'])->name('content.page.store');
         Route::resource('page-layout-template', PageLayoutTemplateController::class)->except(['show']);
         Route::post('page/{page}/duplicate', [PageController::class, 'duplicate'])->name('page.duplicate');
         Route::post('page/{page}/toggle-active', [PageController::class, 'toggleActive'])->name('page.toggle-active');
@@ -173,17 +174,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('faq', [FaqHubController::class, 'index'])->name('faq.hub');
         Route::resource('element-related-content', RelatedContentElementController::class)->parameters(['element-related-content' => 'element']);
         Route::resource('element-card-grid', CardGridElementController::class)->parameters(['element-card-grid' => 'element']);
+        Route::resource('element-hero-section', HeroSectionElementController::class)->parameters(['element-hero-section' => 'element']);
         Route::resource('element-hero-video', HeroVideoElementController::class)->parameters(['element-hero-video' => 'element']);
+        Route::post('element-hero-video/{element}/clone', [HeroVideoElementController::class, 'clone'])->name('element-hero-video.clone');
         Route::resource('element-newsletter', NewsletterElementController::class)->parameters(['element-newsletter' => 'element']);
         Route::resource('element-feature', FeatureElementController::class)->parameters(['element-feature' => 'element']);
-
-        // Static Pages
-        Route::resource('static-page', StaticPageController::class)->except(['destroy']);
-        Route::post('static-page/{staticPage}/toggle-active', [StaticPageController::class, 'toggleActive'])->name('static-page.toggle-active');
-        Route::post('static-page/{staticPage}/faq', [StaticPageController::class, 'storeFaq'])->name('static-page.store-faq');
-        Route::put('static-page/{staticPage}/faq/{faqId}', [StaticPageController::class, 'updateFaq'])->name('static-page.update-faq');
-        Route::delete('static-page/{staticPage}/faq/{faqId}', [StaticPageController::class, 'destroyFaq'])->name('static-page.destroy-faq');
-        Route::post('static-page/{staticPage}/faq/{faqId}/toggle-active', [StaticPageController::class, 'toggleFaqActive'])->name('static-page.toggle-faq-active');
 
         // Blog Categories
         Route::resource('blog-category', BlogCategoryController::class);
@@ -200,7 +195,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
         // Blogs
         Route::resource('blog', BlogController::class);
-        Route::post('blog', [BlogController::class, 'store'])->name('content.blog.store');
+        Route::post('content/blog', [BlogController::class, 'store'])->name('content.blog.store');
         Route::post('blog/{blog}/toggle-active', [BlogController::class, 'toggleActive'])->name('blog.toggle-active');
         Route::post('blog/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('blog.toggle-featured');
         Route::post('blog/{blog}/social-media-post', [BlogController::class, 'createSocialMediaPost'])->name('blog.social-media-post');
