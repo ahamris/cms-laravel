@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Data\Ai\AiOperationResult;
+use App\Jobs\RunAiTaskJob;
+use App\Models\AiTask;
 use App\Services\AIService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AiController extends AdminBaseController
 {
@@ -31,10 +35,15 @@ class AiController extends AdminBaseController
         );
 
         if (! $result['success']) {
-            return response()->json(['error' => $result['error'] ?? 'Generation failed.'], 422);
+            return $this->failure($result['error'] ?? 'Generation failed.', 422);
         }
 
-        return response()->json(['data' => $result['blocks']]);
+        return $this->success([
+            'blocks' => $result['blocks'] ?? [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ]);
     }
 
     public function generateArticle(Request $request): JsonResponse
@@ -58,10 +67,15 @@ class AiController extends AdminBaseController
         );
 
         if (! $result['success']) {
-            return response()->json(['error' => $result['error'] ?? 'Generation failed.'], 422);
+            return $this->failure($result['error'] ?? 'Generation failed.', 422);
         }
 
-        return response()->json(['data' => $result['article']]);
+        return $this->success([
+            'article' => $result['article'] ?? [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ]);
     }
 
     public function optimizeSeo(Request $request): JsonResponse
@@ -73,10 +87,15 @@ class AiController extends AdminBaseController
         $result = $this->aiService->optimizeSEO($request->input('content'));
 
         if (! $result['success']) {
-            return response()->json(['error' => $result['error'] ?? 'Optimization failed.'], 422);
+            return $this->failure($result['error'] ?? 'Optimization failed.', 422);
         }
 
-        return response()->json(['data' => $result['seo']]);
+        return $this->success([
+            'seo' => $result['seo'] ?? [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ]);
     }
 
     public function draftReply(Request $request): JsonResponse
@@ -96,10 +115,10 @@ class AiController extends AdminBaseController
         );
 
         if (empty($draft)) {
-            return response()->json(['error' => 'Draft generation failed.'], 422);
+            return $this->failure('Draft generation failed.', 422);
         }
 
-        return response()->json(['data' => ['draft' => $draft]]);
+        return $this->success(['draft' => $draft]);
     }
 
     public function contentPlan(Request $request): JsonResponse
@@ -117,9 +136,94 @@ class AiController extends AdminBaseController
         );
 
         if (! $result['success']) {
-            return response()->json(['error' => $result['error'] ?? 'Plan generation failed.'], 422);
+            return $this->failure($result['error'] ?? 'Plan generation failed.', 422);
         }
 
-        return response()->json(['data' => $result['plan']]);
+        return $this->success([
+            'plan' => $result['plan'] ?? [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ]);
+    }
+
+    public function queueTask(Request $request): JsonResponse
+    {
+        $request->validate([
+            'task_type' => 'required|in:generate_page,generate_article,optimize_seo,draft_reply,content_plan',
+            'payload' => 'required|array',
+        ]);
+
+        $task = AiTask::query()->create([
+            'user_id' => Auth::id(),
+            'task_type' => (string) $request->input('task_type'),
+            'status' => AiTask::STATUS_PENDING,
+            'payload' => $request->input('payload'),
+        ]);
+
+        RunAiTaskJob::dispatch($task->id)->onQueue('default');
+
+        return $this->success([
+            'task_id' => $task->id,
+            'status' => $task->status,
+        ], 202);
+    }
+
+    public function taskStatus(AiTask $task): JsonResponse
+    {
+        return $this->success([
+            'task' => [
+                'id' => $task->id,
+                'task_type' => $task->task_type,
+                'status' => $task->status,
+                'provider' => $task->provider,
+                'model' => $task->model,
+                'duration_ms' => $task->duration_ms,
+                'error_message' => $task->error_message,
+                'result' => $task->result,
+                'started_at' => $task->started_at,
+                'completed_at' => $task->completed_at,
+                'created_at' => $task->created_at,
+            ],
+        ]);
+    }
+
+    public function metrics(): JsonResponse
+    {
+        $base = AiTask::query()->where('created_at', '>=', now()->subDay());
+        $total = (clone $base)->count();
+        $failed = (clone $base)->where('status', AiTask::STATUS_FAILED)->count();
+        $completed = (clone $base)->where('status', AiTask::STATUS_COMPLETED)->count();
+        $avgDuration = (int) round((clone $base)->whereNotNull('duration_ms')->avg('duration_ms') ?? 0);
+        $byProvider = (clone $base)
+            ->selectRaw('provider, count(*) as total')
+            ->whereNotNull('provider')
+            ->groupBy('provider')
+            ->pluck('total', 'provider')
+            ->toArray();
+
+        return $this->success([
+            'window' => '24h',
+            'total' => $total,
+            'completed' => $completed,
+            'failed' => $failed,
+            'failure_rate' => $total > 0 ? round(($failed / $total) * 100, 2) : 0,
+            'avg_duration_ms' => $avgDuration,
+            'by_provider' => $byProvider,
+        ]);
+    }
+
+    private function success(array $payload, int $status = 200): JsonResponse
+    {
+        $result = AiOperationResult::success($payload);
+
+        return response()->json($result->toApiArray(), $status);
+    }
+
+    private function failure(string $message, int $status = 422): JsonResponse
+    {
+        $result = AiOperationResult::failure($message);
+
+        return response()->json($result->toApiArray(), $status);
     }
 }

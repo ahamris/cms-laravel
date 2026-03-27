@@ -22,20 +22,20 @@ return [
     | Page templates
     |--------------------------------------------------------------------------
     | Each template defines which form sections are visible in the admin.
-    | Sections: page_info, page_rows, body, marketing, sidebar_settings, sidebar_image, sidebar_elements, seo
+    | Sections: page_info, page_rows, body, marketing, sidebar_settings, sidebar_image, seo
     */
     'templates' => [
         'default' => [
             'label' => 'Default (full)',
-            'sections' => ['page_info', 'page_rows', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
+            'sections' => ['page_info', 'page_rows', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'seo'],
         ],
         'landing' => [
             'label' => 'Landing page',
-            'sections' => ['page_info', 'page_rows', 'body', 'sidebar_settings', 'sidebar_image', 'sidebar_elements', 'seo'],
+            'sections' => ['page_info', 'page_rows', 'body', 'marketing', 'sidebar_settings', 'sidebar_image', 'seo'],
         ],
         'minimal' => [
             'label' => 'Minimal',
-            'sections' => ['page_info', 'body', 'sidebar_settings'],
+            'sections' => ['page_info', 'page_rows', 'body', 'sidebar_settings'],
         ],
         'legal' => [
             'label' => 'Legal',

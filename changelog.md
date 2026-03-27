@@ -1,5 +1,34 @@
 # Changelog
 
+## 2026-03-27 — AI jobs, providers, Moneybird ledger, and admin content tools
+
+### Added
+
+- **Async AI tasks**: `ai_tasks` table, `AiTask` model, `RunAiTaskJob`, `POST admin/ai/tasks` and `GET admin/ai/tasks/{task}` with unified JSON (`AiOperationResult`), `GET admin/ai/metrics`, throttled AI route group.
+- **Admin AI**: OpenAI and Anthropic (Claude) in `AISettingsController` and AI settings Blade; test-connection support; **Background tasks** page (`admin/settings/ai/tasks`) with polling; sidebar entries under AI Settings.
+- **AI configuration**: `config/ai.php` / `config/services.php` extensions; `config/ai_prompts.php` versioned prompt registry keys; `ResolvedAiProviders::providerModelMapForTask()` with Gemini → OpenAI → Anthropic → Groq → Ollama ordering for content, SEO, and CRM paths.
+- **HTTP AI providers**: Direct OpenAI and Anthropic calls in `AIService` (aligned with existing Groq/Gemini/Ollama); task-profile ordering in `callAI()`; provider/model/duration on page blocks, article fallback, SEO optimize, and content plan responses.
+- **Moneybird foundation**: `moneybird_syncs` migration, `MoneybirdSync` model, `App\Services\Moneybird\MoneybirdSyncLedger` (outbound start, mark synced/failed, idempotency lookup), `services.moneybird` config (`MONEYBIRD_*` env).
+- **Support code**: `app/Data/Ai/AiOperationResult.php`, `app/Support/SeoSnippetDefaults.php`; GitHub Actions CI workflow (`.github/workflows/ci.yml`) for Composer, migrate (SQLite), Pint test mode, and `php artisan test`.
+- **Frontend admin**: `resources/js/seo-assist.js` wired via `admin.js` for SEO assistance on pages/articles where integrated.
+- **Documentation**: `docs/ServiceOS-Laravel13-Build-Plan-v2.md` (build plan reference).
+
+### Changed
+
+- **Pages & articles admin**: Expanded create/edit flows and form body partials; page index/title column behaviour; blog index/create/edit alignment with new tooling; `PageRequest` validation adjustments; `page_templates` config tweaks.
+- **Media library**: Larger admin UI/controller updates for library management (upload, sync, and related actions as implemented in `MediaLibraryController` and `media-library/index.blade.php`).
+- **Admin chrome**: `livewire:admin.table`, search components, header/layout tweaks; `BlogController` / `PageController` / `AiController` route handling updates; `AIServiceSetting` normalization and active-provider resolution; `AIServiceStatusComposer` updates.
+
+### Fixed
+
+- **Migrations**: `2026_02_25_120000_remove_doc_versioning` — avoid MySQL-incompatible `DROP INDEX IF EXISTS` on `doc_sections` (driver-specific index drop with safe fallbacks).
+
+### Tests
+
+- `tests/Unit/Services/ResolvedAiProvidersTest.php`, `tests/Unit/Services/MoneybirdSyncLedgerTest.php`, `tests/Unit/Jobs/RunAiTaskJobTest.php` (and related coverage).
+
+---
+
 ## 2026-03-26 — Admin UX, design system, and fixes
 
 ### Added

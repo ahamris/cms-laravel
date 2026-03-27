@@ -49,7 +49,7 @@
                     </div>
                     <input
                         type="text"
-                        wire:model.live.debounce.300ms="query"
+                        wire:model.live.debounce.500ms="query"
                         x-ref="searchInput"
                         x-on:click.stop
                         class="block w-full pl-8 pr-20 py-2.5 border-0 bg-transparent text-base text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-0 font-normal"
@@ -123,20 +123,8 @@
                                     </div>
                                     <div class="space-y-0">
                                         @foreach($group['items'] as $item)
-                                            @php
-                                                $href = '#';
-                                                if (isset($item['route'])) {
-                                                    try {
-                                                        $href = route($item['route']);
-                                                    } catch (\Illuminate\Routing\Exceptions\UrlGenerationException $e) {
-                                                        $href = $item['url'] ?? '#';
-                                                    }
-                                                } else {
-                                                    $href = $item['url'] ?? '#';
-                                                }
-                                            @endphp
                                             <a
-                                                href="{{ $href }}"
+                                                href="{{ $item['url'] ?? '#' }}"
                                                 wire:key="result-{{ $group['type'] }}-{{ $loop->index }}"
                                                 class="flex items-center px-5 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors cursor-pointer group focus:outline-none focus:bg-zinc-50 dark:focus:bg-zinc-700/50"
                                                 @click="isOpen = false; $wire.close()"

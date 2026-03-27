@@ -1,10 +1,7 @@
 @php
-    use App\Enums\ElementType;
     use App\Enums\PageLayoutRowKind;
     $templates = config('page_templates.templates', []);
     $templateLabel = $templates[$page->template ?? '']['label'] ?? ($page->template ?? '—');
-    $linkedFaq = $page->elements->firstWhere('type', ElementType::Faq);
-    $linkedCta = $page->elements->firstWhere('type', ElementType::Cta);
     $publicUrl = url('/pagina/'.$page->slug);
     $orderedLayoutAssignments = $page->layoutAssignments
         ->filter(fn ($a) => $a->templateRow !== null)
@@ -176,26 +173,6 @@
                                 </li>
                             @endforeach
                         </ol>
-                    </div>
-                @endif
-
-                @if($linkedFaq || $linkedCta)
-                    <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/80">
-                        <h3 class="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">Linked elements</h3>
-                        <dl class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            @if($linkedFaq)
-                                <div>
-                                    <dt class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">FAQ</dt>
-                                    <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">{{ $linkedFaq->title ?: 'FAQ #'.$linkedFaq->id }}</dd>
-                                </div>
-                            @endif
-                            @if($linkedCta)
-                                <div>
-                                    <dt class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">CTA</dt>
-                                    <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">{{ $linkedCta->title ?: 'CTA #'.$linkedCta->id }}</dd>
-                                </div>
-                            @endif
-                        </dl>
                     </div>
                 @endif
 

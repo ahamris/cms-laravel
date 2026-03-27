@@ -2,15 +2,10 @@
     $isDraft = ! ($item->is_active ?? false);
     $editUrl = $this->edit($item->id);
     $viewUrl = $this->view($item->id);
-    $modelName = class_basename($this->modelClass ?? \App\Models\Page::class);
-    $hasEdit = $editUrl && in_array('edit', $this->actions);
-    $hasView = $viewUrl && in_array('view', $this->actions);
+    $modelName = class_basename($this->modelClass);
 @endphp
 <div class="min-w-0 max-w-xl">
     <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-        @if($item->icon)
-            <i class="{{ $item->icon }} flex-shrink-0 text-[var(--color-accent)]" aria-hidden="true"></i>
-        @endif
         @if($editUrl)
             <a href="{{ $editUrl }}" class="text-[13px] font-semibold text-sky-700 hover:text-sky-900 dark:text-sky-400 dark:hover:text-sky-300">
                 {{ $item->title }}
@@ -23,24 +18,23 @@
         @endif
     </div>
     <div class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-zinc-600 opacity-0 transition-opacity group-hover/tr:opacity-100 max-sm:opacity-100 dark:text-zinc-400">
-        @if($hasEdit)
+        @if($editUrl && in_array('edit', $this->actions))
             <a href="{{ $editUrl }}" class="text-sky-700 hover:underline dark:text-sky-400">{{ __('Edit') }}</a>
         @endif
-        @if($hasView)
-            @if($hasEdit)
+        @if($viewUrl && in_array('view', $this->actions))
+            @if($editUrl && in_array('edit', $this->actions))
                 <span class="select-none text-zinc-300 dark:text-zinc-600" aria-hidden="true">|</span>
             @endif
-            <a href="{{ $viewUrl }}" class="text-sky-700 hover:underline dark:text-sky-400">{{ __('View') }}</a>
+            <a
+                href="{{ $viewUrl }}"
+                class="text-sky-700 hover:underline dark:text-sky-400"
+                @if(str_starts_with((string) $viewUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif
+            >{{ __('View') }}</a>
         @endif
-        @if($hasEdit || $hasView)
-            <span class="select-none text-zinc-300 dark:text-zinc-600" aria-hidden="true">|</span>
-        @endif
-        <form action="{{ route('admin.page.duplicate', $item) }}" method="POST" class="inline">
-            @csrf
-            <button type="submit" class="text-sky-700 hover:underline dark:text-sky-400">{{ __('Duplicate') }}</button>
-        </form>
         @if(in_array('delete', $this->actions))
-            <span class="select-none text-zinc-300 dark:text-zinc-600" aria-hidden="true">|</span>
+            @if(($editUrl && in_array('edit', $this->actions)) || ($viewUrl && in_array('view', $this->actions)))
+                <span class="select-none text-zinc-300 dark:text-zinc-600" aria-hidden="true">|</span>
+            @endif
             <button
                 type="button"
                 class="text-red-600 hover:underline dark:text-red-400"
@@ -54,7 +48,7 @@
             <x-slot:title>{{ __('Delete :model', ['model' => $modelName]) }}</x-slot:title>
             <div class="space-y-4">
                 <p class="text-[13px] text-zinc-600 dark:text-zinc-400">
-                    {{ __('Are you sure you want to delete this page? This cannot be undone.') }}
+                    {{ __('Are you sure you want to delete this article? This cannot be undone.') }}
                 </p>
                 <div class="space-y-2 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-600 dark:bg-zinc-900/50">
                     <div class="text-[12.5px]">

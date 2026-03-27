@@ -16,7 +16,7 @@
 
         <!-- Center: Search Input -->
         <div class="hidden md:flex items-center justify-center flex-1 max-w-xl mx-auto">
-            @livewire('admin.search', ['dropdownMode' => true])
+            <livewire:admin.search :dropdownMode="true" lazy />
         </div>
 
         <!-- Mobile: Search Button -->

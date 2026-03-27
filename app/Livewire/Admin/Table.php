@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -44,6 +45,12 @@ class Table extends Component
     public bool $showCheckbox = true; // Show checkbox column
 
     public bool $showBulkDelete = true; // Show bulk delete button
+
+    /** WordPress-style list: status tabs, striped table, muted toolbar. */
+    public bool $wordPressListStyle = false;
+
+    /** Hide the right actions column (row actions move under title). */
+    public bool $hideActionsColumn = false;
 
     protected $providedItems = null; // External items (Paginator or Collection)
 
@@ -101,6 +108,8 @@ class Table extends Component
         int $paginate = 10,
         bool $showCheckbox = true,
         bool $showBulkDelete = true,
+        bool $wordPressListStyle = false,
+        bool $hideActionsColumn = false,
         ?string $customActionsView = null,
         array $templateFilterOptions = [],
         array $statusFilterOptions = [],
@@ -157,6 +166,11 @@ class Table extends Component
         $this->paginate = $paginate;
         $this->showCheckbox = $showCheckbox;
         $this->showBulkDelete = $showBulkDelete;
+        $this->wordPressListStyle = $wordPressListStyle;
+        $this->hideActionsColumn = $hideActionsColumn;
+        if ($this->hideActionsColumn) {
+            $this->showActions = false;
+        }
         $this->customActionsView = $customActionsView;
         $this->templateFilterOptions = $templateFilterOptions;
         $this->statusFilterOptions = $statusFilterOptions;
@@ -323,42 +337,16 @@ class Table extends Component
         return $fields;
     }
 
-    #[Computed]
-    public function items()
+    /**
+     * Base query with search + template/home filters (no status, no sort, no eager load).
+     */
+    protected function baseFilteredQueryWithoutStatus(): Builder
     {
-        // If items are passed from parent (Controller mode), use them directly
-        if ($this->providedItems) {
-            return $this->providedItems;
-        }
+        $query = $this->getModelInstance()->newQuery();
 
-        $query = $this->getModelInstance()->query();
-
-        // Eager load relationships dynamically based on column keys
-        // Supports nested relations: 'user.role.name' -> loads 'user.role'
-        $relationships = [];
-        foreach ($this->columns as $column) {
-            $key = is_array($column) ? ($column['key'] ?? null) : null;
-
-            // If key contains a dot (e.g., category.name, user.role.name)
-            if ($key && str($key)->contains('.')) {
-                // Get the relation path excluding the last part
-                // Example: 'user.role.name' -> 'user.role'
-                // Example: 'user.name' -> 'user'
-                $relationPath = str($key)->beforeLast('.')->toString();
-                $relationships[] = $relationPath;
-            }
-        }
-
-        // Load unique relationships
-        if (! blank($relationships)) {
-            $query->with(array_unique($relationships));
-        }
-
-        // Apply search
         if ($this->search && ! blank($this->searchFields)) {
             $query->where(function (Builder $q) {
                 foreach ($this->searchFields as $index => $field) {
-                    // Check if field is a relationship field (e.g., 'user.name')
                     if (str($field)->contains('.')) {
                         $parts = explode('.', $field, 2);
                         if (count($parts) === 2) {
@@ -374,7 +362,6 @@ class Table extends Component
                             }
                         }
                     } else {
-                        // Direct field search
                         if ($index === 0) {
                             $q->where($field, 'like', "%{$this->search}%");
                         } else {
@@ -385,17 +372,8 @@ class Table extends Component
             });
         }
 
-        // Apply facet filters (optional)
         if (! blank($this->templateFilter) && ! blank($this->templateFilterOptions)) {
             $query->where('template', $this->templateFilter);
-        }
-
-        if (! blank($this->statusFilter) && ! blank($this->statusFilterOptions)) {
-            if ($this->statusFilter === 'active') {
-                $query->where('is_active', true);
-            } elseif ($this->statusFilter === 'inactive') {
-                $query->where('is_active', false);
-            }
         }
 
         if (! blank($this->homeFilter) && ! blank($this->homeFilterOptions)) {
@@ -406,26 +384,92 @@ class Table extends Component
             }
         }
 
-        // Apply sorting
-        if (in_array($this->sortField, $this->sortableFields)) {
-            // Handle relationship sorting
-            if (str($this->sortField)->contains('.')) {
-                $parts = explode('.', $this->sortField, 2);
-                if (count($parts) === 2) {
-                    [$relation, $column] = $parts;
-                    $modelTable = $this->getModelInstance()->getTable();
-                    $relationTable = $relation === 'user' ? 'users' : $relation.'s';
-                    $foreignKey = $relation === 'user' ? 'user_id' : $relation.'_id';
-                    $query->join($relationTable, $modelTable.'.'.$foreignKey, '=', $relationTable.'.id')
-                        ->orderBy($relationTable.'.'.$column, $this->sortDirection)
-                        ->select($modelTable.'.*');
-                } else {
-                    $query->orderBy($this->sortField, $this->sortDirection);
-                }
+        return $query;
+    }
+
+    protected function applyRelationshipEagerLoad(Builder $query): void
+    {
+        $relationships = [];
+        foreach ($this->columns as $column) {
+            $key = is_array($column) ? ($column['key'] ?? null) : null;
+            if ($key && str($key)->contains('.')) {
+                $relationships[] = str($key)->beforeLast('.')->toString();
+            }
+        }
+        if (! blank($relationships)) {
+            $query->with(array_unique($relationships));
+        }
+    }
+
+    protected function applyStatusFilterToQuery(Builder $query): void
+    {
+        if (! blank($this->statusFilter) && ! blank($this->statusFilterOptions)) {
+            if ($this->statusFilter === 'active') {
+                $query->where('is_active', true);
+            } elseif ($this->statusFilter === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+    }
+
+    protected function applySortToQuery(Builder $query): void
+    {
+        if (! in_array($this->sortField, $this->sortableFields)) {
+            return;
+        }
+
+        if (str($this->sortField)->contains('.')) {
+            $parts = explode('.', $this->sortField, 2);
+            if (count($parts) === 2) {
+                [$relation, $column] = $parts;
+                $modelTable = $this->getModelInstance()->getTable();
+                $relationTable = $relation === 'user' ? 'users' : $relation.'s';
+                $foreignKey = $relation === 'user' ? 'user_id' : $relation.'_id';
+                $query->join($relationTable, $modelTable.'.'.$foreignKey, '=', $relationTable.'.id')
+                    ->orderBy($relationTable.'.'.$column, $this->sortDirection)
+                    ->select($modelTable.'.*');
             } else {
                 $query->orderBy($this->sortField, $this->sortDirection);
             }
+        } else {
+            $query->orderBy($this->sortField, $this->sortDirection);
         }
+    }
+
+    #[Computed]
+    public function wpPublishCounts(): ?array
+    {
+        if (! $this->wordPressListStyle) {
+            return null;
+        }
+
+        $model = $this->getModelInstance();
+        $table = $model->getTable();
+        if (! Schema::hasColumn($table, 'is_active')) {
+            return null;
+        }
+
+        $base = $this->baseFilteredQueryWithoutStatus();
+
+        return [
+            'all' => (clone $base)->count(),
+            'published' => (clone $base)->where('is_active', true)->count(),
+            'draft' => (clone $base)->where('is_active', false)->count(),
+        ];
+    }
+
+    #[Computed]
+    public function items()
+    {
+        // If items are passed from parent (Controller mode), use them directly
+        if ($this->providedItems) {
+            return $this->providedItems;
+        }
+
+        $query = $this->baseFilteredQueryWithoutStatus();
+        $this->applyRelationshipEagerLoad($query);
+        $this->applyStatusFilterToQuery($query);
+        $this->applySortToQuery($query);
 
         return $query->paginate($this->paginate);
     }
@@ -458,6 +502,13 @@ class Table extends Component
 
     public function updatedHomeFilter(): void
     {
+        $this->resetPage();
+    }
+
+    /** WordPress-style status tabs: '' = all, active = published, inactive = draft. */
+    public function setWpStatusFilter(string $status): void
+    {
+        $this->statusFilter = $status;
         $this->resetPage();
     }
 

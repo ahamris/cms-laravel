@@ -11,7 +11,7 @@
         </div>
         <input
             type="text"
-            wire:model.live.debounce.300ms="query"
+            wire:model.live.debounce.500ms="query"
             x-on:focus="showResults = true"
             x-on:keydown.escape="showResults = false; $wire.set('query', '')"
             x-on:keydown.ctrl.k.prevent="showResults = !showResults"
@@ -66,20 +66,8 @@
                             </div>
                             <div class="space-y-0">
                                 @foreach($group['items'] as $item)
-                                    @php
-                                        $href = '#';
-                                        if (isset($item['route'])) {
-                                            try {
-                                                $href = route($item['route']);
-                                            } catch (\Illuminate\Routing\Exceptions\UrlGenerationException $e) {
-                                                $href = $item['url'] ?? '#';
-                                            }
-                                        } else {
-                                            $href = $item['url'] ?? '#';
-                                        }
-                                    @endphp
                                     <a
-                                        href="{{ $href }}"
+                                        href="{{ $item['url'] ?? '#' }}"
                                         wire:key="result-{{ $group['type'] }}-{{ $loop->index }}"
                                         class="flex items-center px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors cursor-pointer group focus:outline-none focus:bg-zinc-50 dark:focus:bg-zinc-700/50"
                                         x-on:click="showResults = false"

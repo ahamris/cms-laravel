@@ -5,6 +5,10 @@
             <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">AI Settings</h1>
             <p class="text-zinc-600 dark:text-zinc-400">Configure AI for content generation: Groq, Gemini, or your own Ollama instance</p>
         </div>
+        <a href="{{ route('admin.settings.ai.tasks') }}"
+           class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 text-sm font-medium whitespace-nowrap">
+            <i class="fa-solid fa-list-check mr-2"></i> Background tasks
+        </a>
     </div>
 
     @if (session('success'))
@@ -403,6 +407,110 @@
                             @error('ollama_priority')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- OpenAI Settings Section --}}
+                <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
+                    <div class="mb-6 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">OpenAI Settings</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Configure OpenAI models for CMS/CRM AI features</p>
+                        </div>
+                        <button type="button"
+                                onclick="testConnection('openai')"
+                                class="px-4 py-2 text-sm bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">
+                            <i class="fa-solid fa-plug mr-2"></i>Test Connection
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label for="openai_api_key" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">OpenAI API Key</label>
+                            <input type="password"
+                                   id="openai_api_key"
+                                   name="openai_api_key"
+                                   value="{{ old('openai_api_key', $settings['openai_api_key'] ?? '') }}"
+                                   placeholder="sk-..."
+                                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-[var(--color-accent)]">
+                        </div>
+
+                        <div>
+                            <label for="openai_model" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Model</label>
+                            <input type="text"
+                                   id="openai_model"
+                                   name="openai_model"
+                                   value="{{ old('openai_model', $settings['openai_model'] ?? 'gpt-4o-mini') }}"
+                                   placeholder="gpt-4o-mini"
+                                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-[var(--color-accent)]">
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                            <div>
+                                <label for="openai_is_active" class="block text-sm font-medium text-gray-900 dark:text-white">Activate OpenAI Service</label>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="openai_is_active" name="openai_is_active" value="1" {{ old('openai_is_active', $settings['openai_is_active'] ?? false) ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label for="openai_priority" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Priority (0 = highest)</label>
+                            <input type="number" id="openai_priority" name="openai_priority" value="{{ old('openai_priority', $settings['openai_priority'] ?? 3) }}" min="0" max="10" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-[var(--color-accent)]">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Anthropic Settings Section --}}
+                <div class="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6">
+                    <div class="mb-6 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Claude (Anthropic) Settings</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Configure Claude models via Anthropic API</p>
+                        </div>
+                        <button type="button"
+                                onclick="testConnection('claude')"
+                                class="px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors">
+                            <i class="fa-solid fa-plug mr-2"></i>Test Connection
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label for="anthropic_api_key" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Anthropic API Key</label>
+                            <input type="password"
+                                   id="anthropic_api_key"
+                                   name="anthropic_api_key"
+                                   value="{{ old('anthropic_api_key', $settings['anthropic_api_key'] ?? '') }}"
+                                   placeholder="sk-ant-..."
+                                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-[var(--color-accent)]">
+                        </div>
+
+                        <div>
+                            <label for="anthropic_model" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Model</label>
+                            <input type="text"
+                                   id="anthropic_model"
+                                   name="anthropic_model"
+                                   value="{{ old('anthropic_model', $settings['anthropic_model'] ?? 'claude-3-5-sonnet-latest') }}"
+                                   placeholder="claude-3-5-sonnet-latest"
+                                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-[var(--color-accent)]">
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                            <div>
+                                <label for="anthropic_is_active" class="block text-sm font-medium text-gray-900 dark:text-white">Activate Claude Service</label>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="anthropic_is_active" name="anthropic_is_active" value="1" {{ old('anthropic_is_active', $settings['anthropic_is_active'] ?? false) ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label for="anthropic_priority" class="block text-sm/6 font-medium text-gray-900 dark:text-white mb-2">Priority (0 = highest)</label>
+                            <input type="number" id="anthropic_priority" name="anthropic_priority" value="{{ old('anthropic_priority', $settings['anthropic_priority'] ?? 4) }}" min="0" max="10" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--color-accent)] sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-[var(--color-accent)]">
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
 **Status:** Canonical  
 **Version:** 2.0  
 **Last updated:** 2026-03-26  
-**Scope:** Admin UI (Pages, Articles, Taxonomies, System modules)
+**Scope:** Admin UI (Pages, Articles, Taxonomies, Media System modules)
 
 This file is the standardized Markdown design guide for OPCM.  
 It is structured for practical implementation in Blade, Livewire, and Tailwind.

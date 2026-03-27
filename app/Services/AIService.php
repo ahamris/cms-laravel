@@ -8,11 +8,93 @@ use Illuminate\Support\Facades\Log;
 
 class AIService
 {
+    protected function callOpenAIAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
+    {
+        $startedAt = microtime(true);
+        try {
+            $apiKey = AIServiceSetting::getApiKey('openai');
+            if (empty($apiKey)) {
+                return ['success' => false, 'provider' => 'openai', 'error' => 'OpenAI API key not configured.'];
+            }
+
+            $model = AIServiceSetting::getModel('openai', 'gpt-4o-mini');
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$apiKey}",
+                'Content-Type' => 'application/json',
+            ])->timeout(120)->post('https://api.openai.com/v1/chat/completions', [
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $userMessage],
+                ],
+                'temperature' => $temperature,
+                'max_tokens' => $maxTokens,
+            ]);
+
+            if ($response->failed()) {
+                return ['success' => false, 'provider' => 'openai', 'error' => 'OpenAI API request failed'];
+            }
+
+            $content = $response->json('choices.0.message.content');
+            if (! is_string($content) || trim($content) === '') {
+                return ['success' => false, 'provider' => 'openai', 'error' => 'No response from OpenAI'];
+            }
+
+            $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+
+            return ['success' => true, 'provider' => 'openai', 'model' => $model, 'duration_ms' => $durationMs, 'content' => $this->cleanAIResponse($content)];
+        } catch (\Throwable $e) {
+            return ['success' => false, 'provider' => 'openai', 'error' => $e->getMessage()];
+        }
+    }
+
+    protected function callAnthropicAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
+    {
+        $startedAt = microtime(true);
+        try {
+            $apiKey = AIServiceSetting::getApiKey('anthropic');
+            if (empty($apiKey)) {
+                return ['success' => false, 'provider' => 'anthropic', 'error' => 'Anthropic API key not configured.'];
+            }
+
+            $model = AIServiceSetting::getModel('anthropic', 'claude-3-5-sonnet-latest');
+            $response = Http::withHeaders([
+                'x-api-key' => $apiKey,
+                'anthropic-version' => '2023-06-01',
+                'Content-Type' => 'application/json',
+            ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+                'model' => $model,
+                'max_tokens' => $maxTokens,
+                'temperature' => $temperature,
+                'system' => $systemPrompt,
+                'messages' => [
+                    ['role' => 'user', 'content' => $userMessage],
+                ],
+            ]);
+
+            if ($response->failed()) {
+                return ['success' => false, 'provider' => 'anthropic', 'error' => 'Anthropic API request failed'];
+            }
+
+            $content = $response->json('content.0.text');
+            if (! is_string($content) || trim($content) === '') {
+                return ['success' => false, 'provider' => 'anthropic', 'error' => 'No response from Anthropic'];
+            }
+
+            $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+
+            return ['success' => true, 'provider' => 'anthropic', 'model' => $model, 'duration_ms' => $durationMs, 'content' => $this->cleanAIResponse($content)];
+        } catch (\Throwable $e) {
+            return ['success' => false, 'provider' => 'anthropic', 'error' => $e->getMessage()];
+        }
+    }
+
     /**
      * Call Groq AI API
      */
     protected function callGroqAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
     {
+        $startedAt = microtime(true);
         try {
             $apiKey = AIServiceSetting::getApiKey('groq');
             if (empty($apiKey)) {
@@ -56,12 +138,20 @@ class AIService
                 return ['success' => false, 'error' => 'No response from Groq AI'];
             }
 
-            return ['success' => true, 'content' => $this->cleanAIResponse($content)];
+            $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+            Log::info('ai.request.completed', [
+                'provider' => 'groq',
+                'model' => $model,
+                'duration_ms' => $durationMs,
+                'success' => true,
+            ]);
+
+            return ['success' => true, 'provider' => 'groq', 'model' => $model, 'duration_ms' => $durationMs, 'content' => $this->cleanAIResponse($content)];
 
         } catch (\Exception $e) {
             Log::error('Groq AI Error', ['message' => $e->getMessage()]);
 
-            return ['success' => false, 'error' => $e->getMessage()];
+            return ['success' => false, 'provider' => 'groq', 'error' => $e->getMessage()];
         }
     }
 
@@ -70,6 +160,7 @@ class AIService
      */
     protected function callGeminiAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
     {
+        $startedAt = microtime(true);
         try {
             $apiKey = AIServiceSetting::getApiKey('gemini');
             if (empty($apiKey)) {
@@ -116,12 +207,20 @@ class AIService
                 return ['success' => false, 'error' => 'No response from Gemini AI'];
             }
 
-            return ['success' => true, 'content' => $this->cleanAIResponse($content)];
+            $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+            Log::info('ai.request.completed', [
+                'provider' => 'gemini',
+                'model' => $model,
+                'duration_ms' => $durationMs,
+                'success' => true,
+            ]);
+
+            return ['success' => true, 'provider' => 'gemini', 'model' => $model, 'duration_ms' => $durationMs, 'content' => $this->cleanAIResponse($content)];
 
         } catch (\Exception $e) {
             Log::error('Gemini AI Error', ['message' => $e->getMessage()]);
 
-            return ['success' => false, 'error' => $e->getMessage()];
+            return ['success' => false, 'provider' => 'gemini', 'error' => $e->getMessage()];
         }
     }
 
@@ -130,6 +229,7 @@ class AIService
      */
     protected function callOllamaAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
     {
+        $startedAt = microtime(true);
         try {
             $baseUrl = AIServiceSetting::getBaseUrl('ollama');
             if (empty($baseUrl)) {
@@ -172,21 +272,30 @@ class AIService
                 return ['success' => false, 'error' => 'No response from Ollama'];
             }
 
-            return ['success' => true, 'content' => $this->cleanAIResponse($content)];
+            $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+            Log::info('ai.request.completed', [
+                'provider' => 'ollama',
+                'model' => $model,
+                'duration_ms' => $durationMs,
+                'success' => true,
+            ]);
+
+            return ['success' => true, 'provider' => 'ollama', 'model' => $model, 'duration_ms' => $durationMs, 'content' => $this->cleanAIResponse($content)];
 
         } catch (\Exception $e) {
             Log::error('Ollama AI Error', ['message' => $e->getMessage()]);
 
-            return ['success' => false, 'error' => $e->getMessage()];
+            return ['success' => false, 'provider' => 'ollama', 'error' => $e->getMessage()];
         }
     }
 
     /**
-     * Call AI with fallback (Groq, Gemini, Ollama by priority)
+     * Call AI with fallback. Tries providers in task-specific order (Gemini → OpenAI → Anthropic → …), then any remaining active providers.
+     *
+     * @param  'content'|'seo'|'crm'  $profile
      */
-    protected function callAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192): array
+    protected function callAI(string $systemPrompt, string $userMessage, float $temperature = 0.7, int $maxTokens = 8192, string $profile = 'content'): array
     {
-        // Get active services ordered by priority
         $activeServices = AIServiceSetting::getActiveServices();
 
         if ($activeServices->isEmpty()) {
@@ -196,26 +305,42 @@ class AIService
             ];
         }
 
-        foreach ($activeServices as $service) {
-            if ($service->service === 'groq') {
-                $result = $this->callGroqAI($systemPrompt, $userMessage, $temperature, $maxTokens);
-                if ($result['success']) {
-                    return $result;
-                }
-                Log::warning('Groq API failed, trying next service', ['error' => $result['error'] ?? 'Unknown']);
-            } elseif ($service->service === 'gemini') {
-                $result = $this->callGeminiAI($systemPrompt, $userMessage, $temperature, $maxTokens);
-                if ($result['success']) {
-                    return $result;
-                }
-                Log::warning('Gemini API failed, trying next service', ['error' => $result['error'] ?? 'Unknown']);
-            } elseif ($service->service === 'ollama') {
-                $result = $this->callOllamaAI($systemPrompt, $userMessage, $temperature, $maxTokens);
-                if ($result['success']) {
-                    return $result;
-                }
-                Log::warning('Ollama API failed, trying next service', ['error' => $result['error'] ?? 'Unknown']);
+        $preferred = match ($profile) {
+            'seo' => ResolvedAiProviders::TASK_SEO_ORDER,
+            'crm' => ResolvedAiProviders::TASK_CRM_ORDER,
+            default => ResolvedAiProviders::TASK_CONTENT_ORDER,
+        };
+
+        $sorted = $activeServices->sortBy(function ($service) use ($preferred) {
+            $name = AIServiceSetting::normalizeServiceName((string) $service->service);
+            $i = array_search($name, $preferred, true);
+
+            return $i === false ? 1000 : $i;
+        })->values();
+
+        foreach ($sorted as $service) {
+            $name = AIServiceSetting::normalizeServiceName((string) $service->service);
+            $result = match ($name) {
+                'groq' => $this->callGroqAI($systemPrompt, $userMessage, $temperature, $maxTokens),
+                'gemini' => $this->callGeminiAI($systemPrompt, $userMessage, $temperature, $maxTokens),
+                'ollama' => $this->callOllamaAI($systemPrompt, $userMessage, $temperature, $maxTokens),
+                'openai' => $this->callOpenAIAI($systemPrompt, $userMessage, $temperature, $maxTokens),
+                'anthropic' => $this->callAnthropicAI($systemPrompt, $userMessage, $temperature, $maxTokens),
+                default => null,
+            };
+
+            if ($result === null) {
+                continue;
             }
+
+            if ($result['success']) {
+                return $result;
+            }
+
+            Log::warning('AI provider failed, trying next service', [
+                'provider' => $name,
+                'error' => $result['error'] ?? 'Unknown',
+            ]);
         }
 
         return [
@@ -236,7 +361,7 @@ class AIService
             ."Tone: {$tone}. Language: {$language}. "
             .'Return ONLY valid JSON array, no explanations.';
 
-        $result = $this->callAI($systemPrompt, "Create page blocks for: {$topic}");
+        $result = $this->callAI($systemPrompt, "Create page blocks for: {$topic}", 0.7, 8192, 'content');
 
         if (! $result['success']) {
             return $result;
@@ -244,7 +369,13 @@ class AIService
 
         $decoded = json_decode($result['content'], true);
 
-        return ['success' => true, 'blocks' => is_array($decoded) ? $decoded : []];
+        return [
+            'success' => true,
+            'blocks' => is_array($decoded) ? $decoded : [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ];
     }
 
     /**
@@ -255,7 +386,13 @@ class AIService
         $gen = app(ContentGenerationService::class);
         $structured = $gen->generateArticleStructured($topic, $type, $category, $tone, $language, $length);
         if ($structured['success'] && ! empty($structured['article'])) {
-            return ['success' => true, 'article' => $structured['article']];
+            return [
+                'success' => true,
+                'article' => $structured['article'],
+                'provider' => null,
+                'model' => null,
+                'duration_ms' => null,
+            ];
         }
 
         $systemPrompt = 'You are a professional content writer. Generate a blog article in JSON format with keys: '
@@ -267,7 +404,7 @@ class AIService
             ."Tone: {$tone}. Language: {$language}. Target length: ~{$length} words. "
             .'Return ONLY valid JSON, no explanations.';
 
-        $result = $this->callAI($systemPrompt, "Write about: {$topic}");
+        $result = $this->callAI($systemPrompt, "Write about: {$topic}", 0.7, 8192, 'content');
 
         if (! $result['success']) {
             return $result;
@@ -275,7 +412,13 @@ class AIService
 
         $decoded = json_decode($result['content'], true);
 
-        return ['success' => true, 'article' => is_array($decoded) ? $decoded : []];
+        return [
+            'success' => true,
+            'article' => is_array($decoded) ? $decoded : [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ];
     }
 
     /**
@@ -292,7 +435,7 @@ class AIService
         $plainText = strip_tags($contentHtml);
         $snippet = mb_substr($plainText, 0, 3000);
 
-        $result = $this->callAI($systemPrompt, "Analyze this content:\n\n{$snippet}");
+        $result = $this->callAI($systemPrompt, "Analyze this content:\n\n{$snippet}", 0.7, 8192, 'seo');
 
         if (! $result['success']) {
             return $result;
@@ -300,7 +443,13 @@ class AIService
 
         $decoded = json_decode($result['content'], true);
 
-        return ['success' => true, 'seo' => is_array($decoded) ? $decoded : []];
+        return [
+            'success' => true,
+            'seo' => is_array($decoded) ? $decoded : [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ];
     }
 
     /**
@@ -357,7 +506,7 @@ class AIService
             ."Tone: {$tone}. Language: {$language}. "
             .'Be concise, empathetic, and solution-oriented. Return ONLY the reply text, no JSON or formatting.';
 
-        $result = $this->callAI($systemPrompt, "Customer message:\n\n{$originalMessage}");
+        $result = $this->callAI($systemPrompt, "Customer message:\n\n{$originalMessage}", 0.7, 8192, 'crm');
 
         return $result['success'] ? $result['content'] : '';
     }
@@ -374,7 +523,7 @@ class AIService
             ."Language: {$language}. Generate {$items} content items. "
             .'Return ONLY valid JSON array, no explanations.';
 
-        $result = $this->callAI($systemPrompt, "Create content plan about: {$topic}");
+        $result = $this->callAI($systemPrompt, "Create content plan about: {$topic}", 0.7, 8192, 'content');
 
         if (! $result['success']) {
             return $result;
@@ -382,7 +531,13 @@ class AIService
 
         $decoded = json_decode($result['content'], true);
 
-        return ['success' => true, 'plan' => is_array($decoded) ? $decoded : []];
+        return [
+            'success' => true,
+            'plan' => is_array($decoded) ? $decoded : [],
+            'provider' => $result['provider'] ?? null,
+            'model' => $result['model'] ?? null,
+            'duration_ms' => $result['duration_ms'] ?? null,
+        ];
     }
 
     /**

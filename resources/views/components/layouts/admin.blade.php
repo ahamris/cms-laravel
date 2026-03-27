@@ -123,8 +123,8 @@
         </div>
     </div>
     
-    {{-- Search Component --}}
-    @livewire('admin.search')
+    {{-- Search Component (lazy to reduce initial render cost) --}}
+    <livewire:admin.search lazy />
     
     @livewireScripts
     @stack('scripts')

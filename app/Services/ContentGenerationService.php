@@ -17,7 +17,7 @@ class ContentGenerationService
      */
     public function generateAdminBlog(string $topic, string $keywords, string $tone, string $lengthGuide): array
     {
-        $map = ResolvedAiProviders::providerModelMap();
+        $map = ResolvedAiProviders::providerModelMapForTask('content');
         if ($map === []) {
             return ['success' => false, 'error' => 'No AI service is configured.'];
         }
@@ -49,7 +49,7 @@ class ContentGenerationService
      */
     public function generatePlanBlog(string $title, string $brief, array $keywords, IntentBrief $intentBrief): array
     {
-        $map = ResolvedAiProviders::providerModelMap();
+        $map = ResolvedAiProviders::providerModelMapForTask('content');
         if ($map === []) {
             return ['success' => false, 'error' => 'No AI service is configured.'];
         }
@@ -89,7 +89,7 @@ class ContentGenerationService
         string $language,
         int $length,
     ): array {
-        $map = ResolvedAiProviders::providerModelMap();
+        $map = ResolvedAiProviders::providerModelMapForTask('content');
         if ($map === []) {
             return ['success' => false, 'error' => 'No AI service is configured.'];
         }
@@ -128,7 +128,7 @@ class ContentGenerationService
      */
     public function crmAssist(string $threadText, ?int $contactId, string $tone, string $language): array
     {
-        $map = ResolvedAiProviders::providerModelMap();
+        $map = ResolvedAiProviders::providerModelMapForTask('crm');
         if ($map === []) {
             return ['success' => false, 'error' => 'No AI service is configured.'];
         }

@@ -3,6 +3,7 @@
 namespace App\View\Composers;
 
 use App\Models\AIServiceSetting;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class AIServiceStatusComposer
@@ -12,20 +13,21 @@ class AIServiceStatusComposer
      */
     public function compose(View $view): void
     {
-        // Check if any AI service is active
-        $activeServices = AIServiceSetting::getActiveServices();
-        $hasActiveService = $activeServices->isNotEmpty();
+        $state = Cache::remember('admin.ai.service-status.v1', now()->addMinutes(2), function (): array {
+            $activeServices = AIServiceSetting::getActiveServices();
+            $hasActiveService = $activeServices->isNotEmpty();
 
-        // Get service statuses
-        $groqActive = AIServiceSetting::isServiceActive('groq');
-        $geminiActive = AIServiceSetting::isServiceActive('gemini');
+            return [
+                'aiServiceConfigured' => $hasActiveService,
+                'groqServiceActive' => AIServiceSetting::isServiceActive('groq'),
+                'geminiServiceActive' => AIServiceSetting::isServiceActive('gemini'),
+                'aiServiceWarning' => ! $hasActiveService
+                    ? 'No AI service is configured. Please configure at least one AI service in Settings → AI Settings to use content generation features.'
+                    : null,
+            ];
+        });
 
-        $view->with([
-            'aiServiceConfigured' => $hasActiveService,
-            'groqServiceActive' => $groqActive,
-            'geminiServiceActive' => $geminiActive,
-            'aiServiceWarning' => !$hasActiveService ? 'No AI service is configured. Please configure at least one AI service in Settings → AI Settings to use content generation features.' : null,
-        ]);
+        $view->with($state);
     }
 }
 

@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\Cache;
  */
 class AIServiceSetting extends BaseModel
 {
+    /**
+     * @var array<int, string>
+     */
+    public const array SUPPORTED_SERVICES = [
+        'groq',
+        'gemini',
+        'ollama',
+        'openai',
+        'anthropic',
+    ];
+
     protected $table = 'ai_service_settings';
 
     protected $fillable = [
@@ -31,8 +42,9 @@ class AIServiceSetting extends BaseModel
      */
     public static function getForService(string $service): ?self
     {
-        $id = Cache::remember("ai_service_setting_id_{$service}", 3600, function () use ($service) {
-            return self::query()->where('service', $service)->value('id');
+        $normalizedService = self::normalizeServiceName($service);
+        $id = Cache::remember("ai_service_setting_id_{$normalizedService}", 3600, function () use ($normalizedService) {
+            return self::query()->where('service', $normalizedService)->value('id');
         });
 
         return $id ? self::query()->find($id) : null;
@@ -71,7 +83,8 @@ class AIServiceSetting extends BaseModel
         if (! $setting || ! $setting->is_active) {
             return false;
         }
-        if ($service === 'ollama') {
+        $normalizedService = self::normalizeServiceName($service);
+        if ($normalizedService === 'ollama') {
             return ! empty($setting->base_url);
         }
 
@@ -83,9 +96,19 @@ class AIServiceSetting extends BaseModel
      */
     public static function getApiKey(string $service): ?string
     {
-        $setting = self::getForService($service);
+        $normalizedService = self::normalizeServiceName($service);
+        $setting = self::getForService($normalizedService);
+        if ($setting && $setting->is_active && ! empty($setting->api_key)) {
+            return $setting->api_key;
+        }
 
-        return $setting && $setting->is_active ? $setting->api_key : null;
+        return match ($normalizedService) {
+            'groq' => (string) config('ai.providers.groq.key', ''),
+            'gemini' => (string) config('ai.providers.gemini.key', ''),
+            'openai' => (string) config('ai.providers.openai.key', ''),
+            'anthropic' => (string) config('ai.providers.anthropic.key', ''),
+            default => null,
+        };
     }
 
     /**
@@ -93,9 +116,17 @@ class AIServiceSetting extends BaseModel
      */
     public static function getBaseUrl(string $service): ?string
     {
-        $setting = self::getForService($service);
+        $normalizedService = self::normalizeServiceName($service);
+        $setting = self::getForService($normalizedService);
+        if ($setting && $setting->is_active && ! empty($setting->base_url)) {
+            return $setting->base_url ?? null;
+        }
 
-        return $setting && $setting->is_active ? ($setting->base_url ?? null) : null;
+        if ($normalizedService === 'ollama') {
+            return (string) config('ai.providers.ollama.url', '');
+        }
+
+        return null;
     }
 
     /**
@@ -103,9 +134,24 @@ class AIServiceSetting extends BaseModel
      */
     public static function getModel(string $service, ?string $default = null): ?string
     {
-        $setting = self::getForService($service);
+        $normalizedService = self::normalizeServiceName($service);
+        $setting = self::getForService($normalizedService);
 
-        return $setting && $setting->is_active ? ($setting->model !== 'default' ? $setting->model : $default) : $default;
+        if ($setting && $setting->is_active && $setting->model !== 'default') {
+            return $setting->model;
+        }
+
+        $configDefault = match ($normalizedService) {
+            'groq' => (string) config('services.groq.model', ''),
+            'gemini' => (string) config('services.gemini.model', ''),
+            default => '',
+        };
+
+        if ($configDefault !== '') {
+            return $configDefault;
+        }
+
+        return $default;
     }
 
     /**
@@ -116,17 +162,29 @@ class AIServiceSetting extends BaseModel
         parent::boot();
 
         static::saved(function ($setting) {
-            Cache::forget("ai_service_setting_{$setting->service}");
-            Cache::forget("ai_service_setting_id_{$setting->service}");
+            $service = self::normalizeServiceName((string) $setting->service);
+            Cache::forget("ai_service_setting_{$service}");
+            Cache::forget("ai_service_setting_id_{$service}");
             Cache::forget('ai_service_settings_active');
             Cache::forget('ai_service_settings_active_ids');
+            Cache::forget('admin.ai.service-status.v1');
         });
 
         static::deleted(function ($setting) {
-            Cache::forget("ai_service_setting_{$setting->service}");
-            Cache::forget("ai_service_setting_id_{$setting->service}");
+            $service = self::normalizeServiceName((string) $setting->service);
+            Cache::forget("ai_service_setting_{$service}");
+            Cache::forget("ai_service_setting_id_{$service}");
             Cache::forget('ai_service_settings_active');
             Cache::forget('ai_service_settings_active_ids');
+            Cache::forget('admin.ai.service-status.v1');
         });
+    }
+
+    public static function normalizeServiceName(string $service): string
+    {
+        return match (strtolower(trim($service))) {
+            'claude' => 'anthropic',
+            default => strtolower(trim($service)),
+        };
     }
 }

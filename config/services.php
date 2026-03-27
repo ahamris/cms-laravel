@@ -40,9 +40,25 @@ return [
         'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY', ''),
+        'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+    ],
+
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY', ''),
+        'model' => env('ANTHROPIC_MODEL', 'claude-3-5-sonnet-latest'),
+    ],
+
     'groq' => [
         'api_key' => env('GROQ_API_KEY', ''),
         'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+    ],
+
+    'moneybird' => [
+        'access_token' => env('MONEYBIRD_ACCESS_TOKEN'),
+        'administration_id' => env('MONEYBIRD_ADMINISTRATION_ID'),
+        'base_url' => env('MONEYBIRD_BASE_URL', 'https://moneybird.com'),
     ],
 
 ];

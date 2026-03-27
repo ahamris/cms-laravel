@@ -11,37 +11,36 @@
     @endphp
     <div class="space-y-6">
         {{-- Page Header --}}
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="mb-1 text-xl font-semibold text-zinc-900 dark:text-white">Pages</h1>
-                <p class="text-[12.5px] text-zinc-600 dark:text-zinc-400">Manage website pages and content</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <x-ui.button variant="primary" icon="plus" icon-position="left" href="{{ route('admin.page.create') }}">
-                    Add page
+        <div class="flex flex-wrap items-end justify-between gap-3">
+            <div class="flex min-w-0 flex-wrap items-baseline gap-3">
+                <h1 class="text-2xl font-normal tracking-tight text-zinc-900 dark:text-white">{{ __('Pages') }}</h1>
+                <x-ui.button variant="secondary" size="sm" href="{{ route('admin.page.create') }}">
+                    {{ __('Add page') }}
                 </x-ui.button>
             </div>
+            <p class="w-full text-[12.5px] text-zinc-600 dark:text-zinc-400 sm:w-auto">{{ __('Manage website pages and content') }}</p>
         </div>
 
         {{-- Pages Table --}}
         <livewire:admin.table
             resource="page"
             :columns="[
-                ['key' => 'image', 'label' => 'Image', 'type' => 'custom', 'view' => 'admin.page.partials.image-column'],
-                ['key' => 'title', 'label' => 'Title', 'type' => 'custom', 'view' => 'admin.page.partials.title-column'],
-                ['key' => 'slug', 'label' => 'Slug', 'type' => 'custom', 'view' => 'admin.page.partials.slug-column'],
-                ['key' => 'template', 'label' => 'Template', 'type' => 'custom', 'view' => 'admin.page.partials.template-column'],
-                ['key' => 'is_homepage', 'label' => 'Home', 'type' => 'custom', 'view' => 'admin.page.partials.homepage-column'],
-                ['key' => 'created_at', 'label' => 'Created', 'format' => 'date'],
-                ['key' => 'is_active', 'label' => 'Status', 'type' => 'toggle'],
+                ['key' => 'image', 'label' => __('Image'), 'type' => 'custom', 'view' => 'admin.page.partials.image-column'],
+                ['key' => 'title', 'label' => __('Title'), 'type' => 'custom', 'view' => 'admin.page.partials.title-column'],
+                ['key' => 'slug', 'label' => __('Slug'), 'type' => 'custom', 'view' => 'admin.page.partials.slug-column'],
+                ['key' => 'template', 'label' => __('Template'), 'type' => 'custom', 'view' => 'admin.page.partials.template-column'],
+                ['key' => 'is_homepage', 'label' => __('Home'), 'type' => 'custom', 'view' => 'admin.page.partials.homepage-column'],
+                ['key' => 'created_at', 'label' => __('Date'), 'format' => 'date'],
+                ['key' => 'is_active', 'label' => __('Published'), 'type' => 'toggle'],
             ]"
             route-prefix="admin.page"
-            search-placeholder="Search pages..."
+            search-placeholder="{{ __('Search pages…') }}"
             :template-filter-options="$templateFilterOptions"
-            :status-filter-options="['' => __('All statuses'), 'active' => __('Active'), 'inactive' => __('Inactive')]"
+            :status-filter-options="['' => __('All'), 'active' => __('Published'), 'inactive' => __('Draft')]"
             :home-filter-options="['' => __('All'), 'yes' => __('Homepage'), 'no' => __('Not homepage')]"
             :paginate="15"
-            custom-actions-view="admin.page.partials.table-actions"
+            word-press-list-style="true"
+            hide-actions-column="true"
             :search-fields="['title', 'slug']"
             entity-count-label="pages"
             empty-state-title="No pages found"

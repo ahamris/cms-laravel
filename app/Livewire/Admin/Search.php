@@ -3,6 +3,8 @@
 namespace App\Livewire\Admin;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Computed;
@@ -35,7 +37,7 @@ class Search extends Component
     #[Computed]
     public function results(): array
     {
-        if (empty($this->query)) {
+        if (mb_strlen(trim($this->query)) < 2) {
             return [];
         }
 
@@ -57,40 +59,26 @@ class Search extends Component
     protected function searchMenus(): Collection
     {
         try {
-            $menuItems = StaticSidebarItem::fromArray(Sidebar::staticMenuDefinition());
+            $menuItems = collect($this->cachedMenuIndex());
             $items = collect();
+            $query = mb_strtolower($this->query);
 
-            $searchInItems = function (array $nodes, string $parentLabel = '') use (&$searchInItems, &$items): void {
-                foreach ($nodes as $item) {
-                    if (! $item->is_active) {
-                        continue;
-                    }
-
-                    $label = $item->label;
-                    $fullLabel = $parentLabel ? "{$parentLabel} → {$label}" : $label;
-
-                    if (stripos($label, $this->query) !== false
-                        || stripos($fullLabel, $this->query) !== false
-                        || ($item->route_name && stripos($item->route_name, $this->query) !== false)) {
-                        $url = $item->route_name ? route($item->route_name, $item->resolvedRouteParameters()) : $item->url;
-                        $items->push([
-                            'title' => $fullLabel,
-                            'url' => $url,
-                            'route' => $item->route_name,
-                            'icon' => $item->icon,
-                        ]);
-                    }
-
-                    $children = collect($item->children ?? []);
-                    if ($children->isNotEmpty()) {
-                        $searchInItems($children->all(), $fullLabel);
-                    }
-                }
-            };
-
-            $searchInItems($menuItems, '');
-
-            return $items->take(5);
+            return $menuItems
+                ->filter(function (array $item) use ($query) {
+                    return str_contains(mb_strtolower($item['title']), $query)
+                        || str_contains(mb_strtolower($item['full_title']), $query)
+                        || (isset($item['route']) && str_contains(mb_strtolower($item['route']), $query));
+                })
+                ->map(function (array $item) {
+                    return [
+                        'title' => $item['full_title'],
+                        'url' => $item['url'],
+                        'route' => $item['route'] ?? null,
+                        'icon' => $item['icon'] ?? null,
+                    ];
+                })
+                ->take(5)
+                ->values();
         } catch (\Exception $e) {
             Log::error('Search component: Error searching menus', [
                 'error' => $e->getMessage(),
@@ -99,6 +87,51 @@ class Search extends Component
 
             return collect();
         }
+    }
+
+    /**
+     * Build and cache a flattened menu index per user for faster search requests.
+     *
+     * @return array<int, array{title:string,full_title:string,url:?string,route:?string,icon:?string}>
+     */
+    private function cachedMenuIndex(): array
+    {
+        $userId = Auth::id() ?? 'guest';
+        $cacheKey = "admin.search.menu-index.v1.user.{$userId}";
+
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () {
+            $menuItems = StaticSidebarItem::fromArray(Sidebar::filteredMenuDefinition());
+            $index = [];
+
+            $flatten = function (array $nodes, string $parentLabel = '') use (&$flatten, &$index): void {
+                foreach ($nodes as $item) {
+                    if (! $item->is_active) {
+                        continue;
+                    }
+
+                    $label = $item->label;
+                    $fullLabel = $parentLabel ? "{$parentLabel} → {$label}" : $label;
+                    $url = $item->route_name ? route($item->route_name, $item->resolvedRouteParameters()) : $item->url;
+
+                    $index[] = [
+                        'title' => $label,
+                        'full_title' => $fullLabel,
+                        'url' => $url,
+                        'route' => $item->route_name,
+                        'icon' => $item->icon,
+                    ];
+
+                    $children = collect($item->children ?? []);
+                    if ($children->isNotEmpty()) {
+                        $flatten($children->all(), $fullLabel);
+                    }
+                }
+            };
+
+            $flatten($menuItems, '');
+
+            return $index;
+        });
     }
 
     protected function searchRoutes(): Collection

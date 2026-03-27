@@ -14,25 +14,37 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.blog.store') }}" method="POST" enctype="multipart/form-data" id="blogForm">
+    <form action="{{ route('admin.blog.store') }}" method="POST" enctype="multipart/form-data" id="blogForm"
+        class="rounded-lg border border-zinc-200 bg-zinc-100/90 p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/50">
         @csrf
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {{-- Left Column - 2/3 --}}
-            <div class="lg:col-span-2 space-y-8">
+            <div class="space-y-6 lg:col-span-2">
+                <div>
+                    <label for="title" class="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400">{{ __('Article title') }} <span class="text-red-500">*</span></label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        value="{{ old('title') }}"
+                        required
+                        class="w-full border-0 border-b border-zinc-200 bg-transparent px-0 py-2 text-2xl font-normal text-zinc-900 placeholder:text-zinc-400 focus:border-sky-600 focus:outline-none focus:ring-0 dark:border-zinc-600 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-sky-500"
+                        placeholder="{{ __('Add title') }}"
+                    />
+                    @error('title')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 {{-- Post Details Section --}}
                 <div
-                    class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
+                    class="rounded-sm border border-zinc-300 bg-white p-6 shadow-sm dark:border-zinc-600 dark:bg-zinc-800/90">
                     <div class="mb-6">
-                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Article details</h2>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Basic information about your article.
-                        </p>
+                        <h2 class="border-b border-zinc-200 pb-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-600 dark:border-zinc-600 dark:text-zinc-400">{{ __('Article details') }}</h2>
                     </div>
 
                     <div class="space-y-6">
-                        {{-- Title --}}
-                        <x-ui.input id="title" name="title" :value="old('title')" label="Article title"
-                            placeholder="e.g. 10 Tips for Better SEO" required />
 
                         {{-- Slug --}}
                         <x-ui.input id="slug" name="slug" label="URL Slug" :value="old('slug')"
@@ -60,15 +72,34 @@
                 </div>
 
                 {{-- SEO Settings Section --}}
+                @php
+                    $seoAssistConfig = [
+                        'metaTitleHasValue' => filled(old('meta_title')),
+                        'metaDescHasValue' => filled(old('meta_description')),
+                    ];
+                @endphp
                 <div
-                    class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
-                    <div class="mb-6">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">SEO & Metadata</h2>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Control how your post appears in search
-                            engines.</p>
+                    class="overflow-hidden rounded-sm border border-zinc-300 bg-white shadow-sm dark:border-zinc-600 dark:bg-zinc-800/90"
+                    x-data="seoAssistFromSummary({{ \Illuminate\Support\Js::from($seoAssistConfig) }})"
+                    x-init="init()"
+                >
+                    <div class="border-b border-zinc-200 bg-zinc-100 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                        {{ __('SEO') }}
                     </div>
 
-                    <div class="space-y-6">
+                    <div class="space-y-6 p-6">
+                    <div class="flex flex-wrap items-start justify-between gap-2 border-b border-zinc-100 pb-3 dark:border-zinc-700">
+                        <p class="max-w-xl text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                            {{ __('Meta title follows your article title (trimmed ~60 characters). Meta description is built from the short description (~158 characters). Clear a field or use the button to re-apply.') }}
+                        </p>
+                        <button
+                            type="button"
+                            class="shrink-0 rounded border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-medium text-sky-700 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-sky-400 dark:hover:bg-zinc-700"
+                            @click="syncFromSummary()"
+                        >
+                            {{ __('Sync SEO from title & summary') }}
+                        </button>
+                    </div>
                         <x-ui.input id="meta_title" name="meta_title" :value="old('meta_title')" label="Meta Title"
                             placeholder="Search engine title (50-60 chars recommended)" />
 
@@ -84,7 +115,7 @@
             </div>
 
             {{-- Right Column - 1/3 --}}
-            <div class="lg:col-span-1 space-y-8">
+            <div class="space-y-4 lg:col-span-1">
                 {{-- AI Content Generator Section --}}
                 @if ($aiServiceConfigured ?? false)
                     <div
@@ -162,13 +193,12 @@
 
                 {{-- Publishing Settings Section --}}
                 <div
-                    class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
-                    <div class="mb-6">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Publishing</h2>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Post settings and visibility.</p>
+                    class="overflow-hidden rounded-sm border border-zinc-300 bg-white shadow-sm dark:border-zinc-600 dark:bg-zinc-800/90">
+                    <div class="border-b border-zinc-200 bg-zinc-100 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                        {{ __('Publish') }}
                     </div>
 
-                    <div class="space-y-6">
+                    <div class="space-y-6 p-4">
                         {{-- Blog Category --}}
                         <x-ui.select id="blog_category_id" name="blog_category_id" label="Category" required
                             placeholder="Select a category" :value="old('blog_category_id')">
@@ -223,14 +253,12 @@
 
                 {{-- Featured Image Section --}}
                 <div
-                    class="rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm">
-                    <div class="mb-4">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Featured Image</h2>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Visual for the post and social sharing.
-                        </p>
+                    class="overflow-hidden rounded-sm border border-zinc-300 bg-white shadow-sm dark:border-zinc-600 dark:bg-zinc-800/90">
+                    <div class="border-b border-zinc-200 bg-zinc-100 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                        {{ __('Featured image') }}
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-4 p-4">
                         <x-image-upload id="image" name="image" label="" :required="false"
                             help-text="Optimal: 1200x630px (Max 20MB)" :max-size="20480" />
                     </div>

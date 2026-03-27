@@ -2,12 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ElementType;
 use App\Enums\PageLayoutRowKind;
 use App\Models\Element;
 use App\Models\PageLayoutTemplateRow;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class PageRequest extends FormRequest
@@ -38,13 +36,6 @@ class PageRequest extends FormRequest
         $template = $this->input('template');
         if ($template === null || $template === '') {
             $this->merge(['template' => config('page_templates.default', 'default')]);
-        }
-
-        foreach (['faq_element_id', 'cta_element_id'] as $key) {
-            $v = $this->input($key);
-            if ($v === '' || $v === null) {
-                $this->merge([$key => null]);
-            }
         }
 
         $plt = $this->input('page_layout_template_id');
@@ -146,17 +137,6 @@ class PageRequest extends FormRequest
             'secondary_keywords.*' => 'string|max:255',
             'ai_briefing' => 'nullable|string',
             'seo_analysis' => 'nullable|array',
-
-            'faq_element_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('elements', 'id')->where(fn ($q) => $q->where('type', ElementType::Faq->value)),
-            ],
-            'cta_element_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('elements', 'id')->where(fn ($q) => $q->where('type', ElementType::Cta->value)),
-            ],
         ];
     }
 
@@ -223,8 +203,6 @@ class PageRequest extends FormRequest
             'secondary_keywords' => 'Secondary keywords',
             'ai_briefing' => 'AI briefing',
             'seo_analysis' => 'SEO analysis',
-            'faq_element_id' => 'FAQ element',
-            'cta_element_id' => 'CTA element',
         ];
     }
 }

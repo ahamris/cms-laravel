@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\ElementType;
 use App\Enums\PageLayoutRowKind;
 use App\Http\Requests\PageRequest;
 use App\Models\ContentType;
@@ -11,7 +10,7 @@ use App\Models\MarketingPersona;
 use App\Models\Page;
 use App\Models\PageLayoutAssignment;
 use App\Models\PageLayoutTemplate;
-use Illuminate\Database\Eloquent\Collection;
+use App\Support\SeoSnippetDefaults;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -45,16 +44,12 @@ class PageController extends AdminBaseController
         $templates = config('page_templates.templates', []);
         $currentTemplate = old('template', config('page_templates.default', 'default'));
 
-        [$faqElements, $ctaElements] = $this->faqAndCtaElementLists();
-
         return view('admin.page.create', array_merge(
             compact(
                 'marketingPersonas',
                 'contentTypes',
                 'templates',
                 'currentTemplate',
-                'faqElements',
-                'ctaElements'
             ),
             $this->pageLayoutBuilderData(null)
         ));
@@ -66,11 +61,9 @@ class PageController extends AdminBaseController
     public function store(PageRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        $faqElementId = $validated['faq_element_id'] ?? null;
-        $ctaElementId = $validated['cta_element_id'] ?? null;
-        unset($validated['faq_element_id'], $validated['cta_element_id']);
 
         $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body']);
+        $validated = SeoSnippetDefaults::fillPageMetaFromContent($validated);
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -91,7 +84,6 @@ class PageController extends AdminBaseController
             $validated['page_layout_template_id'] ?? null,
             $request->input('layout_row_element', [])
         );
-        $this->syncPageElements($page, $faqElementId, $ctaElementId);
 
         Cache::forget("page.{$page->id}");
         Cache::forget("page.slug.{$page->slug}");
@@ -112,7 +104,6 @@ class PageController extends AdminBaseController
     public function show(Page $page): View
     {
         $page->load([
-            'elements',
             'marketingPersona',
             'contentType',
             'ogImage',
@@ -130,7 +121,7 @@ class PageController extends AdminBaseController
      */
     public function edit(Page $page): View
     {
-        $page->load(['marketingPersona', 'contentType', 'elements', 'layoutAssignments']);
+        $page->load(['marketingPersona', 'contentType', 'layoutAssignments']);
 
         $marketingPersonas = MarketingPersona::active()
             ->ordered()
@@ -143,16 +134,15 @@ class PageController extends AdminBaseController
         $templates = config('page_templates.templates', []);
         $currentTemplate = old('template', $page->template ?? config('page_templates.default', 'default'));
 
-        [$faqElements, $ctaElements] = $this->faqAndCtaElementLists();
-
-        return view('admin.page.edit', compact(
-            'page',
-            'marketingPersonas',
-            'contentTypes',
-            'templates',
-            'currentTemplate',
-            'faqElements',
-            'ctaElements'
+        return view('admin.page.edit', array_merge(
+            compact(
+                'page',
+                'marketingPersonas',
+                'contentTypes',
+                'templates',
+                'currentTemplate',
+            ),
+            $this->pageLayoutBuilderData($page)
         ));
     }
 
@@ -162,11 +152,9 @@ class PageController extends AdminBaseController
     public function update(PageRequest $request, Page $page): RedirectResponse
     {
         $validated = $request->validated();
-        $faqElementId = $validated['faq_element_id'] ?? null;
-        $ctaElementId = $validated['cta_element_id'] ?? null;
-        unset($validated['faq_element_id'], $validated['cta_element_id']);
 
         $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body']);
+        $validated = SeoSnippetDefaults::fillPageMetaFromContent($validated);
 
         // New upload wins over "remove" so replacing an image in one submit works
         if ($request->hasFile('image')) {
@@ -195,7 +183,6 @@ class PageController extends AdminBaseController
             $validated['page_layout_template_id'] ?? null,
             $request->input('layout_row_element', [])
         );
-        $this->syncPageElements($page, $faqElementId, $ctaElementId);
 
         Cache::forget("page.{$page->id}");
         Cache::forget("page.slug.{$page->slug}");
@@ -275,14 +262,6 @@ class PageController extends AdminBaseController
     }
 
     /**
-     * Attach at most one FAQ and one CTA element; keep other element types on the pivot.
-     */
-    /**
-     * Single query for FAQ + CTA dropdown options (admin page forms).
-     *
-     * @return array{0: Collection, 1: Collection}
-     */
-    /**
      * @return array<string, mixed>
      */
     private function pageLayoutBuilderData(?Page $page): array
@@ -306,9 +285,23 @@ class PageController extends AdminBaseController
             ])->all(),
         ])->values()->all();
 
-        $sectionElementTypes = collect(config('page_row_section_categories.categories', []))
+        $categoriesConfig = config('page_row_section_categories.categories', []);
+
+        $sectionElementTypes = collect($categoriesConfig)
             ->map(fn (array $meta) => $meta['element_types'] ?? [])
             ->all();
+
+        $elementTypeCategoryLabels = [];
+        $sectionCategoryLabelsOrdered = [];
+        foreach ($categoriesConfig as $meta) {
+            $sectionCategoryLabelsOrdered[] = $meta['label'] ?? '';
+            foreach ($meta['element_types'] ?? [] as $type) {
+                if (! array_key_exists($type, $elementTypeCategoryLabels)) {
+                    $elementTypeCategoryLabels[$type] = $meta['label'] ?? $type;
+                }
+            }
+        }
+        $sectionCategoryLabelsOrdered = array_values(array_unique(array_filter($sectionCategoryLabelsOrdered)));
 
         $elementsForLayout = Element::query()
             ->orderBy('type')
@@ -332,11 +325,19 @@ class PageController extends AdminBaseController
         $savedRows = old('layout_row_element');
         $rowMap = is_array($savedRows) ? $savedRows : $layoutRowSelections;
 
+        $samplePltId = PageLayoutTemplate::query()->value('id');
+        $layoutTemplateEditUrlTemplate = $samplePltId
+            ? str_replace((string) $samplePltId, '__ID__', route('admin.page-layout-template.edit', $samplePltId))
+            : '';
+
         return [
             'pageLayoutTemplates' => $templates,
             'pageLayoutTemplatesData' => $pageLayoutTemplatesData,
             'elementsForLayout' => $elementsForLayout,
             'sectionElementTypes' => $sectionElementTypes,
+            'elementTypeCategoryLabels' => $elementTypeCategoryLabels,
+            'sectionCategoryLabelsOrdered' => $sectionCategoryLabelsOrdered,
+            'layoutTemplateEditUrlTemplate' => $layoutTemplateEditUrlTemplate,
             'layoutRowSelections' => (object) $rowMap,
         ];
     }
@@ -374,20 +375,6 @@ class PageController extends AdminBaseController
         }
     }
 
-    private function faqAndCtaElementLists(): array
-    {
-        $rows = Element::query()
-            ->whereIn('type', [ElementType::Faq->value, ElementType::Cta->value])
-            ->orderBy('type')
-            ->orderBy('title')
-            ->get();
-
-        return [
-            $rows->filter(fn (Element $e) => $e->type === ElementType::Faq)->values(),
-            $rows->filter(fn (Element $e) => $e->type === ElementType::Cta)->values(),
-        ];
-    }
-
     private function uniqueDuplicateSlug(string $baseSlug): string
     {
         $slug = $baseSlug.'-copy';
@@ -398,20 +385,6 @@ class PageController extends AdminBaseController
         }
 
         return $slug;
-    }
-
-    private function syncPageElements(Page $page, ?int $faqElementId, ?int $ctaElementId): void
-    {
-        $otherIds = $page->elements()
-            ->whereNotIn('elements.type', [ElementType::Faq->value, ElementType::Cta->value])
-            ->pluck('elements.id');
-
-        $selected = array_values(array_filter([
-            $faqElementId,
-            $ctaElementId,
-        ]));
-
-        $page->elements()->sync($otherIds->merge($selected)->unique()->values()->all());
     }
 
     /**

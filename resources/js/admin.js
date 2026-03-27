@@ -1,5 +1,6 @@
 import "./bootstrap";
 import "./toast";
+import { registerSeoAssist } from "./seo-assist.js";
 // import "./datepicker"; // Converted to dynamic import
 // import "./tiptap"; // Converted to dynamic import
 // import "./codemirror"; // Removed (handled by PageBuilder)
@@ -15,6 +16,8 @@ document.addEventListener("alpine:init", () => {
 // I will just replace the imports and the start of initializeDatePickers.
 
 document.addEventListener("alpine:init", () => {
+    registerSeoAssist(Alpine);
+
     // Sidebar Store
     Alpine.store("sidebar", {
         isOpen: window.innerWidth > 1024, // Default open on wide screens

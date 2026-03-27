@@ -459,6 +459,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             // AI Settings
             Route::group(['prefix' => 'ai', 'as' => 'ai.'], function () {
                 Route::get('/', [AISettingsController::class, 'index'])->name('index');
+                Route::get('/tasks', [AISettingsController::class, 'tasks'])->name('tasks');
                 Route::put('/', [AISettingsController::class, 'update'])->name('update');
                 Route::post('/test-connection', [AISettingsController::class, 'testConnection'])->name('test-connection');
             });
@@ -564,8 +565,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
             Route::get('/download', [MediaLibraryController::class, 'download'])->name('download');
             Route::get('/preview', [MediaLibraryController::class, 'preview'])->name('preview');
             Route::delete('/', [MediaLibraryController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-destroy', [MediaLibraryController::class, 'bulkDestroy'])->name('bulk-destroy');
             Route::post('/resize', [MediaLibraryController::class, 'resize'])->name('resize');
             Route::post('/upload', [MediaLibraryController::class, 'upload'])->name('upload');
+            Route::post('/sync', [MediaLibraryController::class, 'syncMedia'])->name('sync');
             Route::put('/{id}', [MediaLibraryController::class, 'updateMedia'])->name('update-media');
             Route::delete('/media/{id}', [MediaLibraryController::class, 'destroyMedia'])->name('destroy-media');
             Route::get('/folders', [MediaLibraryController::class, 'folders'])->name('folders');
@@ -579,12 +582,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         });
 
         // AI Endpoints
-        Route::prefix('ai')->name('ai.')->group(function () {
+        Route::prefix('ai')->name('ai.')->middleware('throttle:30,1')->group(function () {
             Route::post('/generate-page', [AiController::class, 'generatePage'])->name('generate-page');
             Route::post('/generate-article', [AiController::class, 'generateArticle'])->name('generate-article');
             Route::post('/optimize-seo', [AiController::class, 'optimizeSeo'])->name('optimize-seo');
             Route::post('/draft-reply', [AiController::class, 'draftReply'])->name('draft-reply');
             Route::post('/content-plan', [AiController::class, 'contentPlan'])->name('content-plan');
+            Route::post('/tasks', [AiController::class, 'queueTask'])->name('tasks.queue');
+            Route::get('/tasks/{task}', [AiController::class, 'taskStatus'])->name('tasks.status');
+            Route::get('/metrics', [AiController::class, 'metrics'])->name('metrics');
         });
 
         // CRM Module

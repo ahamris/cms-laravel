@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\ContentGenerationService;
 use App\Services\MarketingIntelligence;
 use App\Services\SocialMediaPostingService;
+use App\Support\SeoSnippetDefaults;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -73,6 +74,7 @@ class BlogController extends AdminBaseController
     {
         $validated = $request->validated();
         $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body']);
+        $validated = SeoSnippetDefaults::fillBlogMetaFromContent($validated);
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -163,6 +165,7 @@ class BlogController extends AdminBaseController
     {
         $validated = $request->validated();
         $validated = $this->purifyHtmlKeys($validated, ['short_body', 'long_body']);
+        $validated = SeoSnippetDefaults::fillBlogMetaFromContent($validated);
 
         // Handle image deletion
         if ($request->has('remove_image') && $request->input('remove_image') == '1') {

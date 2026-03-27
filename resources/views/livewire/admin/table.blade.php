@@ -2,6 +2,8 @@
     $totalRows = method_exists($this->items, 'total') ? $this->items->total() : $this->items->count();
     $countNoun = $entityCountLabel ?: __('items');
     $emptyTitle = $emptyStateTitle ?? __('No items found');
+    $wpCounts = ($wordPressListStyle ?? false) ? $this->wpPublishCounts : null;
+    $statusForTabs = (string) ($statusFilter ?? '');
 @endphp
 
 <div>
@@ -9,8 +11,42 @@
         $formId = 'table-filter-form-' . md5(($this->resource ?? '') . '|' . ($this->routePrefix ?? ''));
     @endphp
 
+    @if($wpCounts)
+        <div class="mb-3 flex flex-wrap items-center gap-x-1 gap-y-1 text-[13px] leading-snug">
+            <button
+                type="button"
+                wire:click="setWpStatusFilter('')"
+                class="rounded px-1 py-0.5 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/80 {{ $statusForTabs === '' ? 'font-semibold text-zinc-900 dark:text-zinc-100' : 'text-sky-700 hover:underline dark:text-sky-400' }}"
+            >
+                {{ __('All') }}
+                <span class="font-normal text-zinc-500 dark:text-zinc-400">({{ number_format($wpCounts['all']) }})</span>
+            </button>
+            <span class="select-none text-zinc-300 dark:text-zinc-600" aria-hidden="true">|</span>
+            <button
+                type="button"
+                wire:click="setWpStatusFilter('active')"
+                class="rounded px-1 py-0.5 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/80 {{ $statusForTabs === 'active' ? 'font-semibold text-zinc-900 dark:text-zinc-100' : 'text-sky-700 hover:underline dark:text-sky-400' }}"
+            >
+                {{ __('Published') }}
+                <span class="font-normal text-zinc-500 dark:text-zinc-400">({{ number_format($wpCounts['published']) }})</span>
+            </button>
+            <span class="select-none text-zinc-300 dark:text-zinc-600" aria-hidden="true">|</span>
+            <button
+                type="button"
+                wire:click="setWpStatusFilter('inactive')"
+                class="rounded px-1 py-0.5 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/80 {{ $statusForTabs === 'inactive' ? 'font-semibold text-zinc-900 dark:text-zinc-100' : 'text-sky-700 hover:underline dark:text-sky-400' }}"
+            >
+                {{ __('Drafts') }}
+                <span class="font-normal text-zinc-500 dark:text-zinc-400">({{ number_format($wpCounts['draft']) }})</span>
+            </button>
+        </div>
+    @endif
+
     {{-- Toolbar: search / filters | count + bulk --}}
-    <div class="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div @class([
+        'mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between',
+        'rounded-md border border-zinc-200/80 bg-zinc-100/90 p-3 dark:border-zinc-700 dark:bg-zinc-900/40' => $wordPressListStyle ?? false,
+    ])>
         <div class="min-w-0 flex-1 space-y-3">
             <div class="relative w-full max-w-[280px]">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5">
@@ -67,7 +103,7 @@
                         @endif
                     @endif
 
-                    @if(count($this->statusFilterOptions ?? []) > 0)
+                    @if(count($this->statusFilterOptions ?? []) > 0 && ! $wpCounts)
                         @if($isExternal)
                             <select
                                 name="status"
@@ -168,10 +204,18 @@
         </div>
     @endif
 
-    <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/80">
+    <div @class([
+        'overflow-hidden border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/80',
+        'rounded-md shadow-sm' => $wordPressListStyle ?? false,
+        'rounded-lg' => ! ($wordPressListStyle ?? false),
+    ])>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                <thead class="bg-zinc-100 dark:bg-zinc-900/50">
+                <thead @class([
+                    'dark:bg-zinc-900/50',
+                    'border-b border-zinc-200 bg-zinc-100 dark:border-zinc-600' => $wordPressListStyle ?? false,
+                    'bg-zinc-100' => ! ($wordPressListStyle ?? false),
+                ])>
                     <tr>
                         @if($showCheckbox)
                             <th scope="col" class="w-9 px-2 py-2.5 text-left">
@@ -227,7 +271,16 @@
                 <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-800/40">
                     @if($this->items->count() > 0)
                         @foreach($this->items as $item)
-                            <tr wire:key="row-{{ $item->id }}" class="transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/40 {{ in_array($item->id, $selected) ? 'bg-zinc-100 dark:bg-zinc-700/50' : '' }}" x-data="{ showDeleteModal{{ $item->id }}: false }">
+                            <tr
+                                wire:key="row-{{ $item->id }}"
+                                @class([
+                                    'transition-colors duration-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/40',
+                                    'group/tr' => ($wordPressListStyle ?? false) && ($hideActionsColumn ?? false),
+                                    'even:bg-zinc-50/90 dark:even:bg-zinc-800/20' => ($wordPressListStyle ?? false) && ! in_array($item->id, $selected),
+                                    'bg-zinc-100 dark:bg-zinc-700/50' => in_array($item->id, $selected),
+                                ])
+                                x-data="{ showDeleteModal{{ $item->id }}: false }"
+                            >
                                 @if($showCheckbox)
                                     <td class="px-2 py-3 align-middle">
                                         <x-ui.checkbox

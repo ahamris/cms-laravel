@@ -3,6 +3,8 @@
 namespace App\Livewire\Admin;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -12,19 +14,35 @@ class Sidebar extends Component
     #[On('refresh-sidebar')]
     public function refresh(): void
     {
-        // No-op: static menu does not use cache.
+        Cache::forget($this->menuCacheKey());
     }
 
     public function render(): View
     {
         $menu = (object) ['name' => 'Admin Panel'];
-        $filtered = $this->filterMenuByPermission(self::staticMenuDefinition());
+        $filtered = Cache::remember(
+            $this->menuCacheKey(),
+            now()->addMinutes(5),
+            fn () => $this->filterMenuByPermission(self::staticMenuDefinition()),
+        );
         $menuItems = collect(StaticSidebarItem::fromArray($filtered));
 
         return view('livewire.admin.sidebar', [
             'menu' => $menu,
             'menuItems' => $menuItems,
         ]);
+    }
+
+    /**
+     * Get the permission-filtered menu definition for the current user.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function filteredMenuDefinition(): array
+    {
+        $instance = new self;
+
+        return $instance->filterMenuByPermission(self::staticMenuDefinition());
     }
 
     /**
@@ -78,6 +96,13 @@ class Sidebar extends Component
         }
 
         return $result;
+    }
+
+    private function menuCacheKey(): string
+    {
+        $userId = Auth::id() ?? 'guest';
+
+        return "admin.sidebar.menu.v1.user.{$userId}";
     }
 
     /**
@@ -364,6 +389,10 @@ class Sidebar extends Component
                         'route_name' => 'admin.settings.ai.index',
                         'icon' => 'robot',
                         'active_pattern' => 'admin.settings.ai*',
+                        'children' => [
+                            ['label' => 'Providers', 'route_name' => 'admin.settings.ai.index', 'icon' => 'plug', 'permission' => null],
+                            ['label' => 'Background tasks', 'route_name' => 'admin.settings.ai.tasks', 'icon' => 'tasks', 'permission' => null],
+                        ],
                     ],
                     [
                         'label' => 'Site Settings',

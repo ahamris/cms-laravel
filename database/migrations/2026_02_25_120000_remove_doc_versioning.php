@@ -16,8 +16,25 @@ return new class extends Migration
                 $table->dropForeign(['doc_version_id']);
             });
 
-            // SQLite can’t drop a column that still has dependent indexes.
-            DB::statement('DROP INDEX IF EXISTS doc_sections_doc_version_id_slug_index');
+            // SQLite supports DROP INDEX IF EXISTS; MySQL does not (and index name may differ).
+            $driver = Schema::getConnection()->getDriverName();
+            if ($driver === 'sqlite') {
+                DB::statement('DROP INDEX IF EXISTS doc_sections_doc_version_id_slug_index');
+            } else {
+                try {
+                    Schema::table('doc_sections', function (Blueprint $table) {
+                        $table->dropIndex('doc_sections_doc_version_id_slug_index');
+                    });
+                } catch (Throwable) {
+                    try {
+                        Schema::table('doc_sections', function (Blueprint $table) {
+                            $table->dropIndex(['doc_version_id', 'slug']);
+                        });
+                    } catch (Throwable) {
+                        // Index absent or already removed; column drop may still succeed on some drivers.
+                    }
+                }
+            }
 
             Schema::table('doc_sections', function (Blueprint $table) {
                 $table->dropColumn('doc_version_id');
